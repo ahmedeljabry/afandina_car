@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+        <title>Afandina Admin Panel | <?php echo $__env->yieldContent('title'); ?></title>
+
+        <!-- Google Font: Source Sans Pro -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/fontawesome-free/css/all.min.css')); ?>">
+        
+        <!-- Ionicoinns -->
+
+        <!-- Tempusdominus Bootstrap 4 -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')); ?>">
+        <!-- iCheck -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css')); ?>">
+        <!-- JQVMap -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/jqvmap/jqvmap.min.css')); ?>">
+        <!-- Theme style -->
+        <!-- Select2 -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/select2/css/select2.min.css')); ?>">
+        <link rel="stylesheet"  href="<?php echo e(asset('admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')); ?>">
+        <link rel="stylesheet" href="<?php echo e(asset('admin/dist/css/adminlte.min.css')); ?>">
+
+        <link rel="stylesheet" href="<?php echo e(asset('admin/dist/css/custom.css')); ?>">
+        <!-- overlayScrollbars -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')); ?>">
+        <!-- Daterange picker -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/daterangepicker/daterangepicker.css')); ?>">
+        <!-- summernote -->
+        <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/summernote/summernote-bs4.min.css')); ?>">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@latest/dist/tagify.css">
+
+        <style>
+            .cke_notification {
+                display: none;
+            }
+        </style>
+
+        <?php echo $__env->yieldPushContent('styles'); ?>
+    </head>
+    <body class="hold-transition sidebar-mini layout-fixed">
+        <div class="wrapper">
+            <?php echo $__env->make('includes.admin.preloader', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+            <?php echo $__env->make('includes.admin.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+            <?php echo $__env->make('includes.admin.sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+            <div>
+                <?php echo $__env->yieldContent('content'); ?>
+            </div>
+        </div>
+
+
+        <?php echo $__env->make('includes.admin.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
+        <script src="<?php echo e(asset('admin/plugins/jquery/jquery.min.js')); ?>"></script>
+        <!-- jQuery UI 1.11.4 -->
+        <script src="<?php echo e(asset('admin/plugins/jquery-ui/jquery-ui.min.js')); ?>"></script>
+        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+        <script>
+            $.widget.bridge('uibutton', $.ui.button)
+        </script>
+        <!-- Bootstrap 4 -->
+        <script src="<?php echo e(asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js')); ?>"></script>
+        <!-- ChartJS -->
+        <script src="<?php echo e(asset('admin/plugins/chart.js/Chart.min.js')); ?>"></script>
+        <!-- Sparkline -->
+        <script src="<?php echo e(asset('admin/plugins/sparklines/sparkline.js')); ?>"></script>
+        <!-- JQVMap -->
+        <script src="<?php echo e(asset('admin/plugins/jqvmap/jquery.vmap.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/plugins/jqvmap/maps/jquery.vmap.usa.js')); ?>"></script>
+        <!-- jQuery Knob Chart -->
+        <script src="<?php echo e(asset('admin/plugins/jquery-knob/jquery.knob.min.js')); ?>"></script>
+        <!-- daterangepicker -->
+        <script src="<?php echo e(asset('admin/plugins/moment/moment.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/plugins/daterangepicker/daterangepicker.js')); ?>"></script>
+        <!-- Tempusdominus Bootstrap 4 -->
+        <script src="<?php echo e(asset('admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')); ?>"></script>
+        <!-- Summernote -->
+        <script src="<?php echo e(asset('admin/plugins/jquery-validation/jquery.validate.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/plugins/jquery-validation/additional-methods.min.js')); ?>"></script>
+
+        <script src="<?php echo e(asset('admin/plugins/summernote/summernote-bs4.min.js')); ?>"></script>
+        <!-- overlayScrollbars -->
+        <script src="<?php echo e(asset('admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')); ?>"></script>
+        <!-- AdminLTE App -->
+        <script src="<?php echo e(asset('admin/dist/js/adminlte.js')); ?>"></script>
+        <!-- AdminLTE for demo purposes -->
+        
+        <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+        <script src="<?php echo e(asset('admin/dist/js/pages/dashboard.js')); ?>"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@latest/dist/tagify.min.js"></script>
+
+
+
+
+
+        <script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+        <script>
+            CKEDITOR.editorConfig = function( config ) {
+                config.language = 'es';
+                config.uiColor = '#F7B42C';
+                config.height = 200;
+                config.toolbarCanCollapse = true;
+            };
+            var editor = CKEDITOR.replaceAll( 'teny-editor' );
+        </script>
+
+
+        <script src="<?php echo e(asset('admin/plugins/select2/js/select2.full.min.js')); ?>"></script>
+        <script src="<?php echo e(asset('admin/dist/js/custom.js')); ?>"></script>
+        <?php echo $__env->yieldPushContent('scripts'); ?>
+    </body>
+
+</html>
+<?php /**PATH D:\car_rental-src-2025-11-05\car_rental\resources\views/layouts/admin_layout.blade.php ENDPATH**/ ?>

@@ -1,0 +1,141 @@
+/* Switch Column Styling */
+.switch-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Adds space between switches */
+}
+
+.switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.switch-wrapper label {
+    font-size: 14px; /* Adjust label font size */
+    color: #333; /* Label color */
+    font-weight: 500; /* Medium weight for better visibility */
+}
+
+/* Existing Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    min-width: 48px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 28px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #28a745; /* Success green */
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+/* Rounded slider */
+.slider.round {
+    border-radius: 28px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+
+
+
+/* Customize the File Input Button */
+ .custom-file-input {
+     cursor: pointer;
+ }
+
+ .custom-file-label {
+     cursor: pointer;
+     border-radius: 5px;
+     padding: 8px 15px;
+     transition: background-color 0.3s ease;
+ }
+
+ .custom-file-label:hover {
+     background-color: #0056b3;
+ }
+
+ /* Styling the Image Preview */
+ .image-preview {
+     display: block;
+     border-radius: 50%;
+     margin: 10px auto;
+     transition: transform 0.3s ease;
+ }
+
+ /* Smooth Zoom Effect on Hover */
+ .image-preview:hover {
+     transform: scale(1.05);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+ }
+
+
+ /* Styling the Image Preview */
+ .image-rectangle-preview {
+     display: block;
+     border-radius: 3%;
+     margin: 10px auto;
+     transition: transform 0.3s ease;
+ }
+
+ /* Smooth Zoom Effect on Hover */
+ .image-rectangle-preview:hover {
+     transform: scale(1.05);
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+ }
+
+ /* Error Styling for Invalid Input */
+ .is-invalid {
+     border-color: #dc3545;
+ }
+
+.full-screen-image-container {
+    position: relative;
+    width: 100%;
+    height: 50vh; /* 50% of the viewport height */
+    overflow: hidden; /* Hide any overflow */
+}
+
+.full-screen-image {
+    width: 100%;
+    height: 50vh; /* 50% of the viewport height */
+    object-fit: cover; /* Scale the image to cover the entire container */
+}
+
