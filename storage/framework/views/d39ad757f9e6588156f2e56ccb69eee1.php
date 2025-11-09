@@ -222,50 +222,31 @@ unset($__errorArgs, $__bag); ?>
                                                         </div>
                                                     </div>
 
-                                                    <?php
-                                                        $selectedCategoryIds = collect(old('category_ids', old('category_id') ? [old('category_id')] : []))
-                                                            ->filter()
-                                                            ->map(fn ($value) => (string) $value);
-                                                    ?>
-                                                    <input type="hidden" name="category_id" id="primary_category_id" value="<?php echo e(old('category_id', $selectedCategoryIds->first())); ?>">
-
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="category_ids" class="font-weight-bold">Car Categories</label>
-                                                            <select name="category_ids[]" id="category_ids" class="form-control shadow-sm select2 <?php $__errorArgs = ['category_id'];
+                                                            <label for="category_id" class="font-weight-bold">Car Category</label>
+                                                            <select name="category_id" id="category_id" class="form-control shadow-sm select2 <?php $__errorArgs = ['category_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" multiple data-placeholder="Select Categories">
+unset($__errorArgs, $__bag); ?>">
+                                                                <option value="">-- Select Category --</option>
                                                                 <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                                    <option value="<?php echo e($category->id); ?>" <?php echo e($selectedCategoryIds->contains((string)$category->id) ? 'selected' : ''); ?>>
+                                                                    <option value="<?php echo e($category->id); ?>" <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
                                                                         <?php echo e($category->translations()->first()->name); ?>
 
                                                                     </option>
                                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                             </select>
-                                                            <small class="form-text text-muted">The first selected category will be treated as the primary one. Additional selections will create duplicates automatically.</small>
                                                             <?php $__errorArgs = ['category_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
                                                                 <span class="invalid-feedback" role="alert">
-                                                                    <strong><?php echo e($message); ?></strong>
-                                                                </span>
-                                                            <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                                            <?php $__errorArgs = ['category_ids'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                                                <span class="text-danger d-block mt-2">
                                                                     <strong><?php echo e($message); ?></strong>
                                                                 </span>
                                                             <?php unset($message);
@@ -1195,7 +1176,7 @@ unset($__errorArgs, $__bag); ?>
             const gearTypeOption = $('#gear_type_id option:selected');
             context.gear_type = gearTypeOption.val() ? gearTypeOption.text().trim() : null;
 
-            const categoryNames = $('#category_ids option:selected').map(function () {
+            const categoryNames = $('#category_id option:selected').map(function () {
                 const value = $(this).val();
                 return value ? $(this).text().trim() : null;
             }).get().filter(Boolean);
@@ -1421,22 +1402,6 @@ unset($__errorArgs, $__bag); ?>
                 }
             }
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-            const categorySelect = $('#category_ids');
-            const primaryCategoryInput = $('#primary_category_id');
-
-            function syncPrimaryCategory() {
-                if (!primaryCategoryInput.length) {
-                    return;
-                }
-                const selectedValues = categorySelect.val() || [];
-                primaryCategoryInput.val(selectedValues.length ? selectedValues[0] : '');
-            }
-
-            if (categorySelect.length && primaryCategoryInput.length) {
-                syncPrimaryCategory();
-                categorySelect.on('change', syncPrimaryCategory);
-            }
         });
 
 
@@ -1471,10 +1436,10 @@ unset($__errorArgs, $__bag); ?>
 
                 // Show loading overlay
                 $('#loader-overlay').css('display', 'flex');
-                
+
                 // Disable submit button
                 submitBtn.prop('disabled', true);
-                
+
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
@@ -1484,7 +1449,7 @@ unset($__errorArgs, $__bag); ?>
                     success: function(response) {
                         // Hide loader
                         $('#loader-overlay').hide();
-                        
+
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -1502,16 +1467,16 @@ unset($__errorArgs, $__bag); ?>
                     error: function(xhr) {
                         // Hide loading overlay
                         $('#loader-overlay').hide();
-                        
+
                         // Enable submit button
                         submitBtn.prop('disabled', false);
 
                         var errors = xhr.responseJSON.errors;
-                        
+
                         // Clear previous errors
                         $('.is-invalid').removeClass('is-invalid');
                         $('.invalid-feedback').remove();
-                        
+
                         if (errors) {
                             // Show error alert at the top
                             var errorHtml = '<div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">' +
@@ -1520,11 +1485,11 @@ unset($__errorArgs, $__bag); ?>
                                 '<div class="flex-grow-1">' +
                                 '<h5 class="alert-heading mb-2">Please correct the following errors:</h5>' +
                                 '<ul class="mb-0 pl-3">';
-                            
+
                             $.each(errors, function(key, messages) {
                                 messages.forEach(function(message) {
                                     errorHtml += '<li>' + message + '</li>';
-                                    
+
                                     // Add error class and message to form field
                                     var input = $('[name="' + key + '"]');
                                     if (input.length) {
@@ -1535,13 +1500,13 @@ unset($__errorArgs, $__bag); ?>
                                     }
                                 });
                             });
-                            
+
                             errorHtml += '</ul></div>' +
                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                                 '<span aria-hidden="true">&times;</span>' +
                                 '</button>' +
                                 '</div></div>';
-                            
+
                             // Remove any existing error alerts
                             $('.alert-danger').remove();
                             // Add the new error alert at the top of the form
@@ -1556,7 +1521,7 @@ unset($__errorArgs, $__bag); ?>
                             });
                         });
                         errorMessage += '</ul>';
-                        
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Validation Error!',

@@ -4,13 +4,13 @@
     0 =>
     array (
       'title' => 'Dashboard',
-      'icon' => 'fas fa-tachometer-alt',
+      'icon' => 'icon-home',
       'route' => 'admin.dashboard',
     ),
     1 =>
     array (
       'title' => 'Settings',
-      'icon' => 'fas fa-cogs',
+      'icon' => 'icon-settings',
       'subMenu' =>
       array (
         0 =>
@@ -38,7 +38,7 @@
     2 =>
     array (
       'title' => 'Cars Management',
-      'icon' => 'fas fa-car',
+      'icon' => 'icon-layers',
       'subMenu' =>
       array (
         0 =>
@@ -71,7 +71,7 @@
     3 =>
     array (
       'title' => 'Attributes',
-      'icon' => 'fas fa-sliders-h',
+      'icon' => 'icon-equalizer',
       'subMenu' =>
       array (
         0 =>
@@ -94,7 +94,7 @@
     4 =>
     array (
       'title' => 'Blog & Content',
-      'icon' => 'fas fa-blog',
+      'icon' => 'icon-notebook',
       'subMenu' =>
       array (
         0 =>
@@ -132,7 +132,7 @@
     5 =>
     array (
       'title' => 'Pages Settings',
-      'icon' => 'fas fa-cogs',
+      'icon' => 'icon-screen-tablet',
       'subMenu' =>
       array (
         0 =>
@@ -157,7 +157,7 @@
     6 =>
     array (
       'title' => 'Currency',
-      'icon' => 'fas fa-box',
+      'icon' => 'icon-bag',
       'subMenu' =>
       array (
         0 =>

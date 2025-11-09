@@ -2,6 +2,10 @@
 
 @section('title', 'Manage Car Media')
 
+@section('page-title')
+    Manage Media for Car ID: {{ $item->id }}
+@endsection
+
 @push('styles')
 <style>
     .preview-grid {
@@ -207,7 +211,6 @@
 @endpush
 
 @section('content')
-<div class="content-wrapper">
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
         <div class="text-center">
@@ -217,28 +220,7 @@
                 <div class="progress-bar" role="progressbar"></div>
             </div>
         </div>
-    </div>
-
-    <section class="content-header">
-        <div class="container-fluid">
-            <div id="error-container"></div>
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="display-4">Manage Media for Car ID: {{ $item->id }}</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Manage Media</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="content">
-        <div class="container-fluid">
-            <div id="success-alert" class="alert alert-success alert-dismissible fade show" style="display: none;" role="alert">
+    </div><div id="success-alert" class="alert alert-success alert-dismissible fade show" style="display: none;" role="alert">
                 <span id="success-message"></span>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -328,11 +310,7 @@
                         <button type="submit" class="btn btn-info">Upload Media</button>
                     </form>
                 </div>
-            </div>
-        </div>
-    </section>
-</div>
-@endsection
+            </div>`n@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

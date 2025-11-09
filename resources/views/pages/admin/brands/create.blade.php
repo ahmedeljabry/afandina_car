@@ -2,31 +2,11 @@
 
 @section('title', 'Add ' . $modelName)
 
-@section('content')
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">Add {{$modelName}}</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.' . $modelName . '.index') }}" style="text-transform: capitalize;">{{ $modelName }} List</a></li>
-                            <li class="breadcrumb-item active" style="text-transform: capitalize;">Add {{$modelName}}</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
+@section('page-title')
+    Add {{$modelName}}
+@endsection
 
-
-
-        <section class="content">
-            <div class="container-fluid">
-
-                @if($errors->any())
+@section('content')@if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert" style="background-color: #f8d7da; border-color: #f5c6cb; color: #721c24;">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px; color: #f44336;"></i>
@@ -230,11 +210,7 @@
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
-        </section>
-    </div>
-@endsection
+                </div>`n@endsection
 
 
 @push('scripts')

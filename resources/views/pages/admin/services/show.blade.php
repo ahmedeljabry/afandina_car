@@ -2,28 +2,11 @@
 
 @section('title', 'View ' . $modelName)
 
-@section('content')
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">View {{ $modelName }}</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.' . $modelName . '.index') }}" style="text-transform: capitalize;">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.' . $modelName . '.index') }}" style="text-transform: capitalize;">{{ $modelName }} List</a></li>
-                            <li class="breadcrumb-item active">View {{ $modelName }}</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
+@section('page-title')
+    View {{ $modelName }}
+@endsection
 
-        <section class="content">
-            <div class="container-fluid">
-                <!-- Back, Edit, and Delete Buttons -->
+@section('content')<!-- Back, Edit, and Delete Buttons -->
                 <div class="mb-3 d-flex justify-content-between">
                     <a href="{{ route('admin.' . $modelName . '.index') }}" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Back to list">
                         <i class="fas fa-arrow-left"></i> Back

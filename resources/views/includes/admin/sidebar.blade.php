@@ -1,61 +1,48 @@
-<!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a href="{{ route('admin.dashboard') }}" class="brand-link">
-            <img src="{{ asset('admin/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Avandina</span>
-    </a>
+@php
+    $menuItems = config('sidebar.menu', []);
+@endphp
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div class="image">
-                <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
-            </div>
-            <div class="info">
-                <a href="#" class="d-block">{{ Auth::user()->name }}</a>
-            </div>
-        </div>
-
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                @foreach(config('sidebar.menu') as $menu)
-                    <!-- If no subMenu, link directly -->
-                    @if(empty($menu['subMenu']))
-                        <li class="nav-item">
-                            <a href="{{ route($menu['route']) }}" class="nav-link {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
-                                <i class="nav-icon {{ $menu['icon'] }}"></i>
-                                <p>{{ $menu['title'] }}</p>
-                            </a>
-                        </li>
+<div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
+    <div class="main-menu-content">
+        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+            @foreach($menuItems as $menu)
+                @php
+                    $subMenu = $menu['subMenu'] ?? [];
+                    $hasChildren = filled($subMenu);
+                    $childRoutes = $hasChildren ? collect($subMenu)->pluck('route')->filter()->toArray() : [];
+                    $isActive = $hasChildren
+                        ? collect($childRoutes)->contains(fn ($route) => request()->routeIs($route))
+                        : (isset($menu['route']) ? request()->routeIs($menu['route']) : false);
+                    $iconClass = $menu['icon'] ?? 'ft-circle';
+                    $menuTitle = __($menu['title'] ?? 'Menu');
+                @endphp
+                <li class="nav-item {{ $hasChildren ? 'has-sub' : '' }} {{ $isActive ? 'open active' : '' }}">
+                    @if($hasChildren)
+                        <a href="#">
+                            <i class="menu-icon {{ $iconClass }}"></i>
+                            <span class="menu-title">{{ $menuTitle }}</span>
+                        </a>
+                        <ul class="menu-content">
+                            @foreach($subMenu as $sub)
+                                @php
+                                    $subRouteName = $sub['route'] ?? null;
+                                    $subRouteParams = $sub['parameter'] ?? null;
+                                    $subUrl = $subRouteName ? route($subRouteName, $subRouteParams) : '#';
+                                    $subActive = $subRouteName && request()->routeIs($subRouteName);
+                                @endphp
+                                <li class="{{ $subActive ? 'active' : '' }}">
+                                    <a class="menu-item" href="{{ $subUrl }}">{{ __($sub['title'] ?? 'Link') }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
                     @else
-                        <!-- If there is a subMenu -->
-                        <li class="nav-item {{ request()->routeIs(collect($menu['subMenu'])->pluck('route')->toArray()) ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link {{ request()->routeIs(collect($menu['subMenu'])->pluck('route')->toArray()) ? 'active' : '' }}">
-                                <i class="nav-icon {{ $menu['icon'] }}"></i>
-                                <p>
-                                    {{ $menu['title'] }}
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                @foreach($menu['subMenu'] as $subMenu)
-                                    <li class="nav-item">
-                                        <a href="{{ route($subMenu['route'],$subMenu['parameter']??null) }}" class="nav-link {{ request()->routeIs($subMenu['route']) ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>{{ $subMenu['title'] }}</p>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
+                        <a href="{{ isset($menu['route']) ? route($menu['route']) : '#' }}">
+                            <i class="menu-icon {{ $iconClass }}"></i>
+                            <span class="menu-title">{{ $menuTitle }}</span>
+                        </a>
                     @endif
-                @endforeach
-            </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
+                </li>
+            @endforeach
+        </ul>
     </div>
-    <!-- /.sidebar -->
-</aside>
+</div>

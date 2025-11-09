@@ -2,28 +2,12 @@
 
 @section('title', 'Contacts Settings')
 
-@section('content')
-    <div class="content-wrapper">
-        <!-- Page Header -->
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">Contact Settings</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item active" style="text-transform: capitalize;">Update Contacts</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
+@section('page-title')
+    Contact Settings
+@endsection
 
-        <section class="content">
-            <div class="container-fluid">
-                <!-- Error Messages -->
+@section('content')
+        <!-- Page Header --><!-- Error Messages -->
                 @if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                         <i class="fas fa-exclamation-triangle mr-2"></i>
@@ -161,8 +145,4 @@
                     <div class="row">
                         <button type="submit" class="btn btn-primary btn-lg btn-block mb-3"><i class="fas fa-save mr-2"></i> Update Contact Information</button>
                     </div>
-                </form>
-            </div>
-        </section>
-    </div>
-@endsection
+                </form>@endsection

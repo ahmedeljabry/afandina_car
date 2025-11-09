@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use App\Services\Ai\CarContentGenerator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
@@ -383,18 +382,6 @@ class CarController extends GenericController
         'status' => $request->has('status') ? 'available' : 'not_available',
     ]);
 
-    $selectedCategories = collect($request->input('category_ids', []))
-        ->filter(fn ($id) => $id !== null && $id !== '')
-        ->map(fn ($id) => (int) $id)
-        ->unique()
-        ->values();
-
-    if ($selectedCategories->isNotEmpty()) {
-        $request->merge([
-            'category_id' => $selectedCategories->first(),
-        ]);
-    }
-
     // Log the incoming request data for debugging
     \Log::info('Request Data:', $request->all());
 
@@ -422,8 +409,6 @@ class CarController extends GenericController
         'year_id' => 'required|exists:years,id',
         'gear_type_id' => 'required|exists:gear_types,id',
         'brand_id' => 'required|exists:brands,id',
-        'category_ids' => 'nullable|array|min:1',
-        'category_ids.*' => 'exists:categories,id',
         'category_id' => 'required|exists:categories,id',
         'seo_questions.*.*.question' => 'nullable|string',
         'seo_questions.*.*.answer' => 'nullable|string',
@@ -483,12 +468,6 @@ class CarController extends GenericController
                 }
             }
 
-            $car->loadMissing(['translations', 'features', 'periods', 'seoQuestions', 'images']);
-            $additionalCategoryIds = $selectedCategories->slice(1);
-            if ($additionalCategoryIds->isNotEmpty()) {
-                $this->duplicateCarForCategories($car, $additionalCategoryIds);
-            }
-
             DB::commit();
 
             if ($request->ajax()) {
@@ -526,86 +505,6 @@ class CarController extends GenericController
         return back()->with('error', 'An error occurred while creating the car: ' . $e->getMessage())->withInput();
     }
 }
-
-    protected function duplicateCarForCategories(Car $originalCar, \Illuminate\Support\Collection $categoryIds): void
-    {
-        foreach ($categoryIds as $categoryId) {
-            $clone = $originalCar->replicate();
-            $clone->category_id = $categoryId;
-            $clone->slug = $this->generateDuplicateSlug($originalCar, $categoryId);
-            $clone->created_at = now();
-            $clone->updated_at = now();
-            $clone->save();
-
-            foreach ($originalCar->translations as $translation) {
-                $translationClone = $translation->replicate();
-                $translationClone->car_id = $clone->id;
-                $translationClone->created_at = now();
-                $translationClone->updated_at = now();
-                $translationClone->save();
-            }
-
-            if ($originalCar->relationLoaded('features') && $originalCar->features->isNotEmpty()) {
-                $clone->features()->sync($originalCar->features->pluck('id')->all());
-            }
-
-            if ($originalCar->relationLoaded('periods') && $originalCar->periods->isNotEmpty()) {
-                $clone->periods()->sync($originalCar->periods->pluck('id')->all());
-            }
-
-            if ($originalCar->relationLoaded('images') && $originalCar->images->isNotEmpty()) {
-                foreach ($originalCar->images as $image) {
-                    $imageClone = $image->replicate();
-                    $imageClone->car_id = $clone->id;
-                    $imageClone->created_at = now();
-                    $imageClone->updated_at = now();
-                    $imageClone->save();
-                }
-            }
-
-            if ($originalCar->relationLoaded('seoQuestions') && $originalCar->seoQuestions->isNotEmpty()) {
-                foreach ($originalCar->seoQuestions as $question) {
-                    $questionClone = $question->replicate();
-                    $questionClone->seo_questionable_id = $clone->id;
-                    $questionClone->seo_questionable_type = Car::class;
-                    $questionClone->created_at = now();
-                    $questionClone->updated_at = now();
-                    $questionClone->save();
-
-                    $translations = DB::table('seo_question_translations')
-                        ->where('seo_question_id', $question->id)
-                        ->get();
-
-                    foreach ($translations as $row) {
-                        $data = (array) $row;
-                        unset($data['id']);
-                        $data['seo_question_id'] = $questionClone->id;
-                        $data['created_at'] = now();
-                        $data['updated_at'] = now();
-                        DB::table('seo_question_translations')->insert($data);
-                    }
-                }
-            }
-        }
-    }
-
-    protected function generateDuplicateSlug(Car $originalCar, int $categoryId): string
-    {
-        $baseSlug = $originalCar->slug;
-        if (!$baseSlug) {
-            $englishTranslation = $originalCar->translations->firstWhere('locale', 'en');
-            $fallbackName = $englishTranslation->name ?? optional($originalCar->translations->first())->name ?? Str::random(8);
-            $baseSlug = Str::slug($fallbackName);
-        }
-
-        $slug = $baseSlug . '-cat-' . $categoryId;
-        $counter = 1;
-        while (Car::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-cat-' . $categoryId . '-' . $counter++;
-        }
-
-        return $slug;
-    }
 
     public function edit_images($id)
     {

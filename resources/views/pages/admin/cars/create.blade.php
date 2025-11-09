@@ -2,6 +2,10 @@
 
 @section('title', 'Add ' . $modelName)
 
+@section('page-title')
+    Add {{$modelName}}
+@endsection
+
 @push('styles')
     <style>
         .preview-grid {
@@ -94,30 +98,7 @@
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
         <div class="loader"></div>
-    </div>
-
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">Add {{$modelName}}</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.' . $modelName . '.index') }}" style="text-transform: capitalize;">{{ $modelName }} List</a></li>
-                            <li class="breadcrumb-item active" style="text-transform: capitalize;">Add {{$modelName}}</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="content">
-            <div class="container-fluid">
-
-                @if($errors->any())
+    </div>@if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">
                         <div class="d-flex">
                             <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>
@@ -209,31 +190,19 @@
                                                         </div>
                                                     </div>
 
-                                                    @php
-                                                        $selectedCategoryIds = collect(old('category_ids', old('category_id') ? [old('category_id')] : []))
-                                                            ->filter()
-                                                            ->map(fn ($value) => (string) $value);
-                                                    @endphp
-                                                    <input type="hidden" name="category_id" id="primary_category_id" value="{{ old('category_id', $selectedCategoryIds->first()) }}">
-
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="category_ids" class="font-weight-bold">Car Categories</label>
-                                                            <select name="category_ids[]" id="category_ids" class="form-control shadow-sm select2 @error('category_id') is-invalid @enderror" multiple data-placeholder="Select Categories">
+                                                            <label for="category_id" class="font-weight-bold">Car Category</label>
+                                                            <select name="category_id" id="category_id" class="form-control shadow-sm select2 @error('category_id') is-invalid @enderror">
+                                                                <option value="">-- Select Category --</option>
                                                                 @foreach($categories as $category)
-                                                                    <option value="{{ $category->id }}" {{ $selectedCategoryIds->contains((string)$category->id) ? 'selected' : '' }}>
+                                                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                                                         {{ $category->translations()->first()->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
-                                                            <small class="form-text text-muted">The first selected category will be treated as the primary one. Additional selections will create duplicates automatically.</small>
                                                             @error('category_id')
                                                                 <span class="invalid-feedback" role="alert">
-                                                                    <strong>{{ $message }}</strong>
-                                                                </span>
-                                                            @enderror
-                                                            @error('category_ids')
-                                                                <span class="text-danger d-block mt-2">
                                                                     <strong>{{ $message }}</strong>
                                                                 </span>
                                                             @enderror
@@ -799,11 +768,7 @@
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
-        </section>
-    </div>
-@endsection
+                </div>`n@endsection
 
 
 @push('scripts')
@@ -862,7 +827,7 @@
             const gearTypeOption = $('#gear_type_id option:selected');
             context.gear_type = gearTypeOption.val() ? gearTypeOption.text().trim() : null;
 
-            const categoryNames = $('#category_ids option:selected').map(function () {
+            const categoryNames = $('#category_id option:selected').map(function () {
                 const value = $(this).val();
                 return value ? $(this).text().trim() : null;
             }).get().filter(Boolean);
@@ -1088,22 +1053,6 @@
                 }
             }
             @endforeach
-
-            const categorySelect = $('#category_ids');
-            const primaryCategoryInput = $('#primary_category_id');
-
-            function syncPrimaryCategory() {
-                if (!primaryCategoryInput.length) {
-                    return;
-                }
-                const selectedValues = categorySelect.val() || [];
-                primaryCategoryInput.val(selectedValues.length ? selectedValues[0] : '');
-            }
-
-            if (categorySelect.length && primaryCategoryInput.length) {
-                syncPrimaryCategory();
-                categorySelect.on('change', syncPrimaryCategory);
-            }
         });
 
 
@@ -1138,10 +1087,10 @@
 
                 // Show loading overlay
                 $('#loader-overlay').css('display', 'flex');
-                
+
                 // Disable submit button
                 submitBtn.prop('disabled', true);
-                
+
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
@@ -1151,7 +1100,7 @@
                     success: function(response) {
                         // Hide loader
                         $('#loader-overlay').hide();
-                        
+
                         if (response.success) {
                             Swal.fire({
                                 icon: 'success',
@@ -1169,16 +1118,16 @@
                     error: function(xhr) {
                         // Hide loading overlay
                         $('#loader-overlay').hide();
-                        
+
                         // Enable submit button
                         submitBtn.prop('disabled', false);
 
                         var errors = xhr.responseJSON.errors;
-                        
+
                         // Clear previous errors
                         $('.is-invalid').removeClass('is-invalid');
                         $('.invalid-feedback').remove();
-                        
+
                         if (errors) {
                             // Show error alert at the top
                             var errorHtml = '<div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">' +
@@ -1187,11 +1136,11 @@
                                 '<div class="flex-grow-1">' +
                                 '<h5 class="alert-heading mb-2">Please correct the following errors:</h5>' +
                                 '<ul class="mb-0 pl-3">';
-                            
+
                             $.each(errors, function(key, messages) {
                                 messages.forEach(function(message) {
                                     errorHtml += '<li>' + message + '</li>';
-                                    
+
                                     // Add error class and message to form field
                                     var input = $('[name="' + key + '"]');
                                     if (input.length) {
@@ -1202,13 +1151,13 @@
                                     }
                                 });
                             });
-                            
+
                             errorHtml += '</ul></div>' +
                                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
                                 '<span aria-hidden="true">&times;</span>' +
                                 '</button>' +
                                 '</div></div>';
-                            
+
                             // Remove any existing error alerts
                             $('.alert-danger').remove();
                             // Add the new error alert at the top of the form
@@ -1223,7 +1172,7 @@
                             });
                         });
                         errorMessage += '</ul>';
-                        
+
                         Swal.fire({
                             icon: 'error',
                             title: 'Validation Error!',

@@ -1,120 +1,88 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Afandina Admin Panel | @yield('title')</title>
+<html class="loading" lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-textdirection="ltr">
 
-        <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/fontawesome-free/css/all.min.css')}}">
-        {{--    <link rel="stylesheet" href="{{asset('admin/plugins/fontawesome-free/css/all.min.css')}}">--}}
-        <!-- Ionicoinns -->
-{{--        <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css')}}">--}}
-        <!-- Tempusdominus Bootstrap 4 -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
-        <!-- iCheck -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css')}}">
-        <!-- JQVMap -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/jqvmap/jqvmap.min.css')}}">
-        <!-- Theme style -->
-        <!-- Select2 -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/select2/css/select2.min.css')}}">
-        <link rel="stylesheet"  href="{{asset('admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css')}}">
-        <link rel="stylesheet" href="{{asset('admin/dist/css/adminlte.min.css')}}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description"
+        content="Robust admin is super flexible, powerful, clean &amp; modern responsive admin template.">
+    <meta name="keywords"
+        content="admin template, robust admin template, dashboard template, responsive admin template, web app">
+    <meta name="author" content="PIXINVENT">
+    <title>Afandina Admin Panel | @yield('title')</title>
+    <link rel="apple-touch-icon" href="{{ asset('admin/dist/logo/afandina.svg') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('admin/dist/logo/afandina.svg') }}">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700"
+        rel="stylesheet">
+    <!-- BEGIN VENDOR CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/vendors.css') }}">
+    <!-- END VENDOR CSS-->
+    <!-- BEGIN ROBUST CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/app.css') }}">
+    <!-- END ROBUST CSS-->
+    <!-- BEGIN Page Level CSS-->
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/colors/palette-gradient.css') }}">
+    <!-- END Page Level CSS-->
+    @stack('styles')
+</head>
 
-        <link rel="stylesheet" href="{{asset('admin/dist/css/custom.css')}}">
-        <!-- overlayScrollbars -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
-        <!-- Daterange picker -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/daterangepicker/daterangepicker.css')}}">
-        <!-- summernote -->
-        <link rel="stylesheet" href="{{asset('admin/plugins/summernote/summernote-bs4.min.css')}}">
+<body class="vertical-layout vertical-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
+    @include('includes.admin.navbar')
+    @include('includes.admin.sidebar')
 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@latest/dist/tagify.css">
-
-        <style>
-            .cke_notification {
-                display: none;
-            }
-        </style>
-
-        @stack('styles')
-    </head>
-    <body class="hold-transition sidebar-mini layout-fixed">
-        <div class="wrapper">
-            @include('includes.admin.preloader')
-            @include('includes.admin.navbar')
-            @include('includes.admin.sidebar')
-            <div>
+    <div class="app-content content">
+        <div class="content-wrapper">
+            <div class="content-header row">
+                <div class="content-header-left col-md-8 col-12 mb-2 breadcrumb-new">
+                    <h3 class="content-header-title mb-0 d-inline-block">
+                        @yield('page-title', __('Dashboard'))
+                    </h3>
+                    <div class="row breadcrumbs-top d-inline-block">
+                        <div class="breadcrumb-wrapper col-12">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ route('admin.dashboard') }}">{{ __('Home') }}</a>
+                                </li>
+                                @hasSection('breadcrumbs')
+                                    @yield('breadcrumbs')
+                                @else
+                                    <li class="breadcrumb-item active">
+                                        @yield('page-title', __('Dashboard'))
+                                    </li>
+                                @endif
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                @hasSection('page-actions')
+                <div class="content-header-right col-md-4 col-12">
+                    <div class="btn-group float-md-right">
+                        @yield('page-actions')
+                    </div>
+                </div>
+                @endif
+            </div>
+            <div class="content-body">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
+                        <strong>{{ __('Success') }}:</strong> {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                @endif
                 @yield('content')
             </div>
         </div>
+    </div>
 
-
-        @include('includes.admin.footer')
-
-        <script src="{{asset('admin/plugins/jquery/jquery.min.js')}}"></script>
-        <!-- jQuery UI 1.11.4 -->
-        <script src="{{asset('admin/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
-        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-        <script>
-            $.widget.bridge('uibutton', $.ui.button)
-        </script>
-        <!-- Bootstrap 4 -->
-        <script src="{{asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-        <!-- ChartJS -->
-        <script src="{{asset('admin/plugins/chart.js/Chart.min.js')}}"></script>
-        <!-- Sparkline -->
-        <script src="{{asset('admin/plugins/sparklines/sparkline.js')}}"></script>
-        <!-- JQVMap -->
-        <script src="{{asset('admin/plugins/jqvmap/jquery.vmap.min.js')}}"></script>
-        <script src="{{asset('admin/plugins/jqvmap/maps/jquery.vmap.usa.js')}}"></script>
-        <!-- jQuery Knob Chart -->
-        <script src="{{asset('admin/plugins/jquery-knob/jquery.knob.min.js')}}"></script>
-        <!-- daterangepicker -->
-        <script src="{{asset('admin/plugins/moment/moment.min.js')}}"></script>
-        <script src="{{asset('admin/plugins/daterangepicker/daterangepicker.js')}}"></script>
-        <!-- Tempusdominus Bootstrap 4 -->
-        <script src="{{asset('admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
-        <!-- Summernote -->
-        <script src="{{asset('admin/plugins/jquery-validation/jquery.validate.min.js')}}"></script>
-        <script src="{{asset('admin/plugins/jquery-validation/additional-methods.min.js')}}"></script>
-
-        <script src="{{asset('admin/plugins/summernote/summernote-bs4.min.js')}}"></script>
-        <!-- overlayScrollbars -->
-        <script src="{{asset('admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
-        <!-- AdminLTE App -->
-        <script src="{{asset('admin/dist/js/adminlte.js')}}"></script>
-        <!-- AdminLTE for demo purposes -->
-        {{--<script src="{{asset('admin/dist/js/demo.js')}}"></script>--}}
-        <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-        <script src="{{asset('admin/dist/js/pages/dashboard.js')}}"></script>
-
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@latest/dist/tagify.min.js"></script>
-{{--        <script src="https://cdn.tiny.cloud/1/5c135bzlciyk91vi7xrlsu8kg30bj232e5y5i5rw53oaztrj/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>--}}
-
-
-{{--        <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>--}}
-
-        <script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
-        <script>
-            CKEDITOR.editorConfig = function( config ) {
-                config.language = 'es';
-                config.uiColor = '#F7B42C';
-                config.height = 200;
-                config.toolbarCanCollapse = true;
-            };
-            var editor = CKEDITOR.replaceAll( 'teny-editor' );
-        </script>
-
-
-        <script src="{{asset('admin/plugins/select2/js/select2.full.min.js')}}"></script>
-        <script src="{{asset('admin/dist/js/custom.js')}}"></script>
-        @stack('scripts')
-    </body>
+    @include('includes.admin.footer')
+    @include('includes.admin.footer_scripts')
+    @stack('scripts')
+</body>
 
 </html>

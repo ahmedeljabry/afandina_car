@@ -1,5 +1,9 @@
 @extends('layouts.admin_layout')
 @section('title', 'Edit ' . $modelName)
+
+@section('page-title')
+    Edit {{$modelName}}
+@endsection
 @push('styles')
     <style>
         .preview-grid {
@@ -87,27 +91,7 @@
             <div class="loader"></div>
             <p class="mt-2">Processing...</p>
         </div>
-    </div>
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">Edit {{$modelName}}</h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.' . $modelName . '.index') }}" style="text-transform: capitalize;">{{ $modelName }} List</a></li>
-                            <li class="breadcrumb-item active" style="text-transform: capitalize;">Edit {{$modelName}}</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="content">
-            <div class="container-fluid">
-                @if($errors->any())
+    </div>@if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">
                         <div class="d-flex">
                             <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>
@@ -571,11 +555,7 @@
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
-        </section>
-    </div>
-@endsection
+                </div>`n@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
@@ -647,7 +627,7 @@
                         // Remove any existing error alerts
                         $('.alert-danger').remove();
                         // Add the new error alert at the top of the container
-                        $('.content .container-fluid').first().prepend(errorHtml);
+                        $('.content-body').first().prepend(errorHtml);
                         
                         // Scroll to the top of the page to show the errors
                         $('html, body').animate({
