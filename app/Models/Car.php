@@ -54,17 +54,17 @@ class Car extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function blogs(): BelongsToMany
+    public function blogs()
     {
         return $this->belongsToMany(Blog::class, BlogCar::class, 'car_id', 'blog_id');
     }
 
-    public function features(): BelongsToMany
+    public function features()
     {
         return $this->belongsToMany(Feature::class, CarFeature::class, 'car_id', 'feature_id');
     }
 
-    public function periods(): BelongsToMany
+    public function periods()
     {
         return $this->belongsToMany(Period::class, PeriodCar::class, 'car_id', 'period_id');
     }
