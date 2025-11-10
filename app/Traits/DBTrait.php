@@ -80,7 +80,7 @@ trait DBTrait
                 $join->on('categories.id', '=', 'category_translations.category_id')
                     ->where('category_translations.locale', '=', $language);
             })
-            ->leftJoin('cars', 'categories.id', '=', 'cars.category_id')
+            ->leftJoin('cars', 'categories.id', '=', 'cars.category_id') // Assuming there is a cars table with a category_id
             ->where('categories.is_active', true)
             ->groupBy('categories.id', 'categories.slug', 'category_translations.name', 'categories.image_path')
             ->get();
