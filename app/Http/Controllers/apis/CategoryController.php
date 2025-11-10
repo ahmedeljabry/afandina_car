@@ -17,19 +17,19 @@ class CategoryController extends Controller
     use DBTrait;
     public function index(Request $request){
         $language = $request->header('Accept-Language') ?? 'en';
-
+        
         $cacheKey = "categories_{$language}_" . md5(json_encode($request->all()));
-
+        
         $result = Cache::remember($cacheKey, 3600, function() use ($request, $language) {
             $homeData = $this->getHome($language);
-
+            
             $query = Category::where('is_active',true)->with(['translations' => function ($query) use ($language) {
                 $query->where('locale', $language);
             }]);
 
             if ($request->has('filters')) {
                 $filters = $request->input('filters');
-
+                
                 foreach ($filters as $key => $value) {
                     if ($key == 'name'){
                         $query->whereHas('translations', function ($q) use ($value) {
@@ -40,7 +40,7 @@ class CategoryController extends Controller
             }
 
             if ($request->has('paginate') && $request->input('paginate') == 'true') {
-                $perPage = $request->input('per_page', 10);
+                $perPage = $request->input('per_page', 10); 
                 $brands = $query->paginate($perPage);
             } else {
                 $brands = $query->get();
@@ -52,7 +52,7 @@ class CategoryController extends Controller
                 'categories'=> CategoryResource::collection($brands)
             ];
         });
-
+        
         return $result;
     }
 
