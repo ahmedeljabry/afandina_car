@@ -17,6 +17,7 @@
     <link
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dymI1Q1WDaY/qvpDMAYA9Yg3gCBXlI3VzBkYOPxfN3E3xaQa58aeGeq/QAdZkziEtGlUZon6I4v4YglP9ZDjYQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/vendors.css') }}">
     <!-- END VENDOR CSS-->
@@ -26,6 +27,7 @@
     <!-- BEGIN Page Level CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/menu/menu-types/vertical-menu.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/colors/palette-gradient.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('admin/dist/css/custom.css') }}">
     <!-- END Page Level CSS-->
     @stack('styles')
 </head>
@@ -67,6 +69,26 @@
                 @endif
             </div>
             <div class="content-body">
+                @if($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">
+                        <div class="d-flex">
+                            <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>
+                            <div class="flex-grow-1">
+                                <h5 class="alert-heading mb-2">{{ __('Please correct the following errors:') }}</h5>
+                                <ul class="mb-0 pl-3">
+                                    @foreach($errors->getBag('default')->toArray() as $field => $errorMessages)
+                                        @foreach($errorMessages as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                @endif
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
                         <strong>{{ __('Success') }}:</strong> {{ session('success') }}

@@ -1,12 +1,11 @@
-@extends('layouts.admin_layout')
+<?php $__env->startSection('title', 'Add ' . $modelName); ?>
 
-@section('title', 'Add ' . $modelName)
+<?php $__env->startSection('page-title'); ?>
+    Add <?php echo e($modelName); ?>
 
-@section('page-title')
-    Add {{$modelName}}
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
 
@@ -42,8 +41,8 @@
 
         <div class="card-body">
             <!-- Form -->
-            <form action="{{ route('admin.' . $modelName . '.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+            <form action="<?php echo e(route('admin.' . $modelName . '.store')); ?>" method="POST" enctype="multipart/form-data">
+                <?php echo csrf_field(); ?>
                 <div class="tab-content" id="custom-tabs-three-tabContent">
                     <!-- General Data Tab Content -->
                     <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel"
@@ -51,25 +50,25 @@
                         <div class="form-group">
                             <label for="symbol" class="font-weight-bold">Symbol</label>
                             <input type="text" name="symbol" class="form-control form-control-lg shadow-sm"
-                                id="general_field" value="{{ old('symbol') }}">
+                                id="general_field" value="<?php echo e(old('symbol')); ?>">
                         </div>
                         <div class="form-group">
                             <div class="form-group">
                                 <label for="code" class="font-weight-bold">Code</label>
                                 <input type="text" name="code" class="form-control form-control-lg shadow-sm" id="code"
-                                    value="{{ old('code') }}">
+                                    value="<?php echo e(old('code')); ?>">
                             </div>
                             <div class="form-group">
                                 <label for="exchange_rate" class="font-weight-bold">Exchange Rate</label>
                                 <input type="number" name="exchange_rate" class="form-control form-control-lg shadow-sm"
-                                    id="exchange_rate" value="{{ old('exchange_rate') }}">
+                                    id="exchange_rate" value="<?php echo e(old('exchange_rate')); ?>">
                             </div>
 
 
                             <div class="form-group">
                                 <label for="is_default" class="font-weight-bold">Default</label>
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" name="is_default" class="custom-control-input" id="is_default" {{ old('is_default')}}>
+                                    <input type="checkbox" name="is_default" class="custom-control-input" id="is_default" <?php echo e(old('is_default')); ?>>
                                     <label class="custom-control-label" for="is_default">Default</label>
                                 </div>
                             </div>
@@ -78,7 +77,7 @@
                             <div class="form-group">
                                 <label for="is_active" class="font-weight-bold">Active</label>
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" name="is_active" class="custom-control-input" id="is_active" {{ old('is_active')}}>
+                                    <input type="checkbox" name="is_active" class="custom-control-input" id="is_active" <?php echo e(old('is_active')); ?>>
                                     <label class="custom-control-label" for="is_active">Active</label>
                                 </div>
                             </div>
@@ -88,36 +87,36 @@
                         <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel"
                             aria-labelledby="custom-tabs-translated-tab">
                             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                                @foreach($activeLanguages as $lang)
+                                <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li class="nav-item">
-                                        <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                            id="pills-{{ $lang->code }}-tab" data-toggle="pill" href="#pills-{{ $lang->code }}"
-                                            role="tab" aria-controls="pills-{{ $lang->code }}"
-                                            aria-selected="true">{{ $lang->name }}</a>
+                                        <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark"
+                                            id="pills-<?php echo e($lang->code); ?>-tab" data-toggle="pill" href="#pills-<?php echo e($lang->code); ?>"
+                                            role="tab" aria-controls="pills-<?php echo e($lang->code); ?>"
+                                            aria-selected="true"><?php echo e($lang->name); ?></a>
                                     </li>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                             <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-tabContent">
-                                @foreach($activeLanguages as $lang)
-                                    <div class="tab-pane fade @if($loop->first) show active @endif" id="pills-{{ $lang->code }}"
-                                        role="tabpanel" aria-labelledby="pills-{{ $lang->code }}-tab">
+                                <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="pills-<?php echo e($lang->code); ?>"
+                                        role="tabpanel" aria-labelledby="pills-<?php echo e($lang->code); ?>-tab">
                                         <div class="form-group">
-                                            <label for="name_{{ $lang->code }}" class="font-weight-bold">Name
-                                                ({{ $lang->name }})</label>
-                                            <input type="text" name="name[{{ $lang->code }}]"
-                                                class="form-control form-control-lg shadow-sm" id="name_{{ $lang->code }}"
-                                                value="{{ old('name.' . $lang->code) }}">
+                                            <label for="name_<?php echo e($lang->code); ?>" class="font-weight-bold">Name
+                                                (<?php echo e($lang->name); ?>)</label>
+                                            <input type="text" name="name[<?php echo e($lang->code); ?>]"
+                                                class="form-control form-control-lg shadow-sm" id="name_<?php echo e($lang->code); ?>"
+                                                value="<?php echo e(old('name.' . $lang->code)); ?>">
                                         </div>
                                         <div class="form-group">
-                                            <label for="description_{{ $lang->code }}" class="font-weight-bold">Description
-                                                ({{ $lang->name }})</label>
-                                            <textarea name="description[{{ $lang->code }}]"
+                                            <label for="description_<?php echo e($lang->code); ?>" class="font-weight-bold">Description
+                                                (<?php echo e($lang->name); ?>)</label>
+                                            <textarea name="description[<?php echo e($lang->code); ?>]"
                                                 class="form-control form-control-lg shadow-sm"
-                                                id="description_{{ $lang->code }}"
-                                                rows="4">{{ old('description.' . $lang->code) }}</textarea>
+                                                id="description_<?php echo e($lang->code); ?>"
+                                                rows="4"><?php echo e(old('description.' . $lang->code)); ?></textarea>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
 
@@ -125,56 +124,56 @@
                         <div class="tab-pane fade" id="custom-tabs-seo" role="tabpanel"
                             aria-labelledby="custom-tabs-seo-tab">
                             <ul class="nav nav-pills mb-3" id="pills-seo-tab" role="tablist">
-                                @foreach($activeLanguages as $lang)
+                                <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li class="nav-item">
-                                        <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                            id="pills-seo-{{ $lang->code }}-tab" data-toggle="pill"
-                                            href="#pills-seo-{{ $lang->code }}" role="tab"
-                                            aria-controls="pills-seo-{{ $lang->code }}"
-                                            aria-selected="true">{{ $lang->name }}</a>
+                                        <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark"
+                                            id="pills-seo-<?php echo e($lang->code); ?>-tab" data-toggle="pill"
+                                            href="#pills-seo-<?php echo e($lang->code); ?>" role="tab"
+                                            aria-controls="pills-seo-<?php echo e($lang->code); ?>"
+                                            aria-selected="true"><?php echo e($lang->name); ?></a>
                                     </li>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                             <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-seo-tabContent">
-                                @foreach($activeLanguages as $lang)
-                                    <div class="tab-pane fade @if($loop->first) show active @endif"
-                                        id="pills-seo-{{ $lang->code }}" role="tabpanel"
-                                        aria-labelledby="pills-seo-{{ $lang->code }}-tab">
+                                <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>"
+                                        id="pills-seo-<?php echo e($lang->code); ?>" role="tabpanel"
+                                        aria-labelledby="pills-seo-<?php echo e($lang->code); ?>-tab">
                                         <div class="form-group">
-                                            <label for="meta_title_{{ $lang->code }}" class="font-weight-bold">Meta Title
-                                                ({{ $lang->name }})</label>
-                                            <input type="text" name="meta_title[{{ $lang->code }}]"
-                                                class="form-control form-control-lg shadow-sm" id="meta_title_{{ $lang->code }}"
-                                                value="{{ old('meta_title.' . $lang->code) }}">
+                                            <label for="meta_title_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta Title
+                                                (<?php echo e($lang->name); ?>)</label>
+                                            <input type="text" name="meta_title[<?php echo e($lang->code); ?>]"
+                                                class="form-control form-control-lg shadow-sm" id="meta_title_<?php echo e($lang->code); ?>"
+                                                value="<?php echo e(old('meta_title.' . $lang->code)); ?>">
                                         </div>
                                         <div class="form-group">
-                                            <label for="meta_description_{{ $lang->code }}" class="font-weight-bold">Meta
-                                                Description ({{ $lang->name }})</label>
-                                            <textarea name="meta_description[{{ $lang->code }}]"
+                                            <label for="meta_description_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta
+                                                Description (<?php echo e($lang->name); ?>)</label>
+                                            <textarea name="meta_description[<?php echo e($lang->code); ?>]"
                                                 class="form-control form-control-lg shadow-sm"
-                                                id="meta_description_{{ $lang->code }}"
-                                                rows="3">{{ old('meta_description.' . $lang->code) }}</textarea>
+                                                id="meta_description_<?php echo e($lang->code); ?>"
+                                                rows="3"><?php echo e(old('meta_description.' . $lang->code)); ?></textarea>
                                         </div>
                                         <div class="form-group">
-                                            <label for="meta_keywords_{{ $lang->code }}" class="font-weight-bold">Meta Keywords
-                                                ({{ $lang->name }})</label>
-                                            <input type="text" name="meta_keywords[{{ $lang->code }}]"
+                                            <label for="meta_keywords_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta Keywords
+                                                (<?php echo e($lang->name); ?>)</label>
+                                            <input type="text" name="meta_keywords[<?php echo e($lang->code); ?>]"
                                                 class="form-control form-control-lg shadow-sm"
-                                                id="meta_keywords_{{ $lang->code }}" data-role="tagsinput"
-                                                value="{{ old('meta_keywords.' . $lang->code) }}">
+                                                id="meta_keywords_<?php echo e($lang->code); ?>" data-role="tagsinput"
+                                                value="<?php echo e(old('meta_keywords.' . $lang->code)); ?>">
                                         </div>
 
                                         <!-- Dynamic SEO Questions/Answers Section -->
-                                        <div class="seo-questions-container" id="seo-questions-{{ $lang->code }}">
-                                            <label class="font-weight-bold">SEO Questions/Answers ({{ $lang->name }})</label>
+                                        <div class="seo-questions-container" id="seo-questions-<?php echo e($lang->code); ?>">
+                                            <label class="font-weight-bold">SEO Questions/Answers (<?php echo e($lang->name); ?>)</label>
                                             <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
                                                 <div class="form-group">
-                                                    <input type="text" name="seo_questions[{{ $lang->code }}][0][question]"
+                                                    <input type="text" name="seo_questions[<?php echo e($lang->code); ?>][0][question]"
                                                         class="form-control form-control-lg shadow-sm mb-2"
                                                         placeholder="Enter Question" />
                                                 </div>
                                                 <div class="form-group">
-                                                    <textarea name="seo_questions[{{ $lang->code }}][0][answer]"
+                                                    <textarea name="seo_questions[<?php echo e($lang->code); ?>][0][answer]"
                                                         class="form-control form-control-lg shadow-sm"
                                                         placeholder="Enter Answer"></textarea>
                                                 </div>
@@ -183,11 +182,11 @@
                                             </div>
                                         </div>
                                         <button type="button" class="btn btn-info add-question mt-3"
-                                            data-lang="{{ $lang->code }}">
+                                            data-lang="<?php echo e($lang->code); ?>">
                                             <i class="fas fa-plus"></i> Add Question
                                         </button>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                     </div>
@@ -198,10 +197,10 @@
                     </button>
             </form>
         </div>
-</div>@endsection
+</div><?php $__env->stopSection(); ?>
 
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 
     <!-- Custom JS -->
     <script>
@@ -231,14 +230,15 @@
             });
 
 
-            @foreach($activeLanguages as $lang)
-                var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
+            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                var metaKeywordsInput = document.querySelector('#meta_keywords_<?php echo e($lang->code); ?>');
                 if (metaKeywordsInput) {
                     new Tagify(metaKeywordsInput, {
                         placeholder: 'Enter meta keywords'
                     });
                 }
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\car_rental-src-2025-11-05\car_rental\resources\views/pages/admin/currencies/create.blade.php ENDPATH**/ ?>

@@ -8,20 +8,7 @@
 
 @section('content')
         <!-- Page Header --><!-- Error Messages -->
-                @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        <strong>Oops! We found some issues:</strong>
-                        <ul class="mt-2 mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                @endif
+
 
                 <!-- Contact Update Form -->
                 <form action="{{ route('admin.contacts.update') }}" method="POST">

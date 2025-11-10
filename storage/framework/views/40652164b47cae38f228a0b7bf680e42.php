@@ -1,12 +1,11 @@
-@extends('layouts.admin_layout')
+<?php $__env->startSection('title', 'Add <?php echo e($modelName); ?>'); ?>
 
-@section('title', 'Add {{$modelName}}')
+<?php $__env->startSection('page-title'); ?>
+    Add <?php echo e($modelName); ?>
 
-@section('page-title')
-    Add {{$modelName}}
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 
                 <div class="card card-primary card-outline card-tabs shadow-lg">
@@ -21,23 +20,23 @@
                     </div>
 
                     <div class="card-body">
-                        <form action="{{ route('admin.'.$modelName.'.store') }}" method="POST" enctype="multipart/form-data">
-                            @csrf
+                        <form action="<?php echo e(route('admin.'.$modelName.'.store')); ?>" method="POST" enctype="multipart/form-data">
+                            <?php echo csrf_field(); ?>
                             <div class="tab-content" id="custom-tabs-three-tabContent">
                                 <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel" aria-labelledby="custom-tabs-general-tab">
                                     <div class="form-group">
                                         <label for="code" class="font-weight-bold">Code</label>
-                                        <input type="text" name="code" class="form-control form-control-lg shadow-sm" id="code" value="{{ old('code') }}" placeholder="e.g., en, ar">
+                                        <input type="text" name="code" class="form-control form-control-lg shadow-sm" id="code" value="<?php echo e(old('code')); ?>" placeholder="e.g., en, ar">
                                     </div>
                                     <div class="form-group">
                                         <label for="name" class="font-weight-bold">Name</label>
-                                        <input type="text" name="name" class="form-control form-control-lg shadow-sm" id="name" value="{{ old('name') }}" placeholder="{{$modelName}} name">
+                                        <input type="text" name="name" class="form-control form-control-lg shadow-sm" id="name" value="<?php echo e(old('name')); ?>" placeholder="<?php echo e($modelName); ?> name">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="is_active" class="font-weight-bold">Active</label>
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" name="is_active" class="custom-control-input" id="is_active" {{ old('is_active', 1) == 1 ? 'checked' : '' }}>
+                                            <input type="checkbox" name="is_active" class="custom-control-input" id="is_active" <?php echo e(old('is_active', 1) == 1 ? 'checked' : ''); ?>>
                                             <label class="custom-control-label" for="is_active">Active</label>
                                         </div>
                                     </div>
@@ -49,9 +48,9 @@
                             </button>
                         </form>
                     </div>
-                </div>@endsection
+                </div><?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
             background-color: #28a745;
@@ -62,4 +61,6 @@
             box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\car_rental-src-2025-11-05\car_rental\resources\views/pages/admin/languages/create.blade.php ENDPATH**/ ?>

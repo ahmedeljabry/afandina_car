@@ -7,89 +7,98 @@
 @endsection
 
 @section('content')
-<div class="card card-outline card-shadow mb-4" style="border: 1px solid #dcdcdc; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <div class="card-header bg-light">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h3 class="card-title text-dark">{{ $modelName }} List</h3>
-                            <a href="{{ route('admin.' . $modelName . '.create') }}" class="btn btn-primary shadow-sm">
-                                <i class="fas fa-plus"></i> Add {{ $modelName }}
-                            </a>
-                        </div>
-                    </div>
+    <div class="card card-outline card-shadow mb-4"
+        style="border: 1px solid #dcdcdc; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title text-dark">{{ $modelName }} List</h3>
+                <a href="{{ route('admin.' . $modelName . '.create') }}" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-plus"></i> Add {{ $modelName }}
+                </a>
+            </div>
+        </div>
 
-                    <div class="card-body p-3">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped table-responsive-xl" style="background-color: #f9f9f9;">
-                                <thead class="bg-dark text-light">
-                                <tr>
-                                    <th>#</th>
-                                    <th>Post Image</th>
-                                    <th>Title</th>
-                                    <th>Options</th>
-                                    <th>Created At</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach ($items as $item)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            @if ($item->image_path)
-                                                <img src="{{ asset('storage/' . $item->image_path) }}" alt="post_image" class="img-" style="width: 100px; height: 100px; object-fit: cover;">
-                                            @else
-                                                <span>N/A</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $item->translations->first()->title ?? 'N/A' }}</td>
-                                        <td>
-                                            <!-- Combine all switches in one column -->
-                                            <div class="switch-column">
+        <div class="card-body p-3">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-responsive-xl" style="background-color: #f9f9f9;">
+                    <thead class="bg-dark text-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Post Image</th>
+                            <th>Title</th>
+                            <th>Options</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($items as $item)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($item->image_path)
+                                        <img src="{{ asset('storage/' . $item->image_path) }}" alt="post_image" class="img-"
+                                            style="width: 100px; height: 100px; object-fit: cover;">
+                                    @else
+                                        <span>N/A</span>
+                                    @endif
+                                </td>
+                                <td>{{ $item->translations->first()->title ?? 'N/A' }}</td>
+                                <td>
+                                    <!-- Combine all switches in one column -->
+                                    <div class="switch-column">
 
-                                                <div class="switch-wrapper">
-                                                    <label for="show_in_home">Show In Home</label>
-                                                    <label class="switch">
-                                                        <input type="checkbox" class="toggle-status" id="how_in_home" data-model="{{ $modelName }}" data-attribute="show_in_home" data-id="{{ $item->id }}" {{ $item->show_in_home ? 'checked' : '' }}>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
+                                        <div class="switch-wrapper">
+                                            <label for="show_in_home">Show In Home</label>
+                                            <label class="switch">
+                                                <input type="checkbox" class="toggle-status" id="how_in_home"
+                                                    data-model="{{ $modelName }}" data-attribute="show_in_home"
+                                                    data-id="{{ $item->id }}" {{ $item->show_in_home ? 'checked' : '' }}>
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </div>
 
-                                                <div class="switch-wrapper">
-                                                    <label for="is_active">Active</label>
-                                                    <label class="switch">
-                                                        <input type="checkbox" class="toggle-status" id="is_active" data-model="{{ $modelName }}" data-attribute="is_active" data-id="{{ $item->id }}" {{ $item->is_active ? 'checked' : '' }}>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{{ $item->created_at ? $item->created_at->format('d M, Y') : 'N/A' }}</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                {{--                                                <a href="{{ route('admin.' . $modelName . '.show', $item->id) }}" class="btn btn-primary btn-sm shadow-sm mr-1">--}}
-{{--                                                    <i class="fas fa-eye"></i> Show--}}
-{{--                                                </a>--}}
-                                                <a href="{{ route('admin.' . $modelName . '.edit', $item->id) }}" class="btn btn-info btn-sm shadow-sm mr-1">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                                <button type="button" class="btn btn-danger btn-sm shadow-sm delete-btn" data-id="{{ $item->id }}" data-model="{{ $modelName }}">
-                                                    <i class="fas fa-trash"></i> Delete
-                                                </button>
+                                        <div class="switch-wrapper">
+                                            <label for="is_active">Active</label>
+                                            <label class="switch">
+                                                <input type="checkbox" class="toggle-status" id="is_active"
+                                                    data-model="{{ $modelName }}" data-attribute="is_active"
+                                                    data-id="{{ $item->id }}" {{ $item->is_active ? 'checked' : '' }}>
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ $item->created_at ? $item->created_at->format('d M, Y') : 'N/A' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        {{-- <a href="{{ route('admin.' . $modelName . '.show', $item->id) }}"
+                                            class="btn btn-primary btn-sm shadow-sm mr-1">--}}
+                                            {{-- <i class="fas fa-eye"></i> Show--}}
+                                            {{-- </a>--}}
+                                        <a href="{{ route('admin.' . $modelName . '.edit', $item->id) }}"
+                                            class="btn btn-info btn-sm shadow-sm mr-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button type="button" class="btn btn-danger btn-sm shadow-sm delete-btn"
+                                            data-id="{{ $item->id }}" data-model="{{ $modelName }}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
 
-                                            </div>
-                                        </td>
+                                    </div>
+                                </td>
 
 
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                    <div class="card-footer bg-light">
-                        <div class="d-flex justify-content-end">
-                            {{ $items->links() }}
-                        </div>
-                    </div>
-                </div>`n@endsection
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-end">
+                {{ $items->links() }}
+            </div>
+        </div>
+</div>@endsection

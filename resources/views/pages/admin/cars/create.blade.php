@@ -95,34 +95,11 @@
     </style>
 @endpush
 @section('content')
-    <!-- Loader Overlay -->
-    <div class="loader-overlay" id="loader-overlay">
-        <div class="loader"></div>
-    </div>@if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">
-                        <div class="d-flex">
-                            <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>
-                            <div class="flex-grow-1">
-                                <h5 class="alert-heading mb-2">Please correct the following errors:</h5>
-                                <ul class="mb-0 pl-3">
-                                    @foreach($errors->getBag('default')->toArray() as $field => $errorMessages)
-                                        @foreach($errorMessages as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                @endif
-
+    @include('pages.admin.cars.partials.crud_header', ['activeStep' => 'details'])
                 <div class="card card-primary card-outline card-tabs shadow-lg">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
                         <!-- Tabs Header -->
-                        <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                        <ul class="nav nav-tabs nav-tabs-modern" id="custom-tabs-three-tab" role="tablist">
                             <!-- General Data Tab -->
                             <li class="nav-item">
                                 <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill" href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
@@ -148,7 +125,7 @@
                         <!-- Form -->
                         <form id="createCarForm" action="{{ route('admin.'.$modelName.'.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="tab-content" id="custom-tabs-three-tabContent">
+                            <div class="tab-content tab-modern" id="custom-tabs-three-tabContent">
                                 <!-- General Data Tab Content -->
                                 <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel" aria-labelledby="custom-tabs-general-tab">
 
@@ -768,7 +745,8 @@
                             </button>
                         </form>
                     </div>
-                </div>`n@endsection
+                </div>
+@endsection
 
 
 @push('scripts')

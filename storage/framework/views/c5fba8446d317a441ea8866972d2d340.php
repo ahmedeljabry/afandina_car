@@ -1,12 +1,10 @@
-@extends('layouts.admin_layout')
+<?php $__env->startSection('title', 'List of ' . $modelName); ?>
 
-@section('title', 'List of ' . $modelName)
+<?php $__env->startSection('page-title'); ?>
+    <?php echo e($modelName); ?> List
+<?php $__env->stopSection(); ?>
 
-@section('page-title')
-    {{ $modelName }} List
-@endsection
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .filter-section {
             background-color: #f8f9fa;
@@ -90,10 +88,10 @@
             gap: 5px;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
-    @include('pages.admin.cars.partials.crud_header', ['activeStep' => 'list'])
+<?php $__env->startSection('content'); ?>
+    <?php echo $__env->make('pages.admin.cars.partials.crud_header', ['activeStep' => 'list'], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <div class="card">
         <div class="card-header">
             <h4 class="card-title">Filter Cars</h4>
@@ -104,33 +102,35 @@
                     <label for="brand" class="form-label">Brand</label>
                     <select name="brand" id="brand" class="form-control select2">
                         <option value="">All Brands</option>
-                        @foreach($brands as $brand)
-                            <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
-                                @php
+                        <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($brand->id); ?>" <?php echo e(request('brand') == $brand->id ? 'selected' : ''); ?>>
+                                <?php
                                     $translation = $brand->translations->where('locale', 'en')->first();
                                     $name = $translation ? $translation->name : ($brand->translations->first() ? $brand->translations->first()->name : 'N/A');
-                                @endphp
-                                {{ $name }}
+                                ?>
+                                <?php echo e($name); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
                 <div class="col-md-2">
                     <label for="model" class="form-label">Model</label>
-                    <select name="model" id="model" class="form-control select2" {{ !request('brand') ? 'disabled' : '' }}>
+                    <select name="model" id="model" class="form-control select2" <?php echo e(!request('brand') ? 'disabled' : ''); ?>>
                         <option value="">All Models</option>
-                        @if(request('brand'))
-                            @foreach($brands->find(request('brand'))->carModels as $model)
-                                @php
+                        <?php if(request('brand')): ?>
+                            <?php $__currentLoopData = $brands->find(request('brand'))->carModels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $model): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
                                     $translation = $model->translations->where('locale', 'en')->first();
                                     $name = $translation ? $translation->name : ($model->translations->first() ? $model->translations->first()->name : 'N/A');
-                                @endphp
-                                <option value="{{ $model->id }}" {{ request('model') == $model->id ? 'selected' : '' }}>
-                                    {{ $name }}
+                                ?>
+                                <option value="<?php echo e($model->id); ?>" <?php echo e(request('model') == $model->id ? 'selected' : ''); ?>>
+                                    <?php echo e($name); ?>
+
                                 </option>
-                            @endforeach
-                        @endif
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endif; ?>
                     </select>
                 </div>
 
@@ -138,51 +138,38 @@
                     <label for="category" class="form-label">Category</label>
                     <select name="category" id="category" class="form-control select2">
                         <option value="">All Categories</option>
-                        @foreach($categories as $category)
-                            @php
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
                                 $translation = $category->translations->where('locale', 'en')->first();
                                 $name = $translation ? $translation->name : ($category->translations->first() ? $category->translations->first()->name : 'N/A');
-                            @endphp
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $name }}
+                            ?>
+                            <option value="<?php echo e($category->id); ?>" <?php echo e(request('category') == $category->id ? 'selected' : ''); ?>>
+                                <?php echo e($name); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
-                {{-- <div class="col-md-2">
-                    <label for="rent_periods" class="form-label">Rent Periods</label>
-                    <select name="rent_periods" id="rent_periods" class="form-control select2">
-                        <option value="">All Rent Periods</option>
-                        @foreach($periods as $rent_period)
-                        @php
-                        $translation = $rent_period->translations->where('locale', 'en')->first();
-                        $name = $translation ? $translation->name : ($rent_period->translations->first() ?
-                        $rent_period->translations->first()->name : 'N/A');
-                        @endphp
-                        <option value="{{ $rent_period->id }}" {{ request('period')==$rent_period->id ? 'selected' : '' }}>
-                            {{ $name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div> --}}
+                
 
                 <div class="col-md-2">
                     <label for="year" class="form-label">Year</label>
                     <select name="year" id="year" class="form-control select2">
                         <option value="">All Years</option>
-                        @foreach($years as $year)
-                            <option value="{{ $year->id }}" {{ request('year') == $year->id ? 'selected' : '' }}>
-                                {{ $year->year }}
+                        <?php $__currentLoopData = $years; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($year->id); ?>" <?php echo e(request('year') == $year->id ? 'selected' : ''); ?>>
+                                <?php echo e($year->year); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
                 <div class="col-md-2">
                     <label for="search" class="form-label">Search</label>
                     <input type="text" name="search" id="search" class="form-control" placeholder="Search by name..."
-                        value="{{ request('search') }}">
+                        value="<?php echo e(request('search')); ?>">
                 </div>
 
                 <div class="col-md-2 d-flex align-items-end">
@@ -190,7 +177,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-filter"></i> Filter
                         </button>
-                        <a href="{{ route('admin.cars.index') }}" class="btn btn-secondary">
+                        <a href="<?php echo e(route('admin.cars.index')); ?>" class="btn btn-secondary">
                             <i class="fas fa-redo"></i> Reset
                         </a>
                     </div>
@@ -221,53 +208,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($items as $item)
+                        <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td><?php echo e($loop->iteration); ?></td>
                                 <td>
-                                    @if($item->default_image_path)
-                                        <img src="{{ asset('storage/' . $item->default_image_path) }}" alt="Car Image"
+                                    <?php if($item->default_image_path): ?>
+                                        <img src="<?php echo e(asset('storage/' . $item->default_image_path)); ?>" alt="Car Image"
                                             class="car-thumbnail" data-toggle="tooltip" title="Click to enlarge">
-                                    @else
+                                    <?php else: ?>
                                         <span class="badge bg-secondary">No Image</span>
-                                    @endif
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    @php
+                                    <?php
                                         $translation = $item->translations->where('locale', 'en')->first();
                                         $name = $translation ? $translation->name : ($item->translations->first() ? $item->translations->first()->name : 'N/A');
-                                    @endphp
-                                    {{ $name }}
+                                    ?>
+                                    <?php echo e($name); ?>
+
                                 </td>
                                 <td>
-                                    @php
+                                    <?php
                                         $brand = $item->brand;
                                         $brandName = $brand && $brand->translations ?
                                             ($brand->translations->where('locale', 'en')->first()?->name ??
                                                 $brand->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $brandName }}
+                                    ?>
+                                    <?php echo e($brandName); ?>
+
                                 </td>
                                 <td>
-                                    @php
+                                    <?php
                                         $model = $item->carModel;
                                         $modelName = $model && $model->translations ?
                                             ($model->translations->where('locale', 'en')->first()?->name ??
                                                 $model->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $modelName }}
+                                    ?>
+                                    <?php echo e($modelName); ?>
+
                                 </td>
                                 <td>
-                                    @php
+                                    <?php
                                         $category = $item->category;
                                         $categoryName = $category && $category->translations ?
                                             ($category->translations->where('locale', 'en')->first()?->name ??
                                                 $category->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $categoryName }}
+                                    ?>
+                                    <?php echo e($categoryName); ?>
+
                                 </td>
                                 <td>
-                                    @php
+                                    <?php
                                         $rentPeriod = $item->periods;
                                         foreach ($rentPeriod as $period) {
                                             $periodName = $period && $period->translations ?
@@ -275,24 +266,24 @@
                                                     $period->translations->first()?->name ?? 'N/A') : 'N/A';
                                             echo '<span class="badge bg-warning">' . $periodName . '</span> <br>';
                                         }
-                                    @endphp
+                                    ?>
                                 </td>
 
-                                <td>{{ optional($item->year)->year ?? 'N/A' }}</td>
+                                <td><?php echo e(optional($item->year)->year ?? 'N/A'); ?></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{{ route('admin.cars.edit', $item->id) }}" class="btn btn-sm btn-primary"
+                                        <a href="<?php echo e(route('admin.cars.edit', $item->id)); ?>" class="btn btn-sm btn-primary"
                                             data-toggle="tooltip" title="Edit Car">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="{{ route('admin.cars.edit_images', $item->id) }}" class="btn btn-sm btn-info"
+                                        <a href="<?php echo e(route('admin.cars.edit_images', $item->id)); ?>" class="btn btn-sm btn-info"
                                             data-toggle="tooltip" title="Manage Images">
                                             <i class="fas fa-images"></i>
                                         </a>
-                                        <form action="{{ route('admin.cars.destroy', $item->id) }}" method="POST"
+                                        <form action="<?php echo e(route('admin.cars.destroy', $item->id)); ?>" method="POST"
                                             class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
                                             <button type="submit" class="btn btn-sm btn-danger" data-toggle="tooltip"
                                                 title="Delete Car"
                                                 onclick="return confirm('Are you sure you want to delete this car?')">
@@ -302,22 +293,23 @@
                                     </div>
                                 </td>
                             </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <tr>
                                 <td colspan="10" class="text-center">No cars found</td>
                             </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
 
             <div class="mt-4">
-                {{ $items->links() }}
+                <?php echo e($items->links()); ?>
+
             </div>
         </div>
-</div>@endsection
+</div><?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         $(document).ready(function () {
             // تفعيل tooltips
@@ -361,4 +353,6 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\car_rental-src-2025-11-05\car_rental\resources\views/pages/admin/cars/index.blade.php ENDPATH**/ ?>

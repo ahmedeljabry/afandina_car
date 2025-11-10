@@ -1,5 +1,10 @@
 <?php $__env->startSection('title', 'Add ' . $modelName); ?>
 
+<?php $__env->startSection('page-title'); ?>
+    Add <?php echo e($modelName); ?>
+
+<?php $__env->stopSection(); ?>
+
 <?php $__env->startPush('styles'); ?>
     <style>
         .preview-grid {
@@ -89,57 +94,11 @@
     </style>
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
-    <!-- Loader Overlay -->
-    <div class="loader-overlay" id="loader-overlay">
-        <div class="loader"></div>
-    </div>
-
-    <div class="content-wrapper">
-        <section class="content-header">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1 class="display-4">Add <?php echo e($modelName); ?></h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ol class="breadcrumb float-sm-right">
-                            <li class="breadcrumb-item"><a href="<?php echo e(route('admin.dashboard')); ?>">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="<?php echo e(route('admin.' . $modelName . '.index')); ?>" style="text-transform: capitalize;"><?php echo e($modelName); ?> List</a></li>
-                            <li class="breadcrumb-item active" style="text-transform: capitalize;">Add <?php echo e($modelName); ?></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="content">
-            <div class="container-fluid">
-
-                <?php if($errors->any()): ?>
-                    <div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">
-                        <div class="d-flex">
-                            <i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>
-                            <div class="flex-grow-1">
-                                <h5 class="alert-heading mb-2">Please correct the following errors:</h5>
-                                <ul class="mb-0 pl-3">
-                                    <?php $__currentLoopData = $errors->getBag('default')->toArray(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $field => $errorMessages): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php $__currentLoopData = $errorMessages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <li><?php echo e($error); ?></li>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </ul>
-                            </div>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
+    <?php echo $__env->make('pages.admin.cars.partials.crud_header', ['activeStep' => 'details'], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <div class="card card-primary card-outline card-tabs shadow-lg">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
                         <!-- Tabs Header -->
-                        <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
+                        <ul class="nav nav-tabs nav-tabs-modern" id="custom-tabs-three-tab" role="tablist">
                             <!-- General Data Tab -->
                             <li class="nav-item">
                                 <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill" href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
@@ -165,7 +124,7 @@
                         <!-- Form -->
                         <form id="createCarForm" action="<?php echo e(route('admin.'.$modelName.'.store')); ?>" method="POST" enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
-                            <div class="tab-content" id="custom-tabs-three-tabContent">
+                            <div class="tab-content tab-modern" id="custom-tabs-three-tabContent">
                                 <!-- General Data Tab Content -->
                                 <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel" aria-labelledby="custom-tabs-general-tab">
 
@@ -1114,9 +1073,6 @@ unset($__errorArgs, $__bag); ?>
                         </form>
                     </div>
                 </div>
-            </div>
-        </section>
-    </div>
 <?php $__env->stopSection(); ?>
 
 
