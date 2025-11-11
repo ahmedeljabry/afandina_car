@@ -29,6 +29,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('app-assets/css/core/colors/palette-gradient.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin/dist/css/custom.css') }}">
     <!-- END Page Level CSS-->
+    <link rel="stylesheet" href="{{asset('admin/plugins/fontawesome-free/css/all.min.css')}}">
     @stack('styles')
 </head>
 

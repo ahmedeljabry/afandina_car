@@ -29,6 +29,7 @@
     <link rel="stylesheet" type="text/css" href="<?php echo e(asset('app-assets/css/core/colors/palette-gradient.css')); ?>">
     <link rel="stylesheet" type="text/css" href="<?php echo e(asset('admin/dist/css/custom.css')); ?>">
     <!-- END Page Level CSS-->
+    <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/fontawesome-free/css/all.min.css')); ?>">
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 

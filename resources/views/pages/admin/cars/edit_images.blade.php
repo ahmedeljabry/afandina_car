@@ -216,7 +216,6 @@
 @endpush
 
 @section('content')
-    @include('pages.admin.cars.partials.crud_header', ['activeStep' => 'media'])
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
         <div class="text-center">

@@ -93,7 +93,6 @@
 @endpush
 
 @section('content')
-    @include('pages.admin.cars.partials.crud_header', ['activeStep' => 'list'])
     <div class="card">
         <div class="card-header">
             <h4 class="card-title">Filter Cars</h4>

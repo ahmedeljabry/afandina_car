@@ -7,7 +7,7 @@
 <script src="<?php echo e(asset('app-assets/js/core/app-menu.js')); ?>"></script>
 <script src="<?php echo e(asset('app-assets/js/core/app.js')); ?>"></script>
 <!-- END ROBUST JS-->
-<script src="https://cdn.ckeditor.com/4.16.2/full/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
 <script>
     CKEDITOR.editorConfig = function (config) {
         config.language = 'es';

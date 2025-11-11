@@ -98,7 +98,6 @@
     </style>
 @endpush
 @section('content')
-    @include('pages.admin.cars.partials.crud_header', ['activeStep' => 'edit'])
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
         <div class="text-center">
@@ -640,7 +639,7 @@
 </div>@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
     <script>
         $(document).ready(function () {
             $('#editCarForm').on('submit', function (e) {

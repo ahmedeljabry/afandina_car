@@ -94,7 +94,6 @@
     </style>
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
-    <?php echo $__env->make('pages.admin.cars.partials.crud_header', ['activeStep' => 'details'], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 <div class="card card-primary card-outline card-tabs shadow-lg">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
                         <!-- Tabs Header -->
