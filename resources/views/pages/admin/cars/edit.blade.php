@@ -100,7 +100,154 @@
                 transform: rotate(360deg);
             }
         }
-    </style>
+    
+        .nav-tabs.nav-tabs-modern {
+            border-bottom: none;
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            position: relative;
+        }
+        .nav-tabs.nav-tabs-modern .nav-link {
+            border: none;
+            border-radius: 16px;
+            margin-right: 1rem;
+            padding: .85rem 1.5rem;
+            background: #f1f5ff;
+            color: #4353ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .nav-tabs.nav-tabs-modern .nav-link.active {
+            background: linear-gradient(135deg, #4c6ef5, #6a82fb);
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(76, 110, 245, .25);
+        }
+
+        .car-insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .car-insight-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 1.25rem;
+            box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+            border: 1px solid #eef1fb;
+        }
+        .car-insight-card span {
+            font-size: .85rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #94a3b8;
+            display: block;
+            margin-bottom: .35rem;
+        }
+        .car-insight-card i {
+            color: #4c6ef5;
+            margin-right: .35rem;
+        }
+        .car-insight-card strong {
+            font-size: 1.75rem;
+            display: block;
+            color: #0f172a;
+        }
+
+        .car-form-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+            gap: 1.5rem;
+        }
+        .car-panel-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .car-panel-main .card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
+        }
+        .car-panel-main .card-header {
+            background: transparent;
+            border-bottom: none;
+        }
+        .car-panel-main .card-title {
+            font-weight: 600;
+        }
+        .car-panel-aside {
+            position: sticky;
+            top: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .car-panel-aside .card {
+            border: none;
+            border-radius: 22px;
+            box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
+        }
+        .status-pill-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .status-pair {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            background: #f8fafc;
+        }
+        .status-pair strong {
+            font-size: .9rem;
+            color: #0f172a;
+        }
+        .car-cover-preview img {
+            width: 100%;
+            border-radius: 18px;
+            border: 1px dashed #cbd5f5;
+        }
+        .car-cover-preview label {
+            font-weight: 600;
+            color: #1f2b6c;
+        }
+        .car-tip-list {
+            padding-left: 1rem;
+        }
+        .car-tip-list li {
+            margin-bottom: .35rem;
+            color: #475569;
+        }
+        .media-dropzone {
+            border: 2px dashed #cbd5ff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            background: #f7faff;
+        }
+        .media-dropzone i {
+            font-size: 2rem;
+            color: #4c6ef5;
+            margin-bottom: .5rem;
+        }
+
+        @media (max-width: 1200px) {
+            .car-form-grid {
+                grid-template-columns: 1fr;
+            }
+            .car-panel-aside {
+                position: static;
+            }
+        }
+
+</style>
 @endpush
 @section('content')
 

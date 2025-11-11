@@ -606,7 +606,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Translated Data Tab Content with Sub-tabs for Languages -->
                                 <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel" aria-labelledby="custom-tabs-translated-tab">
                                     <div class="card shadow-sm border-0 mb-4">
                                         <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">

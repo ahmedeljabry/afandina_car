@@ -1,9 +1,14 @@
 <?php $__env->startSection('title', 'Add ' . $modelName); ?>
 
+
 <?php $__env->startSection('page-title'); ?>
-    Add <?php echo e($modelName); ?>
+    <?php echo e(isset($item) ? __('Edit :entity', ['entity' => $modelName]) : __('Add :entity', ['entity' => $modelName])); ?>
 
 <?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('includes.admin.form_theme', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
+
 
 <?php $__env->startPush('styles'); ?>
     <style>
@@ -94,7 +99,31 @@
     </style>
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
-                <div class="card card-primary card-outline card-tabs shadow-lg">
+
+    <?php
+        $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
+        $formStats = [];
+        if ($languageCount) {
+            $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
+        }
+        $formStats[] = ['icon' => 'fas fa-layer-group', 'label' => __('Guided workflow')];
+        $formStats[] = ['icon' => 'fas fa-save', 'label' => __('Content safety')];
+        $formTitle = isset($item)
+            ? __('Update :entity', ['entity' => $modelName])
+            : __('Add :entity', ['entity' => $modelName]);
+        $formDescription = isset($item)
+            ? __('Review the content, adjust translations and assets, then save confidently.')
+            : __('Complete the details below to publish a polished entry.');
+    ?>
+
+    <?php echo $__env->make('includes.admin.form_header', [
+        'title' => $formTitle,
+        'description' => $formDescription,
+        'stats' => $formStats
+    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
+
+                <div class="card form-card card-primary card-outline card-tabs shadow-lg">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
                         <!-- Tabs Header -->
                         <ul class="nav nav-tabs nav-tabs-modern" id="custom-tabs-three-tab" role="tablist">

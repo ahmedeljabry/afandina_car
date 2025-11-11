@@ -76,23 +76,6 @@
                 if (typeof $.fn.select2 === 'undefined') {
                     return;
                 }
-
-                $('.select2').each(function () {
-                    var $el = $(this);
-                    if ($el.data('select2')) {
-                        return;
-                    }
-
-                    var options = {
-                        theme: 'bootstrap4',
-                        width: '100%',
-                        placeholder: $el.data('placeholder') || $el.attr('placeholder') || "{{ __('Select an option') }}",
-                        allowClear: $el.data('allow-clear') !== undefined ? $el.data('allow-clear') : true,
-                        tags: !!$el.data('tags')
-                    };
-
-                    $el.select2(options);
-                });
             });
         </script>
     @endpush
