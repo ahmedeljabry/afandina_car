@@ -16,6 +16,59 @@
     </a>
 <?php $__env->stopSection(); ?>
 
+<?php $__env->startPush('styles'); ?>
+    <style>
+        .dashboard-hero {
+            background: radial-gradient(circle at top left, #3949ab, #1a237e);
+            border-radius: 24px;
+            color: #fff;
+            padding: 2.25rem;
+            box-shadow: 0 18px 40px rgba(19, 16, 64, 0.35);
+            margin-bottom: 2rem;
+        }
+        .dashboard-hero h1 { font-weight: 600; }
+        .dashboard-hero .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .65rem 1rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,.18);
+            margin-right: .75rem;
+            margin-bottom: .5rem;
+        }
+        .metric-card {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,.08);
+            overflow: hidden;
+        }
+        .metric-card .metric-icon {
+            width: 56px; height: 56px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        .quick-action-card {
+            border-radius: 18px;
+            padding: 1.6rem;
+            border: 1px solid #edf1f7;
+            height: 100%;
+            transition: all .2s;
+        }
+        .quick-action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 26px rgba(0,0,0,.08);
+        }
+        .table-modern tbody tr:hover {
+            background:#f6f8fb;
+        }
+    </style>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startSection('content'); ?>
     <?php
         $totalListings = $carsByCategory->sum('cars_count');

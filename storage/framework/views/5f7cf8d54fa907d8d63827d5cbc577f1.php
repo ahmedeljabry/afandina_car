@@ -1,12 +1,48 @@
+
+
 <?php $__env->startSection('title', 'List of ' . $modelName); ?>
+
+
+<?php echo $__env->make('includes.admin.datatable_theme', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <?php $__env->startSection('page-title'); ?>
     <?php echo e($modelName); ?> List
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('content'); ?>
-    <div class="card card-outline card-shadow mb-4"
-        style="border: 1px solid #dcdcdc; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+
+    <?php
+        $itemsCollection = $items instanceof \Illuminate\Pagination\AbstractPaginator ? collect($items->items()) : collect($items);
+        $totalItems = $itemsCollection->count();
+        $activeItems = $itemsCollection->where('is_active', true)->count();
+        $inactiveItems = max($totalItems - $activeItems, 0);
+    ?>
+
+    <div class="management-hero">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <div>
+                <h2 class="mb-1"><?php echo e(__('Manage')); ?> <?php echo e($modelName); ?></h2>
+                <p class="mb-0"><?php echo e(__('Keep this dataset polished and ready for your storefront experience.')); ?></p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <span class="stat-pill">
+                    <i class="fas fa-layer-group"></i> <?php echo e($totalItems); ?> <?php echo e(__('entries')); ?>
+
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-on"></i> <?php echo e($activeItems); ?> <?php echo e(__('active')); ?>
+
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-off"></i> <?php echo e($inactiveItems); ?> <?php echo e(__('inactive')); ?>
+
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card management-card">
         <div class="card-header bg-light">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="card-title text-dark"><?php echo e($modelName); ?> List</h3>
@@ -17,9 +53,9 @@
             </div>
         </div>
 
-        <div class="card-body p-3">
+        <div class="card-body pt-1">
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-responsive-xl" style="background-color: #f9f9f9;">
+                <table id="brands-table" class="table table-hover table-striped table-modern w-100 datatable">
                     <thead class="bg-dark text-light">
                         <tr>
                             <th>#</th>
@@ -82,4 +118,44 @@
             </div>
         </div>
 </div><?php $__env->stopSection(); ?>
+
+
+<?php $__env->startPush('scripts'); ?>
+    <script>
+        $(function () {
+            const $table = $('#brands-table');
+            if (!$table.length || !$table.find('tbody tr').length) {
+                return;
+            }
+
+            $table.DataTable({
+                order: [[1, 'asc']],
+                autoWidth: false,
+                pageLength: 10,
+                columnDefs: [
+                    { orderable: false, targets: [-1] }
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "<?php echo e(__('Search :entity', ['entity' => $modelName])); ?>",
+                    lengthMenu: "<?php echo e(__('Show _MENU_ entries')); ?>",
+                    info: "<?php echo e(__('Showing _START_ to _END_ of _TOTAL_ entries')); ?>",
+                    infoEmpty: "<?php echo e(__('Showing 0 to 0 of 0 entries')); ?>",
+                    zeroRecords: "<?php echo e(__('No matching records found')); ?>",
+                    paginate: {
+                        first: "<?php echo e(__('First')); ?>",
+                        previous: "<?php echo e(__('Previous')); ?>",
+                        next: "<?php echo e(__('Next')); ?>",
+                        last: "<?php echo e(__('Last')); ?>"
+                    }
+                },
+                dom:
+                    "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-right'f>>" +
+                    "t" +
+                    "<'row align-items-center mt-2'<'col-sm-5'i><'col-sm-7'p>>"
+            });
+        });
+    </script>
+<?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\car_rental-src-2025-11-05\car_rental\resources\views/pages/admin/brands/index.blade.php ENDPATH**/ ?>

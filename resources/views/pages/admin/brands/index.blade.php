@@ -2,13 +2,44 @@
 
 @section('title', 'List of ' . $modelName)
 
+
+@include('includes.admin.datatable_theme')
+
 @section('page-title')
     {{ $modelName }} List
 @endsection
 
 @section('content')
-    <div class="card card-outline card-shadow mb-4"
-        style="border: 1px solid #dcdcdc; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+
+    @php
+        $itemsCollection = $items instanceof \Illuminate\Pagination\AbstractPaginator ? collect($items->items()) : collect($items);
+        $totalItems = $itemsCollection->count();
+        $activeItems = $itemsCollection->where('is_active', true)->count();
+        $inactiveItems = max($totalItems - $activeItems, 0);
+    @endphp
+
+    <div class="management-hero">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <div>
+                <h2 class="mb-1">{{ __('Manage') }} {{ $modelName }}</h2>
+                <p class="mb-0">{{ __('Keep this dataset polished and ready for your storefront experience.') }}</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <span class="stat-pill">
+                    <i class="fas fa-layer-group"></i> {{ $totalItems }} {{ __('entries') }}
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-on"></i> {{ $activeItems }} {{ __('active') }}
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-off"></i> {{ $inactiveItems }} {{ __('inactive') }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card management-card">
         <div class="card-header bg-light">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="card-title text-dark">{{ $modelName }} List</h3>
@@ -18,9 +49,9 @@
             </div>
         </div>
 
-        <div class="card-body p-3">
+        <div class="card-body pt-1">
             <div class="table-responsive">
-                <table class="table table-hover table-striped table-responsive-xl" style="background-color: #f9f9f9;">
+                <table id="brands-table" class="table table-hover table-striped table-modern w-100 datatable">
                     <thead class="bg-dark text-light">
                         <tr>
                             <th>#</th>
@@ -83,3 +114,42 @@
             </div>
         </div>
 </div>@endsection
+
+
+@push('scripts')
+    <script>
+        $(function () {
+            const $table = $('#brands-table');
+            if (!$table.length || !$table.find('tbody tr').length) {
+                return;
+            }
+
+            $table.DataTable({
+                order: [[1, 'asc']],
+                autoWidth: false,
+                pageLength: 10,
+                columnDefs: [
+                    { orderable: false, targets: [-1] }
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "{{ __('Search :entity', ['entity' => $modelName]) }}",
+                    lengthMenu: "{{ __('Show _MENU_ entries') }}",
+                    info: "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                    infoEmpty: "{{ __('Showing 0 to 0 of 0 entries') }}",
+                    zeroRecords: "{{ __('No matching records found') }}",
+                    paginate: {
+                        first: "{{ __('First') }}",
+                        previous: "{{ __('Previous') }}",
+                        next: "{{ __('Next') }}",
+                        last: "{{ __('Last') }}"
+                    }
+                },
+                dom:
+                    "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-right'f>>" +
+                    "t" +
+                    "<'row align-items-center mt-2'<'col-sm-5'i><'col-sm-7'p>>"
+            });
+        });
+    </script>
+@endpush

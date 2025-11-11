@@ -91,12 +91,14 @@
                     </div>
                 @endif
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
-                        <strong>{{ __('Success') }}:</strong> {{ session('success') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                    <noscript>
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
+                            <strong>{{ __('Success') }}:</strong> {{ session('success') }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="{{ __('Close') }}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </noscript>
                 @endif
                 @yield('content')
             </div>
@@ -105,6 +107,22 @@
 
     @include('includes.admin.footer')
     @include('includes.admin.footer_scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            @foreach (['success' => 'success', 'error' => 'error', 'warning' => 'warning', 'info' => 'info'] as $type => $icon)
+                @if (session($type))
+                    Swal.fire({
+                        icon: '{{ $icon }}',
+                        title: "{{ ucfirst($icon) }}",
+                        text: @json(session($type)),
+                        timer: 3500,
+                        showConfirmButton: false
+                    });
+                @endif
+            @endforeach
+        });
+    </script>
     @stack('scripts')
 </body>
 

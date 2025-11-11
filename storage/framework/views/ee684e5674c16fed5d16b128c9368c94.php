@@ -91,13 +91,15 @@
                     </div>
                 <?php endif; ?>
                 <?php if(session('success')): ?>
-                    <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
-                        <strong><?php echo e(__('Success')); ?>:</strong> <?php echo e(session('success')); ?>
+                    <noscript>
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm p-2 px-3 rounded">
+                            <strong><?php echo e(__('Success')); ?>:</strong> <?php echo e(session('success')); ?>
 
-                        <button type="button" class="close" data-dismiss="alert" aria-label="<?php echo e(__('Close')); ?>">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="<?php echo e(__('Close')); ?>">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </noscript>
                 <?php endif; ?>
                 <?php echo $__env->yieldContent('content'); ?>
             </div>
@@ -106,6 +108,22 @@
 
     <?php echo $__env->make('includes.admin.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <?php echo $__env->make('includes.admin.footer_scripts', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            <?php $__currentLoopData = ['success' => 'success', 'error' => 'error', 'warning' => 'warning', 'info' => 'info']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type => $icon): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(session($type)): ?>
+                    Swal.fire({
+                        icon: '<?php echo e($icon); ?>',
+                        title: "<?php echo e(ucfirst($icon)); ?>",
+                        text: <?php echo json_encode(session($type), 15, 512) ?>,
+                        timer: 3500,
+                        showConfirmButton: false
+                    });
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        });
+    </script>
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 

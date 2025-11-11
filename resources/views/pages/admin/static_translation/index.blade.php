@@ -1,112 +1,133 @@
 @extends('layouts.admin_layout')
 
-@section('title', 'Manage Static Translations')
+@section('title', __('Manage Static Translations'))
+
+@include('includes.admin.datatable_theme')
 
 @section('page-title')
-    Manage Static Translations
+    {{ __('Static Translations') }}
 @endsection
 
+@php
+    $translationMap = collect($staticTranslations)->groupBy('key');
+    $uniqueKeys = $translationMap->count();
+    $languageCount = $activeLanguages->count();
+@endphp
+
 @section('content')
-<div class="card">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h3 class="card-title">Translation Management</h3>
-                            <div>
-                                <button type="button" class="btn btn-primary" onclick="table.addNewRow()">
-                                    <i class="fas fa-plus"></i> Add New Row
-                                </button>
-                                <button type="button" class="btn btn-success ml-2" onclick="table.saveTranslations()">
-                                    <i class="fas fa-save"></i> Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="translation-table"></div>
-                    </div>
-                </div>
+
+    <div class="management-hero">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <div>
+                <h2 class="mb-1">{{ __('Translation Management') }}</h2>
+                <p class="mb-0">{{ __('Edit multi-locale strings inline and keep your copy in sync.') }}</p>
             </div>
-        </section>
+            <div class="mt-3 mt-md-0">
+                <span class="stat-pill">
+                    <i class="fas fa-key"></i> {{ $uniqueKeys }} {{ __('keys') }}
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-language"></i> {{ $languageCount }} {{ __('locales') }}
+                </span>
+            </div>
+        </div>
     </div>
 
-    <!-- Include Tabulator CSS -->
+    <div class="card management-card">
+        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <div>
+                <h4 class="mb-1">{{ __('Translation Workspace') }}</h4>
+                <p class="text-muted mb-0">{{ __('Use the grid below to add or edit static translation keys per locale.') }}</p>
+            </div>
+            <div class="btn-toolbar mt-2 mt-md-0">
+                <button type="button" class="btn btn-outline-primary mr-1" onclick="translationsTable.addNewRow()">
+                    <i class="fas fa-plus mr-50"></i> {{ __('Add Row') }}
+                </button>
+                <button type="button" class="btn btn-success" onclick="translationsTable.saveTranslations()">
+                    <i class="fas fa-save mr-50"></i> {{ __('Save Changes') }}
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="translation-table"></div>
+        </div>
+    </div>
+@endsection
+
+@push('styles')
     <link href="https://unpkg.com/tabulator-tables@5.4.4/dist/css/tabulator.min.css" rel="stylesheet">
     <style>
         .tabulator {
-            border: 1px solid #dee2e6;
+            border-radius: 16px;
+            border: 1px solid #dbe2f0;
         }
         .tabulator-cell {
-            padding: 8px !important;
+            padding: 10px !important;
         }
         .tabulator-header {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            background-color: #f4f6fb;
+            border-bottom: 2px solid #dbe2f0;
         }
     </style>
+@endpush
 
-    <!-- Include Tabulator JS -->
+@push('scripts')
     <script src="https://unpkg.com/tabulator-tables@5.4.4/dist/js/tabulator.min.js"></script>
-
     <script>
-        var table = {
+        const translationsTable = {
             tabulatorInstance: null,
             activeLanguages: @json($activeLanguages),
 
-            init: function() {
+            init() {
                 const translations = @json($staticTranslations);
-
-                // Transform data
                 const translationMap = {};
-                translations.forEach(translation => {
-                    if (!translationMap[translation.key]) {
-                        translationMap[translation.key] = {
-                            id: translation.id,
-                            key: translation.key,
-                            section: translation.section,
-                            created_at: translation.created_at,
-                            updated_at: translation.updated_at
+
+                translations.forEach(entry => {
+                    if (!translationMap[entry.key]) {
+                        translationMap[entry.key] = {
+                            id: entry.id,
+                            key: entry.key,
+                            section: entry.section,
+                            created_at: entry.created_at,
+                            updated_at: entry.updated_at
                         };
                     }
-                    translationMap[translation.key][translation.locale] = translation.value;
+                    translationMap[entry.key][entry.locale] = entry.value;
                 });
 
                 const tableData = Object.values(translationMap);
-
-                // Define columns
                 const columns = [
-                    { title: "Key", field: "key", editor: "input", minWidth: 150 },
-                    { title: "Section", field: "section", editor: "input", minWidth: 120 },
+                    { title: "{{ __('Key') }}", field: "key", editor: "input", minWidth: 160 },
+                    { title: "{{ __('Section') }}", field: "section", editor: "input", minWidth: 140 },
                 ];
 
-                // Add language columns
                 this.activeLanguages.forEach(lang => {
                     columns.push({
                         title: lang.name,
                         field: lang.code,
                         editor: "input",
-                        minWidth: 150,
+                        minWidth: 150
                     });
                 });
 
-                // Add timestamp columns
                 columns.push(
-                    { title: "Created At", field: "created_at", editor: false, minWidth: 130 },
-                    { title: "Updated At", field: "updated_at", editor: false, minWidth: 130 }
+                    { title: "{{ __('Created At') }}", field: "created_at", sorter: "datetime", minWidth: 150 },
+                    { title: "{{ __('Updated At') }}", field: "updated_at", sorter: "datetime", minWidth: 150 }
                 );
 
-                // Initialize Tabulator
                 this.tabulatorInstance = new Tabulator("#translation-table", {
                     data: tableData,
                     layout: "fitColumns",
-                    columns: columns,
-                    height: "500px",
+                    responsiveLayout: "collapse",
+                    columns,
+                    height: "520px"
                 });
             },
 
-            addNewRow: function() {
+            addNewRow() {
                 const newRow = {
                     key: "",
-                    section: "",
+                    section: ""
                 };
 
                 this.activeLanguages.forEach(lang => {
@@ -116,51 +137,61 @@
                 this.tabulatorInstance.addRow(newRow, true);
             },
 
-            saveTranslations: function() {
+            saveTranslations() {
                 const updatedData = this.tabulatorInstance.getData();
                 const transformedData = [];
 
                 updatedData.forEach(row => {
+                    if (!row.key || !row.key.trim()) {
+                        return;
+                    }
+
                     this.activeLanguages.forEach(lang => {
-                        if (row.key && row.key.trim()) {
-                            transformedData.push({
-                                id: row.id || null,
-                                key: row.key.trim(),
-                                locale: lang.code,
-                                value: row[lang.code] || "",
-                                section: row.section || "",
-                            });
-                        }
+                        transformedData.push({
+                            id: row.id || null,
+                            key: row.key.trim(),
+                            locale: lang.code,
+                            value: row[lang.code] || "",
+                            section: row.section || ""
+                        });
                     });
                 });
+
+                const csrf = $('meta[name="csrf-token"]').attr('content');
 
                 fetch('{{ url("admin/static-translations/save") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-CSRF-TOKEN': csrf,
                     },
                     body: JSON.stringify({ translations: transformedData }),
                 })
                     .then(response => response.json())
                     .then(result => {
-                        if (result.success) {
-                            alert('Translations saved successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error saving translations: ' + result.message);
-                        }
+                        Swal.fire({
+                            icon: result.success ? 'success' : 'error',
+                            title: result.success ? '{{ __('Saved!') }}' : '{{ __('Oops!') }}',
+                            text: result.message || '{{ __('Translations saved successfully.') }}'
+                        }).then(() => {
+                            if (result.success) {
+                                window.location.reload();
+                            }
+                        });
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Error saving translations. Please try again.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: '{{ __('Error') }}',
+                            text: '{{ __('Unable to save translations right now.') }}'
+                        });
                     });
             }
         };
 
-        // Initialize when document is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            table.init();
+        document.addEventListener('DOMContentLoaded', () => {
+            translationsTable.init();
         });
     </script>
-@endsection
+@endpush

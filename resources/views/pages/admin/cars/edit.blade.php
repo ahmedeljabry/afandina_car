@@ -1,9 +1,14 @@
 @extends('layouts.admin_layout')
 @section('title', 'Edit ' . $modelName)
 
+
 @section('page-title')
-    Edit {{$modelName}}
+    {{ isset($item) ? __('Edit :entity', ['entity' => $modelName]) : __('Add :entity', ['entity' => $modelName]) }}
 @endsection
+
+@include('includes.admin.form_theme')
+
+
 @push('styles')
     <style>
         .preview-grid {
@@ -98,6 +103,30 @@
     </style>
 @endpush
 @section('content')
+
+    @php
+        $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
+        $formStats = [];
+        if ($languageCount) {
+            $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
+        }
+        $formStats[] = ['icon' => 'fas fa-layer-group', 'label' => __('Guided workflow')];
+        $formStats[] = ['icon' => 'fas fa-save', 'label' => __('Content safety')];
+        $formTitle = isset($item)
+            ? __('Update :entity', ['entity' => $modelName])
+            : __('Add :entity', ['entity' => $modelName]);
+        $formDescription = isset($item)
+            ? __('Review the content, adjust translations and assets, then save confidently.')
+            : __('Complete the details below to publish a polished entry.');
+    @endphp
+
+    @include('includes.admin.form_header', [
+        'title' => $formTitle,
+        'description' => $formDescription,
+        'stats' => $formStats
+    ])
+
+
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
         <div class="text-center">
@@ -106,7 +135,7 @@
         </div>
     </div>
 
-    <div class="card card-primary card-outline card-tabs shadow-lg">
+    <div class="card form-card card-primary card-outline card-tabs shadow-lg">
         <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
             <ul class="nav nav-tabs nav-tabs-modern" id="custom-tabs-three-tab" role="tablist">
                 <li class="nav-item">

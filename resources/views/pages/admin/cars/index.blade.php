@@ -2,6 +2,8 @@
 
 @section('title', 'List of ' . $modelName)
 
+@include('includes.admin.datatable_theme')
+
 @section('page-title')
     {{ $modelName }} List
 @endsection
@@ -93,6 +95,34 @@
 @endpush
 
 @section('content')
+
+    @php
+        $itemsCollection = $items instanceof \Illuminate\Pagination\AbstractPaginator ? collect($items->items()) : collect($items);
+        $totalCars = $itemsCollection->count();
+        $activeCars = $itemsCollection->where('is_active', true)->count();
+        $inactiveCars = max($totalCars - $activeCars, 0);
+    @endphp
+
+    <div class="management-hero mb-2">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <div>
+                <h2 class="mb-1">{{ __('Manage') }} {{ $modelName }}</h2>
+                <p class="mb-0">{{ __('Refine fleet entries, update filters, and keep availability in sync.') }}</p>
+            </div>
+            <div class="mt-3 mt-md-0">
+                <span class="stat-pill">
+                    <i class="fas fa-layer-group"></i> {{ $totalCars }} {{ __('cars') }}
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-on"></i> {{ $activeCars }} {{ __('active') }}
+                </span>
+                <span class="stat-pill">
+                    <i class="fas fa-toggle-off"></i> {{ $inactiveCars }} {{ __('inactive') }}
+                </span>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
             <h4 class="card-title">Filter Cars</h4>
@@ -199,13 +229,13 @@
     </div>
 
     <!-- Cars List -->
-    <div class="card mt-4">
+    <div class="card management-card mt-4">
         <div class="card-header">
             <h4 class="card-title">Cars List</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table id="cars-table" class="table table-hover table-modern w-100 datatable">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -319,6 +349,36 @@
 @push('scripts')
     <script>
         $(document).ready(function () {
+            const $carsTable = $('#cars-table');
+            if ($carsTable.length && $carsTable.find('tbody tr').length) {
+                $carsTable.DataTable({
+                    order: [[2, 'asc']],
+                    autoWidth: false,
+                    pageLength: 10,
+                    columnDefs: [
+                        { orderable: false, targets: [0, 1, 6, 8] }
+                    ],
+                    language: {
+                        search: "",
+                        searchPlaceholder: "{{ __('Search cars') }}",
+                        lengthMenu: "{{ __('Show _MENU_ entries') }}",
+                        info: "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                        infoEmpty: "{{ __('Showing 0 to 0 of 0 entries') }}",
+                        zeroRecords: "{{ __('No matching cars found') }}",
+                        paginate: {
+                            first: "{{ __('First') }}",
+                            previous: "{{ __('Previous') }}",
+                            next: "{{ __('Next') }}",
+                            last: "{{ __('Last') }}"
+                        }
+                    },
+                    dom:
+                        "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-right'f>>" +
+                        "t" +
+                        "<'row align-items-center mt-2'<'col-sm-5'i><'col-sm-7'p>>"
+                });
+            }
+
             // تفعيل tooltips
             $('[data-toggle="tooltip"]').tooltip();
 
