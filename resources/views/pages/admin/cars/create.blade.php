@@ -1530,7 +1530,10 @@
                 }
 
                 try {
-                    CKEDITOR.replace(editorId, {
+                    // Extract language code from editor ID (e.g., 'long_description_ar' -> 'ar')
+                    var langCode = editorId.replace('long_description_', '');
+                    
+                    var config = {
                         height: 300,
                         removeButtons: 'Save,Form,About',
                         allowedContent: true,
@@ -1550,7 +1553,15 @@
                             { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
                             { name: 'about', items: ['About'] }
                         ]
-                    });
+                    };
+
+                    // Set RTL for Arabic
+                    if (langCode === 'ar') {
+                        config.contentsLangDirection = 'rtl';
+                        config.language = 'ar';
+                    }
+
+                    CKEDITOR.replace(editorId, config);
                     console.log('CKEditor initialized for: ' + editorId);
                     return true;
                 } catch (error) {

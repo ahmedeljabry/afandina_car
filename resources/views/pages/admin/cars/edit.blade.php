@@ -1035,30 +1035,112 @@
             @endforeach
             });
         $(document).ready(function () {
-            // Initialize CKEditor for each language
-            @foreach($activeLanguages as $lang)
-                CKEDITOR.replace('long_description_{{ $lang->code }}', {
-                    height: 300,
-                    removeButtons: 'Save,Form,About',
-                    allowedContent: true,
-                    toolbar: [
-                        { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
-                        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-                        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
-                        { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-                        '/',
-                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
-                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
-                        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-                        '/',
-                        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-                        { name: 'colors', items: ['TextColor', 'BGColor'] },
-                        { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
-                        { name: 'about', items: ['About'] }
-                    ]
-                });
-            @endforeach
+            // Function to initialize CKEditor for a specific textarea
+            function initializeCKEditor(editorId, langCode) {
+                // Check if CKEditor is loaded
+                if (typeof CKEDITOR === 'undefined') {
+                    console.warn('CKEditor not loaded yet, will retry...');
+                    return false;
+                }
+
+                // Check if textarea exists
+                var textarea = document.getElementById(editorId);
+                if (!textarea) {
+                    return false;
+                }
+
+                // Check if editor already exists
+                if (CKEDITOR.instances[editorId]) {
+                    return true; // Already initialized
+                }
+
+                try {
+                    var config = {
+                        height: 300,
+                        removeButtons: 'Save,Form,About',
+                        allowedContent: true,
+                        toolbar: [
+                            { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
+                            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                            { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                            '/',
+                            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+                            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
+                            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                            '/',
+                            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                            { name: 'colors', items: ['TextColor', 'BGColor'] },
+                            { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                            { name: 'about', items: ['About'] }
+                        ]
+                    };
+
+                    // Set RTL for Arabic
+                    if (langCode === 'ar') {
+                        config.contentsLangDirection = 'rtl';
+                        config.language = 'ar';
+                    }
+
+                    CKEDITOR.replace(editorId, config);
+                    console.log('CKEditor initialized for: ' + editorId);
+                    return true;
+                } catch (error) {
+                    console.error('Error initializing CKEditor for ' + editorId + ':', error);
+                    return false;
+                }
+            }
+
+            // Initialize all CKEditor instances
+            function initializeAllCKEditors() {
+                @foreach($activeLanguages as $lang)
+                    initializeCKEditor('long_description_{{ $lang->code }}', '{{ $lang->code }}');
+                @endforeach
+            }
+
+            // Wait for CKEditor to be fully loaded, then initialize
+            function waitForCKEditorAndInit() {
+                if (typeof CKEDITOR !== 'undefined') {
+                    // CKEditor is loaded, initialize after a short delay
+                    setTimeout(function() {
+                        initializeAllCKEditors();
+                    }, 300);
+                } else {
+                    // CKEditor not loaded yet, keep checking (max 50 times = 5 seconds)
+                    var attempts = 0;
+                    var checkInterval = setInterval(function() {
+                        attempts++;
+                        if (typeof CKEDITOR !== 'undefined') {
+                            clearInterval(checkInterval);
+                            setTimeout(function() {
+                                initializeAllCKEditors();
+                            }, 300);
+                        } else if (attempts >= 50) {
+                            clearInterval(checkInterval);
+                            console.error('CKEditor failed to load after 5 seconds');
+                        }
+                    }, 100);
+                }
+            }
+
+            // Start initialization process after DOM is ready
+            waitForCKEditorAndInit();
+
+            // Initialize editors when the Translated Data tab is shown
+            $('#custom-tabs-translated-tab').on('shown.bs.tab', function() {
+                setTimeout(initializeAllCKEditors, 150);
+            });
+
+            // Initialize editors when language pills are shown
+            $('a[data-toggle="pill"][href^="#pills-"]').on('shown.bs.tab', function() {
+                var targetId = $(this).attr('href');
+                var langCode = targetId.replace('#pills-', '');
+                var editorId = 'long_description_' + langCode;
+                setTimeout(function() {
+                    initializeCKEditor(editorId, langCode);
+                }, 150);
+            });
 
             // Ensure CKEditor content is updated before form submission
             $('#editCarForm').on('submit', function () {
@@ -1068,7 +1150,7 @@
                         editor.updateElement();
                     }
                 @endforeach
-                });
+            });
         });
     </script>
     <script>
