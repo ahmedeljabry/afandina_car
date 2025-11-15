@@ -831,7 +831,7 @@
                                             if (is_array($metaKeywords) && !empty($metaKeywords)) {
                                                 // Check if it's an array of objects with 'value' key (Tagify format)
                                                 if (isset($metaKeywords[0]) && is_array($metaKeywords[0]) && isset($metaKeywords[0]['value'])) {
-                                                    $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                            $keywordString = implode(',', array_column($metaKeywords, 'value'));
                                                 } else {
                                                     // It's already an array of strings
                                                     $keywordString = implode(',', $metaKeywords);
@@ -915,7 +915,24 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
-    <script src="{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}"></script>
+    <script>
+        // Wrap editor-ckeditor.js to prevent errors for non-existent demo elements
+        (function() {
+            try {
+                // Only initialize if demo elements exist
+                if (document.getElementById('ckeditor') || document.getElementById('ckeditor-readonly')) {
+                    var script = document.createElement('script');
+                    script.src = '{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}';
+                    script.onerror = function() {
+                        console.log('editor-ckeditor.js not needed for this page');
+                    };
+                    document.head.appendChild(script);
+                }
+            } catch(e) {
+                console.log('Skipping editor-ckeditor.js initialization');
+            }
+        })();
+    </script>
     <script>
         $(document).ready(function () {
             $('#editCarForm').on('submit', function (e) {
@@ -1068,12 +1085,12 @@
 
                 try {
                     var config = {
-                        height: 300,
-                        removeButtons: 'Save,Form,About',
+                    height: 300,
+                    removeButtons: 'Save,Form,About',
                         allowedContent: true,
                         startupFocus: false,
                         toolbar: [
-                            { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
+                            { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
                             { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
                             { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
                             { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
@@ -1116,7 +1133,7 @@
             function initializeAllCKEditors() {
                 @foreach($activeLanguages as $lang)
                     initializeCKEditor('long_description_{{ $lang->code }}', '{{ $lang->code }}');
-                @endforeach
+            @endforeach
             }
 
             // Wait for CKEditor to be fully loaded, then initialize
@@ -1224,7 +1241,7 @@
                         editor.updateElement();
                     }
                 @endforeach
-            });
+                });
         });
     </script>
     <script>
