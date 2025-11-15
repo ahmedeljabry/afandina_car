@@ -914,8 +914,63 @@
 </div>@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script>
     <script>
+        // Suppress CKEditor warnings immediately after load
+        (function() {
+            var originalWarn, originalError;
+            
+            function suppressWarnings() {
+                if (typeof CKEDITOR !== 'undefined') {
+                    // Suppress warn function
+                    if (CKEDITOR.warn && !CKEDITOR._warnSuppressed) {
+                        originalWarn = CKEDITOR.warn;
+                        CKEDITOR.warn = function() {
+                            var args = Array.prototype.slice.call(arguments);
+                            var errorCode = args[0];
+                            if (errorCode && (
+                                errorCode.indexOf('license') !== -1 || 
+                                errorCode.indexOf('exportpdf') !== -1 ||
+                                errorCode === 'exportpdf-no-token-url' ||
+                                errorCode === 'invalid-lts-license-key'
+                            )) {
+                                return; // Suppress these warnings
+                            }
+                            return originalWarn.apply(CKEDITOR, args);
+                        };
+                        CKEDITOR._warnSuppressed = true;
+                    }
+                    
+                    // Suppress error function for license issues
+                    if (CKEDITOR.error && !CKEDITOR._errorSuppressed) {
+                        originalError = CKEDITOR.error;
+                        CKEDITOR.error = function() {
+                            var args = Array.prototype.slice.call(arguments);
+                            var errorCode = args[0];
+                            if (errorCode && (
+                                errorCode.indexOf('license') !== -1 || 
+                                errorCode === 'invalid-lts-license-key'
+                            )) {
+                                return; // Suppress license errors
+                            }
+                            return originalError.apply(CKEDITOR, args);
+                        };
+                        CKEDITOR._errorSuppressed = true;
+                    }
+                    
+                    // Global config
+                    CKEDITOR.config.removePlugins = 'exportpdf';
+                }
+            }
+            
+            // Try immediately
+            suppressWarnings();
+            
+            // Try after a delay in case CKEditor loads asynchronously
+            setTimeout(suppressWarnings, 100);
+            setTimeout(suppressWarnings, 500);
+        })();
+        
         // Wrap editor-ckeditor.js to prevent errors for non-existent demo elements
         (function() {
             try {
@@ -1085,8 +1140,9 @@
 
                 try {
                     var config = {
-                    height: 300,
-                    removeButtons: 'Save,Form,About',
+                        height: 300,
+                        removeButtons: 'Save,Form,About,ExportPdf',
+                        removePlugins: 'exportpdf',
                         allowedContent: true,
                         startupFocus: false,
                         toolbar: [
