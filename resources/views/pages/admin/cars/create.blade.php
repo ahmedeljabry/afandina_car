@@ -1510,30 +1510,68 @@
                 placeholder: "Select features"
             });
 
-            // Initialize CKEditor for long_description fields
-            @foreach($activeLanguages as $lang)
-                CKEDITOR.replace('long_description_{{ $lang->code }}', {
-                    height: 300,
-                    removeButtons: 'Save,Form,About',
-                    allowedContent: true,
-                    toolbar: [
-                        { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
-                        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-                        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
-                        { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-                        '/',
-                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
-                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
-                        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-                        '/',
-                        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-                        { name: 'colors', items: ['TextColor', 'BGColor'] },
-                        { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
-                        { name: 'about', items: ['About'] }
-                    ]
-                });
-            @endforeach
+            function initializeCKEditors() {
+                // Wait for CKEditor to be fully loaded
+                if (typeof CKEDITOR === 'undefined') {
+                    console.error('CKEditor is not loaded');
+                    setTimeout(initializeCKEditors, 100);
+                    return;
+                }
+
+                // Initialize CKEditor for long_description fields
+                @foreach($activeLanguages as $lang)
+                    (function() {
+                        var editorId = 'long_description_{{ $lang->code }}';
+                        var textarea = document.getElementById(editorId);
+                        
+                        if (!textarea) {
+                            console.warn('Textarea with id "' + editorId + '" not found');
+                            return;
+                        }
+                        
+                        // Check if editor already exists
+                        if (CKEDITOR.instances[editorId]) {
+                            CKEDITOR.instances[editorId].destroy();
+                        }
+                        
+                        try {
+                            CKEDITOR.replace(editorId, {
+                                height: 300,
+                                removeButtons: 'Save,Form,About',
+                                allowedContent: true,
+                                language: '{{ $lang->code }}',
+                                contentsLangDirection: '{{ $lang->code === "ar" ? "rtl" : "ltr" }}',
+                                toolbar: [
+                                    { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
+                                    { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                                    { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                                    { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                                    '/',
+                                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+                                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
+                                    { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                                    { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                                    '/',
+                                    { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                                    { name: 'colors', items: ['TextColor', 'BGColor'] },
+                                    { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                                    { name: 'about', items: ['About'] }
+                                ],
+                                on: {
+                                    instanceReady: function(ev) {
+                                        console.log('CKEditor initialized for: ' + editorId);
+                                    }
+                                }
+                            });
+                        } catch (error) {
+                            console.error('Error initializing CKEditor for ' + editorId + ':', error);
+                        }
+                    })();
+                @endforeach
+            }
+
+            // Initialize editors after a short delay to ensure DOM is ready
+            setTimeout(initializeCKEditors, 100);
         });
     </script>
 @endpush
