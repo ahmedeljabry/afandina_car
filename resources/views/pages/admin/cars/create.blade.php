@@ -761,7 +761,7 @@
 
                                                 <div class="form-group">
                                                     <label for="long_description_{{ $lang->code }}" class="font-weight-bold">Long Description ({{ $lang->name }})</label>
-                                                    <textarea name="long_description[{{ $lang->code }}]" class="form-control form-control-lg shadow-sm ckeditor @error('long_description.'.$lang->code) is-invalid @enderror" id="long_description_{{ $lang->code }}">{{ old('long_description.'.$lang->code) }}</textarea>
+                                                    <textarea name="long_description[{{ $lang->code }}]" id="ckeditor" class="form-control  form-control-lg shadow-sm ckeditor @error('long_description.'.$lang->code) is-invalid @enderror" id="long_description_{{ $lang->code }}">{{ old('long_description.'.$lang->code) }}</textarea>
                                                     @error('long_description.'.$lang->code)
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -884,7 +884,6 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}"></script>
-
     <script>
         // Array to store selected media files
         let selectedFiles = [];
