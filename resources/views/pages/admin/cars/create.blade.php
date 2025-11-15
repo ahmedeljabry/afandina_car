@@ -883,7 +883,7 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script>
+    <script src="{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}"></script>
     <script>
         // Suppress CKEditor warnings immediately after load
         (function() {
