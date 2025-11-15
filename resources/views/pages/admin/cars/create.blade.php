@@ -883,7 +883,7 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('app-assets/vendors/js/editors/ckeditor/ckeditor.js') }}"></script>
+    <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
     <script src="{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}"></script>
     <script>
         // Array to store selected media files
@@ -1608,7 +1608,19 @@
 
             // Initialize editors when the Translated Data tab is shown
             $('#custom-tabs-translated-tab').on('shown.bs.tab', function() {
-                setTimeout(initializeAllCKEditors, 150);
+                setTimeout(function() {
+                    initializeAllCKEditors();
+                    // Also try to initialize the currently visible language tab
+                    var activeLangTab = $('a[data-toggle="pill"][href^="#pills-"].active');
+                    if (activeLangTab.length) {
+                        var targetId = activeLangTab.attr('href');
+                        var langCode = targetId.replace('#pills-', '');
+                        var editorId = 'long_description_' + langCode;
+                        setTimeout(function() {
+                            initializeCKEditor(editorId);
+                        }, 100);
+                    }
+                }, 200);
             });
 
             // Initialize editors when language pills are shown (Bootstrap uses 'shown.bs.tab' for pills too)
@@ -1616,9 +1628,16 @@
                 var targetId = $(this).attr('href');
                 var langCode = targetId.replace('#pills-', '');
                 var editorId = 'long_description_' + langCode;
+                console.log('Language tab shown:', langCode, 'Editor ID:', editorId);
                 setTimeout(function() {
-                    initializeCKEditor(editorId);
-                }, 150);
+                    var result = initializeCKEditor(editorId);
+                    if (!result) {
+                        // Retry if initialization failed
+                        setTimeout(function() {
+                            initializeCKEditor(editorId);
+                        }, 200);
+                    }
+                }, 200);
             });
         });
     </script>
