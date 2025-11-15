@@ -1037,22 +1037,33 @@
             });
         $(document).ready(function () {
             // Function to initialize CKEditor for a specific textarea
-            function initializeCKEditor(editorId, langCode) {
+            function initializeCKEditor(editorId, langCode, forceInit) {
                 // Check if CKEditor is loaded
                 if (typeof CKEDITOR === 'undefined') {
-                    console.warn('CKEditor not loaded yet, will retry...');
+                    console.warn('CKEditor not loaded yet for: ' + editorId);
                     return false;
                 }
 
                 // Check if textarea exists
                 var textarea = document.getElementById(editorId);
                 if (!textarea) {
+                    console.warn('Textarea not found: ' + editorId);
                     return false;
                 }
 
                 // Check if editor already exists
-                if (CKEDITOR.instances[editorId]) {
+                if (CKEDITOR.instances[editorId] && !forceInit) {
+                    console.log('CKEditor already exists for: ' + editorId);
                     return true; // Already initialized
+                }
+
+                // If editor exists and we're forcing, destroy it first
+                if (CKEDITOR.instances[editorId] && forceInit) {
+                    try {
+                        CKEDITOR.instances[editorId].destroy();
+                    } catch (e) {
+                        console.warn('Error destroying existing editor:', e);
+                    }
                 }
 
                 try {
@@ -1060,6 +1071,7 @@
                         height: 300,
                         removeButtons: 'Save,Form,About',
                         allowedContent: true,
+                        startupFocus: false,
                         toolbar: [
                             { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
                             { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
@@ -1082,10 +1094,17 @@
                     if (langCode === 'ar') {
                         config.contentsLangDirection = 'rtl';
                         config.language = 'ar';
+                        config.contentsCss = CKEDITOR.basePath + 'contents.css';
                     }
 
-                    CKEDITOR.replace(editorId, config);
-                    console.log('CKEditor initialized for: ' + editorId);
+                    var editor = CKEDITOR.replace(editorId, config);
+                    
+                    // Wait for editor to be ready
+                    editor.on('instanceReady', function() {
+                        console.log('CKEditor instance ready for: ' + editorId);
+                    });
+                    
+                    console.log('CKEditor initialization started for: ' + editorId + ' (lang: ' + langCode + ')');
                     return true;
                 } catch (error) {
                     console.error('Error initializing CKEditor for ' + editorId + ':', error);
@@ -1151,15 +1170,50 @@
                 var langCode = targetId.replace('#pills-', '');
                 var editorId = 'long_description_' + langCode;
                 console.log('Language tab shown:', langCode, 'Editor ID:', editorId);
+                
+                // Wait a bit longer to ensure tab content is fully visible
                 setTimeout(function() {
-                    var result = initializeCKEditor(editorId, langCode);
-                    if (!result) {
-                        // Retry if initialization failed
+                    var textarea = document.getElementById(editorId);
+                    if (textarea) {
+                        // Check if element is visible
+                        var isVisible = $(textarea).is(':visible') && $(textarea).closest('.tab-pane').hasClass('active');
+                        console.log('Textarea visibility check:', editorId, 'visible:', isVisible);
+                        
+                        if (isVisible || $(textarea).closest('.tab-pane').hasClass('show')) {
+                            var result = initializeCKEditor(editorId, langCode);
+                            if (!result) {
+                                // Retry if initialization failed
+                                console.log('Retrying initialization for:', editorId);
+                                setTimeout(function() {
+                                    initializeCKEditor(editorId, langCode, true);
+                                }, 300);
+                            }
+                        } else {
+                            // Element not visible yet, wait a bit more
+                            setTimeout(function() {
+                                initializeCKEditor(editorId, langCode, true);
+                            }, 400);
+                        }
+                    } else {
+                        console.warn('Textarea not found when tab shown:', editorId);
+                        // Retry after a longer delay
                         setTimeout(function() {
-                            initializeCKEditor(editorId, langCode);
-                        }, 200);
+                            initializeCKEditor(editorId, langCode, true);
+                        }, 500);
                     }
-                }, 200);
+                }, 300);
+            });
+            
+            // Also listen for click events as a fallback
+            $('a[data-toggle="pill"][href^="#pills-"]').on('click', function() {
+                var targetId = $(this).attr('href');
+                var langCode = targetId.replace('#pills-', '');
+                var editorId = 'long_description_' + langCode;
+                
+                // Initialize after tab transition completes
+                setTimeout(function() {
+                    initializeCKEditor(editorId, langCode);
+                }, 500);
             });
 
             // Ensure CKEditor content is updated before form submission
