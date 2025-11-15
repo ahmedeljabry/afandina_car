@@ -823,9 +823,23 @@
                                             ({{ $lang->name }})</label>
                                         @php
                                             // Decode the JSON meta_keywords into an array
-                                            $metaKeywords = json_decode($translation->meta_keywords ?? '[]', true);
-                                            // Convert the array into a comma-separated string of keywords
-                                            $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                            $metaKeywordsJson = $translation->meta_keywords ?? '[]';
+                                            $metaKeywords = json_decode($metaKeywordsJson, true);
+                                            
+                                            // Handle different formats: array of objects, array of strings, or null
+                                            $keywordString = '';
+                                            if (is_array($metaKeywords) && !empty($metaKeywords)) {
+                                                // Check if it's an array of objects with 'value' key (Tagify format)
+                                                if (isset($metaKeywords[0]) && is_array($metaKeywords[0]) && isset($metaKeywords[0]['value'])) {
+                                                    $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                                } else {
+                                                    // It's already an array of strings
+                                                    $keywordString = implode(',', $metaKeywords);
+                                                }
+                                            } elseif (is_string($metaKeywordsJson) && !empty($metaKeywordsJson) && $metaKeywordsJson !== '[]') {
+                                                // If it's a string but not valid JSON, use it as is
+                                                $keywordString = $metaKeywordsJson;
+                                            }
                                         @endphp
                                         <input type="text" name="meta_keywords[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="meta_keywords_{{ $lang->code }}"
