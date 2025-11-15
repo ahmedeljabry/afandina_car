@@ -21,13 +21,14 @@
 
         .preview-item {
             position: relative;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             background-color: #fff;
             text-align: center;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .preview-item img,
@@ -35,40 +36,47 @@
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
         }
 
         .remove-preview {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: #ff4d4d;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #ff4d4d, #e60000);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            font-size: 14px;
-            line-height: 30px;
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            line-height: 32px;
             text-align: center;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 77, 77, 0.3);
+            transition: all 0.3s ease;
         }
 
         .remove-preview:hover {
-            background-color: #e60000;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 77, 77, 0.5);
         }
 
         .preview-item:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
 
         .btn-secondary {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d, #5a6268);
             border-color: #6c757d;
+            transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
-            background-color: #5a6268;
+            background: linear-gradient(135deg, #5a6268, #4a5258);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
         }
 
         .loader-overlay {
@@ -78,24 +86,114 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
             z-index: 9999;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         .loader {
             border: 5px solid #f3f3f3;
             border-radius: 50%;
-            border-top: 5px solid #3498db;
-            width: 50px;
-            height: 50px;
+            border-top: 5px solid #4c6ef5;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .form-card {
+            border-radius: 24px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+            border: none;
+        }
+
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            border: 1px solid #eef1fb;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 20px 20px 0 0;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 1px solid #d0d7e2;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4c6ef5;
+            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
+        }
+
+        .nav-tabs-modern .nav-link {
+            border-radius: 16px;
+            padding: 0.85rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs-modern .nav-link.active {
+            background: linear-gradient(135deg, #4c6ef5, #6a82fb);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(76, 110, 245, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: #4c6ef5;
+            border-color: #4c6ef5;
+        }
+
+        .seo-question-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .seo-question-group:hover {
+            border-color: #4c6ef5;
+            box-shadow: 0 4px 12px rgba(76, 110, 245, 0.1);
+        }
+
+        .ckeditor {
+            min-height: 300px;
         }
     </style>
 @endpush
@@ -123,6 +221,13 @@
         'stats' => $formStats
     ])
 
+    <!-- Loader Overlay -->
+    <div class="loader-overlay" id="loader-overlay">
+        <div class="text-center">
+            <div class="loader"></div>
+            <p class="mt-3" style="color: #4c6ef5; font-weight: 600;">Processing...</p>
+        </div>
+    </div>
 
                 <div class="card form-card card-primary card-outline card-tabs shadow-lg">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
@@ -656,7 +761,7 @@
 
                                                 <div class="form-group">
                                                     <label for="long_description_{{ $lang->code }}" class="font-weight-bold">Long Description ({{ $lang->name }})</label>
-                                                    <textarea name="long_description[{{ $lang->code }}]" class="form-control form-control-lg shadow-sm teny-editor @error('long_description.'.$lang->code) is-invalid @enderror" id="long_description_{{ $lang->code }}">{{ old('long_description.'.$lang->code) }}</textarea>
+                                                    <textarea name="long_description[{{ $lang->code }}]" class="form-control form-control-lg shadow-sm ckeditor @error('long_description.'.$lang->code) is-invalid @enderror" id="long_description_{{ $lang->code }}">{{ old('long_description.'.$lang->code) }}</textarea>
                                                     @error('long_description.'.$lang->code)
                                                         <span class="invalid-feedback" role="alert">
                                                             <strong>{{ $message }}</strong>
@@ -778,6 +883,7 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
     <script>
         // Array to store selected media files
         let selectedFiles = [];
@@ -895,7 +1001,12 @@
             }
 
             if (data.long_description) {
-                $('#long_description_' + lang).val(data.long_description);
+                const editor = CKEDITOR.instances['long_description_' + lang];
+                if (editor) {
+                    editor.setData(data.long_description);
+                } else {
+                    $('#long_description_' + lang).val(data.long_description);
+                }
             }
 
             if (data.meta_title) {
@@ -1086,6 +1197,12 @@
             // Handle form submission
             $('#createCarForm').on('submit', function(e) {
                 e.preventDefault();
+                
+                // Update CKEditor instances before form submission
+                for (var instanceName in CKEDITOR.instances) {
+                    CKEDITOR.instances[instanceName].updateElement();
+                }
+                
                 var form = $(this);
                 var submitBtn = form.find('button[type="submit"]');
                 var formData = new FormData(this);
@@ -1392,6 +1509,31 @@
                 allowClear: true,
                 placeholder: "Select features"
             });
+
+            // Initialize CKEditor for long_description fields
+            @foreach($activeLanguages as $lang)
+                CKEDITOR.replace('long_description_{{ $lang->code }}', {
+                    height: 300,
+                    removeButtons: 'Save,Form,About',
+                    allowedContent: true,
+                    toolbar: [
+                        { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
+                        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                        { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                        '/',
+                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
+                        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                        '/',
+                        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                        { name: 'colors', items: ['TextColor', 'BGColor'] },
+                        { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                        { name: 'about', items: ['About'] }
+                    ]
+                });
+            @endforeach
         });
     </script>
 @endpush

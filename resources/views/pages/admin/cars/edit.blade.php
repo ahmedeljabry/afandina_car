@@ -126,6 +126,91 @@
             box-shadow: 0 12px 30px rgba(76, 110, 245, .25);
         }
 
+        .form-card {
+            border-radius: 24px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+            border: none;
+        }
+
+        .card {
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            border: 1px solid #eef1fb;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 20px 20px 0 0;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            border: 1px solid #d0d7e2;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #4c6ef5;
+            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: #4c6ef5;
+            border-color: #4c6ef5;
+        }
+
+        .seo-question-group {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .seo-question-group:hover {
+            border-color: #4c6ef5;
+            box-shadow: 0 4px 12px rgba(76, 110, 245, 0.1);
+        }
+
+        .loader-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+        }
+
+        .loader {
+            border-top: 5px solid #4c6ef5;
+        }
+
+        .ckeditor {
+            min-height: 300px;
+        }
+
         .car-insight-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -278,7 +363,7 @@
     <div class="loader-overlay" id="loader-overlay">
         <div class="text-center">
             <div class="loader"></div>
-            <p class="mt-2">Processing...</p>
+            <p class="mt-3" style="color: #4c6ef5; font-weight: 600;">Processing...</p>
         </div>
     </div>
 
@@ -815,7 +900,7 @@
 </div>@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
     <script>
         $(document).ready(function () {
             $('#editCarForm').on('submit', function (e) {
@@ -941,7 +1026,23 @@
                 CKEDITOR.replace('long_description_{{ $lang->code }}', {
                     height: 300,
                     removeButtons: 'Save,Form,About',
-                    allowedContent: true
+                    allowedContent: true,
+                    toolbar: [
+                        { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'ExportPdf', 'Preview', 'Print', '-', 'Templates'] },
+                        { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                        { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
+                        { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
+                        '/',
+                        { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
+                        { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
+                        { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                        { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                        '/',
+                        { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                        { name: 'colors', items: ['TextColor', 'BGColor'] },
+                        { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
+                        { name: 'about', items: ['About'] }
+                    ]
                 });
             @endforeach
 
