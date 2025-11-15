@@ -914,7 +914,8 @@
 </div>@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
+    <script src="{{ asset('app-assets/vendors/js/editors/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}"></script>
     <script>
         $(document).ready(function () {
             $('#editCarForm').on('submit', function (e) {
