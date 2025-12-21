@@ -10,6 +10,7 @@ use App\Http\Controllers\apis\FAQController;
 use App\Http\Controllers\apis\GeneralController;
 use App\Http\Controllers\apis\HomePageController;
 use App\Http\Controllers\apis\LocationController;
+use App\Http\Controllers\apis\PageController;
 use App\Http\Controllers\apis\ServiceController;
 use App\Http\Controllers\apis\ShortVideoController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,9 @@ Route::middleware(['language','currency','cta'])->group(function () {
     Route::get('advanced-search-setting', [GeneralController::class, 'advancedSearchSetting']);
     Route::get('seo-pages',[HomePageController::class,'SEO']);
     Route::get('currencies',[GeneralController::class,'getCurrencies']);
+    
+    // Pages API
+    Route::get('pages/{slug}', [PageController::class, 'show']);
 });
 
 // Debug route for SEO questions

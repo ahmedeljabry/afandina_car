@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\CurrencyController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\GenericController;
 use App\Http\Controllers\admin\MainSettingController;
+use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\SitemapController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\LoginController;
@@ -121,6 +122,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sitemap/download/{lang}/{type}', [SitemapController::class, 'downloadSpecific'])->name('sitemap.download.specific');
     Route::get('/sitemap/list', [SitemapController::class, 'list'])->name('sitemap.list');
     Route::post('/sitemap/notify', [SitemapController::class, 'notify'])->name('sitemap.notify');
+
+    // Pages management routes
+    Route::get('pages', [PageController::class, 'index'])->name('pages.index');
+    Route::get('pages/{slug}/edit', [PageController::class, 'edit'])->name('pages.edit');
+    Route::put('pages/{slug}', [PageController::class, 'update'])->name('pages.update');
 
 
 
