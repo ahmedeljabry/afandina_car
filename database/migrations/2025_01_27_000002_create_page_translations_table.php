@@ -18,15 +18,6 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->longText('description')->nullable();
             $table->longText('sub_description')->nullable();
-            // Section titles and descriptions
-            $table->string('category_section_title')->nullable();
-            $table->longText('category_section_description')->nullable();
-            $table->string('brands_section_title')->nullable();
-            $table->longText('brands_section_description')->nullable();
-            $table->string('special_offers_title')->nullable();
-            $table->longText('special_offers_description')->nullable();
-            $table->string('only_on_us_title')->nullable();
-            $table->longText('only_on_us_description')->nullable();
             // SEO fields
             $table->text('meta_title')->nullable();
             $table->text('meta_description')->nullable();

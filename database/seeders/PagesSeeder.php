@@ -42,15 +42,6 @@ class PagesSeeder extends Seeder
                     'title' => $this->getDefaultTitle($language->code),
                     'description' => $this->getDefaultDescription($language->code),
                     'sub_description' => $this->getDefaultSubDescription($language->code),
-                    // Section fields (can be filled later via admin)
-                    'category_section_title' => null,
-                    'category_section_description' => null,
-                    'brands_section_title' => null,
-                    'brands_section_description' => null,
-                    'special_offers_title' => null,
-                    'special_offers_description' => null,
-                    'only_on_us_title' => null,
-                    'only_on_us_description' => null,
                     // SEO fields
                     'meta_title' => $this->getDefaultMetaTitle($language->code),
                     'meta_description' => $this->getDefaultMetaDescription($language->code),

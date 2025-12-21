@@ -24,23 +24,6 @@ class PageResource extends JsonResource
                 'title' => $translation->title ?? null,
                 'description' => $translation->description ?? null,
                 'sub_description' => $translation->sub_description ?? null,
-                // Sections
-                'category_section' => [
-                    'title' => $translation->category_section_title ?? null,
-                    'description' => $translation->category_section_description ?? null,
-                ],
-                'brands_section' => [
-                    'title' => $translation->brands_section_title ?? null,
-                    'description' => $translation->brands_section_description ?? null,
-                ],
-                'special_offers' => [
-                    'title' => $translation->special_offers_title ?? null,
-                    'description' => $translation->special_offers_description ?? null,
-                ],
-                'only_on_us' => [
-                    'title' => $translation->only_on_us_title ?? null,
-                    'description' => $translation->only_on_us_description ?? null,
-                ],
             ],
             'seo_data' => [
                 'meta_title' => $translation->meta_title ?? null,
