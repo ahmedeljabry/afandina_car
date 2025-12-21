@@ -47,11 +47,6 @@ class PageResource extends JsonResource
 
         return [
             'page_data' => $pageData,
-            'seo_data' => [
-                'meta_title' => $translation->meta_title ?? null,
-                'meta_description' => $translation->meta_description ?? null,
-                'meta_keywords' => $translation->meta_keywords ?? null,
-            ],
         ];
     }
 }

@@ -116,11 +116,6 @@
                                     <i class="fas fa-language mr-2"></i>Content (Multi-language)
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="seo-tab" data-toggle="tab" href="#seo" role="tab">
-                                    <i class="fas fa-search mr-2"></i>SEO Settings
-                                </a>
-                            </li>
                         </ul>
 
                         <div class="tab-content" id="mainTabsContent">
@@ -367,81 +362,6 @@
                                                 </div>
                                             </div>
                                             @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
-                            <!-- SEO Tab -->
-                            <div class="tab-pane fade" id="seo" role="tabpanel">
-                                <!-- SEO Language Pills -->
-                                <div class="mb-4">
-                                    <ul class="nav nav-pills" id="seoTabs" role="tablist">
-                                        @foreach($activeLanguages as $lang)
-                                            <li class="nav-item mr-2 mb-2">
-                                                <a class="nav-link language-pill @if($loop->first) active @endif" 
-                                                   id="seo-{{ $lang->code }}-tab" 
-                                                   data-toggle="pill" 
-                                                   href="#seo-{{ $lang->code }}" 
-                                                   role="tab">
-                                                    <i class="fas fa-globe mr-1"></i>{{ $lang->name }} ({{ strtoupper($lang->code) }})
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-
-                                <!-- SEO Content -->
-                                <div class="tab-content" id="seoTabsContent">
-                                    @foreach($activeLanguages as $lang)
-                                        @php
-                                            $translation = $page->translations->where('locale', $lang->code)->first();
-                                        @endphp
-                                        <div class="tab-pane fade @if($loop->first) show active @endif" 
-                                             id="seo-{{ $lang->code }}" 
-                                             role="tabpanel">
-                                            
-                                            <div class="form-section">
-                                                <h5 class="form-section-title">
-                                                    <i class="fas fa-search mr-2"></i>SEO Settings ({{ $lang->name }})
-                                                </h5>
-
-                                                <div class="form-group">
-                                                    <label for="meta_title_{{ $lang->code }}" class="font-weight-bold">
-                                                        Meta Title
-                                                    </label>
-                                                    <input type="text" 
-                                                           name="meta_title[{{ $lang->code }}]" 
-                                                           id="meta_title_{{ $lang->code }}"
-                                                           class="form-control"
-                                                           value="{{ old('meta_title.' . $lang->code, $translation->meta_title ?? '') }}"
-                                                           placeholder="Enter meta title for SEO">
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="meta_description_{{ $lang->code }}" class="font-weight-bold">
-                                                        Meta Description
-                                                    </label>
-                                                    <textarea name="meta_description[{{ $lang->code }}]" 
-                                                              id="meta_description_{{ $lang->code }}"
-                                                              class="form-control"
-                                                              rows="3"
-                                                              placeholder="Enter meta description for SEO">{{ old('meta_description.' . $lang->code, $translation->meta_description ?? '') }}</textarea>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="meta_keywords_{{ $lang->code }}" class="font-weight-bold">
-                                                        Meta Keywords
-                                                    </label>
-                                                    <input type="text" 
-                                                           name="meta_keywords[{{ $lang->code }}]" 
-                                                           id="meta_keywords_{{ $lang->code }}"
-                                                           class="form-control"
-                                                           value="{{ old('meta_keywords.' . $lang->code, $translation->meta_keywords ?? '') }}"
-                                                           placeholder="Enter keywords separated by commas">
-                                                    <small class="form-text text-muted">Separate keywords with commas</small>
-                                                </div>
-                                            </div>
                                         </div>
                                     @endforeach
                                 </div>

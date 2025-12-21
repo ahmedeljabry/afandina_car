@@ -42,10 +42,6 @@ class PagesSeeder extends Seeder
                     'title' => $this->getDefaultTitle($language->code),
                     'description' => $this->getDefaultDescription($language->code),
                     'sub_description' => $this->getDefaultSubDescription($language->code),
-                    // SEO fields
-                    'meta_title' => $this->getDefaultMetaTitle($language->code),
-                    'meta_description' => $this->getDefaultMetaDescription($language->code),
-                    'meta_keywords' => 'contact, get in touch, contact us',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
@@ -81,10 +77,6 @@ class PagesSeeder extends Seeder
                     'special_offers_description' => $this->getDefaultSpecialOffersDescription($language->code),
                     'only_on_us_title' => $this->getDefaultOnlyOnUsTitle($language->code),
                     'only_on_us_description' => $this->getDefaultOnlyOnUsDescription($language->code),
-                    // SEO fields
-                    'meta_title' => $this->getDefaultHomeMetaTitle($language->code),
-                    'meta_description' => $this->getDefaultHomeMetaDescription($language->code),
-                    'meta_keywords' => 'home, car rental, vehicles',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
@@ -125,28 +117,6 @@ class PagesSeeder extends Seeder
         ];
 
         return $subDescriptions[$locale] ?? $subDescriptions['en'];
-    }
-
-    private function getDefaultMetaTitle($locale)
-    {
-        $metaTitles = [
-            'en' => 'Contact Us - Get in Touch',
-            'ar' => 'اتصل بنا - تواصل معنا',
-            'fr' => 'Contactez-nous - Restez en contact',
-        ];
-
-        return $metaTitles[$locale] ?? $metaTitles['en'];
-    }
-
-    private function getDefaultMetaDescription($locale)
-    {
-        $metaDescriptions = [
-            'en' => 'Contact us for any inquiries. We are ready to help you with your car rental needs.',
-            'ar' => 'اتصل بنا لأي استفسارات. نحن مستعدون لمساعدتك في احتياجات تأجير السيارات الخاصة بك.',
-            'fr' => 'Contactez-nous pour toute demande. Nous sommes prêts à vous aider avec vos besoins de location de voiture.',
-        ];
-
-        return $metaDescriptions[$locale] ?? $metaDescriptions['en'];
     }
 
     // Home page methods
@@ -269,28 +239,6 @@ class PagesSeeder extends Seeder
         ];
 
         return $descriptions[$locale] ?? $descriptions['en'];
-    }
-
-    private function getDefaultHomeMetaTitle($locale)
-    {
-        $metaTitles = [
-            'en' => 'Home - Car Rental',
-            'ar' => 'الرئيسية - تأجير السيارات',
-            'fr' => 'Accueil - Location de voitures',
-        ];
-
-        return $metaTitles[$locale] ?? $metaTitles['en'];
-    }
-
-    private function getDefaultHomeMetaDescription($locale)
-    {
-        $metaDescriptions = [
-            'en' => 'Find the perfect car for your journey. Browse our categories, brands, and special offers.',
-            'ar' => 'ابحث عن السيارة المثالية لرحلتك. تصفح فئاتنا وعلاماتنا التجارية وعروضنا الخاصة.',
-            'fr' => 'Trouvez la voiture parfaite pour votre voyage. Parcourez nos catégories, marques et offres spéciales.',
-        ];
-
-        return $metaDescriptions[$locale] ?? $metaDescriptions['en'];
     }
 }
 

@@ -59,10 +59,6 @@ class PageController extends Controller
             $rules['special_offers_description.' . $lang->code] = 'nullable|string';
             $rules['only_on_us_title.' . $lang->code] = 'nullable|string|max:255';
             $rules['only_on_us_description.' . $lang->code] = 'nullable|string';
-            // SEO fields
-            $rules['meta_title.' . $lang->code] = 'nullable|string|max:255';
-            $rules['meta_description.' . $lang->code] = 'nullable|string';
-            $rules['meta_keywords.' . $lang->code] = 'nullable|string';
         }
 
         $validated = $request->validate($rules);
@@ -91,10 +87,6 @@ class PageController extends Controller
                     'special_offers_description' => $request->input('special_offers_description.' . $lang->code),
                     'only_on_us_title' => $request->input('only_on_us_title.' . $lang->code),
                     'only_on_us_description' => $request->input('only_on_us_description.' . $lang->code),
-                    // SEO fields
-                    'meta_title' => $request->input('meta_title.' . $lang->code),
-                    'meta_description' => $request->input('meta_description.' . $lang->code),
-                    'meta_keywords' => $request->input('meta_keywords.' . $lang->code),
                 ];
 
                 if ($translation) {
