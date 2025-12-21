@@ -137,16 +137,21 @@
       array (
         0 =>
         array (
+          'title' => 'Manage Pages',
+          'route' => 'admin.pages.index',
+        ),
+        1 =>
+        array (
           'title' => 'Home Page',
           'route' => 'admin.homes.edit',
           'parameter' => '1',
         ),
-        1 =>
+        2 =>
         array (
           'title' => 'Contact Page',
           'route' => 'admin.contacts.edit',
         ),
-        2 =>
+        3 =>
         array (
           'title' => 'About Us Page',
           'route' => 'admin.abouts.edit',
