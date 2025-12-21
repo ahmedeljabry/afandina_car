@@ -50,6 +50,15 @@ class PageController extends Controller
             $rules['title.' . $lang->code] = 'nullable|string|max:255';
             $rules['description.' . $lang->code] = 'nullable|string';
             $rules['sub_description.' . $lang->code] = 'nullable|string';
+            // Section fields (for home page)
+            $rules['category_section_title.' . $lang->code] = 'nullable|string|max:255';
+            $rules['category_section_description.' . $lang->code] = 'nullable|string';
+            $rules['brands_section_title.' . $lang->code] = 'nullable|string|max:255';
+            $rules['brands_section_description.' . $lang->code] = 'nullable|string';
+            $rules['special_offers_title.' . $lang->code] = 'nullable|string|max:255';
+            $rules['special_offers_description.' . $lang->code] = 'nullable|string';
+            $rules['only_on_us_title.' . $lang->code] = 'nullable|string|max:255';
+            $rules['only_on_us_description.' . $lang->code] = 'nullable|string';
             // SEO fields
             $rules['meta_title.' . $lang->code] = 'nullable|string|max:255';
             $rules['meta_description.' . $lang->code] = 'nullable|string';
@@ -73,6 +82,15 @@ class PageController extends Controller
                     'title' => $request->input('title.' . $lang->code),
                     'description' => $request->input('description.' . $lang->code),
                     'sub_description' => $request->input('sub_description.' . $lang->code),
+                    // Section fields (for home page)
+                    'category_section_title' => $request->input('category_section_title.' . $lang->code),
+                    'category_section_description' => $request->input('category_section_description.' . $lang->code),
+                    'brands_section_title' => $request->input('brands_section_title.' . $lang->code),
+                    'brands_section_description' => $request->input('brands_section_description.' . $lang->code),
+                    'special_offers_title' => $request->input('special_offers_title.' . $lang->code),
+                    'special_offers_description' => $request->input('special_offers_description.' . $lang->code),
+                    'only_on_us_title' => $request->input('only_on_us_title.' . $lang->code),
+                    'only_on_us_description' => $request->input('only_on_us_description.' . $lang->code),
                     // SEO fields
                     'meta_title' => $request->input('meta_title.' . $lang->code),
                     'meta_description' => $request->input('meta_description.' . $lang->code),

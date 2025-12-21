@@ -74,6 +74,18 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
     }
+    .border-left-primary {
+        border-left: 4px solid #007bff !important;
+    }
+    .border-left-info {
+        border-left: 4px solid #17a2b8 !important;
+    }
+    .border-left-warning {
+        border-left: 4px solid #ffc107 !important;
+    }
+    .border-left-success {
+        border-left: 4px solid #28a745 !important;
+    }
 </style>
 @endpush
 
@@ -226,6 +238,135 @@
                                                     @enderror
                                                 </div>
                                             </div>
+
+                                            @if($page->slug === 'home')
+                                            <!-- Sections (Only for Home Page) -->
+                                            <div class="form-section mt-4">
+                                                <h5 class="form-section-title">
+                                                    <i class="fas fa-th-large mr-2"></i>Page Sections ({{ $lang->name }})
+                                                </h5>
+
+                                                <!-- Category Section -->
+                                                <div class="card mb-3 border-left-primary">
+                                                    <div class="card-header bg-light">
+                                                        <h6 class="mb-0"><i class="fas fa-tags mr-2"></i>Category Section</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group">
+                                                            <label for="category_section_title_{{ $lang->code }}" class="font-weight-bold">
+                                                                Category Section Title
+                                                            </label>
+                                                            <input type="text" 
+                                                                   name="category_section_title[{{ $lang->code }}]" 
+                                                                   id="category_section_title_{{ $lang->code }}"
+                                                                   class="form-control"
+                                                                   value="{{ old('category_section_title.' . $lang->code, $translation->category_section_title ?? '') }}"
+                                                                   placeholder="Enter category section title">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="category_section_description_{{ $lang->code }}" class="font-weight-bold">
+                                                                Category Section Description
+                                                            </label>
+                                                            <textarea name="category_section_description[{{ $lang->code }}]" 
+                                                                      id="category_section_description_{{ $lang->code }}"
+                                                                      class="form-control"
+                                                                      rows="3"
+                                                                      placeholder="Enter category section description">{{ old('category_section_description.' . $lang->code, $translation->category_section_description ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Brands Section -->
+                                                <div class="card mb-3 border-left-info">
+                                                    <div class="card-header bg-light">
+                                                        <h6 class="mb-0"><i class="fas fa-industry mr-2"></i>Brands Section</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group">
+                                                            <label for="brands_section_title_{{ $lang->code }}" class="font-weight-bold">
+                                                                Brands Section Title
+                                                            </label>
+                                                            <input type="text" 
+                                                                   name="brands_section_title[{{ $lang->code }}]" 
+                                                                   id="brands_section_title_{{ $lang->code }}"
+                                                                   class="form-control"
+                                                                   value="{{ old('brands_section_title.' . $lang->code, $translation->brands_section_title ?? '') }}"
+                                                                   placeholder="Enter brands section title">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="brands_section_description_{{ $lang->code }}" class="font-weight-bold">
+                                                                Brands Section Description
+                                                            </label>
+                                                            <textarea name="brands_section_description[{{ $lang->code }}]" 
+                                                                      id="brands_section_description_{{ $lang->code }}"
+                                                                      class="form-control"
+                                                                      rows="3"
+                                                                      placeholder="Enter brands section description">{{ old('brands_section_description.' . $lang->code, $translation->brands_section_description ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Special Offers Section -->
+                                                <div class="card mb-3 border-left-warning">
+                                                    <div class="card-header bg-light">
+                                                        <h6 class="mb-0"><i class="fas fa-percent mr-2"></i>Special Offers Section</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group">
+                                                            <label for="special_offers_title_{{ $lang->code }}" class="font-weight-bold">
+                                                                Special Offers Title
+                                                            </label>
+                                                            <input type="text" 
+                                                                   name="special_offers_title[{{ $lang->code }}]" 
+                                                                   id="special_offers_title_{{ $lang->code }}"
+                                                                   class="form-control"
+                                                                   value="{{ old('special_offers_title.' . $lang->code, $translation->special_offers_title ?? '') }}"
+                                                                   placeholder="Enter special offers title">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="special_offers_description_{{ $lang->code }}" class="font-weight-bold">
+                                                                Special Offers Description
+                                                            </label>
+                                                            <textarea name="special_offers_description[{{ $lang->code }}]" 
+                                                                      id="special_offers_description_{{ $lang->code }}"
+                                                                      class="form-control"
+                                                                      rows="3"
+                                                                      placeholder="Enter special offers description">{{ old('special_offers_description.' . $lang->code, $translation->special_offers_description ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Only on Us Section -->
+                                                <div class="card mb-3 border-left-success">
+                                                    <div class="card-header bg-light">
+                                                        <h6 class="mb-0"><i class="fas fa-star mr-2"></i>Only on Us Section</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-group">
+                                                            <label for="only_on_us_title_{{ $lang->code }}" class="font-weight-bold">
+                                                                Only on Us Title
+                                                            </label>
+                                                            <input type="text" 
+                                                                   name="only_on_us_title[{{ $lang->code }}]" 
+                                                                   id="only_on_us_title_{{ $lang->code }}"
+                                                                   class="form-control"
+                                                                   value="{{ old('only_on_us_title.' . $lang->code, $translation->only_on_us_title ?? '') }}"
+                                                                   placeholder="Enter only on us title">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="only_on_us_description_{{ $lang->code }}" class="font-weight-bold">
+                                                                Only on Us Description
+                                                            </label>
+                                                            <textarea name="only_on_us_description[{{ $lang->code }}]" 
+                                                                      id="only_on_us_description_{{ $lang->code }}"
+                                                                      class="form-control"
+                                                                      rows="3"
+                                                                      placeholder="Enter only on us description">{{ old('only_on_us_description.' . $lang->code, $translation->only_on_us_description ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
