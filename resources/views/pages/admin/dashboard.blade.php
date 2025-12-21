@@ -12,6 +12,9 @@
     <a href="{{ route('admin.blogs.index') }}" class="btn btn-outline-info">
         <i class="ft-edit-2"></i> {{ __('Manage Content') }}
     </a>
+    <button type="button" class="btn btn-success" id="generate-sitemap-btn">
+        <i class="ft-map"></i> {{ __('Generate Sitemap') }}
+    </button>
 @endsection
 
 @push('styles')
@@ -339,3 +342,51 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#generate-sitemap-btn').on('click', function() {
+            const $btn = $(this);
+            const originalText = $btn.html();
+            
+            // Disable button and show loading state
+            $btn.prop('disabled', true);
+            $btn.html('<i class="ft-loader spinner"></i> {{ __('Generating...') }}');
+            
+            // Send AJAX request
+            $.ajax({
+                url: '{{ route("admin.sitemap.generate") }}',
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Show success message with SweetAlert
+                    Swal.fire({
+                        icon: 'success',
+                        title: '{{ __("Success") }}',
+                        text: response.message || '{{ __("Sitemap generated successfully!") }}',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    $btn.prop('disabled', false);
+                    $btn.html(originalText);
+                },
+                error: function(xhr) {
+                    // Show error message with SweetAlert
+                    const message = xhr.responseJSON?.message || '{{ __("Error generating sitemap") }}';
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __("Error") }}',
+                        text: message,
+                        confirmButtonText: '{{ __("OK") }}'
+                    });
+                    $btn.prop('disabled', false);
+                    $btn.html(originalText);
+                }
+            });
+        });
+    });
+</script>
+@endpush
