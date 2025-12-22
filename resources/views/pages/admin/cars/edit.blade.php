@@ -1185,11 +1185,18 @@
                 }
             }
 
-            // Initialize all CKEditor instances
-            function initializeAllCKEditors() {
+            // Initialize CKEditor only for the visible language tab
+            function initializeVisibleCKEditors() {
+                var translatedPane = $('#custom-tabs-translated');
+                if (!translatedPane.length || !translatedPane.hasClass('active')) {
+                    return;
+                }
+
                 @foreach($activeLanguages as $lang)
-                    initializeCKEditor('long_description_{{ $lang->code }}', '{{ $lang->code }}');
-            @endforeach
+                    if ($('#pills-{{ $lang->code }}').hasClass('active')) {
+                        initializeCKEditor('long_description_{{ $lang->code }}', '{{ $lang->code }}');
+                    }
+                @endforeach
             }
 
             // Wait for CKEditor to be fully loaded, then initialize
@@ -1197,7 +1204,7 @@
                 if (typeof CKEDITOR !== 'undefined') {
                     // CKEditor is loaded, initialize after a short delay
                     setTimeout(function() {
-                        initializeAllCKEditors();
+                        initializeVisibleCKEditors();
                     }, 300);
                 } else {
                     // CKEditor not loaded yet, keep checking (max 50 times = 5 seconds)
@@ -1207,7 +1214,7 @@
                         if (typeof CKEDITOR !== 'undefined') {
                             clearInterval(checkInterval);
                             setTimeout(function() {
-                                initializeAllCKEditors();
+                                initializeVisibleCKEditors();
                             }, 300);
                         } else if (attempts >= 50) {
                             clearInterval(checkInterval);
@@ -1223,17 +1230,7 @@
             // Initialize editors when the Translated Data tab is shown
             $('#custom-tabs-translated-tab').on('shown.bs.tab', function() {
                 setTimeout(function() {
-                    initializeAllCKEditors();
-                    // Also try to initialize the currently visible language tab
-                    var activeLangTab = $('a[data-toggle="pill"][href^="#pills-"].active');
-                    if (activeLangTab.length) {
-                        var targetId = activeLangTab.attr('href');
-                        var langCode = targetId.replace('#pills-', '');
-                        var editorId = 'long_description_' + langCode;
-                        setTimeout(function() {
-                            initializeCKEditor(editorId, langCode);
-                        }, 100);
-                    }
+                    initializeVisibleCKEditors();
                 }, 200);
             });
 
@@ -1242,39 +1239,10 @@
                 var targetId = $(this).attr('href');
                 var langCode = targetId.replace('#pills-', '');
                 var editorId = 'long_description_' + langCode;
-                console.log('Language tab shown:', langCode, 'Editor ID:', editorId);
-                
-                // Wait a bit longer to ensure tab content is fully visible
+
                 setTimeout(function() {
-                    var textarea = document.getElementById(editorId);
-                    if (textarea) {
-                        // Check if element is visible
-                        var isVisible = $(textarea).is(':visible') && $(textarea).closest('.tab-pane').hasClass('active');
-                        console.log('Textarea visibility check:', editorId, 'visible:', isVisible);
-                        
-                        if (isVisible || $(textarea).closest('.tab-pane').hasClass('show')) {
-                            var result = initializeCKEditor(editorId, langCode);
-                            if (!result) {
-                                // Retry if initialization failed
-                                console.log('Retrying initialization for:', editorId);
-                                setTimeout(function() {
-                                    initializeCKEditor(editorId, langCode, true);
-                                }, 300);
-                            }
-                        } else {
-                            // Element not visible yet, wait a bit more
-                            setTimeout(function() {
-                                initializeCKEditor(editorId, langCode, true);
-                            }, 400);
-                        }
-                    } else {
-                        console.warn('Textarea not found when tab shown:', editorId);
-                        // Retry after a longer delay
-                        setTimeout(function() {
-                            initializeCKEditor(editorId, langCode, true);
-                        }, 500);
-                    }
-                }, 300);
+                    initializeCKEditor(editorId, langCode);
+                }, 150);
             });
             
             // Also listen for click events as a fallback
