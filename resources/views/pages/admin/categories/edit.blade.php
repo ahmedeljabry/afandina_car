@@ -156,7 +156,7 @@
                                         <label for="article_{{ $lang->code }}" class="font-weight-bold">Article
                                             ({{ $lang->name }})</label>
                                         <textarea name="article[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm teny-editor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="article_{{ $lang->code }}"
                                             rows="5">{{ old('article.' . $lang->code, $translation->article ?? '') }}</textarea>
                                     </div>

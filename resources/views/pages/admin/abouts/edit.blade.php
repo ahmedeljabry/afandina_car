@@ -190,7 +190,7 @@
                                         <label for="why_choose_content_{{ $lang->code }}" class="font-weight-bold">Why Choose
                                             Content ({{ $lang->name }})</label>
                                         <textarea name="why_choose_content[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm teny-editor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="why_choose_content_{{ $lang->code }}"
                                             rows="4">{{ old('why_choose_content.' . $lang->code, $translation->why_choose_content ?? '') }}</textarea>
                                     </div>
@@ -208,7 +208,7 @@
                                         <label for="our_vision_content_{{ $lang->code }}" class="font-weight-bold">Our Vision
                                             Content ({{ $lang->name }})</label>
                                         <textarea name="our_vision_content[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm teny-editor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="our_vision_content_{{ $lang->code }}"
                                             rows="4">{{ old('our_vision_content.' . $lang->code, $translation->our_vision_content ?? '') }}</textarea>
                                     </div>
@@ -225,7 +225,7 @@
                                         <label for="our_mission_content_{{ $lang->code }}" class="font-weight-bold">Our Mission
                                             Content ({{ $lang->name }})</label>
                                         <textarea name="our_mission_content[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm teny-editor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="our_mission_content_{{ $lang->code }}"
                                             rows="4">{{ old('our_mission_content.' . $lang->code, $translation->our_mission_content ?? '') }}</textarea>
                                     </div>

@@ -185,7 +185,7 @@
                                         <label for="content_{{ $lang->code }}" class="font-weight-bold">Content
                                             ({{ $lang->name }})</label>
                                         <textarea name="content[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm teny-editor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="content_{{ $lang->code }}">{{ $translation->content ?? '' }}</textarea>
                                     </div>
                                 </div>

@@ -207,7 +207,7 @@
             border-top: 5px solid #4c6ef5;
         }
 
-        .ckeditor {
+        .tinymce {
             min-height: 300px;
         }
 
@@ -774,7 +774,7 @@
                                         <label for="long_description_{{ $lang->code }}" class="font-weight-bold">Long
                                             Description ({{ $lang->name }})</label>
                                         <textarea name="translations[{{ $lang->code }}][long_description]"
-                                            class="form-control form-control-lg shadow-sm ckeditor"
+                                            class="form-control form-control-lg shadow-sm tinymce"
                                             id="long_description_{{ $lang->code }}"
                                             rows="6">{{ old('translations.' . $lang->code . '.long_description', $translation->long_description ?? '') }}</textarea>
                                     </div>
@@ -914,93 +914,13 @@
 </div>@endsection
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.19.1/standard/ckeditor.js"></script>
-    <script>
-        // Suppress CKEditor warnings immediately after load
-        (function() {
-            var originalWarn, originalError;
-            
-            function suppressWarnings() {
-                if (typeof CKEDITOR !== 'undefined') {
-                    var licenseKey = @json(config('services.ckeditor.license_key'));
-                    if (licenseKey) {
-                        CKEDITOR.config.licenseKey = licenseKey;
-                    }
-
-                    // Suppress warn function
-                    if (CKEDITOR.warn && !CKEDITOR._warnSuppressed) {
-                        originalWarn = CKEDITOR.warn;
-                        CKEDITOR.warn = function() {
-                            var args = Array.prototype.slice.call(arguments);
-                            var errorCode = args[0];
-                            if (errorCode && (
-                                errorCode.indexOf('license') !== -1 || 
-                                errorCode.indexOf('exportpdf') !== -1 ||
-                                errorCode === 'exportpdf-no-token-url' ||
-                                errorCode === 'invalid-lts-license-key'
-                            )) {
-                                return; // Suppress these warnings
-                            }
-                            return originalWarn.apply(CKEDITOR, args);
-                        };
-                        CKEDITOR._warnSuppressed = true;
-                    }
-                    
-                    // Suppress error function for license issues
-                    if (CKEDITOR.error && !CKEDITOR._errorSuppressed) {
-                        originalError = CKEDITOR.error;
-                        CKEDITOR.error = function() {
-                            var args = Array.prototype.slice.call(arguments);
-                            var errorCode = args[0];
-                            if (errorCode && (
-                                errorCode.indexOf('license') !== -1 || 
-                                errorCode === 'invalid-lts-license-key'
-                            )) {
-                                return; // Suppress license errors
-                            }
-                            return originalError.apply(CKEDITOR, args);
-                        };
-                        CKEDITOR._errorSuppressed = true;
-                    }
-                    
-                    // Global config
-                    CKEDITOR.config.removePlugins = 'exportpdf';
-                }
-            }
-            
-            // Try immediately
-            suppressWarnings();
-            
-            // Try after a delay in case CKEditor loads asynchronously
-            setTimeout(suppressWarnings, 100);
-            setTimeout(suppressWarnings, 500);
-        })();
-        
-        // Wrap editor-ckeditor.js to prevent errors for non-existent demo elements
-        (function() {
-            try {
-                // Only initialize if demo elements exist
-                if (document.getElementById('ckeditor') || document.getElementById('ckeditor-readonly')) {
-                    var script = document.createElement('script');
-                    script.src = '{{ asset('app-assets/js/scripts/editors/editor-ckeditor.js') }}';
-                    script.onerror = function() {
-                        console.log('editor-ckeditor.js not needed for this page');
-                    };
-                    document.head.appendChild(script);
-                }
-            } catch(e) {
-                console.log('Skipping editor-ckeditor.js initialization');
-            }
-        })();
-    </script>
     <script>
         $(document).ready(function () {
             $('#editCarForm').on('submit', function (e) {
                 e.preventDefault();
 
-                // Update CKEditor instances
-                for (var instanceName in CKEDITOR.instances) {
-                    CKEDITOR.instances[instanceName].updateElement();
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
                 }
 
                 showLoader();
@@ -1112,166 +1032,6 @@
                 }
             @endforeach
             });
-        $(document).ready(function () {
-            // Function to initialize CKEditor for a specific textarea
-            function initializeCKEditor(editorId, langCode, forceInit) {
-                // Check if CKEditor is loaded
-                if (typeof CKEDITOR === 'undefined') {
-                    console.warn('CKEditor not loaded yet for: ' + editorId);
-                    return false;
-                }
-
-                // Check if textarea exists
-                var textarea = document.getElementById(editorId);
-                if (!textarea) {
-                    console.warn('Textarea not found: ' + editorId);
-                    return false;
-                }
-
-                // Check if editor already exists
-                if (CKEDITOR.instances[editorId] && !forceInit) {
-                    console.log('CKEditor already exists for: ' + editorId);
-                    return true; // Already initialized
-                }
-
-                // If editor exists and we're forcing, destroy it first
-                if (CKEDITOR.instances[editorId] && forceInit) {
-                    try {
-                        CKEDITOR.instances[editorId].destroy();
-                    } catch (e) {
-                        console.warn('Error destroying existing editor:', e);
-                    }
-                }
-
-                try {
-                    var config = {
-                        height: 300,
-                        removeButtons: 'Save,Form,About,ExportPdf',
-                        removePlugins: 'exportpdf',
-                        allowedContent: true,
-                        startupFocus: false,
-                        toolbar: [
-                            { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates'] },
-                            { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
-                            { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt'] },
-                            { name: 'forms', items: ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'] },
-                            '/',
-                            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat'] },
-                            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language'] },
-                            { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
-                            { name: 'insert', items: ['Image', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
-                            '/',
-                            { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
-                            { name: 'colors', items: ['TextColor', 'BGColor'] },
-                            { name: 'tools', items: ['Maximize', 'ShowBlocks'] },
-                            { name: 'about', items: ['About'] }
-                        ]
-                    };
-
-                    // Set RTL for Arabic
-                    if (langCode === 'ar') {
-                        config.contentsLangDirection = 'rtl';
-                        config.language = 'ar';
-                        config.contentsCss = CKEDITOR.basePath + 'contents.css';
-                    }
-
-                    var editor = CKEDITOR.replace(editorId, config);
-                    
-                    // Wait for editor to be ready
-                    editor.on('instanceReady', function() {
-                        console.log('CKEditor instance ready for: ' + editorId);
-                    });
-                    
-                    console.log('CKEditor initialization started for: ' + editorId + ' (lang: ' + langCode + ')');
-                    return true;
-                } catch (error) {
-                    console.error('Error initializing CKEditor for ' + editorId + ':', error);
-                    return false;
-                }
-            }
-
-            // Initialize CKEditor only for the visible language tab
-            function initializeVisibleCKEditors() {
-                var translatedPane = $('#custom-tabs-translated');
-                if (!translatedPane.length || !translatedPane.hasClass('active')) {
-                    return;
-                }
-
-                @foreach($activeLanguages as $lang)
-                    if ($('#pills-{{ $lang->code }}').hasClass('active')) {
-                        initializeCKEditor('long_description_{{ $lang->code }}', '{{ $lang->code }}');
-                    }
-                @endforeach
-            }
-
-            // Wait for CKEditor to be fully loaded, then initialize
-            function waitForCKEditorAndInit() {
-                if (typeof CKEDITOR !== 'undefined') {
-                    // CKEditor is loaded, initialize after a short delay
-                    setTimeout(function() {
-                        initializeVisibleCKEditors();
-                    }, 300);
-                } else {
-                    // CKEditor not loaded yet, keep checking (max 50 times = 5 seconds)
-                    var attempts = 0;
-                    var checkInterval = setInterval(function() {
-                        attempts++;
-                        if (typeof CKEDITOR !== 'undefined') {
-                            clearInterval(checkInterval);
-                            setTimeout(function() {
-                                initializeVisibleCKEditors();
-                            }, 300);
-                        } else if (attempts >= 50) {
-                            clearInterval(checkInterval);
-                            console.error('CKEditor failed to load after 5 seconds');
-                        }
-                    }, 100);
-                }
-            }
-
-            // Start initialization process after DOM is ready
-            waitForCKEditorAndInit();
-
-            // Initialize editors when the Translated Data tab is shown
-            $('#custom-tabs-translated-tab').on('shown.bs.tab', function() {
-                setTimeout(function() {
-                    initializeVisibleCKEditors();
-                }, 200);
-            });
-
-            // Initialize editors when language pills are shown
-            $('a[data-toggle="pill"][href^="#pills-"]').on('shown.bs.tab', function() {
-                var targetId = $(this).attr('href');
-                var langCode = targetId.replace('#pills-', '');
-                var editorId = 'long_description_' + langCode;
-
-                setTimeout(function() {
-                    initializeCKEditor(editorId, langCode);
-                }, 150);
-            });
-            
-            // Also listen for click events as a fallback
-            $('a[data-toggle="pill"][href^="#pills-"]').on('click', function() {
-                var targetId = $(this).attr('href');
-                var langCode = targetId.replace('#pills-', '');
-                var editorId = 'long_description_' + langCode;
-                
-                // Initialize after tab transition completes
-                setTimeout(function() {
-                    initializeCKEditor(editorId, langCode);
-                }, 500);
-            });
-
-            // Ensure CKEditor content is updated before form submission
-            $('#editCarForm').on('submit', function () {
-                @foreach($activeLanguages as $lang)
-                    var editor = CKEDITOR.instances['long_description_{{ $lang->code }}'];
-                    if (editor) {
-                        editor.updateElement();
-                    }
-                @endforeach
-                });
-        });
     </script>
     <script>
         $(document).ready(function () {
