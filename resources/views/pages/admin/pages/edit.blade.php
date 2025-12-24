@@ -145,8 +145,9 @@
 
                                     <div class="form-group">
                                         <div class="custom-control custom-switch">
-                                            <input type="checkbox" name="is_active" class="custom-control-input" 
-                                                   id="is_active" {{ $page->is_active ? 'checked' : '' }}>
+                                            <input type="checkbox" name="is_active" class="custom-control-input"
+                                                   id="is_active" value="1"
+                                                   {{ old('is_active', $page->is_active) ? 'checked' : '' }}>
                                             <label class="custom-control-label font-weight-bold" for="is_active">
                                                 Active Status
                                             </label>
@@ -380,4 +381,3 @@
         </div>
     </div>
 @endsection
-
