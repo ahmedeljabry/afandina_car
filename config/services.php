@@ -36,4 +36,8 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
     ],
 
+    'ckeditor' => [
+        'license_key' => env('CKEDITOR_LICENSE_KEY'),
+    ],
+
 ];

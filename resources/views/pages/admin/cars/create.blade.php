@@ -891,6 +891,11 @@
             
             function suppressWarnings() {
                 if (typeof CKEDITOR !== 'undefined') {
+                    var licenseKey = @json(config('services.ckeditor.license_key'));
+                    if (licenseKey) {
+                        CKEDITOR.config.licenseKey = licenseKey;
+                    }
+
                     // Suppress warn function
                     if (CKEDITOR.warn && !CKEDITOR._warnSuppressed) {
                         originalWarn = CKEDITOR.warn;

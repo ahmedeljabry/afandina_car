@@ -9,6 +9,13 @@
 <!-- END ROBUST JS-->
 <script src="https://cdn.ckeditor.com/4.25.1-lts/full/ckeditor.js"></script>
 <script>
+    (function () {
+        var licenseKey = @json(config('services.ckeditor.license_key'));
+        if (licenseKey && typeof CKEDITOR !== 'undefined') {
+            CKEDITOR.config.licenseKey = licenseKey;
+        }
+    })();
+
     CKEDITOR.editorConfig = function (config) {
         config.language = 'es';
         config.uiColor = '#F7B42C';
