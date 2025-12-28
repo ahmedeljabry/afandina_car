@@ -436,11 +436,19 @@
                                             ({{ $lang->name }})</label>
 
                                         @php
-                                            // Decode the JSON meta_keywords into an array
-                                            $metaKeywords = json_decode($translation->meta_keywords ?? '[]', true);
+                                            $metaKeywordsJson = $translation?->meta_keywords ?? '[]';
+                                            $metaKeywords = json_decode($metaKeywordsJson, true);
 
-                                            // Convert the array into a comma-separated string of keywords
-                                            $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                            $keywordString = '';
+                                            if (is_array($metaKeywords) && !empty($metaKeywords)) {
+                                                if (isset($metaKeywords[0]) && is_array($metaKeywords[0]) && isset($metaKeywords[0]['value'])) {
+                                                    $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                                } else {
+                                                    $keywordString = implode(',', $metaKeywords);
+                                                }
+                                            } elseif (is_string($metaKeywordsJson) && !empty($metaKeywordsJson) && $metaKeywordsJson !== '[]') {
+                                                $keywordString = $metaKeywordsJson;
+                                            }
                                         @endphp
 
                                         <input type="text" name="meta_keywords[{{ $lang->code }}]"
