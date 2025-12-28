@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use App\Services\Ai\CarContentGenerator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
@@ -182,6 +183,8 @@ class CarController extends GenericController
         'status' => $request->has('status') ? 'available' : 'not_available',
     ]);
 
+        $categoryIds = $this->normalizeCategorySelection($request);
+
         // Log the incoming request data for debugging
         \Log::info('Request Data:', $request->all());
 
@@ -224,6 +227,8 @@ class CarController extends GenericController
             'brand_id' => 'required|exists:brands,id',
             'year_id' => 'required|exists:years,id',
             'category_id' => 'required|exists:categories,id',
+            'category_ids' => 'required|array|min:1',
+            'category_ids.*' => 'exists:categories,id',
             'seo_questions.*.*.question' => 'nullable|string',
             'seo_questions.*.*.answer' => 'nullable|string',
             'default_image_path' => 'sometimes|nullable|image|mimes:jpeg,webp,png,jpg,gif|max:10048',
@@ -290,6 +295,13 @@ class CarController extends GenericController
                 }
             }
 
+            $extraCategoryIds = array_slice($categoryIds, 1);
+            if (!empty($extraCategoryIds)) {
+                $car->loadMissing(['translations', 'seoQuestions', 'features', 'periods']);
+                foreach ($extraCategoryIds as $categoryId) {
+                    $this->duplicateCarForCategory($car, (int) $categoryId);
+                }
+            }
 
             if ($request->ajax()) {
                 return response()->json([
@@ -382,6 +394,8 @@ class CarController extends GenericController
         'status' => $request->has('status') ? 'available' : 'not_available',
     ]);
 
+    $categoryIds = $this->normalizeCategorySelection($request);
+
     // Log the incoming request data for debugging
     \Log::info('Request Data:', $request->all());
 
@@ -410,6 +424,8 @@ class CarController extends GenericController
         'gear_type_id' => 'required|exists:gear_types,id',
         'brand_id' => 'required|exists:brands,id',
         'category_id' => 'required|exists:categories,id',
+        'category_ids' => 'required|array|min:1',
+        'category_ids.*' => 'exists:categories,id',
         'seo_questions.*.*.question' => 'nullable|string',
         'seo_questions.*.*.answer' => 'nullable|string',
         'default_image_path' => 'required|mimes:jpeg,webp,png,jpg,gif,svg|max:10048',
@@ -443,15 +459,19 @@ class CarController extends GenericController
 
         DB::beginTransaction();
 
-        // Call parent store to handle common functionality
-        $response = parent::store($request);
+        foreach ($categoryIds as $categoryId) {
+            $request->merge(['category_id' => $categoryId]);
+            $response = parent::store($request);
 
-        // If response is redirect (success) and we have a car ID
-        if ($response instanceof \Illuminate\Http\RedirectResponse) {
-            // Get the newly created car
+            if (!($response instanceof \Illuminate\Http\RedirectResponse)) {
+                throw new \RuntimeException('Failed to create car.');
+            }
+
             $car = $this->model::latest()->first();
+            if (!$car) {
+                throw new \RuntimeException('Failed to fetch created car.');
+            }
 
-            // Handle features
             if ($request->has('features')) {
                 $car->features()->sync($request->features);
             }
@@ -462,36 +482,25 @@ class CarController extends GenericController
                 $requestData = $request->input('translations.' . $translation->locale, []);
                 $description = $requestData['description'] ?? null;
                 $longDescription = $requestData['long_description'] ?? null;
-                
+
                 if (empty($description) || empty($longDescription)) {
                     \App\Jobs\GenerateCarDescriptions::dispatch($car, $translation->locale);
                 }
             }
-
-            DB::commit();
-
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Car created successfully',
-                    'redirect' => route('admin.cars.index')
-                ]);
-            }
-
-            return $response;
         }
 
-        // If we get here, something went wrong in the parent store
-        DB::rollback();
+        DB::commit();
+
         if ($request->ajax()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to create car',
-                'errors' => $this->validator->errors()
-            ], 422);
+                'success' => true,
+                'message' => 'Car created successfully',
+                'redirect' => route('admin.cars.index')
+            ]);
         }
 
-        return $response;
+        return redirect()->route('admin.' . $this->modelName . '.index')
+            ->with('success', ucfirst($this->modelName) . ' created successfully.');
 
     } catch (\Exception $e) {
         DB::rollback();
@@ -505,6 +514,93 @@ class CarController extends GenericController
         return back()->with('error', 'An error occurred while creating the car: ' . $e->getMessage())->withInput();
     }
 }
+
+    protected function normalizeCategorySelection(Request $request): array
+    {
+        $categoryIds = $request->input('category_ids', $request->input('category_id', []));
+
+        if (!is_array($categoryIds)) {
+            $categoryIds = [$categoryIds];
+        }
+
+        $categoryIds = array_values(array_filter($categoryIds, function ($value) {
+            return $value !== null && $value !== '';
+        }));
+        $categoryIds = array_values(array_unique($categoryIds));
+
+        $request->merge([
+            'category_ids' => $categoryIds,
+            'category_id' => $categoryIds[0] ?? null,
+        ]);
+
+        return $categoryIds;
+    }
+
+    protected function duplicateCarForCategory(Car $car, int $categoryId): Car
+    {
+        $car->loadMissing(['translations', 'seoQuestions', 'features', 'periods']);
+
+        $newCar = $car->replicate();
+        $newCar->category_id = $categoryId;
+        $newCar->slug = $this->generateUniqueSlug($this->getCarNameForSlug($car));
+        $newCar->save();
+
+        foreach ($car->translations as $translation) {
+            $newTranslation = $translation->replicate();
+            $newTranslation->car_id = $newCar->id;
+            $newTranslation->save();
+
+            if (empty($translation->description) || empty($translation->long_description)) {
+                \App\Jobs\GenerateCarDescriptions::dispatch($newCar, $translation->locale);
+            }
+        }
+
+        foreach ($car->seoQuestions as $seoQuestion) {
+            $newQuestion = $seoQuestion->replicate();
+            $newQuestion->seo_questionable_id = $newCar->id;
+            $newQuestion->save();
+        }
+
+        if ($car->features->isNotEmpty()) {
+            $newCar->features()->sync($car->features->pluck('id')->all());
+        }
+
+        if ($car->periods->isNotEmpty()) {
+            $newCar->periods()->sync($car->periods->pluck('id')->all());
+        }
+
+        $images = CarImage::where('car_id', $car->id)->get();
+        foreach ($images as $image) {
+            $newImage = $image->replicate();
+            $newImage->car_id = $newCar->id;
+            $newImage->save();
+        }
+
+        return $newCar;
+    }
+
+    protected function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($name ?: 'default-slug');
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while ($this->model::where('slug', $slug)
+            ->when($ignoreId, function ($query) use ($ignoreId) {
+                return $query->where('id', '!=', $ignoreId);
+            })
+            ->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
+
+        return $slug;
+    }
+
+    protected function getCarNameForSlug(Car $car): string
+    {
+        $translation = $car->translations->firstWhere('locale', 'en') ?? $car->translations->first();
+        return $translation && $translation->name ? $translation->name : 'default-slug';
+    }
 
     public function edit_images($id)
     {

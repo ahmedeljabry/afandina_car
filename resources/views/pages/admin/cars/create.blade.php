@@ -302,16 +302,21 @@
 
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="category_id" class="font-weight-bold">Car Category</label>
-                                                            <select name="category_id" id="category_id" class="form-control shadow-sm select2 @error('category_id') is-invalid @enderror">
-                                                                <option value="">-- Select Category --</option>
+                                                            <label for="category_id" class="font-weight-bold">Car Categories</label>
+                                                            <select name="category_ids[]" id="category_id" class="form-control shadow-sm select2 @error('category_ids') is-invalid @enderror @error('category_ids.*') is-invalid @enderror" multiple="multiple">
+                                                                <option value="">-- Select Categories --</option>
                                                                 @foreach($categories as $category)
-                                                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                                    <option value="{{ $category->id }}" {{ in_array($category->id, (array) old('category_ids', [])) ? 'selected' : '' }}>
                                                                         {{ $category->translations()->first()->name }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
-                                                            @error('category_id')
+                                                            @error('category_ids')
+                                                                <span class="invalid-feedback" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                            @error('category_ids.*')
                                                                 <span class="invalid-feedback" role="alert">
                                                                     <strong>{{ $message }}</strong>
                                                                 </span>

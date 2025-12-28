@@ -431,16 +431,36 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="category_id" class="font-weight-bold">Car Category</label>
-                                            <select name="category_id" id="category_id"
-                                                class="form-control shadow-sm select2">
-                                                <option value="">-- Select Category --</option>
+                                            <label for="category_id" class="font-weight-bold">Car Categories</label>
+                                            @php
+                                                $selectedCategoryIds = old('category_ids', [$item->category_id]);
+                                                if (!is_array($selectedCategoryIds)) {
+                                                    $selectedCategoryIds = [$selectedCategoryIds];
+                                                }
+                                                $selectedCategoryIds = array_values(array_filter($selectedCategoryIds, function ($value) {
+                                                    return $value !== null && $value !== '';
+                                                }));
+                                                $selectedCategoryIds = array_values(array_unique($selectedCategoryIds));
+                                            @endphp
+                                            <select name="category_ids[]" id="category_id"
+                                                class="form-control shadow-sm select2 @error('category_ids') is-invalid @enderror @error('category_ids.*') is-invalid @enderror" multiple="multiple">
+                                                <option value="">-- Select Categories --</option>
                                                 @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ old('category_id', $item->category_id) == $category->id ? 'selected' : '' }}>
+                                                    <option value="{{ $category->id }}" {{ in_array($category->id, $selectedCategoryIds) ? 'selected' : '' }}>
                                                         {{ $category->translations()->first()->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            @error('category_ids')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                            @error('category_ids.*')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -739,6 +759,23 @@
                     <!-- Translated Data Tab Content with Sub-tabs for Languages -->
                     <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel"
                         aria-labelledby="custom-tabs-translated-tab">
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
+                                <div class="d-flex align-items-center mb-3 mb-lg-0">
+                                    <span class="badge badge-primary mr-3"><i class="fas fa-robot"></i></span>
+                                    <div>
+                                        <h5 class="mb-1 font-weight-bold">AI Content Assistant</h5>
+                                        <p class="mb-0 text-muted">Choose the language you want to auto-fill. Existing text in that language will be replaced.</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap ai-language-buttons">
+                                    <button type="button" class="btn btn-success mb-2 mr-2 generate-ai-all">
+                                        <i class="fas fa-magic mr-1"></i> Generate Content
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                             @foreach($activeLanguages as $lang)
                                 <li class="nav-item">
@@ -1001,6 +1038,380 @@
         }
     </script>
     <script>
+        const tagifyInstances = {};
+        const aiLanguages = @json($activeLanguages->pluck('code')->toArray());
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function buildSeoQuestionGroup(lang, index, qa = {question: '', answer: ''}) {
+            const question = escapeHtml(qa.question ?? '');
+            const answer = escapeHtml(qa.answer ?? '');
+
+            return `
+                <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
+                    <div class="form-group">
+                        <input type="text" name="seo_questions[${lang}][${index}][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" value="${question}" />
+                    </div>
+                    <div class="form-group">
+                        <textarea name="seo_questions[${lang}][${index}][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer">${answer}</textarea>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
+                </div>
+            `;
+        }
+
+        function collectAiContext(lang) {
+            const context = {};
+
+            const brandOption = $('#brand_id option:selected');
+            context.brand = brandOption.val() ? brandOption.text().trim() : null;
+
+            const modelSelect = $('#model_id').length ? $('#model_id') : $('#car_model_id');
+            const modelOption = modelSelect.find('option:selected');
+            context.model = modelOption.val() ? modelOption.text().trim() : null;
+
+            const yearOption = $('#year_id option:selected');
+            context.year = yearOption.val() ? yearOption.text().trim() : null;
+
+            const colorOption = $('#color_id option:selected');
+            context.color = colorOption.val() ? colorOption.text().trim() : null;
+
+            const gearTypeOption = $('#gear_type_id option:selected');
+            context.gear_type = gearTypeOption.val() ? gearTypeOption.text().trim() : null;
+
+            const categoryNames = $('#category_id option:selected').map(function () {
+                const value = $(this).val();
+                return value ? $(this).text().trim() : null;
+            }).get().filter(Boolean);
+
+            context.categories = categoryNames;
+            context.primary_category = categoryNames[0] || null;
+
+            const englishNameField = $('#name_en');
+            const englishName = englishNameField.length ? englishNameField.val().trim() : '';
+            if (englishName.length) {
+                context.original_name = englishName;
+            }
+
+            context.target_language = lang;
+
+            const featureSelect = $('#features').length ? $('#features') : $('select[name="features[]"]');
+            const featureNames = featureSelect.length
+                ? featureSelect.find('option:selected').map(function () {
+                    const text = $(this).text().trim();
+                    return text.length ? text : null;
+                }).get().filter(Boolean)
+                : [];
+
+            context.features = featureNames;
+
+            context.daily_price = $('#daily_main_price').val();
+            context.weekly_price = $('#weekly_main_price').val();
+            context.monthly_price = $('#monthly_main_price').val();
+            context.passenger_capacity = $('#passenger_capacity').val();
+            context.door_count = $('#door_count').val();
+            context.luggage_capacity = $('#luggage_capacity').val();
+            context.daily_main_price = $('#daily_main_price').val();
+            context.daily_discount_price = $('#daily_discount_price').val();
+            context.daily_mileage_included = $('#daily_mileage_included').val();
+            context.weekly_main_price = $('#weekly_main_price').val();
+            context.weekly_discount_price = $('#weekly_discount_price').val();
+            context.weekly_mileage_included = $('#weekly_mileage_included').val();
+            context.monthly_main_price = $('#monthly_main_price').val();
+            context.monthly_discount_price = $('#monthly_discount_price').val();
+            context.monthly_mileage_included = $('#monthly_mileage_included').val();
+
+            context.insurance_included = $('#insurance_included').is(':checked');
+            context.free_delivery = $('#free_delivery').is(':checked');
+            context.is_flash_sale = $('#is_flash_sale').is(':checked');
+            context.is_featured = $('#is_featured').is(':checked');
+            context.only_on_afandina = $('#only_on_afandina').is(':checked');
+            context.crypto_payment_accepted = $('#crypto_payment_accepted').is(':checked');
+
+            return context;
+        }
+
+        function populateAiContent(lang, data) {
+            if (!data) {
+                return;
+            }
+
+            if (data.name) {
+                $('#name_' + lang).val(data.name);
+            }
+
+            if (data.description) {
+                $('#description_' + lang).val(data.description);
+            }
+
+            if (data.long_description) {
+                const editor = typeof tinymce !== 'undefined'
+                    ? tinymce.get('long_description_' + lang)
+                    : null;
+                if (editor) {
+                    editor.setContent(data.long_description);
+                } else {
+                    $('#long_description_' + lang).val(data.long_description);
+                }
+            }
+
+            if (data.meta_title) {
+                $('#meta_title_' + lang).val(data.meta_title);
+            }
+
+            if (data.meta_description) {
+                $('#meta_description_' + lang).val(data.meta_description);
+            }
+
+            if (Array.isArray(data.meta_keywords)) {
+                if (tagifyInstances[lang]) {
+                    tagifyInstances[lang].removeAllTags();
+                    tagifyInstances[lang].addTags(data.meta_keywords);
+                } else {
+                    $('#meta_keywords_' + lang).val(data.meta_keywords.join(', '));
+                }
+            }
+
+            if (Array.isArray(data.seo_questions)) {
+                const container = $('#seo-questions-' + lang);
+                container.empty();
+
+                data.seo_questions.forEach(function (qa, index) {
+                    container.append(buildSeoQuestionGroup(lang, index, qa));
+                });
+
+                if (data.seo_questions.length === 0) {
+                    container.append(buildSeoQuestionGroup(lang, 0));
+                }
+            }
+        }
+
+        function populateGeneralFields(data) {
+            if (!data || typeof data !== 'object') {
+                return;
+            }
+
+            const mappings = {
+                door_count: '#door_count',
+                luggage_capacity: '#luggage_capacity',
+                passenger_capacity: '#passenger_capacity',
+                daily_main_price: '#daily_main_price',
+                daily_discount_price: '#daily_discount_price',
+                daily_mileage_included: '#daily_mileage_included',
+                weekly_main_price: '#weekly_main_price',
+                weekly_discount_price: '#weekly_discount_price',
+                weekly_mileage_included: '#weekly_mileage_included',
+                monthly_main_price: '#monthly_main_price',
+                monthly_discount_price: '#monthly_discount_price',
+                monthly_mileage_included: '#monthly_mileage_included'
+            };
+
+            Object.entries(mappings).forEach(([key, selector]) => {
+                const value = data[key];
+                if (value !== undefined && value !== null && value !== '') {
+                    const input = $(selector);
+                    if (input.length) {
+                        input.val(value);
+                    }
+                }
+            });
+        }
+
+        function generateContentForLanguage(lang, options = {}) {
+            const opts = Object.assign({
+                button: null,
+                manageLoader: true,
+                silent: false
+            }, options);
+
+            return new Promise((resolve, reject) => {
+                const nameField = $('#name_' + lang);
+                let nameValue = (nameField.val() || '').trim();
+                const englishNameField = $('#name_en');
+                const englishName = englishNameField.length ? englishNameField.val().trim() : '';
+
+                if (!nameValue.length && lang !== 'en' && englishName.length) {
+                    nameValue = englishName;
+                }
+
+                if (!nameValue.length) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Car name required',
+                        text: 'Please enter at least one car name so the AI can generate content.'
+                    });
+                    nameField.focus();
+                    return reject(new Error('Car name required for AI generation (' + lang.toUpperCase() + ')'));
+                }
+
+                const payload = {
+                    language: lang,
+                    name: nameValue,
+                    context: collectAiContext(lang)
+                };
+
+                const button = opts.button && opts.button.length ? opts.button : null;
+                let originalHtml = null;
+                if (button) {
+                    originalHtml = button.html();
+                    button.data('original-html', originalHtml);
+                    button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
+                }
+
+                if (opts.manageLoader) {
+                    $('#loader-overlay').css('display', 'flex');
+                }
+
+                $.ajax({
+                    url: "{{ route('admin.cars.generate-content') }}",
+                    method: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json',
+                    processData: false,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response && response.success) {
+                            populateAiContent(lang, response.data);
+                            const tabTrigger = $('#pills-' + lang + '-tab');
+                            if (tabTrigger.length) {
+                                tabTrigger.tab('show');
+                            }
+                            if (!opts.silent) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'AI content generated',
+                                    text: 'Review the generated ' + lang.toUpperCase() + ' copy and adjust it as needed.',
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                });
+                            }
+                            resolve(response.data);
+                        } else {
+                            const message = response && response.message ? response.message : 'Unable to generate AI content right now.';
+                            if (!opts.silent) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Generation failed',
+                                    text: message
+                                });
+                            }
+                            reject(new Error(message));
+                        }
+                    },
+                    error: function(xhr) {
+                        let message = 'Unable to generate AI content right now.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        if (!opts.silent) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Generation failed',
+                                text: message
+                            });
+                        }
+                        reject(new Error(message));
+                    },
+                    complete: function() {
+                        if (opts.manageLoader) {
+                            $('#loader-overlay').hide();
+                        }
+                        if (button) {
+                            button.prop('disabled', false).html(button.data('original-html'));
+                        }
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            $(document).on('click', '.generate-ai-content', function() {
+                const $button = $(this);
+                const lang = $button.data('lang');
+                generateContentForLanguage(lang, { button: $button })
+                    .catch(() => {});
+            });
+
+            $(document).on('click', '.generate-ai-all', async function() {
+                const $button = $(this);
+                if (!aiLanguages.length) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No languages configured',
+                        text: 'Please add at least one active language before using AI generation.'
+                    });
+                    return;
+                }
+
+                const englishNameField = $('#name_en');
+                const englishName = englishNameField.length ? englishNameField.val().trim() : '';
+
+                if (!englishName) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Add English name',
+                        text: 'Enter the car name in English before generating AI content.'
+                    });
+                    if (englishNameField.length) {
+                        englishNameField.focus();
+                    }
+                    return;
+                }
+
+                const originalHtml = $button.html();
+                $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
+                $('#loader-overlay').css('display', 'flex');
+
+                const languages = Array.from(new Set(['en', ...aiLanguages]));
+
+                try {
+                    for (const lang of languages) {
+                        const data = await generateContentForLanguage(lang, {
+                            manageLoader: false,
+                            silent: true
+                        });
+
+                        if (lang === 'en') {
+                            populateGeneralFields(data);
+                        }
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'All content generated',
+                        text: 'General details and translations were filled automatically. Review before saving.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } catch (error) {
+                    const message = error && error.message ? error.message : 'Unable to generate AI content right now.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Generation interrupted',
+                        text: message
+                    });
+                } finally {
+                    $('#loader-overlay').hide();
+                    $button.prop('disabled', false).html(originalHtml);
+                }
+            });
+        });
+    </script>
+    <script>
         $(document).ready(function () {
             // Function to dynamically add SEO Questions/Answers
             $('.add-question').on('click', function () {
@@ -1024,11 +1435,15 @@
                 $(this).closest('.seo-question-group').remove();
             });
             @foreach($activeLanguages as $lang)
-                var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                if (metaKeywordsInput) {
-                    new Tagify(metaKeywordsInput, {
-                        placeholder: 'Enter meta keywords'
-                    });
+                {
+                    const metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
+                    if (metaKeywordsInput && typeof Tagify !== 'undefined') {
+                        tagifyInstances['{{ $lang->code }}'] = new Tagify(metaKeywordsInput, {
+                            placeholder: 'Enter meta keywords'
+                        });
+                    } else if (metaKeywordsInput) {
+                        metaKeywordsInput.setAttribute('placeholder', 'Enter meta keywords (comma separated)');
+                    }
                 }
             @endforeach
             });
