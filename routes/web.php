@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\CarController;
+use App\Http\Controllers\website\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,21 +14,13 @@ use App\Http\Controllers\admin\CarController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::fallback(function () {
-    return redirect('/admin/dashboard');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/cars/images/check-status/{carId}', [CarController::class, 'checkImageProcessingStatus']);
 
 Route::post('/cars/{id}/upload-image', [CarController::class, 'uploadImage'])->name('cars.upload-image');
 Route::post('/cars/{id}/upload-default-image', [CarController::class, 'uploadDefaultImage'])->name('cars.upload-default-image');
 
-// Test queue route
-Route::get('/test-queue', function () {
-    \App\Jobs\TestQueueJob::dispatch();
-    return 'Job dispatched! Check your logs.';
-});
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/cars/delete-image/{id}', [CarController::class, 'deleteImage'])->name('cars.delete-image');
@@ -39,8 +32,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
 
     Route::post('/cars/delete-all-images/{car}', [CarController::class, 'deleteAllImages'])
         ->name('admin.cars.delete-all-images');
-});
-
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Cars Routes
 });
