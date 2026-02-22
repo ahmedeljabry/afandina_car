@@ -174,7 +174,6 @@
                                             value="{{ old('hero_header_title.' . $lang->code, $translation->hero_header_title ?? '') }}">
                                     </div>
 
-
                                     <div class="form-group">
                                         <label for="car_only_section_title_[{{ $lang->code }}]" class="font-weight-bold">Car
                                             Only Section Title ({{ $lang->name }})</label>

@@ -13,6 +13,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
+        "mcamara/laravel-localization": "^2.3",
         "spatie/image-optimizer": "^1.8",
         "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-responsecache": "^7.4",

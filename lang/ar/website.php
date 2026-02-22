@@ -1,0 +1,238 @@
+<?php
+
+return [
+    'nav' => [
+        'home' => 'الرئيسية',
+        'all_cars' => 'كل السيارات',
+        'blogs' => 'المدونة',
+        'language' => 'اللغة',
+    ],
+
+    'common' => [
+        'car' => 'سيارة',
+        'brand' => 'العلامة التجارية',
+        'category' => 'الفئة',
+        'feature_icon' => 'أيقونة الميزة',
+        'call_for_price' => 'اتصل لمعرفة السعر',
+        'rent_now' => 'احجز الآن',
+        'featured' => 'مميز',
+    ],
+
+    'status' => [
+        'available' => 'متاح',
+        'not_available' => 'غير متاح',
+    ],
+
+    'cars' => [
+        'page_title' => 'قائمة السيارات',
+        'showing_results' => 'عرض :from-:to من :total سيارة',
+        'empty_title' => 'لا توجد سيارات متاحة',
+        'empty_subtitle' => 'يرجى المحاولة لاحقًا.',
+        'filters' => [
+            'title' => 'ماذا تبحث عنه',
+            'search_placeholder' => 'ابحث عن سيارة',
+            'availability' => 'التوفر',
+            'brand' => 'العلامة التجارية',
+            'category' => 'فئة السيارة',
+            'year' => 'سنة الصنع',
+            'apply' => 'تطبيق الفلاتر',
+            'reset' => 'إعادة تعيين',
+        ],
+        'sort' => [
+            'show' => 'عرض',
+            'sort_by' => 'ترتيب حسب',
+            'newest' => 'الأحدث',
+            'price_low' => 'السعر: من الأقل إلى الأعلى',
+            'price_high' => 'السعر: من الأعلى إلى الأقل',
+            'year_new' => 'السنة: الأحدث',
+            'year_old' => 'السنة: الأقدم',
+        ],
+    ],
+
+    'blog' => [
+        'page_title' => 'المدونة',
+        'showing_results' => 'عرض :from-:to من :total مقال',
+        'read_more' => 'اقرأ المزيد',
+        'search_label' => 'بحث',
+        'search_placeholder' => 'ابحث في المقالات',
+        'latest_posts' => 'أحدث المقالات',
+        'empty_title' => 'لا توجد مقالات متاحة',
+        'empty_subtitle' => 'جرّب تغيير البحث أو عد لاحقًا.',
+        'related_posts_title' => 'مقالات ذات صلة',
+        'related_cars_title' => 'سيارات مرتبطة',
+        'sort' => [
+            'show' => 'عرض',
+            'sort_by' => 'ترتيب حسب',
+            'newest' => 'الأحدث',
+            'oldest' => 'الأقدم',
+        ],
+        'navigation' => [
+            'previous' => 'المقال السابق',
+            'next' => 'المقال التالي',
+        ],
+        'common' => [
+            'untitled' => 'مقال بدون عنوان',
+        ],
+    ],
+
+    'home' => [
+        'hero' => [
+            'title_prefix' => 'استكشف سياراتنا',
+            'title_highlight' => 'الموثوقة والاحترافية',
+            'title_suffix' => '',
+            'banner_paragraph' => 'تصاميم رياضية عصرية لعشاق المغامرة والفخامة، وسيارات مريحة للاستمتاع بالرحلات مع أحبائك.',
+            'customers_label' => '+6 آلاف عميل',
+            'customers_subtitle' => 'استخدموا خدمات التأجير لدينا',
+            'browse_cars' => 'استأجر سيارة',
+            'browse_blogs' => 'اقرأ المدونة',
+            'starting_from' => 'يبدأ من',
+            'per_day' => '/ يوم',
+            'available_for_rent' => 'متاح للإيجار',
+        ],
+        'stats' => [
+            'happy_customers' => 'عملاء سعداء',
+            'count_of_cars' => 'عدد السيارات',
+            'locations_to_pickup' => 'مواقع الاستلام',
+            'total_kilometers' => 'إجمالي الكيلومترات',
+        ],
+        'sections' => [
+            'categories_title' => 'الفئات المميزة',
+            'categories_paragraph' => 'تصفح الفئات التي تحتوي على سيارات متاحة.',
+            'featured_cars_title' => 'السيارات المميزة',
+            'featured_cars_paragraph' => 'سيارات مختارة ومُبرزة حاليًا من الفريق.',
+            'only_on_title' => 'فقط على أفندينا',
+            'only_on_paragraph' => 'سيارات حصرية متاحة فقط على منصتنا.',
+            'brands_title' => 'العلامات التجارية الشائعة',
+            'brands_paragraph' => 'تصفح العلامات التجارية وانتقل مباشرة للسيارات المتاحة.',
+            'blogs_title' => 'مقالات وتحديثات',
+            'blogs_paragraph' => 'أحدث المقالات من فريقنا.',
+            'faq_title' => 'الأسئلة الشائعة',
+            'faq_paragraph' => 'إجابات سريعة على أهم أسئلة التأجير.',
+        ],
+        'features' => [
+            'section_title' => 'أفضل منصة لتأجير السيارات',
+            'section_paragraph' => 'لماذا نختار تأجير السيارات عند السفر في مدن غير مألوفة، ليشعرك وكأنك في مدينتك',
+            'best_deal' => [
+                'title' => 'أفضل عرض',
+                'description' => 'توفر Dreams Rent أسطولًا من السيارات عالية الجودة لكل رحلة.',
+            ],
+            'doorstep_delivery' => [
+                'title' => 'التوصيل إلى باب المنزل',
+                'description' => 'استلم سيارتك في موقعك مباشرة بكل سهولة.',
+            ],
+            'low_security_deposit' => [
+                'title' => 'تأمين منخفض',
+                'description' => 'شروط حجز مرنة مع تأمين مبدئي منخفض.',
+            ],
+            'latest_cars' => [
+                'title' => 'أحدث السيارات',
+                'description' => 'اختر من أحدث الموديلات ضمن أسطولنا المتجدد.',
+            ],
+            'customer_support' => [
+                'title' => 'دعم العملاء',
+                'description' => 'فريقنا متاح لمساعدتك قبل وأثناء فترة الإيجار.',
+            ],
+            'no_hidden_charges' => [
+                'title' => 'بدون رسوم خفية',
+                'description' => 'أسعار واضحة وشفافة بدون أي تكاليف غير متوقعة.',
+            ],
+        ],
+        'rental' => [
+            'title' => 'استأجر سيارتك في 3 خطوات',
+            'paragraph' => 'اتبع هذه الخطوات البسيطة وأكمل الحجز بسرعة.',
+            'step1_title' => 'اختر التاريخ والموقع',
+            'step1_description' => 'حدد التاريخ والموقع لتأجير سيارتك، مع مراعاة خط سير رحلتك ومواقع الاستلام والإعادة',
+            'step2_title' => 'حدد مواقع الاستلام والإعادة',
+            'step2_description' => 'تحقق من توفر نوع السيارة المطلوبة في التواريخ والموقع المختار، وتأكد من أسعار الإيجار والضرائب والرسوم',
+            'step3_title' => 'احجز سيارتك',
+            'step3_description' => 'حدد التاريخ والموقع لتأجير سيارتك، مع مراعاة خط سير رحلتك ومواقع الاستلام والإعادة',
+        ],
+        'testimonials' => [
+            'title' => 'آراء عملائنا',
+            'paragraph' => 'تقييمات حقيقية من العملاء حول تجربة التأجير.',
+            'review1' => 'تأجير السيارة من Dreams rent جعل إجازتي أكثر سلاسة! كانت العملية سريعة',
+            'review2' => 'تشكيلتهم الواسعة من السيارات والمواقع المناسبة والأسعار التنافسية',
+            'review3' => 'سيارة SUV الفسيحة التي استأجرناها احتوت عائلتنا وكل أمتعتنا بكل راحة',
+            'client_1_name' => 'كايل روبرتس',
+            'client_1_location' => 'نيويورك، الولايات المتحدة',
+            'client_2_name' => 'هاردلي فانيسا',
+            'client_2_location' => 'نيويورك، الولايات المتحدة',
+            'client_3_name' => 'ويلسون',
+            'client_3_location' => 'نيفادا، الولايات المتحدة',
+        ],
+        'catalog' => [
+            'title' => 'عرض جميع السيارات والفئات',
+        ],
+        'subscribe' => [
+            'title' => 'اشترك للحصول على',
+            'title_highlight' => 'تطبيق محمول وويب سهل الاستخدام',
+            'paragraph' => 'استثمر تجربة مستخدم متميزة عبر منصة متكاملة ومتجددة.',
+            'placeholder' => 'أدخل بريدك الإلكتروني هنا',
+        ],
+        'actions' => [
+            'view_all_cars' => 'عرض كل السيارات',
+            'view_all_blogs' => 'عرض المزيد',
+            'view_all' => 'عرض الكل',
+        ],
+        'support' => [
+            'best_rate' => 'أفضل سعر مضمون',
+            'free_cancellation' => 'إلغاء مجاني',
+            'best_security' => 'أفضل أمان',
+            'latest_update' => 'أحدث السيارات',
+            'trusted_proof' => 'موثوق وموثق',
+        ],
+        'labels' => [
+            'cars_count' => ':count سيارة',
+        ],
+        'empty' => [
+            'categories' => 'لا توجد فئات متاحة الآن.',
+        ],
+    ],
+
+    'footer' => [
+        'quick_links' => 'روابط سريعة',
+        'support' => 'الدعم',
+        'brands_section' => 'قسم العلامات التجارية',
+        'categories_section' => 'قسم الفئات',
+        'locations' => 'المواقع',
+        'available_payment_methods' => 'طرق الدفع المتاحة',
+        'rights_reserved' => 'جميع الحقوق محفوظة.',
+        'no_support_details' => 'لا توجد بيانات دعم متاحة.',
+        'empty_brands' => 'لا توجد علامات تجارية.',
+        'empty_categories' => 'لا توجد فئات.',
+        'empty_locations' => 'لا توجد مواقع.',
+        'links' => [
+            'about_us' => 'من نحن',
+            'blog' => 'المدونة',
+            'contact_us' => 'اتصل بنا',
+        ],
+    ],
+
+    'car_details' => [
+        'page_title' => 'تفاصيل السيارة',
+        'labels' => [
+            'brand' => 'العلامة التجارية',
+            'model' => 'الموديل',
+            'listed_on' => 'تاريخ الإدراج',
+        ],
+        'sections' => [
+            'description' => 'الوصف',
+            'specifications' => 'المواصفات',
+            'features' => 'المزايا',
+            'rental_prices' => 'أسعار الإيجار',
+            'highlights' => 'نقاط مهمة',
+            'related_cars' => 'سيارات مشابهة',
+        ],
+        'contact_for_pricing' => 'تواصل معنا لمعرفة تفاصيل الأسعار.',
+        'related_cars_subtitle' => 'استكشف المزيد من السيارات المتاحة في قائمتنا الحالية.',
+    ],
+
+    'units' => [
+        'per_day' => '/ يوم',
+        'km_value' => ':count كم',
+        'km_included' => ':count كم متضمنة',
+        'doors' => ':count أبواب',
+        'persons' => ':count أشخاص',
+        'bags' => ':count حقائب',
+    ],
+];

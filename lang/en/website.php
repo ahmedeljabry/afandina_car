@@ -1,0 +1,238 @@
+<?php
+
+return [
+    'nav' => [
+        'home' => 'Home',
+        'all_cars' => 'All Cars',
+        'blogs' => 'Blogs',
+        'language' => 'Language',
+    ],
+
+    'common' => [
+        'car' => 'Car',
+        'brand' => 'Brand',
+        'category' => 'Category',
+        'feature_icon' => 'Feature Icon',
+        'call_for_price' => 'Call for price',
+        'rent_now' => 'Rent Now',
+        'featured' => 'Featured',
+    ],
+
+    'status' => [
+        'available' => 'Available',
+        'not_available' => 'Not Available',
+    ],
+
+    'cars' => [
+        'page_title' => 'Car Listings',
+        'showing_results' => 'Showing :from-:to of :total cars',
+        'empty_title' => 'No cars available',
+        'empty_subtitle' => 'Please check back later.',
+        'filters' => [
+            'title' => 'What Are You Looking For',
+            'search_placeholder' => 'Search cars',
+            'availability' => 'Availability',
+            'brand' => 'Car Brand',
+            'category' => 'Car Category',
+            'year' => 'Year',
+            'apply' => 'Filter Results',
+            'reset' => 'Reset Filter',
+        ],
+        'sort' => [
+            'show' => 'Show',
+            'sort_by' => 'Sort By',
+            'newest' => 'Newest',
+            'price_low' => 'Price: Low to High',
+            'price_high' => 'Price: High to Low',
+            'year_new' => 'Year: Newest',
+            'year_old' => 'Year: Oldest',
+        ],
+    ],
+
+    'blog' => [
+        'page_title' => 'Blogs',
+        'showing_results' => 'Showing :from-:to of :total posts',
+        'read_more' => 'Read More',
+        'search_label' => 'Search',
+        'search_placeholder' => 'Search blog posts',
+        'latest_posts' => 'Latest Posts',
+        'empty_title' => 'No blog posts available',
+        'empty_subtitle' => 'Try changing your search or check back later.',
+        'related_posts_title' => 'Related Posts',
+        'related_cars_title' => 'Related Cars',
+        'sort' => [
+            'show' => 'Show',
+            'sort_by' => 'Sort By',
+            'newest' => 'Newest',
+            'oldest' => 'Oldest',
+        ],
+        'navigation' => [
+            'previous' => 'Previous Post',
+            'next' => 'Next Post',
+        ],
+        'common' => [
+            'untitled' => 'Untitled Post',
+        ],
+    ],
+
+    'home' => [
+        'hero' => [
+            'title_prefix' => 'Explore our',
+            'title_highlight' => 'Verified & Professional',
+            'title_suffix' => 'Cars',
+            'banner_paragraph' => 'Modern design sports cruisers for those who crave adventure and grandeur. Cars for relaxing with your loved ones.',
+            'customers_label' => '6K + Customers',
+            'customers_subtitle' => 'have used our renting services',
+            'browse_cars' => 'Rent a Car',
+            'browse_blogs' => 'Read Blog',
+            'starting_from' => 'Starts From',
+            'per_day' => '/ day',
+            'available_for_rent' => 'Available for Rent',
+        ],
+        'stats' => [
+            'happy_customers' => 'Happy Customers',
+            'count_of_cars' => 'Count of Cars',
+            'locations_to_pickup' => 'Locations to Pickup',
+            'total_kilometers' => 'Total Kilometers',
+        ],
+        'sections' => [
+            'categories_title' => 'Featured Categories',
+            'categories_paragraph' => 'Browse categories with active inventory.',
+            'featured_cars_title' => 'Featured Cars',
+            'featured_cars_paragraph' => 'Hand-picked cars currently highlighted by the team.',
+            'only_on_title' => 'Only on Afandina',
+            'only_on_paragraph' => 'Exclusive vehicles available only on our platform.',
+            'brands_title' => 'Popular Brands',
+            'brands_paragraph' => 'Browse brands and jump to available cars.',
+            'blogs_title' => 'Insights and Updates',
+            'blogs_paragraph' => 'Latest articles from our team.',
+            'faq_title' => 'Frequently Asked Questions',
+            'faq_paragraph' => 'Quick answers to the most common rental questions.',
+        ],
+        'features' => [
+            'section_title' => 'Best Platform for Car Rental',
+            'section_paragraph' => 'Why do we choose relax rent bikes generally if we travel in a un known cities with a bike in our hand we feel which is like a home town',
+            'best_deal' => [
+                'title' => 'Best Deal',
+                'description' => 'Dreams Rent offers a fleet of high-quality vehicles for every trip.',
+            ],
+            'doorstep_delivery' => [
+                'title' => 'Doorstep Delivery',
+                'description' => 'Get your rental delivered directly to your location.',
+            ],
+            'low_security_deposit' => [
+                'title' => 'Low Security Deposit',
+                'description' => 'Enjoy flexible booking terms with a low security deposit.',
+            ],
+            'latest_cars' => [
+                'title' => 'Latest Cars',
+                'description' => 'Choose from the latest models in our updated fleet.',
+            ],
+            'customer_support' => [
+                'title' => 'Customer Support',
+                'description' => 'Our team is available to help you before and during your rental.',
+            ],
+            'no_hidden_charges' => [
+                'title' => 'No Hidden Charges',
+                'description' => 'Transparent pricing with no unexpected fees.',
+            ],
+        ],
+        'rental' => [
+            'title' => 'Rent Our Cars in 3 Steps',
+            'paragraph' => 'Follow these simple steps and complete your booking quickly.',
+            'step1_title' => 'Choose Date & Locations',
+            'step1_description' => 'Determine the date & location for your car rental. Consider factors such as your travel itinerary, pickup/drop-off locations',
+            'step2_title' => 'Select Pick-Up & Drop Locations',
+            'step2_description' => 'Check the availability of your desired vehicle type for your chosen dates and location. Ensure that the rental rates, taxes, fees, and any additional charges.',
+            'step3_title' => 'Book your Car',
+            'step3_description' => 'Determine the date & location for your car rental. Consider factors such as your travel itinerary, pickup/drop-off locations',
+        ],
+        'testimonials' => [
+            'title' => 'Our Clients Feedback',
+            'paragraph' => 'Real feedback from customers about their rental experience.',
+            'review1' => 'Renting a car from Dreams rent made my vacation so much smoother! The process was quick',
+            'review2' => 'Their wide selection of vehicles, convenient locations, and competitive prices',
+            'review3' => 'The spacious SUV we rented comfortably fit our family and all our luggage',
+            'client_1_name' => 'Kyle Roberts DVM',
+            'client_1_location' => 'New York, USA',
+            'client_2_name' => 'Hardley Vanessa',
+            'client_2_location' => 'New York, USA',
+            'client_3_name' => 'Wilson',
+            'client_3_location' => 'Nevada, USA',
+        ],
+        'catalog' => [
+            'title' => 'View All Cars & Categories',
+        ],
+        'subscribe' => [
+            'title' => 'Subscribe To Get User Friendly',
+            'title_highlight' => 'Mobile & Web App',
+            'paragraph' => 'Appropriately monetize one-to-one interfaces rather than cutting-edge. Competently disintermediate backward.',
+            'placeholder' => 'Enter Your Email Here',
+        ],
+        'actions' => [
+            'view_all_cars' => 'View All Cars',
+            'view_all_blogs' => 'View More',
+            'view_all' => 'View All',
+        ],
+        'support' => [
+            'best_rate' => 'Best Rate Guaranteed',
+            'free_cancellation' => 'Free Cancellation',
+            'best_security' => 'Best Security',
+            'latest_update' => 'Latest Update of Bikes',
+            'trusted_proof' => 'Trusted Proof',
+        ],
+        'labels' => [
+            'cars_count' => ':count Cars',
+        ],
+        'empty' => [
+            'categories' => 'No categories available right now.',
+        ],
+    ],
+
+    'footer' => [
+        'quick_links' => 'Quick Links',
+        'support' => 'Support',
+        'brands_section' => 'Brands Section',
+        'categories_section' => 'Category Section',
+        'locations' => 'Locations',
+        'available_payment_methods' => 'Available Payment Methods',
+        'rights_reserved' => 'All rights reserved.',
+        'no_support_details' => 'No support details available.',
+        'empty_brands' => 'No brands available.',
+        'empty_categories' => 'No categories available.',
+        'empty_locations' => 'No locations available.',
+        'links' => [
+            'about_us' => 'About Us',
+            'blog' => 'Blog',
+            'contact_us' => 'Contact Us',
+        ],
+    ],
+
+    'car_details' => [
+        'page_title' => 'Car Details',
+        'labels' => [
+            'brand' => 'Brand',
+            'model' => 'Model',
+            'listed_on' => 'Listed on',
+        ],
+        'sections' => [
+            'description' => 'Description',
+            'specifications' => 'Specifications',
+            'features' => 'Features',
+            'rental_prices' => 'Rental Prices',
+            'highlights' => 'Highlights',
+            'related_cars' => 'Related Cars',
+        ],
+        'contact_for_pricing' => 'Contact us for pricing details.',
+        'related_cars_subtitle' => 'Explore more available cars from our current listings.',
+    ],
+
+    'units' => [
+        'per_day' => '/ Day',
+        'km_value' => ':count KM',
+        'km_included' => ':count KM included',
+        'doors' => ':count Doors',
+        'persons' => ':count Persons',
+        'bags' => ':count Bags',
+    ],
+];

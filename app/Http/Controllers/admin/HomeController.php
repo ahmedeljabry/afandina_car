@@ -13,10 +13,20 @@ class HomeController extends GenericController
         $this->slugField ='page_name';
         $this->translatableFields = [
             'hero_header_title',
+            'featured_cars_section_title',
+            'featured_cars_section_paragraph',
             'car_only_section_title',
             'car_only_section_paragraph',
+            'category_section_title',
+            'category_section_paragraph',
+            'brand_section_title',
+            'brand_section_paragraph',
             'blog_section_title',
             'blog_section_paragraph',
+            'contact_us_title',
+            'contact_us_paragraph',
+            'contact_us_detail_title',
+            'contact_us_detail_paragraph',
             'special_offers_section_title',
             'special_offers_section_paragraph',
             'why_choose_us_section_title',
@@ -29,6 +39,7 @@ class HomeController extends GenericController
             'required_documents_section_paragraph',
             'footer_section_paragraph',
             'instagram_section_title',
+            'instagram_section_paragraph',
         ];
         $this->nonTranslatableFields = ['page_name','is_active','hero_type'];
         $this->uploadedfiles = [
@@ -54,10 +65,20 @@ class HomeController extends GenericController
         $this->validationRules = [
             'page_name' => 'required|string|max:255',
             'hero_type' => 'required|in:video,image',
+            'featured_cars_section_title.*' => 'nullable|string',
+            'featured_cars_section_paragraph.*' => 'nullable|string',
             'car_only_section_title.*' => 'nullable|string',
             'car_only_section_paragraph.*' => 'nullable|string',
+            'category_section_title.*' => 'nullable|string',
+            'category_section_paragraph.*' => 'nullable|string',
+            'brand_section_title.*' => 'nullable|string',
+            'brand_section_paragraph.*' => 'nullable|string',
             'blog_section_title.*' => 'nullable|string',
             'blog_section_paragraph.*' => 'nullable|string',
+            'contact_us_title.*' => 'nullable|string',
+            'contact_us_paragraph.*' => 'nullable|string',
+            'contact_us_detail_title.*' => 'nullable|string',
+            'contact_us_detail_paragraph.*' => 'nullable|string',
             'special_offers_section_title.*' => 'nullable|string',
             'special_offers_section_paragraph.*' => 'nullable|string',
             'why_choose_us_section_title.*' => 'nullable|string',
@@ -71,6 +92,7 @@ class HomeController extends GenericController
             'hero_header_title.*' => 'nullable|string',
             'hero_header_image_path' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:10000',
             'instagram_section_title.*' => 'nullable|string',
+            'instagram_section_paragraph.*' => 'nullable|string',
             'footer_section_paragraph.*' => 'nullable|string',
             'meta_title.*' => 'nullable|string|max:255',
             'meta_description.*' => 'nullable|string',
@@ -101,10 +123,20 @@ class HomeController extends GenericController
         $this->validationRules = [
             'page_name' => 'required|string|max:255',
             'hero_type' => 'required|in:video,image',
+            'featured_cars_section_title.*' => 'nullable|string',
+            'featured_cars_section_paragraph.*' => 'nullable|string',
             'car_only_section_title.*' => 'nullable|string',
             'car_only_section_paragraph.*' => 'nullable|string',
+            'category_section_title.*' => 'nullable|string',
+            'category_section_paragraph.*' => 'nullable|string',
+            'brand_section_title.*' => 'nullable|string',
+            'brand_section_paragraph.*' => 'nullable|string',
             'blog_section_title.*' => 'nullable|string',
             'blog_section_paragraph.*' => 'nullable|string',
+            'contact_us_title.*' => 'nullable|string',
+            'contact_us_paragraph.*' => 'nullable|string',
+            'contact_us_detail_title.*' => 'nullable|string',
+            'contact_us_detail_paragraph.*' => 'nullable|string',
             'special_offers_section_title.*' => 'nullable|string',
             'special_offers_section_paragraph.*' => 'nullable|string',
             'why_choose_us_section_title.*' => 'nullable|string',
@@ -117,6 +149,7 @@ class HomeController extends GenericController
             'required_documents_section_paragraph.*' => 'nullable|string',
             'hero_header_title.*' => 'nullable|string',
             'instagram_section_title.*' => 'nullable|string',
+            'instagram_section_paragraph.*' => 'nullable|string',
             'footer_section_paragraph.*' => 'nullable|string',
             'meta_title.*' => 'nullable|string|max:255',
             'meta_description.*' => 'nullable|string',
@@ -136,7 +169,7 @@ class HomeController extends GenericController
 
         // Delegate to the generic controller's update function
         parent::update($request, $id);
-        return back()->with('success', 'About Page updated successfully.');
+        return back()->with('success', 'Home Page updated successfully.');
     }
 
 }

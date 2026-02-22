@@ -1,1473 +1,778 @@
-
-	
 @extends('layouts.website')
-@section('title' , 'Home')
+@section('title', $homeTranslation?->meta_title ?? __('website.nav.home'))
+
 @section('content')
-		<!-- Banner -->
-		<section class="banner-section-four">		
-			<div class="container">
-			   	<div class="home-banner">		
-				   <div class="row align-items-center">					    
-					   	<div class="col-lg-5" data-aos="fade-down">
-							<div class="banner-content">
-								<h1>Explore our <span>Verified & Professional</span> Cars</h1>
-								<p>Modern design sports cruisers for those who crave adventure & grandeur Cars for relaxing with your loved ones.
-								</p>
-								<div class="customer-list">
-									<div class="users-wrap">
-										<ul class="users-list">
-											<li>
-												<img src="assets/img/profiles/avatar-11.jpg" class="img-fluid aos" alt="bannerimage">
-											</li>
-											<li>
-												<img src="assets/img/profiles/avatar-15.jpg" class="img-fluid aos" alt="bannerimage">
-											</li>
-											<li>
-												<img src="assets/img/profiles/avatar-03.jpg" class="img-fluid aos" alt="bannerimage">
-											</li>
-										</ul>
-										<div class="customer-info">
-											<h4>6K + Customers</h4>
-											<p>has used our renting services </p>
-										</div>
-									</div>
-									<div class="view-all d-flex align-items-center gap-3">
-										<a href="listing-grid.html" class="btn btn-primary d-inline-flex align-items-center">Rent a Car<i class="bx bx-right-arrow-alt ms-1"></i></a>
-										<a href="add-listing.html" class="btn btn-secondary d-inline-flex align-items-center"><i class="bx bxs-plus-circle me-1"></i>Add Your Car</a>
-									</div>
-								</div>	
-							</div>	
-					   	</div>
-						<div class="col-lg-7">							
-							<div class="banner-image">
-								<div class="banner-img" data-aos="fade-down">
-									<div class="amount-icon">
-										<span class="day-amt">
-											<p>Starts From</p>
-											<h6>$650 <span> /day</span></h6>
-										</span>
-									</div>
-									<span class="rent-tag"><i class="bx bxs-circle"></i> Available for Rent</span>
-									<img src="{{ asset('website/assets/img/banner/banner.png') }}" class="img-fluid" alt="img">
-								</div>
-							</div>
-						</div>
-				   	</div>
-			   	</div>	
-		   	</div>
-		   	<div class="banner-bgs">
-		   		<img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img">
-		   	</div>
-		</section>
-	   	<!-- /Banner -->
-
-		<!-- Category  Section -->
-		<section class="category-section-four">
-			<div class="container">	
-				<div class="row">	
-					<div class="col-md-12">	
-
-						<!-- Heading title-->
-						<div class="section-heading heading-four" data-aos="fade-down">
-							<h2>Featured Categories</h2>
-							<p>Know what you’re looking for? Browse our extensive selection of cars</p>
-						</div>
-						<!-- /Heading title -->
-
-						<div class="row row-gap-4">
-							
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Sports Coupe</a></h6>
-											<p>14 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-01.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Sedan</a></h6>
-											<p>12 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-02.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Sports Car</a></h6>
-											<p>35 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-03.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Pickup</a></h6>
-											<p>35 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-04.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Family MPV</a></h6>
-											<p>35 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-05.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-							<!-- Category Item -->
-							<div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-								<div class="category-item flex-fill">
-									<div class="category-info d-flex align-items-center justify-content-between">
-										<div>
-											<h6 class="title"><a href="listing-grid.html">Crossover</a></h6>
-											<p>30 Cars</p>
-										</div>
-										<a href="listing-grid.html" class="link-icon"><i class="bx bx-right-arrow-alt"></i></a>
-									</div>
-									<div class="category-img">
-										<img src="assets/img/category/category-06.png" alt="img" class="img-fluid">
-									</div>
-								</div>
-							</div>
-							<!-- /Category Item -->
-
-						</div>
-
-						<div class="view-all-btn text-center aos" data-aos="fade-down">
-							<a href="listing-grid.html" class="btn btn-secondary">View All<i class="bx bx-right-arrow-alt ms-1"></i></a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Category  Section -->
-
-		<!-- Feature Section -->
-		<section class="feature-section pt-0">
-			<div class="container">	
-				<div class="row align-items-center">	
-					<div class="col-lg-6">	
-
-						<div class="feature-img">
-							<div class="section-heading heading-four text-start" data-aos="fade-down">
-								<h2>Best Platform for Car Rental</h2>
-								<p>Why do we choose relax rent bikes generally if we travel in a un known cities with a bike in our hand we feel which is like a home town</p>
-							</div>
-							<img src="assets/img/cars/car.png" alt="img" class="img-fluid">
-						</div>
-
-					</div>
-
-					<div class="col-lg-6">	
-						<div class="row row-gap-4">
-							
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-									<span class="feature-icon">
-										<i class="bx bxs-info-circle"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">Best Deal</h6>
-										<p>Dreams Rent offers a fleet of high-quality </p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-									<span class="feature-icon">
-										<i class="bx bx-exclude"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">Doorstep Delivery</h6>
-										<p>Dreams Rent offers a fleet of high-quality </p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-									<span class="feature-icon">
-										<i class="bx bx-money"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">Low Security Deposit</h6>
-										<p>Dreams Rent offers a fleet of high-quality </p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-
-									<span class="feature-icon">
-										<i class="bx bxs-car-mechanic"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">Latest Cars</h6>
-										<p>Dreams Rent offers a fleet of high-quality</p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-									<span class="feature-icon">
-										<i class="bx bx-support"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">Customer Support</h6>
-										<p>Dreams Rent offers a fleet of high-quality</p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-							<!-- Feature Item -->
-							<div class="col-md-6 d-flex">
-								<div class="feature-item flex-fill">
-									<span class="feature-icon">
-										<i class="bx bxs-coin"></i>
-									</span>
-									<div>
-										<h6 class="mb-1">No Hidden Charges</h6>
-										<p>Dreams Rent offers a fleet of high-quality</p>
-									</div>
-								</div>
-							</div>
-							<!-- /Feature Item -->
-
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Feature Section -->
-
-		<!-- Car Section -->
-		<section class="car-section">
-			<div class="container">	
-
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2>Explore Most Popular Cars</h2>
-					<p>Here's a list of some of the most popular cars globally</p>
-				</div>
-
-				<div class="row">
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<div class="img-slider owl-carousel">
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-11.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-12.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-11.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-								</div>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon selected">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Lasvegas</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">Toyota Camry SE 350</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 138 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$160 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Auto</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>10 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Diesel</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2018</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<a href="listing-details.html">
-									<img src="assets/img/cars/car-12.jpg" class="img-fluid" alt="Toyota">
-								</a>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon selected">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Lasvegas</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">Audi A3 2019 new</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 150 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$45 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Auto</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>10 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Diesel</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2019</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<a href="listing-details.html">
-									<img src="assets/img/cars/car-13.jpg" class="img-fluid" alt="Toyota">
-								</a>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Lasvegas</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">Ford Mustang 4.0 AT</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 170 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$90 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Auto</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>10 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Petrol</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2021</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<div class="img-slider owl-carousel">
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-14.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-13.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-									<div class="slide-images">
-										<a href="listing-details.html">
-											<img src="assets/img/cars/car-16.jpg" class="img-fluid" alt="Toyota">
-										</a>
-									</div>
-								</div>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Spain</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">Chevrolet Picker</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 165 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$48 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Manual</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>18 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Diesel</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2018</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<a href="listing-details.html">
-									<img src="assets/img/cars/car-15.jpg" class="img-fluid" alt="Toyota">
-								</a>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Lasvegas</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">Ferrari 458 MM Special</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 160 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$95 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Auto</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>16 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Petrol</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2021</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-					<!-- Car List -->
-					<div class="col-lg-4 col-md-6">
-						<div class="listing-item listing-item-two">										
-							<div class="listing-img">
-								<a href="listing-details.html">
-									<img src="assets/img/cars/car-16.jpg" class="img-fluid" alt="Toyota">
-								</a>
-								<div class="fav-item">
-									<div class="d-flex align-items-center gap-2">
-										<span class="featured-text">Toyota</span>
-										<span class="availability">Available</span>
-									</div>
-									<a href="javascript:void(0)" class="fav-icon">
-										<i class="feather-heart"></i>
-									</a>										
-								</div>									
-								<span class="location"><i class="bx bx-map me-1"></i>Newyork, USA</span>
-							</div>										
-							<div class="listing-content">
-								<div class="listing-features d-flex align-items-center justify-content-between">
-									<div class="list-rating">
-										<h3 class="listing-title">
-											<a href="listing-details.html">2018 Chevrolet Camaro</a>
-										</h3>																	  
-										<div class="list-rating">							
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star filled"></i>
-											<i class="fas fa-star"></i>
-											<span>(4.0) 150 Reviews</span>
-										</div>
-									</div>
-									<div>
-										<h4 class="price">$120 <span>/ Day</span></h4>
-									</div>
-								</div> 
-								<div class="listing-details-group">
-									<ul>
-										<li>
-											<img src="assets/img/icons/car-parts-01.svg" alt="Auto">
-											<p>Auto</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-02.svg" alt="10 KM">
-											<p>10 KM</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-03.svg" alt="Petrol">
-											<p>Diesel</p>
-										</li>
-										<li>
-											<img src="assets/img/icons/car-parts-05.svg" alt="2018">
-											<p>2019</p>	
-										</li>
-									</ul>
-								</div>	
-							</div>
-						</div>	
-					</div>
-					<!-- /Car List -->
-
-				</div>
-
-				<div class="view-all-btn text-center aos" data-aos="fade-down">
-					<a href="listing-grid.html" class="btn btn-secondary d-inline-flex align-items-center">View More Cars<i class="bx bx-right-arrow-alt ms-1"></i></a>
-				</div>
-
-			</div>
-		</section>
-		<!-- /Car Section -->
-
-		<!-- Brand Section -->
-		<section class="brand-section">
-			<div class="container">	
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2 class="text-white">Rent by Brands</h2>
-					<p>Here's a list of some of the most popular cars globally</p>
-				</div>
-				<div class="brands-slider owl-carousel">
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-09.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-10.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-11.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-12.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-13.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-					<div class="brand-wrap">
-						<img src="assets/img/brand/brand-14.svg" alt="img">
-						<p>Chevrolet</p>
-					</div>
-				</div>
-				<div class="brand-img text-center">
-					<img src="assets/img/bg/brand.png" alt="img" class="img-fluid">
-				</div>
-			</div>
-		</section>
-		<!-- /Brand Section -->
-
-		<!-- Rental Section -->
-		<section class="rental-section-four">
-			<div class="container">	
-				<div class="row align-items-center">
-					<div class="col-lg-7">
-						<div class="rental-img">
-							<img src="assets/img/about/rent-car.png" alt="img" class="img-fluid">
-							<div class="grid-img">
-								<img src="assets/img/about/car-grid.png" alt="img" class="img-fluid">
-							</div>
-						</div>						
-					</div>
-					<div class="col-lg-5">
-						<div class="rental-content">
-							<div class="section-heading heading-four text-start" data-aos="fade-down">
-								<h2>Rent Our Cars in 3 Steps</h2>
-								<p>Check how it Works to Rent Cars in DreamsRent</p>
-							</div>
-							<div class="step-item d-flex align-items-center">
-								<span class="step-icon bg-primary me-3">
-									<i class="bx bx-calendar-heart"></i>
-								</span>
-								<div>
-									<h5>Choose Date &  Locations</h5>
-									<p>Determine the date & location for your car rental. Consider factors such as your travel itinerary, pickup/drop-off locations</p>
-								</div>
-							</div>
-							<div class="step-item d-flex align-items-center">
-								<span class="step-icon bg-secondary-100 me-3">
-									<i class="bx bxs-edit-location"></i>
-								</span>
-								<div>
-									<h5>Select Pick-Up & Drop Locations</h5>
-									<p>Check the availability of your desired vehicle type for your chosen dates and location. Ensure that the rental rates, taxes, fees, and any additional charges.</p>
-								</div>
-							</div>
-							<div class="step-item d-flex align-items-center">
-								<span class="step-icon bg-dark me-3">
-									<i class="bx bx-coffee-togo"></i>
-								</span>
-								<div>
-									<h5>Book your Car</h5>
-									<p>Determine the date & location for your car rental. Consider factors such as your travel itinerary, pickup/drop-off locations</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="count-sec">
-					<div class="row row-gap-4" >
-						<div class="col-lg-3 col-md-6 d-flex">
-							<div class="count-item flex-fill">
-								<h3><span class="counterUp">16</span>K+</h3>
-								<p>Happy Customers</p>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 d-flex">
-							<div class="count-item flex-fill">
-								<h3><span class="counterUp">2547</span>K+</h3>
-								<p>Count of Cars</p>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 d-flex">
-							<div class="count-item flex-fill">
-								<h3><span class="counterUp">625</span>K+</h3>
-								<p>Locations to Pickup</p>
-							</div>
-						</div>
-						<div class="col-lg-3 col-md-6 d-flex">
-							<div class="count-item flex-fill">
-								<h3><span class="counterUp">15000</span>K+</h3>
-								<p>Total Kilometers</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Rental Section -->
-
-		<!-- Popular Section -->
-		<section class="popular-section-four">
-			<div class="container">
-				<!-- Section Header -->
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2>Popular Cars On Recommendations</h2>
-					<p>Here are some versatile options that cater to different needs</p>
-				</div>
-				<!-- /Section Header -->
-				<div class="car-slider owl-carousel">
-
-					<!-- Car Item -->
-					<div class="car-item">
-						<h6>FORD</h6>
-						<h2 class="display-1">MUSTANG</h2>
-						<div class="car-img">
-							<img src="assets/img/cars/car-15.png" alt="img" class="img-fluid">
-							<div class="amount-icon">
-								<span class="day-amt">
-									<p>Starts From</p>
-									<h6>$650 <span> /day</span></h6>
-								</span>
-							</div>
-						</div>
-						<div class="spec-list">
-							<span><img src="assets/img/icons/spec-01.svg" alt="img">Auto</span>
-							<span><img src="assets/img/icons/spec-02.svg" alt="img">Power</span>
-							<span><img src="assets/img/icons/spec-03.svg" alt="img">30 K</span>
-							<span><img src="assets/img/icons/spec-04.svg" alt="img">AC</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">Diesel</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">5 Persons</span>
-						</div>
-						<a href="listing-details.html" class="btn btn-primary">Rent Now</a>
-					</div>
-					<!-- /Car Item -->
-
-					<!-- Car Item -->
-					<div class="car-item">
-						<h6>AUDI</h6>
-						<h2 class="display-1">A3 2024 New</h2>
-						<div class="car-img">
-							<img src="assets/img/cars/car-16.png" alt="img" class="img-fluid">
-							<div class="amount-icon">
-								<span class="day-amt">
-									<p>Starts From</p>
-									<h6>$650 <span>/day</span></h6>
-								</span>
-							</div>
-						</div>
-						<div class="spec-list">
-							<span><img src="assets/img/icons/spec-01.svg" alt="img">Auto</span>
-							<span><img src="assets/img/icons/spec-02.svg" alt="img">Power</span>
-							<span><img src="assets/img/icons/spec-03.svg" alt="img">60 K</span>
-							<span><img src="assets/img/icons/spec-04.svg" alt="img">AC</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">Gas</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">4 Persons</span>
-						</div>
-						<a href="listing-details.html" class="btn btn-primary">Rent Now</a>
-					</div>
-					<!-- /Car Item -->
-
-					<!-- Car Item -->
-					<div class="car-item">
-						<h6>TOYOTO</h6>
-						<h2 class="display-1">CAMREY SE 350</h2>
-						<div class="car-img">
-							<img src="assets/img/cars/car-17.png" alt="img" class="img-fluid">
-							<div class="amount-icon">
-								<span class="day-amt">
-									<p>Starts From</p>
-									<h6>$799 <span>/day</span></h6>
-								</span>
-							</div>
-						</div>
-						<div class="spec-list">
-							<span><img src="assets/img/icons/spec-01.svg" alt="img">Auto</span>
-							<span><img src="assets/img/icons/spec-02.svg" alt="img">Power</span>
-							<span><img src="assets/img/icons/spec-03.svg" alt="img">80 K</span>
-							<span><img src="assets/img/icons/spec-04.svg" alt="img">AC</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">Petrol</span>
-							<span><img src="assets/img/icons/spec-05.svg" alt="img">6 Persons</span>
-						</div>
-						<a href="listing-details.html" class="btn btn-primary">Rent Now</a>
-					</div>
-					<!-- /Car Item -->
-
-				</div>
-			</div>
-		</section>
-		<!-- /Popular Section -->
-	
-
-		<!-- Testimonial Section -->
-		<section class="testimonial-section">
-			<div class="container">	
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2>Our Clients Feedback</h2>
-					<p>Provided by customers about their experience with a product or service.</p>
-				</div>
-
-				<div class="row row-gap-4 justify-content-center">
-
-					<!-- Testimonial Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="testimonial-item testimonial-item-two flex-fill">
-							<div class="user-img">
-								<img src="assets/img/profiles/avatar-02.jpg" class="img-fluid" alt="img">
-							</div>
-							<p>Renting a car from Dreams rent made my vacation so much smoother! The process was quick</p>							
-							<div class="rating">
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-							</div>
-							<div class="user-info">
-								<h6>Kyle Roberts DVM</h6>
-								<p>Newyork, USA</p>												
-							</div>
-						</div>
-					</div>
-					<!-- /Testimonial Item -->
-
-					<!-- Testimonial Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="testimonial-item testimonial-item-two flex-fill">
-							<div class="user-img">
-								<img src="assets/img/profiles/avatar-18.jpg" class="img-fluid" alt="img">
-							</div>
-							<p>Their wide selection of vehicles, convenient locations, and competitive prices</p>							
-							<div class="rating">
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-							</div>
-							<div class="user-info">
-								<h6>Hardley Vanessa</h6>
-								<p>Newyork, USA</p>												
-							</div>
-						</div>
-					</div>
-					<!-- /Testimonial Item -->
-
-					<!-- Testimonial Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="testimonial-item testimonial-item-two flex-fill">
-							<div class="user-img">
-								<img src="assets/img/profiles/avatar-15.jpg" class="img-fluid" alt="img">
-							</div>
-							<p>The spacious SUV we rented comfortably fit our family and all our luggage</p>							
-							<div class="rating">
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-								<i class="fas fa-star filled"></i>
-							</div>
-							<div class="user-info">
-								<h6>Wilson</h6>
-								<p>Nevada, USA</p>												
-							</div>
-						</div>
-					</div>
-					<!-- /Testimonial Item -->
-
-				</div>
-
-				<div class="view-all-btn text-center aos" data-aos="fade-down">
-					<a href="listing-grid.html" class="btn btn-secondary">View All<i class="bx bx-right-arrow-alt ms-1"></i></a>
-				</div>
-
-				<div class="client-slider owl-carousel">
-					<div>
-						<img src="assets/img/clients/client-01.svg" alt="img">
-					</div>
-					<div>
-						<img src="assets/img/clients/client-02.svg" alt="img">
-					</div>
-					<div>
-						<img src="assets/img/clients/client-03.svg" alt="img">
-					</div>
-					<div>
-						<img src="assets/img/clients/client-04.svg" alt="img">
-					</div>
-					<div>
-						<img src="assets/img/clients/client-05.svg" alt="img">
-					</div>
-					<div>
-						<img src="assets/img/clients/client-06.svg" alt="img">
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Testimonial Section -->
-
-		<!-- Price Section -->
-		<section class="pricing-section-four">
-			<div class="container">	
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2>Best Pricing in Rental</h2>
-					<p>Choose the Right Plan for Your Business</p>
-				</div>
-
-				<div class="row">
-
-					<!-- Price Item -->
-					<div class="col-lg-3 col-md-6 d-flex">
-						<div class="price-item price-item-two flex-fill">
-							<div class="price-head">
-								<h6>Stater</h6>
-								<div class="price-level">
-									<div>
-										<h3>$299</h3>
-										<p>Per Month</p>
-									</div>
-									<span class="offer-tag bg-danger">30% Offer</span>	
-								</div>						
-							</div>	
-							<div class="price-details">
-								<ul>
-								 	<li>50% Downpayment</li>
-								 	<li>Insurance not Included</li>
-								 	<li>Doorstep Not Included</li>
-								 	<li>Roadside Assistance</li>
-								 	<li>Minimal Insurance Coverage</li>
-								 	<li>Additional Perks - GPS</li>
-								 	<li>No Flexible timing & extension</li>
-								</ul>
-								<a href="login.html" class="btn btn-secondary w-100">Choose Plan<i class="bx bx-right-arrow-alt ms-1"></i></a>							
-							</div>							
-						</div>
-					</div>
-					<!-- /Price Item -->
-
-					<!-- Price Item -->
-					<div class="col-lg-3 col-md-6 d-flex">
-						<div class="price-item price-item-two flex-fill">
-							<div class="price-head">
-								<h6>Premium</h6>
-								<div class="price-level">
-									<div>
-										<h3>$1299</h3>
-										<p>Per Month</p>
-									</div>
-									<span class="offer-tag bg-pink">100% Offer</span>	
-								</div>						
-							</div>	
-							<div class="price-details">
-								<ul>
-								 	<li>25% Downpayment</li>
-								 	<li>Insurance Included</li>
-								 	<li>Doorstep Delivery Available</li>
-								 	<li>Roadside Assistance</li>
-								 	<li>Personal Injury Protection</li>
-								 	<li>Additional Perks GPS, Car Seat</li>
-								 	<li>Flexible timing & extension</li>
-								</ul>
-								<a href="login.html" class="btn btn-secondary w-100">Choose Plan<i class="bx bx-right-arrow-alt ms-1"></i></a>							
-							</div>							
-						</div>
-					</div>
-					<!-- /Price Item -->
-
-					<!-- Price Item -->
-					<div class="col-lg-3 col-md-6 d-flex">
-						<div class="price-item price-item-two recommend flex-fill">
-							<span class="recommend-tag"><i class="bx bxs-star me-1"></i>Recommended</span>
-							<div class="price-head">
-								<h6>Enterprise</h6>
-								<div class="price-level">
-									<div>
-										<h3>$1599</h3>
-										<p>Per Month</p>
-									</div>
-								</div>						
-							</div>	
-							<div class="price-details">
-								<ul>
-								 	<li>0% Downpayment</li>
-								 	<li>Insurance Included</li>
-								 	<li>Doorstep Delivery Available</li>
-								 	<li>Roadside Assistance</li>
-								 	<li>Personal Injury Protection</li>
-								 	<li>Additional Perks GPS, Car Seat</li>
-								 	<li>Flexible timing & extension</li>
-								</ul>
-								<a href="login.html" class="btn btn-secondary w-100">Choose Plan<i class="bx bx-right-arrow-alt ms-1"></i></a>							
-							</div>							
-						</div>
-					</div>
-					<!-- /Price Item -->
-
-					<!-- Price Item -->
-					<div class="col-lg-3 col-md-6 d-flex">
-						<div class="price-item price-item-two active flex-fill">
-							<div class="price-head">
-								<h6>Custom</h6>
-								<div class="price-level">
-									<div>
-										<h3>Contact Us</h3>
-									</div>
-								</div>						
-							</div>	
-							<div class="price-details">
-								<ul>
-								 	<li>Weekend/Weekly Deals</li>
-								 	<li>Membership Discounts</li>
-								 	<li>Insurance Upgrades</li>
-								 	<li>Personal Accident Insurance</li>
-								 	<li>Minimal Insurance Coverage</li>
-								 	<li>No Long term Commitment</li>
-								 	<li>Refundable Deposit </li>
-								 	<li>Priority Service</li>
-								</ul>
-								<a href="login.html" class="btn btn-secondary w-100">Choose Plan<i class="bx bx-right-arrow-alt ms-1"></i></a>							
-							</div>							
-						</div>
-					</div>
-					<!-- /Price Item -->
-
-				</div>
-				<div class="row">
-					<div class="col-lg-6 mx-auto">
-						<div class="view-all-btn text-center aos" data-aos="fade-down">
-							<p>Whether you're a small startup or a large enterprise, our goal is to provide you with the most value and help you leverage the full potential of AI analytics.</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Price Section -->		
-
-		<!-- Support Section -->
-		<section class="support-section">
-			<div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
-				<div class="slide-list d-flex">
-					<div class="support-item">
-						<h2>Best Rate Guarateed</h2>
-					</div>
-					<div class="support-item">
-						<h2>Free Cancellation</h2>
-					</div>
-					<div class="support-item">
-						<h2>Best Security</h2>
-					</div>
-					<div class="support-item">
-						<h2>Latest Update of Bikes</h2>
-					</div>
-					<div class="support-item">
-						<h2>Trusted Proof</h2>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /Support Section -->
-
-		<!-- Blog Section -->
-		<section class="blog-section-four">
-			<div class="container">	
-				<div class="section-heading heading-four" data-aos="fade-down">
-					<h2>Insights and Innovations</h2>
-					<p>Dive into our articles to stay ahead in the fast-paced world of technology.</p>
-				</div>
-
-				<div class="row row-gap-3 justify-content-center">
-
-					<!-- Blog Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="blog-item flex-fill">
-							<div class="blog-img">
-								<img src="assets/img/blog/blog-11.jpg" class="img-fluid" alt="img">
-							</div>
-							<div class="blog-content">
-								<div class="d-flex align-center justify-content-between blog-category">
-									<a href="javascript:void(0);" class="category">Journey</a>
-									<p class="date d-inline-flex align-center"><i class="bx bx-calendar me-1"></i>October 6, 2022</p>
-								</div>
-								<h5 class="title"><a href="blog-details.html">The 2025 Ford F-150 Raptor – A First Look you need to know</a></h5>
-							</div>
-						</div>
-					</div>
-					<!-- /Blog Item -->
-
-					<!-- Blog Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="blog-item flex-fill">
-							<div class="blog-img">
-								<img src="assets/img/blog/blog-12.jpg" class="img-fluid" alt="img">
-							</div>
-							<div class="blog-content">
-								<div class="d-flex align-center justify-content-between blog-category">
-									<a href="javascript:void(0);" class="category">Journey</a>
-									<p class="date d-inline-flex align-center"><i class="bx bx-calendar me-1"></i>October 7, 2022</p>
-								</div>
-								<h5 class="title"><a href="blog-details.html">The 2025 Ford F-150 Raptor – A First Look you need to know</a></h5>
-							</div>
-						</div>
-					</div>
-					<!-- /Blog Item -->
-
-					<!-- Blog Item -->
-					<div class="col-lg-4 col-md-6 d-flex">
-						<div class="blog-item flex-fill">
-							<div class="blog-img">
-								<img src="assets/img/blog/blog-13.jpg" class="img-fluid" alt="img">
-							</div>
-							<div class="blog-content">
-								<div class="d-flex align-center justify-content-between blog-category">
-									<a href="javascript:void(0);" class="category">Journey</a>
-									<p class="date d-inline-flex align-center"><i class="bx bx-calendar me-1"></i>October 8, 2022</p>
-								</div>
-								<h5 class="title"><a href="blog-details.html">The 2025 Ford F-150 Raptor – A First Look you need to know</a></h5>
-							</div>
-						</div>
-					</div>
-					<!-- /Blog Item -->
-
-				</div>
-
-				<div class="view-all-btn text-center aos" data-aos="fade-down">
-					<a href="blog-grid.html" class="btn btn-secondary d-inline-flex align-center">View More<i class="bx bx-right-arrow-alt ms-1"></i></a>
-				</div>				
-
-				<div class="subscribe-sec">
-					<div class="row align-items-end">
-						<div class="col-md-6">
-							<div class="subscribe-content">
-								<h2>Subscribe To Get User Friendly <span>Mobile & Web App</span></h2>
-								<p>Appropriately monetize one-to-one interfaces rather than  cutting-edge. Competently disintermediate backward.</p>
-								<div class="subscribe-form">
-									<form action="#">
-										<span><i class="bx bx-mail-send"></i></span> 
-										<input type="email" class="form-control" placeholder="Enter You Email Here">
-										<button type="submit" class="btn btn-subscribe"><i class="bx bx-send"></i></button>
-									</form>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div class="subscribe-img">
-								<img src="assets/img/about/web-app.png" alt="img" class="img-fluid">
-							</div>
-						</div>
-					</div>
-					<img src="assets/img/bg/app-bg.svg" alt="icon" class="app-bg-01">
-				</div>
-
-			</div>
-		</section>
-		<!-- /Blog Section -->
-
-		<!-- FAQ Section -->
-		<section class="faq-section-four pt-0">
-			<div class="container">	
-				<div class="row">
-					<div class="col-lg-8 mx-auto">
-						<div class="section-heading heading-four" data-aos="fade-down">
-							<h2>Frequently asked questions</h2>
-							<p>Explore to learn more about how can empower your business</p>
-						</div>				
-						<div class="accordion faq-accordion" id="faqAccordion">
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
-										How old do I need to be to rent a car?
-									</button>
-								</h2>
-								<div id="faqOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="true" aria-controls="faqTwo">
-										What documents do I need to rent a car?
-									</button>
-								</h2>
-								<div id="faqTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="true" aria-controls="faqThree">
-										What types of vehicles are available for rent?
-									</button>
-								</h2>
-								<div id="faqThree" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="true" aria-controls="faqFour">
-										Can I rent a car with a debit card?
-									</button>
-								</h2>
-								<div id="faqFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqFive" aria-expanded="true" aria-controls="faqFive">
-										What is your fuel policy?
-									</button>
-								</h2>
-								<div id="faqFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqSix" aria-expanded="true" aria-controls="faqSix">
-										Can I add additional drivers to my rental agreement?
-									</button>
-								</h2>
-								<div id="faqSix" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-									<div class="accordion-body">
-										<p>You can browse our selection online or contact us for assistance in choosing the right vehicle for you</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<!-- /FAQ Section -->
-
-
-		<section class="categories-section">
-			<div class="container">
-				<div class="accordion custom-accordion" id="faqAcordion">
-					<div class="accordion-item">
-						<h2 class="accordion-header">
-							<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
-								View All Cars & Categories
-							</button>
-						</h2>
-						<div id="faqOne" class="accordion-collapse collapse show" data-bs-parent="#faqAcordion">
-							<div class="accordion-body">
-								<div class="row row-gap-3">
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">Coupe</a></li>
-											<li><a href="javascript:void(0);">Convertible</a></li>
-											<li><a href="javascript:void(0);">Hatchback</a></li>
-											<li><a href="javascript:void(0);">Sport utility vehicles</a></li>
-											<li><a href="javascript:void(0);">Minivan</a></li>
-											<li><a href="javascript:void(0);">Pickup Truck</a></li>
-										</ul>
-									</div>
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">Sports car</a></li>
-											<li><a href="javascript:void(0);">SUV</a></li>
-											<li><a href="javascript:void(0);">Wagon</a></li>
-											<li><a href="javascript:void(0);">Crossover</a></li>
-											<li><a href="javascript:void(0);">Electric vehicle</a></li>
-											<li><a href="javascript:void(0);">Jeep</a></li>
-										</ul>
-									</div>
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">C1-segment cars</a></li>
-											<li><a href="javascript:void(0);">Compact car</a></li>
-											<li><a href="javascript:void(0);">Hatchback</a></li>
-											<li><a href="javascript:void(0);">Luxury car</a></li>
-											<li><a href="javascript:void(0);">MPV</a></li>
-											<li><a href="javascript:void(0);">Van</a></li>
-										</ul>
-									</div>
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">Maruti Suzuki</a></li>
-											<li><a href="javascript:void(0);">Hyundai</a></li>
-											<li><a href="javascript:void(0);">Tata Motors</a></li>
-											<li><a href="javascript:void(0);">Skoda</a></li>
-											<li><a href="javascript:void(0);">Volkswagen</a></li>
-											<li><a href="javascript:void(0);">Renault</a></li>
-										</ul>
-									</div>
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">Toyota</a></li>
-											<li><a href="javascript:void(0);">Nissan</a></li>
-											<li><a href="javascript:void(0);">MG Motor</a></li>
-											<li><a href="javascript:void(0);">Kia</a></li>
-											<li><a href="javascript:void(0);">Ford</a></li>
-											<li><a href="javascript:void(0);">Jeep</a></li>
-										</ul>
-									</div>
-									<div class="col-lg-2 col-md-4 col-sm-6">
-										<ul class="category-list">
-											<li><a href="javascript:void(0);">Coupe</a></li>
-											<li><a href="javascript:void(0);">Convertible</a></li>
-											<li><a href="javascript:void(0);">Hatchback</a></li>
-											<li><a href="javascript:void(0);">Sport utility vehicles</a></li>
-											<li><a href="javascript:void(0);">Minivan</a></li>
-											<li><a href="javascript:void(0);">Pickup Truck</a></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-
+@php use Illuminate\Support\Str; @endphp
+
+    {{-- BANNER / HERO --}}
+    <section class="banner-section-four">
+        <div class="container">
+            <div class="home-banner">
+                <div class="row align-items-center">
+                    <div class="col-lg-5" data-aos="fade-down">
+                        <div class="banner-content">
+                            <h1>{{ __('website.home.hero.title_prefix') }} <span>{{ __('website.home.hero.title_highlight') }}</span> {{ __('website.home.hero.title_suffix') }}</h1>
+                            <p>{{ __('website.home.hero.banner_paragraph') }}
+                            </p>
+                            <div class="customer-list">
+                                <div class="users-wrap">
+                                    <ul class="users-list">
+                                        <li>
+                                            <img src="{{ asset('website/assets/img/profiles/avatar-11.jpg') }}" class="img-fluid aos" alt="bannerimage">
+                                        </li>
+                                        <li>
+                                            <img src="{{ asset('website/assets/img/profiles/avatar-15.jpg') }}" class="img-fluid aos" alt="bannerimage">
+                                        </li>
+                                        <li>
+                                            <img src="{{ asset('website/assets/img/profiles/avatar-03.jpg') }}" class="img-fluid aos" alt="bannerimage">
+                                        </li>
+                                    </ul>
+                                    <div class="customer-info">
+                                        <h4>{{ __('website.home.hero.customers_label') }}</h4>
+                                        <p>{{ __('website.home.hero.customers_subtitle') }}</p>
+                                    </div>
+                                </div>
+                                <div class="view-all d-flex align-items-center gap-3">
+                                    <a href="{{ route('website.cars.index') }}" class="btn btn-primary d-inline-flex align-items-center">{{ __('website.home.hero.browse_cars') }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
+                                    <a href="{{ route('website.blogs.index') }}" class="btn btn-secondary d-inline-flex align-items-center"><i class="bx bxs-plus-circle me-1"></i>{{ __('website.home.hero.browse_blogs') }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="banner-image">
+                            <div class="banner-img" data-aos="fade-down">
+                                <div class="amount-icon">
+                                    <span class="day-amt">
+                                        <p>{{ __('website.home.hero.starting_from') }}</p>
+                                        <h6>{{ $currencySymbol }}{{ $minPrice ?? 650 }} <span>{{ __('website.home.hero.per_day') }}</span></h6>
+                                    </span>
+                                </div>
+                                <span class="rent-tag"><i class="bx bxs-circle"></i> {{ __('website.home.hero.available_for_rent') }}</span>
+                                <img src="{{ asset('website/assets/img/banner/banner.png') }}" class="img-fluid" alt="img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="banner-bgs">
+            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img">
+        </div>
+    </section>
+    {{-- /Banner --}}
+
+    {{-- CATEGORIES --}}
+    <section class="category-section-four">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-heading heading-four" data-aos="fade-down">
+                        <h2>{{ $homeTranslation?->category_section_title ?? __('website.home.sections.categories_title') }}</h2>
+                        <p>{{ $homeTranslation?->category_section_paragraph ?? __('website.home.sections.categories_paragraph') }}</p>
+                    </div>
+
+                    <div class="row row-gap-4">
+                        @forelse ($categories as $category)
+                            <div class="col-xl-2 col-md-4 col-sm-6 d-flex">
+                                <div class="category-item flex-fill">
+                                    <div class="category-info d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <h6 class="title">
+                                                <a href="{{ $category['url'] }}">{{ $category['name'] }}</a>
+                                            </h6>
+                                            <p>{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
+                                        </div>
+                                        <a href="{{ $category['url'] }}" class="link-icon">
+                                            <i class="bx bx-right-arrow-alt"></i>
+                                        </a>
+                                    </div>
+                                    @if ($category['image_path'])
+                                        <div class="category-img">
+                                            <img src="{{ asset('storage/' . $category['image_path']) }}"
+                                                alt="{{ $category['name'] }}" class="img-fluid">
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-12 text-center text-muted py-4">
+                                {{ __('website.home.empty.categories') }}
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="view-all-btn text-center aos" data-aos="fade-down">
+                        <a href="{{ route('website.cars.index') }}" class="btn btn-secondary">
+                            {{ __('website.home.actions.view_all_cars') }}
+                            <i class="bx bx-right-arrow-alt ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{-- /Categories --}}
+
+    {{-- Feature Section --}}
+    <section class="feature-section pt-0">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+
+                    <div class="feature-img">
+                        <div class="section-heading heading-four text-start" data-aos="fade-down">
+                            <h2>{{ __('website.home.features.section_title') }}</h2>
+                            <p>{{ __('website.home.features.section_paragraph') }}</p>
+                        </div>
+                        <img src="{{ asset('website/assets/img/cars/car.png') }}" alt="img" class="img-fluid">
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="row row-gap-4">
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+                                <span class="feature-icon">
+                                    <i class="bx bxs-info-circle"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.best_deal.title') }}</h6>
+                                    <p>{{ __('website.home.features.best_deal.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+                                <span class="feature-icon">
+                                    <i class="bx bx-exclude"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.doorstep_delivery.title') }}</h6>
+                                    <p>{{ __('website.home.features.doorstep_delivery.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+                                <span class="feature-icon">
+                                    <i class="bx bx-money"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.low_security_deposit.title') }}</h6>
+                                    <p>{{ __('website.home.features.low_security_deposit.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+
+                                <span class="feature-icon">
+                                    <i class="bx bxs-car-mechanic"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.latest_cars.title') }}</h6>
+                                    <p>{{ __('website.home.features.latest_cars.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+                                <span class="feature-icon">
+                                    <i class="bx bx-support"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.customer_support.title') }}</h6>
+                                    <p>{{ __('website.home.features.customer_support.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                        <!-- Feature Item -->
+                        <div class="col-md-6 d-flex">
+                            <div class="feature-item flex-fill">
+                                <span class="feature-icon">
+                                    <i class="bx bxs-coin"></i>
+                                </span>
+                                <div>
+                                    <h6 class="mb-1">{{ __('website.home.features.no_hidden_charges.title') }}</h6>
+                                    <p>{{ __('website.home.features.no_hidden_charges.description') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Feature Item -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+	{{-- /Feature Section --}}
+
+    {{-- FEATURED CARS --}}
+    @if ($featuredCars->isNotEmpty())
+    <section class="car-section">
+        <div class="container">
+            <div class="section-heading heading-four" data-aos="fade-down">
+                <h2>{{ $homeTranslation?->featured_cars_section_title ?? __('website.home.sections.featured_cars_title') }}</h2>
+                <p>{{ $homeTranslation?->featured_cars_section_paragraph ?? __('website.home.sections.featured_cars_paragraph') }}</p>
+            </div>
+
+            <div class="row">
+                @foreach ($featuredCars as $car)
+                    <div class="col-lg-4 col-md-6">
+                        <div class="listing-item listing-item-two">
+                            <div class="listing-img">
+                                @php
+                                    $allImages = array_values(array_filter(array_merge(
+                                        $car['image_path'] ? [$car['image_path']] : [],
+                                        $car['images'] ?? []
+                                    )));
+                                @endphp
+
+                                @if (count($allImages) > 1)
+                                    <div class="img-slider owl-carousel">
+                                        @foreach (array_slice($allImages, 0, 3) as $img)
+                                            <div class="slide-images">
+                                                <a href="{{ $car['details_url'] }}">
+                                                    <img src="{{ asset('storage/' . $img) }}"
+                                                        class="img-fluid" alt="{{ $car['name'] }}">
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <a href="{{ $car['details_url'] }}">
+                                        <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg') }}"
+                                            class="img-fluid" alt="{{ $car['name'] }}">
+                                    </a>
+                                @endif
+
+                                <div class="fav-item">
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if ($car['brand_name'])
+                                            <span class="featured-text">{{ $car['brand_name'] }}</span>
+                                        @endif
+                                        @if ($car['status'] === 'available')
+                                            <span class="availability">{{ __('website.status.available') }}</span>
+                                        @else
+                                            <span class="availability bg-secondary">{{ __('website.status.not_available') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="listing-content">
+                                <div class="listing-features d-flex align-items-center justify-content-between">
+                                    <div class="list-rating">
+                                        <h3 class="listing-title">
+                                            <a href="{{ $car['details_url'] }}">{{ $car['name'] }}</a>
+                                        </h3>
+                                    </div>
+                                    @if ($car['daily_price'])
+                                        <div>
+                                            <h4 class="price">
+                                                {{ $car['currency_symbol'] }}{{ $car['daily_price'] }}
+                                                <span>{{ __('website.units.per_day') }}</span>
+                                            </h4>
+                                        </div>
+                                    @else
+                                        <div>
+                                            <h4 class="price text-muted">{{ __('website.common.call_for_price') }}</h4>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="listing-details-group">
+                                    <ul>
+                                        @if ($car['gear_type'])
+                                            <li>
+                                                <img src="{{ asset('website/assets/img/icons/car-parts-01.svg') }}" alt="gear">
+                                                <p>{{ $car['gear_type'] }}</p>
+                                            </li>
+                                        @endif
+                                        @if ($car['passenger_capacity'])
+                                            <li>
+                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="passengers">
+                                                <p>{{ __('website.units.persons', ['count' => $car['passenger_capacity']]) }}</p>
+                                            </li>
+                                        @endif
+                                        @if ($car['year'])
+                                            <li>
+                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="year">
+                                                <p>{{ $car['year'] }}</p>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="view-all-btn text-center aos" data-aos="fade-down">
+                <a href="{{ route('website.cars.index') }}"
+                    class="btn btn-secondary d-inline-flex align-items-center">
+                    {{ __('website.home.actions.view_all_cars') }}
+                    <i class="bx bx-right-arrow-alt ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
+    {{-- /Featured Cars --}}
+
+    {{-- BRANDS --}}
+    @if ($brands->isNotEmpty())
+    <section class="brand-section">
+        <div class="container">
+            <div class="section-heading heading-four" data-aos="fade-down">
+                <h2 class="text-white">{{ $homeTranslation?->brand_section_title ?? __('website.home.sections.brands_title') }}</h2>
+                <p>{{ $homeTranslation?->brand_section_paragraph ?? __('website.home.sections.brands_paragraph') }}</p>
+            </div>
+            <div class="brands-slider owl-carousel">
+                @foreach ($brands as $brand)
+                    <div class="brand-wrap">
+                        @if ($brand['logo_path'])
+                            <img src="{{ asset($brand['logo_path']) }}" alt="{{ $brand['name'] }}">
+                        @endif
+                        <p>{{ $brand['name'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+            <div class="brand-img text-center">
+                <img src="{{ asset('website/assets/img/bg/brand.png') }}" alt="img" class="img-fluid">
+            </div>
+        </div>
+    </section>
+    @endif
+    {{-- /Brands --}}
+
+    {{-- HOW IT WORKS + STATS --}}
+    <section class="rental-section-four">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="rental-img">
+                        <img src="{{ asset('website/assets/img/about/rent-car.png') }}" alt="img" class="img-fluid">
+                        <div class="grid-img">
+                            <img src="{{ asset('website/assets/img/about/car-grid.png') }}" alt="img" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="rental-content">
+                        <div class="section-heading heading-four text-start" data-aos="fade-down">
+                            <h2>{{ __('website.home.rental.title') }}</h2>
+                            <p>{{ __('website.home.rental.paragraph') }}</p>
+                        </div>
+                        <div class="step-item d-flex align-items-center">
+                            <span class="step-icon bg-primary me-3">
+                                <i class="bx bx-calendar-heart"></i>
+                            </span>
+                            <div>
+                                <h5>{{ __('website.home.rental.step1_title') }}</h5>
+                                <p>{{ __('website.home.rental.step1_description') }}</p>
+                            </div>
+                        </div>
+                        <div class="step-item d-flex align-items-center">
+                            <span class="step-icon bg-secondary-100 me-3">
+                                <i class="bx bxs-edit-location"></i>
+                            </span>
+                            <div>
+                                <h5>{{ __('website.home.rental.step2_title') }}</h5>
+                                <p>{{ __('website.home.rental.step2_description') }}</p>
+                            </div>
+                        </div>
+                        <div class="step-item d-flex align-items-center">
+                            <span class="step-icon bg-dark me-3">
+                                <i class="bx bx-coffee-togo"></i>
+                            </span>
+                            <div>
+                                <h5>{{ __('website.home.rental.step3_title') }}</h5>
+                                <p>{{ __('website.home.rental.step3_description') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="count-sec">
+                <div class="row row-gap-4" >
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="count-item flex-fill">
+                            <h3><span class="counterUp">16</span>K+</h3>
+                            <p>{{ __('website.home.stats.happy_customers') }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="count-item flex-fill">
+                            <h3><span class="counterUp">2547</span>K+</h3>
+                            <p>{{ __('website.home.stats.count_of_cars') }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="count-item flex-fill">
+                            <h3><span class="counterUp">625</span>K+</h3>
+                            <p>{{ __('website.home.stats.locations_to_pickup') }}</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 d-flex">
+                        <div class="count-item flex-fill">
+                            <h3><span class="counterUp">15000</span>K+</h3>
+                            <p>{{ __('website.home.stats.total_kilometers') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {{-- /How It Works --}}
+
+    {{-- POPULAR CARS SLIDER --}}
+    @if ($popularCars->isNotEmpty())
+    <section class="popular-section-four">
+        <div class="container">
+            <div class="section-heading heading-four" data-aos="fade-down">
+                <h2>{{ $homeTranslation?->car_only_section_title ?? __('website.home.sections.only_on_title') }}</h2>
+                <p>{{ $homeTranslation?->car_only_section_paragraph ?? __('website.home.sections.only_on_paragraph') }}</p>
+            </div>
+            <div class="car-slider owl-carousel">
+                @foreach ($popularCars as $car)
+                    <div class="car-item">
+                        @if ($car['brand_name'])
+                            <h6>{{ Str::upper($car['brand_name']) }}</h6>
+                        @endif
+                        <h2 class="display-1">{{ Str::upper($car['name']) }}</h2>
+                        <div class="car-img">
+                            <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-15.png') }}"
+                                alt="{{ $car['name'] }}" class="img-fluid">
+                            @if ($car['daily_price'])
+                                <div class="amount-icon">
+                                    <span class="day-amt">
+                                        <p>{{ __('website.home.hero.starting_from') }}</p>
+                                        <h6>
+                                            {{ $car['currency_symbol'] }}{{ $car['daily_price'] }}
+                                            <span>{{ __('website.home.hero.per_day') }}</span>
+                                        </h6>
+                                    </span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="spec-list">
+                            @if ($car['gear_type'])
+                                <span>
+                                    <img src="{{ asset('website/assets/img/icons/spec-01.svg') }}" alt="gear">
+                                    {{ $car['gear_type'] }}
+                                </span>
+                            @endif
+                            @if ($car['passenger_capacity'])
+                                <span>
+                                    <img src="{{ asset('website/assets/img/icons/spec-05.svg') }}" alt="persons">
+                                    {{ __('website.units.persons', ['count' => $car['passenger_capacity']]) }}
+                                </span>
+                            @endif
+                            @if ($car['year'])
+                                <span>
+                                    <img src="{{ asset('website/assets/img/icons/spec-03.svg') }}" alt="year">
+                                    {{ $car['year'] }}
+                                </span>
+                            @endif
+                        </div>
+                        <a href="{{ $car['details_url'] }}" class="btn btn-primary">
+                            {{ __('website.common.rent_now') }}
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+    {{-- /Popular Cars --}}
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="container">
+            <div class="section-heading heading-four" data-aos="fade-down">
+                <h2>{{ __('website.home.testimonials.title') }}</h2>
+                <p>{{ __('website.home.testimonials.paragraph') }}</p>
+            </div>
+
+            <div class="row row-gap-4 justify-content-center">
+
+                <!-- Testimonial Item -->
+                <div class="col-lg-4 col-md-6 d-flex">
+                    <div class="testimonial-item testimonial-item-two flex-fill">
+                        <div class="user-img">
+                            <img src="{{ asset('website/assets/img/profiles/avatar-02.jpg') }}" class="img-fluid" alt="img">
+                        </div>
+                        <p>{{ __('website.home.testimonials.review1') }}</p>
+                        <div class="rating">
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                        </div>
+                        <div class="user-info">
+                            <h6>{{ __('website.home.testimonials.client_1_name') }}</h6>
+                            <p>{{ __('website.home.testimonials.client_1_location') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Testimonial Item -->
+
+                <!-- Testimonial Item -->
+                <div class="col-lg-4 col-md-6 d-flex">
+                    <div class="testimonial-item testimonial-item-two flex-fill">
+                        <div class="user-img">
+                            <img src="{{ asset('website/assets/img/profiles/avatar-18.jpg') }}" class="img-fluid" alt="img">
+                        </div>
+                        <p>{{ __('website.home.testimonials.review2') }}</p>
+                        <div class="rating">
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                        </div>
+                        <div class="user-info">
+                            <h6>{{ __('website.home.testimonials.client_2_name') }}</h6>
+                            <p>{{ __('website.home.testimonials.client_2_location') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Testimonial Item -->
+
+                <!-- Testimonial Item -->
+                <div class="col-lg-4 col-md-6 d-flex">
+                    <div class="testimonial-item testimonial-item-two flex-fill">
+                        <div class="user-img">
+                            <img src="{{ asset('website/assets/img/profiles/avatar-15.jpg') }}" class="img-fluid" alt="img">
+                        </div>
+                        <p>{{ __('website.home.testimonials.review3') }}</p>
+                        <div class="rating">
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                            <i class="fas fa-star filled"></i>
+                        </div>
+                        <div class="user-info">
+                            <h6>{{ __('website.home.testimonials.client_3_name') }}</h6>
+                            <p>{{ __('website.home.testimonials.client_3_location') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Testimonial Item -->
+
+            </div>
+
+            <div class="view-all-btn text-center aos" data-aos="fade-down">
+                <a href="{{ route('website.cars.index') }}" class="btn btn-secondary">{{ __('website.home.actions.view_all') }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
+            </div>
+
+            <div class="client-slider owl-carousel">
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-01.svg') }}" alt="img">
+                </div>
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-02.svg') }}" alt="img">
+                </div>
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-03.svg') }}" alt="img">
+                </div>
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-04.svg') }}" alt="img">
+                </div>
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-05.svg') }}" alt="img">
+                </div>
+                <div>
+                    <img src="{{ asset('website/assets/img/clients/client-06.svg') }}" alt="img">
+                </div>
+            </div>
+        </div>
+    </section>
+	<!-- /Testimonial Section -->
+
+    <!-- Support Section -->
+    <section class="support-section">
+        <div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
+            <div class="slide-list d-flex">
+                <div class="support-item">
+                    <h2>{{ __('website.home.support.best_rate') }}</h2>
+                </div>
+                <div class="support-item">
+                    <h2>{{ __('website.home.support.free_cancellation') }}</h2>
+                </div>
+                <div class="support-item">
+                    <h2>{{ __('website.home.support.best_security') }}</h2>
+                </div>
+                <div class="support-item">
+                    <h2>{{ __('website.home.support.latest_update') }}</h2>
+                </div>
+                <div class="support-item">
+                    <h2>{{ __('website.home.support.trusted_proof') }}</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /Support Section -->
+
+    {{-- BLOGS --}}
+    <section class="blog-section-four">
+        <div class="container">
+            @if ($blogs->isNotEmpty())
+                <div class="section-heading heading-four" data-aos="fade-down">
+                    <h2>{{ $homeTranslation?->blog_section_title ?? __('website.home.sections.blogs_title') }}</h2>
+                    <p>{{ $homeTranslation?->blog_section_paragraph ?? __('website.home.sections.blogs_paragraph') }}</p>
+                </div>
+
+                <div class="row row-gap-3 justify-content-center">
+                    @foreach ($blogs as $blog)
+                        <!-- Blog Item -->
+                        <div class="col-lg-4 col-md-6 d-flex">
+                            <div class="blog-item flex-fill">
+                                @if ($blog['image_path'])
+                                    <div class="blog-img">
+                                        <a href="{{ $blog['url'] }}">
+                                            <img src="{{ asset('storage/' . $blog['image_path']) }}"
+                                                class="img-fluid" alt="{{ $blog['title'] }}">
+                                        </a>
+                                    </div>
+                                @endif
+                                <div class="blog-content">
+                                    <div class="d-flex align-center justify-content-between blog-category">
+                                        @if ($blog['category_name'] ?? null)
+                                            <a href="javascript:void(0);" class="category">{{ $blog['category_name'] }}</a>
+                                        @endif
+                                        @if ($blog['published_on'])
+                                            <p class="date d-inline-flex align-center">
+                                                <i class="bx bx-calendar me-1"></i>{{ $blog['published_on'] }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <h5 class="title">
+                                        <a href="{{ $blog['url'] }}">{{ $blog['title'] }}</a>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Blog Item -->
+                    @endforeach
+                </div>
+
+                <div class="view-all-btn text-center aos" data-aos="fade-down">
+                    <a href="{{ route('website.blogs.index') }}"
+                        class="btn btn-secondary d-inline-flex align-center">
+                        {{ __('website.home.actions.view_all_blogs') }}
+                        <i class="bx bx-right-arrow-alt ms-1"></i>
+                    </a>
+                </div>
+            @endif
+
+        </div>
+    </section>
+    {{-- /Blogs --}}
+
+    {{-- FAQ --}}
+    @if ($faqs->isNotEmpty())
+    <section class="faq-section-four pt-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="section-heading heading-four" data-aos="fade-down">
+                        <h2>{{ $homeTranslation?->faq_section_title ?? __('website.home.sections.faq_title') }}</h2>
+                        <p>{{ $homeTranslation?->faq_section_paragraph ?? __('website.home.sections.faq_paragraph') }}</p>
+                    </div>
+                    <div class="accordion faq-accordion" id="faqAccordion">
+                        @foreach ($faqs as $index => $faq)
+                            @php $faqId = 'faqItem' . $faq['id']; @endphp
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#{{ $faqId }}"
+                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                                        aria-controls="{{ $faqId }}">
+                                        {{ $faq['question'] }}
+                                    </button>
+                                </h2>
+                                <div id="{{ $faqId }}"
+                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                    data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        <p>{{ $faq['answer'] }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+    {{-- /FAQ --}}
+
+    {{-- ALL CATEGORIES & BRANDS ACCORDION --}}
+    @if ($allCategories->isNotEmpty() || $allBrands->isNotEmpty())
+    <section class="categories-section">
+        <div class="container">
+            <div class="accordion custom-accordion" id="catalogAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#catalogPanel"
+                            aria-expanded="true" aria-controls="catalogPanel">
+                            {{ __('website.home.catalog.title') }}
+                        </button>
+                    </h2>
+                    <div id="catalogPanel" class="accordion-collapse collapse show"
+                        data-bs-parent="#catalogAccordion">
+                        <div class="accordion-body">
+                            <div class="row row-gap-3">
+                                @php
+                                    $catalogItems = $allCategories->merge($allBrands);
+                                    $chunks = $catalogItems->chunk(6);
+                                @endphp
+                                @foreach ($chunks as $chunk)
+                                    <div class="col-lg-2 col-md-4 col-sm-6">
+                                        <ul class="category-list">
+                                            @foreach ($chunk as $item)
+                                                <li>
+                                                    <a href="{{ $item['url'] }}">{{ $item['name'] }}</a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+    {{-- /Catalog --}}
 
 @endsection
-
-
-	
-	

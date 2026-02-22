@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admin\CarController;
 use App\Http\Controllers\website\HomeController;
+use App\Http\Controllers\admin\CarController as AdminCarController;
+use App\Http\Controllers\website\CarController as WebsiteCarController;
+use App\Http\Controllers\website\BlogController as WebsiteBlogController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,22 +17,34 @@ use App\Http\Controllers\website\HomeController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::group(
+    [
+        'prefix' => LaravelLocalization::setLocale(),
+        'middleware' => ['localize', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+    ],
+    function (): void {
+        Route::get('/', [HomeController::class, 'index'])->name('home');
+        Route::get('/cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
+        Route::get('/cars/{car}', [WebsiteCarController::class, 'show'])->name('website.cars.show');
+        Route::get('/blogs', [WebsiteBlogController::class, 'index'])->name('website.blogs.index');
+        Route::get('/blogs/{blog}', [WebsiteBlogController::class, 'show'])->name('website.blogs.show');
+    }
+);
 
-Route::get('/cars/images/check-status/{carId}', [CarController::class, 'checkImageProcessingStatus']);
+Route::get('/cars/images/check-status/{carId}', [AdminCarController::class, 'checkImageProcessingStatus']);
 
-Route::post('/cars/{id}/upload-image', [CarController::class, 'uploadImage'])->name('cars.upload-image');
-Route::post('/cars/{id}/upload-default-image', [CarController::class, 'uploadDefaultImage'])->name('cars.upload-default-image');
+Route::post('/cars/{id}/upload-image', [AdminCarController::class, 'uploadImage'])->name('cars.upload-image');
+Route::post('/cars/{id}/upload-default-image', [AdminCarController::class, 'uploadDefaultImage'])->name('cars.upload-default-image');
 
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
-    Route::delete('/cars/delete-image/{id}', [CarController::class, 'deleteImage'])->name('cars.delete-image');
+    Route::delete('/cars/delete-image/{id}', [AdminCarController::class, 'deleteImage'])->name('cars.delete-image');
     // Car image management routes
-    Route::post('/cars/delete-selected-images', [CarController::class, 'deleteMultipleImages'])->name('cars.delete-selected-images');
-    Route::delete('/cars/delete-all-images/{carId}', [CarController::class, 'deleteAllImages'])->name('cars.delete-all-images');
-    Route::post('/cars/delete-selected-images', [CarController::class, 'deleteSelectedImages'])
+    Route::post('/cars/delete-selected-images', [AdminCarController::class, 'deleteMultipleImages'])->name('cars.delete-selected-images');
+    Route::delete('/cars/delete-all-images/{carId}', [AdminCarController::class, 'deleteAllImages'])->name('cars.delete-all-images');
+    Route::post('/cars/delete-selected-images', [AdminCarController::class, 'deleteSelectedImages'])
         ->name('admin.cars.delete-selected-images');
 
-    Route::post('/cars/delete-all-images/{car}', [CarController::class, 'deleteAllImages'])
+    Route::post('/cars/delete-all-images/{car}', [AdminCarController::class, 'deleteAllImages'])
         ->name('admin.cars.delete-all-images');
 });
