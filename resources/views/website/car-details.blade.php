@@ -647,84 +647,84 @@
                                         $relatedCurrency = $relatedItem['currency_symbol'] ?? $currencySymbol;
                                         $relatedUrl = $relatedItem['details_url'] ?? route('website.cars.index');
                                     @endphp
-                                    <!-- owl carousel item -->
-                                    <div class="rental-car-item">
-                                        <div class="listing-item pb-0">
-                                            <div class="listing-img">
-                                                <a href="{{ $relatedUrl }}">
-                                                    <img src="{{ $relatedImage }}" class="img-fluid" alt="{{ $relatedName }}">
-                                                </a>
-                                                <span class="featured-text">{{ $relatedBrand }}</span>
-                                            </div>
-                                            <div class="listing-content">
-                                                <div class="listing-features d-flex align-items-end justify-content-between">
-                                                    <div class="list-rating">
-                                                        <h3 class="listing-title">
-                                                            <a href="{{ $relatedUrl }}">{{ $relatedName }}</a>
-                                                        </h3>
+                                        <!-- owl carousel item -->
+                                        <div class="rental-car-item">
+                                            <div class="listing-item pb-0">
+                                                <div class="listing-img">
+                                                    <a href="{{ $relatedUrl }}">
+                                                        <img src="{{ $relatedImage }}" class="img-fluid" alt="{{ $relatedName }}">
+                                                    </a>
+                                                    <span class="featured-text">{{ $relatedBrand }}</span>
+                                                </div>
+                                                <div class="listing-content">
+                                                    <div class="listing-features d-flex align-items-end justify-content-between">
                                                         <div class="list-rating">
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star"></i>
-                                                            <span>({{ number_format($reviewScore, 1) }}) {{ $reviewCount }} Reviews</span>
+                                                            <h3 class="listing-title">
+                                                                <a href="{{ $relatedUrl }}">{{ $relatedName }}</a>
+                                                            </h3>
+                                                            <div class="list-rating">
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <span>({{ number_format($reviewScore, 1) }}) {{ $reviewCount }} Reviews</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="list-km">
+                                                            <span class="km-count"><img src="{{ $assetUrl('img/icons/map-pin.svg') }}" alt="author">{{ $relatedMileage }}</span>
                                                         </div>
                                                     </div>
-                                                    <div class="list-km">
-                                                        <span class="km-count"><img src="{{ $assetUrl('img/icons/map-pin.svg') }}" alt="author">{{ $relatedMileage }}</span>
+                                                    <div class="listing-details-group">
+                                                        <ul>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-01.svg') }}" alt="Auto"></span>
+                                                                <p>{{ $relatedGear }}</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-02.svg') }}" alt="Mileage"></span>
+                                                                <p>{{ $relatedMileage }}</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-03.svg') }}" alt="Category"></span>
+                                                                <p>{{ $relatedItem['category_name'] ?? __('website.common.category') }}</p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}" alt="Brand"></span>
+                                                                <p>{{ $relatedBrand }}</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-05.svg') }}" alt="Year"></span>
+                                                                <p>{{ $relatedYear }}</p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-06.svg') }}" alt="Persons"></span>
+                                                                <p>{{ $relatedPassenger }}</p>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="listing-location-details">
+                                                        <div class="listing-price">
+                                                            <span><i class="feather-map-pin"></i></span>{{ filled($fullAddress) ? $fullAddress : __('website.car_details.not_available') }}
+                                                        </div>
+                                                        <div class="listing-price">
+                                                            <h6>{{ $formatPrice($relatedPrice, $relatedCurrency) }} <span>{{ __('website.units.per_day') }}</span></h6>
+                                                        </div>
+                                                    </div>
+                                                    <div class="listing-button">
+                                                        <a href="{{ $relatedUrl }}" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>{{ __('website.common.rent_now') }}</a>
                                                     </div>
                                                 </div>
-                                                <div class="listing-details-group">
-                                                    <ul>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-01.svg') }}" alt="Auto"></span>
-                                                            <p>{{ $relatedGear }}</p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-02.svg') }}" alt="Mileage"></span>
-                                                            <p>{{ $relatedMileage }}</p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-03.svg') }}" alt="Category"></span>
-                                                            <p>{{ $relatedItem['category_name'] ?? __('website.common.category') }}</p>
-                                                        </li>
-                                                    </ul>
-                                                    <ul>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}" alt="Brand"></span>
-                                                            <p>{{ $relatedBrand }}</p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-05.svg') }}" alt="Year"></span>
-                                                            <p>{{ $relatedYear }}</p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="{{ $assetUrl('img/icons/car-parts-06.svg') }}" alt="Persons"></span>
-                                                            <p>{{ $relatedPassenger }}</p>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <div class="listing-location-details">
-                                                    <div class="listing-price">
-                                                        <span><i class="feather-map-pin"></i></span>{{ filled($fullAddress) ? $fullAddress : __('website.car_details.not_available') }}
+                                                @if (($relatedItem['is_featured'] ?? false) === true)
+                                                    <div class="feature-text">
+                                                        <span class="bg-danger">{{ __('website.common.featured') }}</span>
                                                     </div>
-                                                    <div class="listing-price">
-                                                        <h6>{{ $formatPrice($relatedPrice, $relatedCurrency) }} <span>{{ __('website.units.per_day') }}</span></h6>
-                                                    </div>
-                                                </div>
-                                                <div class="listing-button">
-                                                    <a href="{{ $relatedUrl }}" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>{{ __('website.common.rent_now') }}</a>
-                                                </div>
+                                                @endif
                                             </div>
-                                            @if (($relatedItem['is_featured'] ?? false) === true)
-                                                <div class="feature-text">
-                                                    <span class="bg-danger">{{ __('website.common.featured') }}</span>
-                                                </div>
-                                            @endif
                                         </div>
-                                    </div>
-                                    <!-- /owl carousel item -->
+                                        <!-- /owl carousel item -->
                                 @endforeach
 
 						</div>

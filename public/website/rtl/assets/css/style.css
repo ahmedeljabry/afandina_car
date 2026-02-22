@@ -24909,8 +24909,13 @@ Version      : 1.0
   aspect-ratio: 4/3;
 }
 
+.details-car-grid .listing-item .listing-img {
+  aspect-ratio: 4/3;
+}
+
 .car-listing .listing-item .listing-img > a,
 .car-section .listing-item .listing-img > a,
+.details-car-grid .listing-item .listing-img > a,
 .car-section .listing-item .listing-img .img-slider,
 .car-section .listing-item .listing-img .img-slider .owl-stage-outer,
 .car-section .listing-item .listing-img .img-slider .owl-stage,
@@ -24923,11 +24928,25 @@ Version      : 1.0
 }
 
 .car-listing .listing-item .listing-img img,
-.car-section .listing-item .listing-img img {
+.car-section .listing-item .listing-img img,
+.details-car-grid .listing-item .listing-img img {
   inline-size: 100%;
   block-size: 100%;
   object-fit: cover;
   display: block;
+}
+
+.car-details-slider.owl-carousel .owl-nav .owl-next,
+.details-car.owl-carousel .owl-nav .owl-next {
+  margin-left: 0;
+  margin-inline-start: 15px;
+}
+
+.details-car.owl-carousel .owl-nav {
+  left: 0;
+  right: auto;
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .brand-section .brands-slider .brand-wrap {

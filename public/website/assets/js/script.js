@@ -10,6 +10,9 @@ Version      : 1.0
 	var $slimScrolls = $('.slimscroll');
 	var $wrapper = $('.main-wrapper');
 	var isRtl = $('html').attr('dir') === 'rtl';
+	var directionalArrowIcons = isRtl
+		? ["<i class='fa-solid fa-arrow-right'></i>", "<i class='fa-solid fa-arrow-left'></i>"]
+		: ["<i class='fa-solid fa-arrow-left'></i>", "<i class='fa-solid fa-arrow-right'></i>"];
 	
 
 	// Sidebar
@@ -294,31 +297,42 @@ Version      : 1.0
 	// Recommended Car Rental Deals
 	
 	if($('.rental-deal-slider').length > 0) {
-		$('.rental-deal-slider').owlCarousel({
-			loop:true,
-			margin:24,
-			nav:true,
-			rtl:isRtl,
-			dots: false,
-			autoplay:false,
-			smartSpeed: 2000,
-			navText : ["<i class='fa-solid fa-arrow-left'></i>","<i class='fa-solid fa-arrow-right'></i>"],
-			responsive:{
-				0:{
-					items:1
-				},
-				
-				550:{
-					items:1
-				},
-				700:{
-					items:2
-				},
-				1000:{
-					items:3
+		$('.rental-deal-slider').each(function() {
+			var $slider = $(this);
+			var totalItems = $slider.find('.rental-car-item').length;
+			var desktopItems = totalItems >= 4 ? 3 : (totalItems >= 2 ? totalItems - 1 : 1);
+			var tabletItems = totalItems >= 3 ? 2 : 1;
+
+			$slider.owlCarousel({
+				loop: totalItems > desktopItems,
+				rewind: totalItems > 1,
+				margin:24,
+				nav: totalItems > 1,
+				rtl:isRtl,
+				dots: false,
+				autoplay:false,
+				smartSpeed: 2000,
+				navText : directionalArrowIcons,
+				responsive:{
+					0:{
+						items:1
+					},
+					550:{
+						items:1
+					},
+					700:{
+						items: tabletItems
+					},
+					1000:{
+						items: desktopItems
+					}
 				}
+			});
+
+			if (isRtl) {
+				$slider.find('.owl-nav').css({ left: '0', right: 'auto' });
 			}
-		})
+		});
 	}
 
 	// Card Image Carousel
