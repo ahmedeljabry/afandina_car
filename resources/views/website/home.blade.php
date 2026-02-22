@@ -351,7 +351,7 @@
                 @foreach ($brands as $brand)
                     <div class="brand-wrap">
                         @if ($brand['logo_path'])
-                            <img src="{{ asset($brand['logo_path']) }}" alt="{{ $brand['name'] }}">
+                            <img src="{{ asset('storage/' . $brand['logo_path']) }}" alt="{{ $brand['name'] }}">
                         @endif
                         <p>{{ $brand['name'] }}</p>
                     </div>

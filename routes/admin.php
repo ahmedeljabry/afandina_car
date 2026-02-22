@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\admin\CarController;
 use App\Http\Controllers\admin\ContactController;
+use App\Http\Controllers\admin\ContactMessageController;
 use App\Http\Controllers\admin\CurrencyController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\GenericController;
@@ -95,6 +96,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('contacts/edit', [ContactController::class, 'edit'])->name('contacts.edit');
     Route::put('contacts/update', [ContactController::class, 'update'])->name('contacts.update');
+    Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 
     Route::resource('abouts', 'App\Http\Controllers\admin\AboutController');
 

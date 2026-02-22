@@ -153,6 +153,11 @@
         ),
         3 =>
         array (
+          'title' => 'Contact Messages',
+          'route' => 'admin.contact-messages.index',
+        ),
+        4 =>
+        array (
           'title' => 'About Us Page',
           'route' => 'admin.abouts.edit',
           'parameter' => '1',

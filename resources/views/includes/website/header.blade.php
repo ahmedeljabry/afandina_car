@@ -44,6 +44,9 @@
                     <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
                         <a href="{{ route('home') }}">{{ __('website.nav.home') }}</a>
                     </li>
+                    <li class="{{ request()->routeIs('website.about.*') ? 'active' : '' }}">
+                        <a href="{{ route('website.about.index') }}">{{ __('website.nav.about_us') }}</a>
+                    </li>
                     <li class="{{ request()->routeIs('website.cars.*') ? 'active' : '' }}">
                         <a href="{{ route('website.cars.index') }}">{{ __('website.nav.all_cars') }}</a>
                     </li>

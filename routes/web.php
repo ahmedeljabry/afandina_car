@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\website\HomeController;
 use App\Http\Controllers\admin\CarController as AdminCarController;
+use App\Http\Controllers\website\AboutController as WebsiteAboutController;
+use App\Http\Controllers\website\ContactController as WebsiteContactController;
 use App\Http\Controllers\website\CarController as WebsiteCarController;
 use App\Http\Controllers\website\BlogController as WebsiteBlogController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -24,6 +26,9 @@ Route::group(
     ],
     function (): void {
         Route::get('/', [HomeController::class, 'index'])->name('home');
+        Route::get('/about-us', [WebsiteAboutController::class, 'index'])->name('website.about.index');
+        Route::get('/contact-us', [WebsiteContactController::class, 'index'])->name('website.contact.index');
+        Route::post('/contact-us', [WebsiteContactController::class, 'store'])->name('website.contact.store');
         Route::get('/cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
         Route::get('/cars/{car}', [WebsiteCarController::class, 'show'])->name('website.cars.show');
         Route::get('/blogs', [WebsiteBlogController::class, 'index'])->name('website.blogs.index');
