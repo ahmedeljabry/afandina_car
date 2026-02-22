@@ -120,25 +120,6 @@
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="grid-listview">
-                                    <ul>
-                                        <li>
-                                            <a href="javascript:void(0);" class="active">
-                                                <i class="feather-grid"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);">
-                                                <i class="feather-list"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);">
-                                                <i class="feather-map-pin"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -279,19 +260,11 @@
                                         <a href="{{ $carUrl }}">
                                             <img src="{{ $carImage }}" class="img-fluid" alt="{{ $carName }}">
                                         </a>
-                                        <div class="fav-item justify-content-end">
-                                            <a href="javascript:void(0)" class="fav-icon">
-                                                <i class="feather-heart"></i>
-                                            </a>
-                                        </div>
                                         <span class="featured-text">{{ $carBrand }}</span>
                                     </div>
                                     <div class="listing-content">
                                         <div class="listing-features d-flex align-items-end justify-content-between">
                                             <div class="list-rating">
-                                                <a href="javascript:void(0)" class="author-img">
-                                                    <img src="{{ $assetUrl('img/profiles/avatar-04.jpg') }}" alt="author">
-                                                </a>
                                                 <h3 class="listing-title">
                                                     <a href="{{ $carUrl }}">{{ Str::limit($carName, 36) }}</a>
                                                 </h3>

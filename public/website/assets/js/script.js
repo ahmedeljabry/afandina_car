@@ -298,6 +298,7 @@ Version      : 1.0
 			loop:true,
 			margin:24,
 			nav:true,
+			rtl:isRtl,
 			dots: false,
 			autoplay:false,
 			smartSpeed: 2000,
@@ -390,6 +391,7 @@ Version      : 1.0
 			slidesToScroll: 1,
 			arrows: true,
 			fade: true,
+			rtl: isRtl,
 			asNavFor: '.slider-nav-thumbnails'
 		});
 	}
@@ -400,6 +402,7 @@ Version      : 1.0
 			slidesToScroll: 1,
 			asNavFor: '.detail-bigimg',
 			dots: false,
+			rtl: isRtl,
 			arrows: false,
 			centerMode: false,
 			focusOnSelect: true

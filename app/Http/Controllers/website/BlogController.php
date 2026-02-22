@@ -177,8 +177,17 @@ class BlogController extends Controller
             'category_name' => $categoryTranslation?->name,
             'year' => $car->year?->year,
             'image_path' => $car->default_image_path,
-            'details_url' => route('website.cars.show', ['car' => $car->id]),
+            'details_url' => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
         ];
+    }
+
+    private function carRouteKey(Car $car, string $locale): string
+    {
+        $slug = $this->translationFor($car, $locale)?->slug
+            ?? $this->translationFor($car, 'en')?->slug
+            ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
+
+        return (string) ($slug ?: $car->id);
     }
 
     private function buildExcerpt(mixed $description, mixed $content, int $limit = 160): ?string

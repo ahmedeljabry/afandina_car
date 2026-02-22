@@ -190,16 +190,24 @@ class CarController extends Controller
         return view('website.cars', compact('cars', 'filters'));
     }
 
-    public function show(Car $car)
+    public function show(string $car)
     {
-        if (!$car->is_active) {
+        $locale = app()->getLocale() ?? 'en';
+        $requestedIdentifier = trim(urldecode($car));
+        $carModel = $this->resolveCar($requestedIdentifier, $locale);
+
+        if (!$carModel || !$carModel->is_active) {
             abort(404);
         }
 
-        $locale = app()->getLocale() ?? 'en';
+        $canonicalSlug = $this->carSlugForLocale($carModel, $locale);
+        if (filled($canonicalSlug) && $requestedIdentifier !== $canonicalSlug) {
+            return redirect()->route('website.cars.show', ['car' => $canonicalSlug]);
+        }
+
         [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
-        $car->load([
+        $carModel->load([
             'translations',
             'images',
             'brand.translations',
@@ -212,7 +220,7 @@ class CarController extends Controller
             'features.icon',
         ]);
 
-        $carDetails = $this->mapCarDetailsData($car, $locale, $currencyRate, $currencySymbol);
+        $carDetails = $this->mapCarDetailsData($carModel, $locale, $currencyRate, $currencySymbol);
 
         $relatedCars = Car::query()
             ->with([
@@ -223,9 +231,9 @@ class CarController extends Controller
                 'year',
             ])
             ->where('is_active', true)
-            ->where('id', '!=', $car->id)
-            ->when($car->category_id, function ($query) use ($car) {
-                $query->where('category_id', $car->category_id);
+            ->where('id', '!=', $carModel->id)
+            ->when($carModel->category_id, function ($query) use ($carModel) {
+                $query->where('category_id', $carModel->category_id);
             })
             ->latest('id')
             ->take(6)
@@ -280,7 +288,7 @@ class CarController extends Controller
 
         return [
             'id' => $car->id,
-            'details_url' => route('website.cars.show', ['car' => $car->id]),
+            'details_url' => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'brand_name' => $brandTranslation?->name,
             'category_name' => $categoryTranslation?->name,
@@ -297,6 +305,52 @@ class CarController extends Controller
             'discount_rate' => $discountRate,
             'currency_symbol' => $currencySymbol,
         ];
+    }
+
+    private function resolveCar(string $identifier, string $locale): ?Car
+    {
+        $car = Car::query()
+            ->whereHas('translations', function ($query) use ($identifier, $locale) {
+                $query->where('locale', $locale)
+                    ->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($car) {
+            return $car;
+        }
+
+        $car = Car::query()
+            ->whereHas('translations', function ($query) use ($identifier) {
+                $query->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($car) {
+            return $car;
+        }
+
+        if (ctype_digit($identifier)) {
+            return Car::query()->find((int) $identifier);
+        }
+
+        return null;
+    }
+
+    private function carRouteKey(Car $car, string $locale): string
+    {
+        return (string) ($this->carSlugForLocale($car, $locale) ?: $car->id);
+    }
+
+    private function carSlugForLocale(Car $car, string $locale): ?string
+    {
+        $translations = $car->relationLoaded('translations')
+            ? $car->translations
+            : $car->translations()->get();
+
+        return $translations->firstWhere('locale', $locale)?->slug
+            ?? $translations->firstWhere('locale', 'en')?->slug
+            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug;
     }
 
     private function mapCarDetailsData(Car $car, string $locale, float $currencyRate, string $currencySymbol): array

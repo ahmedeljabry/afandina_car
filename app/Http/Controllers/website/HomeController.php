@@ -190,8 +190,17 @@ class HomeController extends Controller
             'daily_main_price' => $dailyMain ? (int) ceil($dailyMain * $currencyRate) : null,
             'currency_symbol'  => $currencySymbol,
             'passenger_capacity' => $car->passenger_capacity,
-            'details_url'      => route('website.cars.show', ['car' => $car->id]),
+            'details_url'      => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
         ];
+    }
+
+    private function carRouteKey(Car $car, string $locale): string
+    {
+        $slug = $this->translationFor($car, $locale)?->slug
+            ?? $this->translationFor($car, 'en')?->slug
+            ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
+
+        return (string) ($slug ?: $car->id);
     }
 
     private function resolveCurrencyContext(string $locale): array
