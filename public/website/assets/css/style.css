@@ -11266,15 +11266,6 @@ Version      : 1.0
   background: url("../img/bg/popular-bg.png") no-repeat;
   background-position: right bottom 60px;
 }
-.popular-section-four::before {
-  background: #111111;
-  height: 240px;
-  width: 100%;
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
 
 .car-item {
   text-align: center;

@@ -9,6 +9,7 @@ Version      : 1.0
 	
 	var $slimScrolls = $('.slimscroll');
 	var $wrapper = $('.main-wrapper');
+	var isRtl = $('html').attr('dir') === 'rtl';
 	
 
 	// Sidebar
@@ -327,6 +328,7 @@ Version      : 1.0
 			margin:24,
 			nav:true,
 			dots:true,
+			rtl:isRtl,
 			smartSpeed: 2000,
 			autoplay:false,
 			navText: [
@@ -1448,6 +1450,7 @@ Version      : 1.0
 			margin:70,
 			nav:false,
 			dots: false,
+			rtl:isRtl,
 			autoplay:true,
 			smartSpeed: 2000,
 			responsive:{
@@ -1475,6 +1478,7 @@ Version      : 1.0
 			margin:70,
 			nav:false,
 			dots: false,
+			rtl:isRtl,
 			autoplay:true,
 			smartSpeed: 2000,
 			responsive:{
@@ -1502,6 +1506,7 @@ Version      : 1.0
 			margin:0,
 			nav:true,
 			dots: false,
+			rtl:isRtl,
 			autoplay:false,
 			smartSpeed: 2000,
 			navText : ["<i class='bx bx-left-arrow-alt'></i>","<i class='bx bx-right-arrow-alt'></i>"],
