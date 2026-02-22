@@ -24,8 +24,11 @@
                 return __('website.common.call_for_price');
             }
 
-            return $currencySymbol . number_format((float) $price);
+            $currencyLabel = trim((string) $currencySymbol);
+
+            return ($currencyLabel !== '' ? $currencyLabel . ' ' : '') . number_format((float) $price);
         };
+        $formatAmount = static fn ($price): string => number_format((float) $price);
 
         $carName = $carDetails['name'] ?? __('website.common.car');
         $brandName = $carDetails['brand_name'] ?? __('website.common.brand');
@@ -55,10 +58,6 @@
                 ],
             ])->values();
         }
-
-        $videoItem = collect($carDetails['images'] ?? [])
-            ->first(fn ($image) => ($image['type'] ?? 'video') === 'video' && filled($image['file_path'] ?? null));
-        $videoUrl = $videoItem ? $storageUrl($videoItem['file_path'] ?? null) : 'https://www.youtube.com/embed/ExJZAegsOis';
 
         $descriptionParagraphs = collect([
             trim(strip_tags((string) ($carDetails['description'] ?? ''))),
@@ -126,19 +125,8 @@
         $dailyPrice = $carDetails['prices']['daily_discount'] ?? $carDetails['prices']['daily_main'] ?? null;
         $weeklyPrice = $carDetails['prices']['weekly_discount'] ?? $carDetails['prices']['weekly_main'] ?? null;
         $monthlyPrice = $carDetails['prices']['monthly_discount'] ?? $carDetails['prices']['monthly_main'] ?? null;
-        $yearlyPrice = filled($monthlyPrice) ? (int) $monthlyPrice * 12 : null;
-        $extraServiceFee = filled($dailyPrice) ? (int) ceil((float) $dailyPrice * 0.03) : 10;
-        $taxFee = filled($dailyPrice) ? (int) ceil((float) $dailyPrice * 0.02) : 5;
-        $refundableDeposit = filled($monthlyPrice) ? (int) ceil((float) $monthlyPrice * 0.5) : 1200;
-        $grandTotal = (filled($dailyPrice) ? (float) $dailyPrice : 0) + $extraServiceFee + $taxFee;
-        $fareSubtotal = (filled($dailyPrice) ? (float) $dailyPrice : 0) + $taxFee + $refundableDeposit;
-
-        $sidebarPriceItems = collect([
-            ['label' => __('website.car_details.pricing.daily'), 'price' => $dailyPrice],
-            ['label' => __('website.car_details.pricing.weekly'), 'price' => $weeklyPrice],
-            ['label' => __('website.car_details.pricing.monthly'), 'price' => $monthlyPrice],
-            ['label' => 'Yearly', 'price' => $yearlyPrice],
-        ]);
+        $dailyMainPrice = $carDetails['prices']['daily_main'] ?? null;
+        $monthlyMainPrice = $carDetails['prices']['monthly_main'] ?? null;
 
         $tariffRows = collect([
             ['name' => __('website.car_details.pricing.daily'), 'price' => $dailyPrice, 'mileage' => $carDetails['daily_mileage_included'] ?? null],
@@ -152,6 +140,87 @@
             ]);
         }
 
+        $sidebarTitle = trim($carName . (filled($carDetails['year'] ?? null) ? ' - ' . $carDetails['year'] : ''));
+        $sidebarDescription = Str::limit($descriptionParagraphs->first(), 200);
+        $sidebarPassengerValue = isset($carDetails['passenger_capacity'])
+            ? (string) $carDetails['passenger_capacity']
+            : __('website.car_details.not_available');
+        $sidebarDoorsValue = isset($carDetails['door_count'])
+            ? (string) $carDetails['door_count']
+            : __('website.car_details.not_available');
+
+        $carSidebarStats = collect([
+            ['icon' => 'fa-solid fa-user', 'value' => $sidebarPassengerValue],
+            ['icon' => 'fa-solid fa-door-open', 'value' => $sidebarDoorsValue],
+            ['icon' => 'fa-solid fa-car-side', 'value' => $categoryName],
+        ])->values();
+
+        $colorName = trim((string) ($carDetails['color_name'] ?? ''));
+        $colorPalette = [
+            'black' => '#111111',
+            'white' => '#f5f5f5',
+            'gray' => '#7a7a7a',
+            'grey' => '#7a7a7a',
+            'silver' => '#a6adb4',
+            'red' => '#cf2f2f',
+            'blue' => '#1f5fcc',
+            'green' => '#2c8c4b',
+            'yellow' => '#e3b321',
+            'orange' => '#e57a1c',
+            'brown' => '#6f4a36',
+            'beige' => '#d8c7a3',
+            'gold' => '#bfa15a',
+            'أسود' => '#111111',
+            'ابيض' => '#f5f5f5',
+            'أبيض' => '#f5f5f5',
+            'رمادي' => '#7a7a7a',
+            'احمر' => '#cf2f2f',
+            'أحمر' => '#cf2f2f',
+            'ازرق' => '#1f5fcc',
+            'أزرق' => '#1f5fcc',
+            'اخضر' => '#2c8c4b',
+            'أخضر' => '#2c8c4b',
+        ];
+        $normalizedColorName = Str::lower($colorName);
+        $colorDotHex = preg_match('/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $colorName)
+            ? $colorName
+            : ($colorPalette[$normalizedColorName] ?? '#111111');
+
+        $carOverviewItems = collect([
+            ['label' => __('website.common.category'), 'value' => $categoryName],
+            ['label' => __('website.car_details.labels.brand'), 'value' => $brandName],
+            ['label' => __('website.car_details.labels.model'), 'value' => $modelName],
+            ['label' => __('website.car_details.specifications.year'), 'value' => $yearValue],
+            ['label' => __('website.car_details.specifications.color'), 'value' => filled($colorName) ? $colorName : __('website.car_details.not_available'), 'type' => 'color'],
+        ])->values();
+
+        $sidebarPriceRows = collect([
+            [
+                'label' => __('website.car_details.pricing.daily'),
+                'current' => $dailyPrice,
+                'old' => $dailyMainPrice,
+                'unit' => __('website.units.per_day'),
+            ],
+            [
+                'label' => __('website.car_details.pricing.monthly'),
+                'current' => $monthlyPrice,
+                'old' => $monthlyMainPrice,
+                'unit' => __('website.car_details.sidebar.per_month'),
+            ],
+        ])->map(function (array $row) {
+            $row['old'] = filled($row['old']) && filled($row['current']) && (float) $row['old'] > (float) $row['current']
+                ? $row['old']
+                : null;
+
+            return $row;
+        })->filter(fn (array $row) => filled($row['current']))->values();
+
+        $sidebarHighlights = collect([
+            ['label' => __('website.car_details.highlights.free_delivery'), 'enabled' => (bool) ($carDetails['free_delivery'] ?? false)],
+            ['label' => __('website.car_details.highlights.insurance_included'), 'enabled' => (bool) ($carDetails['insurance_included'] ?? false)],
+            ['label' => __('website.car_details.specifications.crypto_payment'), 'enabled' => (bool) ($carDetails['crypto_payment_accepted'] ?? false)],
+        ])->filter(fn (array $item) => $item['enabled'])->values();
+
         $fullAddress = collect([
             $contact?->address_line1,
             $contact?->address_line2,
@@ -161,48 +230,14 @@
             $contact?->country,
         ])->filter()->implode(', ');
 
-        $email = $contact?->email ?? null;
         $phone = $contact?->phone ?: $contact?->alternative_phone;
         $phoneHref = filled($phone) ? 'tel:' . preg_replace('/\s+/', '', $phone) : 'javascript:void(0);';
-        $emailHref = filled($email) ? 'mailto:' . $email : 'javascript:void(0);';
 
         $whatsAppHref = filled($contact?->whatsapp)
             ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
                 ? $contact->whatsapp
                 : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
             : 'javascript:void(0);';
-
-        $mapUrl = filled($contact?->google_map_url)
-            ? $contact->google_map_url
-            : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509170.989457427!2d-123.80081967108484!3d37.192957227641294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb9fe5f285e3d%3A0x8b5109a227086f55!2sCalifornia%2C%20USA!5e0!3m2!1sen!2sin!4v1669181581381!5m2!1sen!2sin';
-
-        $socialLinks = collect([
-            ['icon' => 'fa-brands fa-facebook-f fa-facebook fi-icon', 'url' => $contact?->facebook],
-            ['icon' => 'fab fa-instagram fi-icon', 'url' => $contact?->instagram],
-            ['icon' => 'fab fa-twitter fi-icon', 'url' => $contact?->twitter],
-            ['icon' => 'fab fa-linkedin fi-icon', 'url' => $contact?->linkedin],
-            ['icon' => 'fa-brands fa-youtube fi-icon', 'url' => $contact?->youtube],
-            ['icon' => 'fa-brands fa-tiktok fi-icon', 'url' => $contact?->tiktok],
-            ['icon' => 'fa-brands fa-whatsapp fi-icon', 'url' => $whatsAppHref !== 'javascript:void(0);' ? $whatsAppHref : null],
-        ])->filter(fn ($social) => filled($social['url']))->values();
-
-        $policyItems = collect([
-            [
-                'title' => __('website.car_details.highlights.free_delivery'),
-                'description' => ($carDetails['free_delivery'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no'),
-                'url' => route('website.contact.index'),
-            ],
-            [
-                'title' => __('website.car_details.highlights.insurance_included'),
-                'description' => ($carDetails['insurance_included'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no'),
-                'url' => route('website.contact.index'),
-            ],
-            [
-                'title' => __('website.car_details.sections.description'),
-                'description' => filled($contact?->additional_info) ? Str::limit(strip_tags((string) $contact->additional_info), 120) : __('website.car_details.contact_for_pricing'),
-                'url' => route('website.contact.index'),
-            ],
-        ])->values();
 
         $reviewItems = collect([
             [
@@ -272,11 +307,6 @@
                 ],
             ]);
         }
-
-        $primaryPickupDate = now()->format('m/d/Y');
-        $primaryPickupTime = now()->format('h:i A');
-        $primaryReturnDate = now()->addDay()->format('m/d/Y');
-        $primaryReturnTime = now()->addDay()->format('h:i A');
     ?>
 
         <!-- Detail Page Head-->
@@ -517,524 +547,85 @@
                         </div>
                         <!-- /Gallery -->
 
-                        <!-- Video -->
-                        <div class="review-sec mb-0">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.sections.video')); ?></h4>
+                    </div>
+                    <div class="col-lg-4 theiaStickySidebar">
+                        <aside class="car-details-sidebar-card">
+                            <div class="car-details-sidebar-head">
+                                <h3><?php echo e($sidebarTitle); ?></h3>
+                                <p><?php echo e($sidebarDescription); ?></p>
                             </div>
-                            <div class="short-video">
-                            	<img class="img-fluid" alt="<?php echo e($carName); ?>" src="<?php echo e($mainImage); ?>">
-                            	<a href="<?php echo e($videoUrl); ?>" data-fancybox="video" class="video-icon">
-                            		<i class="bx bx-play"></i>
-                            	</a>
-                            </div>
-                        </div>
-                        <!-- /Video -->
 
-                        <!-- FAQ -->
-                        <div class="review-sec faq-feature">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.sections.faq')); ?></h4>
-                            </div>
-                            <div class="faq-info">
-                                <?php $__empty_1 = true; $__currentLoopData = $faqs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $faq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <?php
-                                        $faqId = 'carFaq' . ($index + 1);
-                                    ?>
-                                    <div class="faq-card">
-                                        <h4 class="faq-title">
-                                            <a class="<?php echo e($index === 0 ? '' : 'collapsed'); ?>" data-bs-toggle="collapse" href="#<?php echo e($faqId); ?>" aria-expanded="<?php echo e($index === 0 ? 'true' : 'false'); ?>"><?php echo e($faq['question']); ?></a>
-                                        </h4>
-                                        <div id="<?php echo e($faqId); ?>" class="card-collapse collapse <?php echo e($index === 0 ? 'show' : ''); ?>">
-                                            <p><?php echo e($faq['answer']); ?></p>
-                                        </div>
-                                    </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <div class="faq-card">
-                                        <h4 class="faq-title">
-                                            <a class="collapsed" data-bs-toggle="collapse" href="#carFaqEmpty" aria-expanded="false"><?php echo e(__('website.about.no_faqs_title')); ?></a>
-                                        </h4>
-                                        <div id="carFaqEmpty" class="card-collapse collapse">
-                                            <p><?php echo e(__('website.about.no_faqs_description')); ?></p>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-							</div>
-                        </div>
-                        <!-- /FAQ -->
-
-                        <!-- Policies -->
-                        <div class="review-sec">
-                            <div class="review-header">
-                                <h4>Policies</h4>
-                            </div>
-                            <div class="policy-list">
-                                <?php $__currentLoopData = $policyItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $policyItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <div class="policy-item">
-                                        <div class="policy-info">
-                                            <h6><?php echo e($policyItem['title']); ?></h6>
-                                            <p><?php echo e($policyItem['description']); ?></p>
-                                        </div>
-                                        <a href="<?php echo e($policyItem['url']); ?>"><?php echo e(__('website.car_details.show_more')); ?></a>
-                                    </div>
+                            <ul class="car-details-sidebar-stats">
+                                <?php $__currentLoopData = $carSidebarStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarStat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li>
+                                        <i class="<?php echo e($sidebarStat['icon']); ?>"></i>
+                                        <span><?php echo e($sidebarStat['value']); ?></span>
+                                    </li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </div>
-                        </div>
-                        <!-- /Policies -->
+                            </ul>
 
-                        <!-- Reviews -->
-                        <div class="review-sec listing-review">
-                            <div class="review-header">
-                                <h4>Reviews</h4>
-                            </div>
-                            <div class="rating-wrapper">
-                                <div class="rating-wraps">
-                                    <h2><?php echo e(number_format($reviewScore, 1)); ?><span>/5</span></h2>
-                                    <p><?php echo e($reviewScore >= 4.5 ? 'Excellent' : 'Good'); ?></p>
-                                    <h6>Based on <?php echo e($reviewCount); ?> Reviews</h6>
-                                </div>
-                                <div class="rating-progress">
-                                    <?php $__currentLoopData = $ratingBreakdown; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ratingItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $ratingWidth = max(0, min(100, (float) $ratingItem['score'] * 20));
-                                        ?>
-                                        <div class="progress-info">
-                                            <h6><?php echo e($ratingItem['label']); ?></h6>
-                                            <div class="progress" role="progressbar">
-                                                <div class="progress-bar bg-primary" style="width: <?php echo e($ratingWidth); ?>%"></div>
-                                            </div>
-                                            <div class="progress-percent"><?php echo e(number_format((float) $ratingItem['score'], 1)); ?></div>
+                            <div class="car-details-sidebar-overview">
+                                <h4><?php echo e(__('website.car_details.sidebar.car_overview')); ?></h4>
+                                <div class="car-details-overview-grid">
+                                    <?php $__currentLoopData = $carOverviewItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $overviewItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="car-details-overview-item">
+                                            <span class="overview-label"><?php echo e($overviewItem['label']); ?></span>
+                                            <?php if(($overviewItem['type'] ?? '') === 'color'): ?>
+                                                <span class="car-color-dot" style="background-color: <?php echo e($colorDotHex); ?>;" title="<?php echo e($overviewItem['value']); ?>"></span>
+                                                <small><?php echo e($overviewItem['value']); ?></small>
+                                            <?php else: ?>
+                                                <strong><?php echo e($overviewItem['value']); ?></strong>
+                                            <?php endif; ?>
                                         </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
-                            <div  class="review-card">
-                                <div class="review-head">
-                                    <h6>Showing <?php echo e($reviewCount); ?> guest reviews</h6>
-                                </div>
-                                <ul>
-                                    <?php $__currentLoopData = $reviewItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $reviewItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <li>
-                                            <div class="review-wraps <?php echo e($loop->last ? 'wrap-card' : ''); ?>">
-                                                <div class="review-header-group">
-                                                    <div class="review-widget-header">
-                                                        <span class="review-widget-img">
-                                                            <img src="<?php echo e($reviewItem['image']); ?>" class="img-fluid" alt="User">
-                                                        </span>
-                                                        <div class="review-design">
-                                                            <h6><?php echo e($reviewItem['name']); ?></h6>
-                                                            <p><?php echo e($reviewItem['date']); ?></p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="reviewbox-list-rating">
-                                                        <p>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <span> (<?php echo e(number_format($reviewScore, 1)); ?>)</span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <p><?php echo e($reviewItem['content']); ?></p>
-                                                <div class="review-reply">
-                                                    <a class="btn" href="javascript:void(0);">
-                                                        <i class="fa-solid fa-reply"></i>Reply
-                                                    </a>
-                                                    <div class="review-action">
-                                                        <a href="javascript:void(0);"><i class="fa-regular fa-thumbs-up"></i><?php echo e(10 + $loop->index); ?></a>
-                                                        <a href="javascript:void(0);"><i class="fa-regular fa-thumbs-down"></i><?php echo e(2 + $loop->index); ?></a>
-                                                        <a href="javascript:void(0);"><i class="fa-regular fa-heart"></i><?php echo e(12 + $loop->index); ?></a>
-                                                    </div>
-                                                </div>
+
+                            <?php if($sidebarPriceRows->isNotEmpty()): ?>
+                                <div class="car-details-sidebar-prices">
+                                    <?php $__currentLoopData = $sidebarPriceRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarPriceRow): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="car-details-price-row">
+                                            <div class="price-main-wrap">
+                                                <strong><?php echo e($formatAmount($sidebarPriceRow['current'])); ?></strong>
+                                                <?php if(filled($sidebarPriceRow['old'])): ?>
+                                                    <del><?php echo e($formatAmount($sidebarPriceRow['old'])); ?></del>
+                                                <?php endif; ?>
                                             </div>
+                                            <span class="price-meta"><?php echo e(trim($currencySymbol . ' ' . $sidebarPriceRow['unit'])); ?></span>
+                                        </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if($sidebarHighlights->isNotEmpty()): ?>
+                                <ul class="car-details-sidebar-highlights">
+                                    <?php $__currentLoopData = $sidebarHighlights; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarHighlight): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li>
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            <span><?php echo e($sidebarHighlight['label']); ?></span>
                                         </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
-                            </div>
-                        </div>
-                        <!-- /Reviews -->
+                            <?php endif; ?>
 
-                        <!-- Leave a Reply -->
-                        <div class="review-sec leave-reply-form mb-0">
-                            <div class="review-header">
-                                <h4>Leave a Reply</h4>
-                            </div>
-                            <div class="review-list-rating">
-                                <div class="row">
-                                    <?php $__currentLoopData = $ratingBreakdown; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ratingIndex => $ratingItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <div class="col-xl-4 col-md-6">
-                                           <div class="set-rating">
-                                           		<p><?php echo e($ratingItem['label']); ?></p>
-                                           		<div class="rating-selection">
-                                                    <?php for($star = 1; $star <= 5; $star++): ?>
-                                                        <?php
-                                                            $ratingInputId = 'rating_' . $ratingIndex . '_' . $star;
-                                                        ?>
-                                                        <input type="checkbox" id="<?php echo e($ratingInputId); ?>" value="<?php echo e($star); ?>">
-                                                        <label for="<?php echo e($ratingInputId); ?>"></label>
-                                                    <?php endfor; ?>
-                                               	</div>
-                                           </div>
-                                        </div>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="review-list">
-                                    <ul>
-                                        <li class="review-box feedbackbox mb-0">
-                                            <div class="review-details">
-                                                <form action="javascript:void(0);">
-                                                    <div class="row">
-                                                        <div class="col-lg-6">
-                                                            <div class="input-block">
-                                                                <label><?php echo e(__('website.contact.form.name')); ?> <span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control" placeholder="<?php echo e(__('website.contact.form.name')); ?>">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-6">
-                                                            <div class="input-block">
-                                                                <label><?php echo e(__('website.contact.form.email_address')); ?> <span class="text-danger">*</span></label>
-                                                                <input type="email" class="form-control" placeholder="<?php echo e(__('website.contact.form.email_address')); ?>">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-12">
-                                                            <div class="input-block">
-                                                                <label><?php echo e(__('website.contact.form.comments')); ?></label>
-                                                                <textarea rows="4" class="form-control" placeholder="<?php echo e(__('website.contact.form.comments')); ?>"></textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="submit-btn text-end">
-                                                        <button class="btn btn-primary submit-review" type="submit"> Submit Review</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /Leave a Reply -->
+                            <div class="car-details-sidebar-actions">
+                                <a href="<?php echo e($whatsAppHref); ?>"
+                                   class="btn sidebar-action-btn sidebar-whatsapp-btn <?php if($whatsAppHref === 'javascript:void(0);'): ?> is-disabled <?php endif; ?>"
+                                   <?php if($whatsAppHref !== 'javascript:void(0);'): ?>
+                                       target="_blank" rel="noopener noreferrer"
+                                   <?php endif; ?>>
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                    <?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?>
 
-                    </div>
-                    <div class="col-lg-4 theiaStickySidebar">
-                    	<div class="review-sec mt-0">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.sidebar.pricing')); ?></h4>
-                            </div>
-							<div class="mb-3">
-                                <?php $__currentLoopData = $sidebarPriceItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarPriceItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <label class="booking_custom_check bookin-check-2" >
-                                        <input type="radio" name="price_rate" <?php if($loop->first): ?> checked <?php endif; ?>>
-                                        <span class="booking_checkmark">
-                                            <span class="checked-title"><?php echo e($sidebarPriceItem['label']); ?></span>
-                                            <span class="price-rate"><?php echo e($formatPrice($sidebarPriceItem['price'], $currencySymbol)); ?></span>
-                                        </span>
-                                    </label>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-							</div>
-                            <div class="location-content">
-                            	<div class="delivery-tab">
-	                            	<ul class="nav">
-	                            		<li>
-		                            		<label class="booking_custom_check" >
-												<input type="radio" name="rent_type" checked="">
-												<span class="booking_checkmark">
-													<span class="checked-title"><?php echo e(__('website.car_details.sidebar.delivery')); ?></span>
-												</span>
-											</label>
-	                            		</li>
-	                            		<li>
-		                            		<label class="booking_custom_check">
-												<input type="radio" name="rent_type">
-												<span class="booking_checkmark">
-													<span class="checked-title"><?php echo e(__('website.car_details.sidebar.self_pickup')); ?></span>
-												</span>
-											</label>
-	                            		</li>
-	                            	</ul>
-	                            </div>
-	                            <div class="tab-content">
-	                            	<div class="tab-pane fade active show" id="delivery">
-		                                <form class="">
-		                                    <ul>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block">
-		                                                <label><?php echo e(__('website.car_details.sidebar.delivery_location')); ?></label>
-		                                                <div class="group-img">
-		                                                	<div class="form-wrap">
-		                                                    	<input type="text" class="form-control" placeholder="<?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?>">
-		                                                    	<span class="form-icon">
-		                                                    		<i class="fa-solid fa-location-crosshairs"></i>
-		                                                    	</span>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-			                                        <div class="input-block">
-														<label class="custom_check d-inline-flex location-check m-0"><span><?php echo e(__('website.car_details.sidebar.return_same_location')); ?></span>
-															<input type="checkbox" name="remeber">
-															<span class="checkmark"></span>
-														</label>
-													</div>
-												</li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block">
-		                                                <label><?php echo e(__('website.car_details.sidebar.return_location')); ?></label>
-		                                                <div class="group-img">
-		                                                	<div class="form-wrap">
-		                                                    	<input type="text" class="form-control" placeholder="<?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?>">
-		                                                    	<span class="form-icon">
-		                                                    		<i class="fa-solid fa-location-crosshairs"></i>
-		                                                    	</span>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block m-0">
-		                                            	<label><?php echo e(__('website.car_details.sidebar.pickup_date')); ?></label>
-		                                            </div>
-		                                            <div class="input-block-wrapp sidebar-form">
-		                                                <div class="input-block  me-lg-2">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-			                                                    	<input type="text" class="form-control datetimepicker" placeholder="<?php echo e($primaryPickupDate); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-calendar-days"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                                <div class="input-block">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-			                                                    	<input type="text" class="form-control timepicker" placeholder="<?php echo e($primaryPickupTime); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-clock"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block m-0">		                                       		<label><?php echo e(__('website.car_details.sidebar.return_date')); ?></label>
-		                                            </div>
-		                                            <div class="input-block-wrapp sidebar-form">
-		                                                <div class="input-block me-lg-2">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-		                                                    		<input type="text" class="form-control datetimepicker" placeholder="<?php echo e($primaryReturnDate); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-calendar-days"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                                <div class="input-block">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-		                                                    		<input type="text" class="form-control timepicker" placeholder="<?php echo e($primaryReturnTime); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-clock"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-last">
-		                                            <div class="input-block mb-0">
-		                                                <div class="search-btn">
-		                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#pages_edit" class="btn btn-primary check-available w-100"><?php echo e(__('website.car_details.sidebar.book')); ?></a>
-		                                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#enquiry" class="btn btn-theme"><?php echo e(__('website.car_details.sidebar.enquire_us')); ?></a>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                    </ul>
-		                                </form>
-		                            </div>
-	                            	<div class="tab-pane fade" id="pickup">
-		                                <form class="">
-		                                    <ul>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block">
-		                                                <label><?php echo e(__('website.car_details.sidebar.delivery_location')); ?></label>
-		                                                <div class="group-img">
-		                                                	<select class="select">
-		                                                		<option><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></option>
-		                                                	</select>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-			                                        <div class="input-block">
-														<label class="custom_check d-inline-flex location-check m-0"><span><?php echo e(__('website.car_details.sidebar.return_same_location')); ?></span>
-															<input type="checkbox" name="remeber">
-															<span class="checkmark"></span>
-														</label>
-													</div>
-												</li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block">
-		                                                <label><?php echo e(__('website.car_details.sidebar.return_location')); ?></label>
-		                                                <div class="group-img">
-		                                                	<select class="select">
-		                                                		<option><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></option>
-		                                                	</select>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block">
-		                                                <label><?php echo e(__('website.car_details.sidebar.return_location')); ?></label>
-		                                                <div class="group-img">
-		                                                	<div class="form-wrap">
-		                                                    	<input type="text" class="form-control" placeholder="<?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?>">
-		                                                    	<span class="form-icon">
-		                                                    		<i class="fa-solid fa-location-crosshairs"></i>
-		                                                    	</span>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block m-0">
-		                                            	<label><?php echo e(__('website.car_details.sidebar.pickup_date')); ?></label>
-		                                            </div>
-		                                            <div class="input-block-wrapp sidebar-form">
-		                                                <div class="input-block  me-lg-2">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-			                                                    	<input type="text" class="form-control datetimepicker" placeholder="<?php echo e($primaryPickupDate); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-calendar-days"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                                <div class="input-block">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-			                                                    	<input type="text" class="form-control timepicker" placeholder="<?php echo e($primaryPickupTime); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-clock"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-main">
-		                                            <div class="input-block m-0">		                                       		<label><?php echo e(__('website.car_details.sidebar.return_date')); ?></label>
-		                                            </div>
-		                                            <div class="input-block-wrapp sidebar-form">
-		                                                <div class="input-block me-2">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-		                                                    		<input type="text" class="form-control datetimepicker" placeholder="<?php echo e($primaryReturnDate); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-calendar-days"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                                <div class="input-block">
-		                                                    <div class="group-img">
-		                                                    	<div class="form-wrap">
-		                                                    		<input type="text" class="form-control timepicker" placeholder="<?php echo e($primaryReturnTime); ?>">
-			                                                    	<span class="form-icon">
-			                                                    		<i class="fa-regular fa-clock"></i>
-			                                                    	</span>
-			                                                    </div>
-		                                                    </div>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                        <li class="column-group-last">
-		                                            <div class="input-block mb-0">
-		                                                <div class="search-btn">
-		                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#pages_edit" class="btn btn-primary check-available w-100"><?php echo e(__('website.car_details.sidebar.book')); ?></a>
-		                                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#enquiry" class="btn btn-theme"><?php echo e(__('website.car_details.sidebar.enquire_us')); ?></a>
-		                                                </div>
-		                                            </div>
-		                                        </li>
-		                                    </ul>
-		                                </form>
-		                            </div>
-		                        </div>
-                            </div>
-                        </div>
-                        <div class="review-sec extra-service mt-0">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.owner_details.title')); ?></h4>
-                            </div>
-                            <div class="owner-detail">
-                                <div class="owner-img">
-                                    <a href="javascript:void(0);"><img src="<?php echo e($assetUrl('img/profiles/avatar-07.jpg')); ?>" alt="User"></a>
-                                    <span class="badge-check"><img src="<?php echo e($assetUrl('img/icons/badge-check.svg')); ?>" alt="User"></span>
-                                </div>
-                                <div class="reviewbox-list-rating">
-                                    <h5><a><?php echo e($contact?->name ?? config('app.name', 'Afandina Car Rental')); ?></a></h5>
-                                    <p>
-                                        <i class="fas fa-star filled"></i>
-                                        <i class="fas fa-star filled"></i>
-                                        <i class="fas fa-star filled"></i>
-                                        <i class="fas fa-star filled"></i>
-                                        <i class="fas fa-star filled"></i>
-                                        <span> (<?php echo e(number_format($reviewScore, 1)); ?>)</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <ul class="booking-list">
-                                <li>
-                                    <?php echo e(__('website.car_details.owner_details.email')); ?>
+                                </a>
+                                <a href="<?php echo e($phoneHref); ?>"
+                                   class="btn sidebar-action-btn sidebar-call-btn <?php if($phoneHref === 'javascript:void(0);'): ?> is-disabled <?php endif; ?>">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <?php echo e(__('website.car_details.sidebar.call_us')); ?>
 
-                                    <span><?php echo e($email ?? __('website.car_details.not_available')); ?></span>
-                                </li>
-                                <li>
-                                    <?php echo e(__('website.car_details.owner_details.phone_number')); ?>
-
-                                    <span><?php echo e($phone ?? __('website.car_details.not_available')); ?></span>
-                                </li>
-                                <li>
-                                    <?php echo e(__('website.car_details.owner_details.location')); ?>
-
-                                    <span><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></span>
-                                </li>
-                            </ul>
-                            <div class="message-btn">
-                                <a href="<?php echo e(route('website.contact.index')); ?>" class="btn btn-order"><?php echo e(__('website.car_details.owner_details.message_owner')); ?></a>
-                                <a href="<?php echo e($whatsAppHref); ?>" class="chat-link" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-whatsapp"></i><?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?></a>
+                                </a>
                             </div>
-                        </div>
-                        <div class="review-sec share-car mt-0">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.owner_details.view_car_location')); ?></h4>
-                            </div>
-                            <iframe src="<?php echo e($mapUrl); ?>" class="iframe-video"></iframe>
-                        </div>
-                        <div class="review-sec share-car mt-0 mb-0">
-                            <div class="review-header">
-                                <h4><?php echo e(__('website.car_details.owner_details.share')); ?></h4>
-                            </div>
-                            <ul class="nav-social">
-                                <?php $__empty_1 = true; $__currentLoopData = $socialLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $socialLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                    <li>
-                                        <a href="<?php echo e($socialLink['url']); ?>" target="_blank" rel="noopener noreferrer"><i class="<?php echo e($socialLink['icon']); ?>"></i></a>
-                                    </li>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                    <li>
-                                        <a href="javascript:void(0)"><i class="fab fa-linkedin fi-icon"></i></a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </div>
+                        </aside>
                     </div>
                 </div>
                 <div class="row">
@@ -1154,215 +745,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Modal -->
-			<div class="modal custom-modal fade check-availability-modal" id="pages_edit" role="dialog">
-				<div class="modal-dialog modal-dialog-centered modal-md">
-					<div class="modal-content">
-						<div class="modal-header">
-							<div class="form-header text-start mb-0">
-								<h4 class="mb-0 text-dark fw-bold">Availability Details</h4>
-							</div>
-							<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-								<span class="align-center" aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<div class="row">
-								<div class="col-lg-12 col-md-12">
-									<div class="available-for-ride">
-                                        <p><i class="fa-regular fa-circle-check"></i><?php echo e($carName); ?> <?php echo e($statusRaw === 'available' ? 'is available for a ride' : 'is currently not available'); ?></p>
-                                    </div>
-								</div>
-								<div class="col-lg-12 col-md-12">
-									<div class="row booking-info">
-                                        <div class="col-md-4 pickup-address">
-                                            <h5>Pickup</h5>
-                                            <p><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></p>
-                                            <span>Date &amp; time : <?php echo e($primaryPickupDate); ?> <?php echo e($primaryPickupTime); ?></span>
-                                        </div>
-                                        <div class="col-md-4 drop-address">
-                                            <h5>Drop Off</h5>
-                                            <p><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></p>
-                                            <span>Date &amp; time : <?php echo e($primaryReturnDate); ?> <?php echo e($primaryReturnTime); ?></span>
-                                        </div>
-                                        <div class="col-md-4 booking-amount">
-                                            <h5>Booking Amount</h5>
-                                            <h6><span><?php echo e($formatPrice($dailyPrice, $currencySymbol)); ?></span> <?php echo e(__('website.units.per_day')); ?></h6>
-                                        </div>
-                                    </div>
-								</div>
-								<div class="col-lg-12 col-md-12">
-									<div class="booking-info seat-select">
-                                        <h6><?php echo e(__('website.car_details.sections.extra_services')); ?></h6>
-                                        <?php $__currentLoopData = $serviceItems->take(2); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $serviceItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <label class="custom_check">
-                                                <input type="checkbox" name="rememberme_<?php echo e($loop->index); ?>" class="rememberme">
-                                                <span class="checkmark"></span>
-                                                <?php echo e($serviceItem['name']); ?> - <span class="ms-2"><?php echo e($formatPrice($extraServiceFee, $currencySymbol)); ?></span>
-                                            </label>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </div>
-								</div>
-                                <div class="col-md-12">
-                                    <div class="booking-info pay-amount">
-                                        <h6>Deposit Option</h6>
-                                        <div class="radio radio-btn">
-                                            <label>
-                                                <input type="radio" name="radio"> Pay Deposit
-                                            </label>
-                                        </div>
-                                        <div class="radio">
-                                            <label>
-                                                <input type="radio" name="radio"> Full Amount
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6"></div>
-                                <div class="col-md-6">
-                                    <div class="booking-info service-tax">
-                                        <ul>
-                                            <li>Booking Price <span><?php echo e($formatPrice($dailyPrice, $currencySymbol)); ?></span></li>
-                                            <li>Extra Service <span><?php echo e($formatPrice($extraServiceFee, $currencySymbol)); ?></span></li>
-                                            <li>Tax <span><?php echo e($formatPrice($taxFee, $currencySymbol)); ?></span></li>
-                                        </ul>
-                                    </div>
-                                    <div class="grand-total">
-                                        <h5>Grand Total</h5>
-                                        <span><?php echo e($formatPrice($grandTotal, $currencySymbol)); ?></span>
-                                    </div>
-                                </div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<a href="javascript:void(0);" class="btn btn-back">Go to Details<i class="fa-solid fa-arrow-right"></i></a>
-						</div>
-					</div>
-				</div>
-			</div>
-		<!-- /Modal -->
-
-		<!-- Custom Date Modal -->
-		<div class="modal new-modal fade enquire-mdl" id="enquiry" data-keyboard="false" data-backdrop="static">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">Enquiry</h4>
-						<button type="button" class="close-btn" data-bs-dismiss="modal"><span>x</span></button>
-					</div>
-					<div class="modal-body">
-						<form action="<?php echo e(route('website.contact.store')); ?>" method="POST" class="enquire-modal">
-                            <?php echo csrf_field(); ?>
-							<div class="booking-header">
-								<div class="booking-img-wrap">
-									<div class="book-img">
-										<img src="<?php echo e($mainImage); ?>" alt="img">
-									</div>
-									<div class="book-info">
-										<h6><?php echo e($carName); ?></h6>
-										<p><i class="feather-map-pin"></i> <?php echo e(__('website.car_details.labels.location')); ?> : <?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></p>
-									</div>
-								</div>
-							</div>
-							<div class="modal-form-group">
-								<label><?php echo e(__('website.contact.form.name')); ?></label>
-								<input type="text" name="full_name" class="form-control" placeholder="<?php echo e(__('website.contact.form.name')); ?>" required>
-							</div>
-							<div class="modal-form-group">
-								<label><?php echo e(__('website.contact.form.email_address')); ?></label>
-								<input type="email" name="email" class="form-control" placeholder="<?php echo e(__('website.contact.form.email_address')); ?>" required>
-							</div>
-							<div class="modal-form-group">
-								<label><?php echo e(__('website.contact.form.phone_number')); ?></label>
-								<input type="text" name="phone" class="form-control" placeholder="<?php echo e(__('website.contact.form.phone_number')); ?>" required>
-							</div>
-							<div class="modal-form-group">
-								<label><?php echo e(__('website.contact.form.comments')); ?></label>
-								<textarea class="form-control" name="message" rows="4" required><?php echo e($carName); ?> enquiry.</textarea>
-							</div>
-							<label class="custom_check w-100">
-								<input type="checkbox" name="username" checked>
-								<span class="checkmark"></span> I Agree with <a href="javascript:void(0);">Terms of Service</a> &amp; <a href="javascript:void(0);">Privacy Policy</a>
-							</label>
-							<div class="modal-btn modal-btn-sm">
-								<button type="submit" class="btn btn-primary w-100">
-									Submit
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /Custom Date Modal -->
-
-		<!-- Custom Date Modal -->
-		<div class="modal new-modal fade enquire-mdl" id="fare_details" data-keyboard="false" data-backdrop="static">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">Fare Details</h4>
-						<button type="button" class="close-btn" data-bs-dismiss="modal"><span>x</span></button>
-					</div>
-					<div class="modal-body">
-						<form action="javascript:void(0);" class="enquire-modal">
-							<div class="booking-header fare-book">
-								<div class="booking-img-wrap">
-									<div class="book-img">
-										<img src="<?php echo e($mainImage); ?>" alt="img">
-									</div>
-									<div class="book-info">
-										<h6><?php echo e($carName); ?></h6>
-										<p><i class="feather-map-pin"></i> <?php echo e(__('website.car_details.labels.location')); ?> : <?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></p>
-									</div>
-								</div>
-							</div>
-							<div class="fare-table">
-								<div class="table-responsive">
-	  								<table class="table table-center">
-	  									<tbody>
-                                        <?php $__currentLoopData = $tariffRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tariffRow): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <tr>
-                                                <td>
-                                                    <?php echo e($tariffRow['name']); ?> <span>(<?php echo e(filled($tariffRow['mileage']) ? __('website.units.km_included', ['count' => $tariffRow['mileage']]) : __('website.car_details.not_available')); ?>)</span>
-                                                    <p class="text-danger">(<?php echo e(__('website.car_details.contact_for_pricing')); ?>)</p>
-                                                </td>
-                                                <td>
-                                                    <select class="select">
-                                                        <option><?php echo e($tariffRow['name']); ?></option>
-                                                    </select>
-                                                </td>
-                                                <td class="amt text-end">+ <?php echo e($formatPrice($tariffRow['price'], $currencySymbol)); ?></td>
-                                            </tr>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-	    									<tr>
-	    										<td>Tax</td>
-	    										<td colspan="2" class="amt text-end"> + <?php echo e($formatPrice($taxFee, $currencySymbol)); ?></td>
-	    									</tr>
-	    									<tr>
-	    										<td>Refundable Deposit</td>
-	    										<td colspan="2" class="amt text-end">+ <?php echo e($formatPrice($refundableDeposit, $currencySymbol)); ?></td>
-	    									</tr>
-	    									<tr>
-	    										<th>Subtotal</th>
-	    										<th colspan="2" class="amt text-end"><?php echo e($formatPrice($fareSubtotal, $currencySymbol)); ?></th>
-	    									</tr>
-	   									</tbody>
-	   								</table>
-	    						</div>
-    						</div>
-							<div class="modal-btn modal-btn-sm">
-								<a href="javascript:void(0);" class="btn btn-primary w-100">
-									Continue to Booking
-								</a>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- /Custom Date Modal -->
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.website', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views\website\car-details.blade.php ENDPATH**/ ?>

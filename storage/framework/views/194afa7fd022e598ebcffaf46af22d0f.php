@@ -1,7 +1,15 @@
 <?php $__env->startSection('title', $homeTranslation?->meta_title ?? __('website.nav.home')); ?>
 
 <?php $__env->startSection('content'); ?>
-<?php use Illuminate\Support\Str; ?>
+<?php
+    use Illuminate\Support\Str;
+
+    $formatCurrency = static function ($price, ?string $currencyLabel): string {
+        $label = trim((string) $currencyLabel);
+
+        return ($label !== '' ? $label . ' ' : '') . number_format((float) $price);
+    };
+?>
 
     
     <section class="banner-section-four">
@@ -45,7 +53,7 @@
                                 <div class="amount-icon">
                                     <span class="day-amt">
                                         <p><?php echo e(__('website.home.hero.starting_from')); ?></p>
-                                        <h6><?php echo e($currencySymbol); ?><?php echo e($minPrice ?? 650); ?> <span><?php echo e(__('website.home.hero.per_day')); ?></span></h6>
+                                        <h6><?php echo e($formatCurrency($minPrice ?? 650, $currencySymbol)); ?> <span><?php echo e(__('website.home.hero.per_day')); ?></span></h6>
                                     </span>
                                 </div>
                                 <span class="rent-tag"><i class="bx bxs-circle"></i> <?php echo e(__('website.home.hero.available_for_rent')); ?></span>
@@ -290,7 +298,7 @@
                                     <?php if($car['daily_price']): ?>
                                         <div>
                                             <h4 class="price">
-                                                <?php echo e($car['currency_symbol']); ?><?php echo e($car['daily_price']); ?>
+                                                <?php echo e($formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null)); ?>
 
                                                 <span><?php echo e(__('website.units.per_day')); ?></span>
                                             </h4>
@@ -472,7 +480,7 @@
                                     <span class="day-amt">
                                         <p><?php echo e(__('website.home.hero.starting_from')); ?></p>
                                         <h6>
-                                            <?php echo e($car['currency_symbol']); ?><?php echo e($car['daily_price']); ?>
+                                            <?php echo e($formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null)); ?>
 
                                             <span><?php echo e(__('website.home.hero.per_day')); ?></span>
                                         </h6>

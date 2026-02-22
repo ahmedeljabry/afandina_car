@@ -39,6 +39,12 @@
         $lastPage = $cars->lastPage();
         $startPage = max(1, $currentPage - 1);
         $endPage = min($lastPage, $currentPage + 1);
+
+        $formatCurrency = static function ($price, ?string $currencyLabel): string {
+            $label = trim((string) $currencyLabel);
+
+            return ($label !== '' ? $label . ' ' : '') . number_format((float) $price);
+        };
     ?>
 
     <!-- Breadscrumb Section -->
@@ -59,103 +65,6 @@
         </div>
     </div>
     <!-- /Breadscrumb Section -->
-
-    <!-- Search -->
-    <div class="section-search page-search">
-        <div class="container">
-            <div class="search-box-banner">
-                <form action="<?php echo e(route('website.cars.index')); ?>" method="GET">
-                    <input type="hidden" name="sort" value="<?php echo e($sort); ?>">
-                    <input type="hidden" name="per_page" value="<?php echo e($perPage); ?>">
-
-                    <ul class="align-items-center">
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label><?php echo e(__('website.cars.filters.search_placeholder')); ?></label>
-                                <div class="group-img">
-                                    <input type="text" name="search" value="<?php echo e($search); ?>" class="form-control" placeholder="<?php echo e(__('website.cars.filters.search_placeholder')); ?>">
-                                    <span><i class="feather-search"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label><?php echo e(__('website.cars.filters.brand')); ?></label>
-                            </div>
-                            <div class="input-block-wrapp">
-                                <div class="input-block date-widget">
-                                    <div class="group-img">
-                                        <select name="brand[]" class="form-control select">
-                                            <option value=""><?php echo e(__('website.cars.filters.brand')); ?></option>
-                                            <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($brand['id']); ?>" <?php if(in_array((int) $brand['id'], $selectedBrandIds, true)): echo 'selected'; endif; ?>>
-                                                    <?php echo e($brand['name']); ?>
-
-                                                </option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                        <span><i class="feather-grid"></i></span>
-                                    </div>
-                                </div>
-                                <div class="input-block time-widge">
-                                    <div class="group-img">
-                                        <select name="category[]" class="form-control select">
-                                            <option value=""><?php echo e(__('website.cars.filters.category')); ?></option>
-                                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($category['id']); ?>" <?php if(in_array((int) $category['id'], $selectedCategoryIds, true)): echo 'selected'; endif; ?>>
-                                                    <?php echo e($category['name']); ?>
-
-                                                </option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                        <span><i class="feather-tag"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label><?php echo e(__('website.cars.filters.year')); ?></label>
-                            </div>
-                            <div class="input-block-wrapp">
-                                <div class="input-block date-widge">
-                                    <div class="group-img">
-                                        <select name="year[]" class="form-control select">
-                                            <option value=""><?php echo e(__('website.cars.filters.year')); ?></option>
-                                            <?php $__currentLoopData = $years; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($year['id']); ?>" <?php if(in_array((int) $year['id'], $selectedYearIds, true)): echo 'selected'; endif; ?>>
-                                                    <?php echo e($year['year']); ?>
-
-                                                </option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                        </select>
-                                        <span><i class="feather-calendar"></i></span>
-                                    </div>
-                                </div>
-                                <div class="input-block time-widge">
-                                    <div class="group-img d-flex align-items-center gap-2 ps-3">
-                                        <input type="checkbox" id="top_available_only" name="available_only" value="1" <?php if($availableOnly): echo 'checked'; endif; ?>>
-                                        <label for="top_available_only" class="mb-0"><?php echo e(__('website.cars.filters.availability')); ?></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-last">
-                            <div class="input-block">
-                                <div class="search-btn">
-                                    <button class="btn search-button" type="submit">
-                                        <i class="fa fa-search" aria-hidden="true"></i><?php echo e(__('website.cars.filters.apply')); ?>
-
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- /Search -->
 
     <!-- Sort By -->
     <div class="sort-section">
@@ -207,25 +116,6 @@
                                                     <option value="year_old" <?php if($sort === 'year_old'): echo 'selected'; endif; ?>><?php echo e(__('website.cars.sort.year_old')); ?></option>
                                                 </select>
                                             </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="grid-listview">
-                                    <ul>
-                                        <li>
-                                            <a href="javascript:void(0);" class="active">
-                                                <i class="feather-grid"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);">
-                                                <i class="feather-list"></i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="javascript:void(0);">
-                                                <i class="feather-map-pin"></i>
-                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -373,19 +263,11 @@
                                         <a href="<?php echo e($carUrl); ?>">
                                             <img src="<?php echo e($carImage); ?>" class="img-fluid" alt="<?php echo e($carName); ?>">
                                         </a>
-                                        <div class="fav-item justify-content-end">
-                                            <a href="javascript:void(0)" class="fav-icon">
-                                                <i class="feather-heart"></i>
-                                            </a>
-                                        </div>
                                         <span class="featured-text"><?php echo e($carBrand); ?></span>
                                     </div>
                                     <div class="listing-content">
                                         <div class="listing-features d-flex align-items-end justify-content-between">
                                             <div class="list-rating">
-                                                <a href="javascript:void(0)" class="author-img">
-                                                    <img src="<?php echo e($assetUrl('img/profiles/avatar-04.jpg')); ?>" alt="author">
-                                                </a>
                                                 <h3 class="listing-title">
                                                     <a href="<?php echo e($carUrl); ?>"><?php echo e(Str::limit($carName, 36)); ?></a>
                                                 </h3>
@@ -439,9 +321,9 @@
                                             </div>
                                             <div class="listing-price">
                                                 <?php if($carPrice): ?>
-                                                    <h6><?php echo e($carCurrency); ?><?php echo e(number_format((int) $carPrice)); ?> <span><?php echo e(__('website.units.per_day')); ?></span></h6>
+                                                    <h6><?php echo e($formatCurrency($carPrice, $carCurrency)); ?> <span><?php echo e(__('website.units.per_day')); ?></span></h6>
                                                     <?php if($carMainPrice && $carMainPrice > $carPrice): ?>
-                                                        <small class="text-muted text-decoration-line-through"><?php echo e($carCurrency); ?><?php echo e(number_format((int) $carMainPrice)); ?></small>
+                                                        <small class="text-muted text-decoration-line-through"><?php echo e($formatCurrency($carMainPrice, $carCurrency)); ?></small>
                                                     <?php endif; ?>
                                                 <?php else: ?>
                                                     <h6><?php echo e(__('website.common.call_for_price')); ?></h6>

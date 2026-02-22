@@ -546,6 +546,7 @@
                             </div>
                         </div>
                         <!-- /Gallery -->
+
                     </div>
                     <div class="col-lg-4 theiaStickySidebar">
                         <aside class="car-details-sidebar-card">
@@ -656,19 +657,11 @@
                                                 <a href="<?php echo e($relatedUrl); ?>">
                                                     <img src="<?php echo e($relatedImage); ?>" class="img-fluid" alt="<?php echo e($relatedName); ?>">
                                                 </a>
-                                                <div class="fav-item justify-content-end">
-                                                    <a href="javascript:void(0)" class="fav-icon">
-                                                        <i class="feather-heart"></i>
-                                                    </a>
-                                                </div>
                                                 <span class="featured-text"><?php echo e($relatedBrand); ?></span>
                                             </div>
                                             <div class="listing-content">
                                                 <div class="listing-features d-flex align-items-end justify-content-between">
                                                     <div class="list-rating">
-                                                        <a href="javascript:void(0)" class="author-img">
-                                                            <img src="<?php echo e($assetUrl('img/profiles/avatar-03.jpg')); ?>" alt="author">
-                                                        </a>
                                                         <h3 class="listing-title">
                                                             <a href="<?php echo e($relatedUrl); ?>"><?php echo e($relatedName); ?></a>
                                                         </h3>

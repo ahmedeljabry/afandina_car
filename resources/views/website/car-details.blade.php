@@ -545,6 +545,7 @@
                             </div>
                         </div>
                         <!-- /Gallery -->
+
                     </div>
                     <div class="col-lg-4 theiaStickySidebar">
                         <aside class="car-details-sidebar-card">
@@ -653,19 +654,11 @@
                                                 <a href="{{ $relatedUrl }}">
                                                     <img src="{{ $relatedImage }}" class="img-fluid" alt="{{ $relatedName }}">
                                                 </a>
-                                                <div class="fav-item justify-content-end">
-                                                    <a href="javascript:void(0)" class="fav-icon">
-                                                        <i class="feather-heart"></i>
-                                                    </a>
-                                                </div>
                                                 <span class="featured-text">{{ $relatedBrand }}</span>
                                             </div>
                                             <div class="listing-content">
                                                 <div class="listing-features d-flex align-items-end justify-content-between">
                                                     <div class="list-rating">
-                                                        <a href="javascript:void(0)" class="author-img">
-                                                            <img src="{{ $assetUrl('img/profiles/avatar-03.jpg') }}" alt="author">
-                                                        </a>
                                                         <h3 class="listing-title">
                                                             <a href="{{ $relatedUrl }}">{{ $relatedName }}</a>
                                                         </h3>

@@ -42,6 +42,9 @@
 <!-- Fancybox JS -->
 <script src="{{ asset('website/assets/plugins/fancybox/fancybox.umd.js') }}"></script>
 
+<!-- Theia Sticky Sidebar JS -->
+<script src="{{ asset('website/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js') }}"></script>
+
 <!-- Custom JS -->
 <script src="{{ asset('website/assets/js/script.js') }}"></script>
 @stack('js')

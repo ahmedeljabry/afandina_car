@@ -25148,4 +25148,29 @@ Version      : 1.0
   }
 }
 
+/* Compact car card pricing */
+.car-listing .listing-item .listing-content .listing-location-details .listing-price h6,
+.car-section .listing-item .listing-content .listing-location-details .listing-price h6,
+.details-car-grid .listing-item .listing-content .listing-location-details .listing-price h6,
+.car-section .listing-item.listing-item-two .listing-content .price {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.car-listing .listing-item .listing-content .listing-location-details .listing-price h6 span,
+.car-section .listing-item .listing-content .listing-location-details .listing-price h6 span,
+.details-car-grid .listing-item .listing-content .listing-location-details .listing-price h6 span,
+.car-section .listing-item.listing-item-two .listing-content .price span {
+  font-size: 12px;
+}
+
+@media (max-width: 991.96px) {
+  .car-listing .listing-item .listing-content .listing-location-details .listing-price h6,
+  .car-section .listing-item .listing-content .listing-location-details .listing-price h6,
+  .details-car-grid .listing-item .listing-content .listing-location-details .listing-price h6,
+  .car-section .listing-item.listing-item-two .listing-content .price {
+    font-size: 16px;
+  }
+}
+
 /*# sourceMappingURL=style.css.map */

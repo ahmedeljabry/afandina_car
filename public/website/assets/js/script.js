@@ -156,7 +156,7 @@ Version      : 1.0
 	//Stick Sidebar
 	
 	if ($(window).width() > 767) {
-		if($('.theiaStickySidebar').length > 0) {
+		if($('.theiaStickySidebar').length > 0 && $.fn.theiaStickySidebar) {
 			$('.theiaStickySidebar').theiaStickySidebar({
 			  // Settings
 			  additionalMarginTop: 30
