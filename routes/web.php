@@ -30,7 +30,7 @@ Route::group(
         Route::get('/contact-us', [WebsiteContactController::class, 'index'])->name('website.contact.index');
         Route::post('/contact-us', [WebsiteContactController::class, 'store'])->name('website.contact.store');
         Route::get('/cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
-        Route::get('/cars', [WebsiteCarController::class, 'show'])->name('website.cars.show');
+        Route::get('/cars/{car}',fn ($car) => redirect()->route('website.cars.index'))->name('website.cars.show');
         Route::get('/blogs', [WebsiteBlogController::class, 'index'])->name('website.blogs.index');
         Route::get('/blogs/{blog}', [WebsiteBlogController::class, 'show'])->name('website.blogs.show');
     }
