@@ -44,6 +44,9 @@
                     <li class="<?php echo e(request()->routeIs('home') ? 'active' : ''); ?>">
                         <a href="<?php echo e(route('home')); ?>"><?php echo e(__('website.nav.home')); ?></a>
                     </li>
+                    <li class="<?php echo e(request()->routeIs('website.about.*') ? 'active' : ''); ?>">
+                        <a href="<?php echo e(route('website.about.index')); ?>"><?php echo e(__('website.nav.about_us')); ?></a>
+                    </li>
                     <li class="<?php echo e(request()->routeIs('website.cars.*') ? 'active' : ''); ?>">
                         <a href="<?php echo e(route('website.cars.index')); ?>"><?php echo e(__('website.nav.all_cars')); ?></a>
                     </li>

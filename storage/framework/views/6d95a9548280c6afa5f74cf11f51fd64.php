@@ -1,0 +1,1 @@
+<?php /**PATH D:\afandina\resources\views\includes\admin\header.blade.php ENDPATH**/ ?>

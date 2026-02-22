@@ -44,4 +44,5 @@
 
 <!-- Custom JS -->
 <script src="<?php echo e(asset('website/assets/js/script.js')); ?>"></script>
-<?php echo $__env->yieldPushContent('js'); ?><?php /**PATH D:\afandina\resources\views/includes/website/scripts.blade.php ENDPATH**/ ?>
+<?php echo $__env->yieldPushContent('js'); ?>
+<?php /**PATH D:\afandina\resources\views/includes/website/scripts.blade.php ENDPATH**/ ?>
