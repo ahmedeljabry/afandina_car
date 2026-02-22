@@ -40,6 +40,12 @@
         $lastPage = $cars->lastPage();
         $startPage = max(1, $currentPage - 1);
         $endPage = min($lastPage, $currentPage + 1);
+
+        $formatCurrency = static function ($price, ?string $currencyLabel): string {
+            $label = trim((string) $currencyLabel);
+
+            return ($label !== '' ? $label . ' ' : '') . number_format((float) $price);
+        };
     @endphp
 
     <!-- Breadscrumb Section -->
@@ -60,99 +66,6 @@
         </div>
     </div>
     <!-- /Breadscrumb Section -->
-
-    <!-- Search -->
-    <div class="section-search page-search">
-        <div class="container">
-            <div class="search-box-banner">
-                <form action="{{ route('website.cars.index') }}" method="GET">
-                    <input type="hidden" name="sort" value="{{ $sort }}">
-                    <input type="hidden" name="per_page" value="{{ $perPage }}">
-
-                    <ul class="align-items-center">
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label>{{ __('website.cars.filters.search_placeholder') }}</label>
-                                <div class="group-img">
-                                    <input type="text" name="search" value="{{ $search }}" class="form-control" placeholder="{{ __('website.cars.filters.search_placeholder') }}">
-                                    <span><i class="feather-search"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label>{{ __('website.cars.filters.brand') }}</label>
-                            </div>
-                            <div class="input-block-wrapp">
-                                <div class="input-block date-widget">
-                                    <div class="group-img">
-                                        <select name="brand[]" class="form-control select">
-                                            <option value="">{{ __('website.cars.filters.brand') }}</option>
-                                            @foreach($brands as $brand)
-                                                <option value="{{ $brand['id'] }}" @selected(in_array((int) $brand['id'], $selectedBrandIds, true))>
-                                                    {{ $brand['name'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <span><i class="feather-grid"></i></span>
-                                    </div>
-                                </div>
-                                <div class="input-block time-widge">
-                                    <div class="group-img">
-                                        <select name="category[]" class="form-control select">
-                                            <option value="">{{ __('website.cars.filters.category') }}</option>
-                                            @foreach($categories as $category)
-                                                <option value="{{ $category['id'] }}" @selected(in_array((int) $category['id'], $selectedCategoryIds, true))>
-                                                    {{ $category['name'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <span><i class="feather-tag"></i></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-main">
-                            <div class="input-block">
-                                <label>{{ __('website.cars.filters.year') }}</label>
-                            </div>
-                            <div class="input-block-wrapp">
-                                <div class="input-block date-widge">
-                                    <div class="group-img">
-                                        <select name="year[]" class="form-control select">
-                                            <option value="">{{ __('website.cars.filters.year') }}</option>
-                                            @foreach($years as $year)
-                                                <option value="{{ $year['id'] }}" @selected(in_array((int) $year['id'], $selectedYearIds, true))>
-                                                    {{ $year['year'] }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <span><i class="feather-calendar"></i></span>
-                                    </div>
-                                </div>
-                                <div class="input-block time-widge">
-                                    <div class="group-img d-flex align-items-center gap-2 ps-3">
-                                        <input type="checkbox" id="top_available_only" name="available_only" value="1" @checked($availableOnly)>
-                                        <label for="top_available_only" class="mb-0">{{ __('website.cars.filters.availability') }}</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="column-group-last">
-                            <div class="input-block">
-                                <div class="search-btn">
-                                    <button class="btn search-button" type="submit">
-                                        <i class="fa fa-search" aria-hidden="true"></i>{{ __('website.cars.filters.apply') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                </form>
-            </div>
-        </div>
-    </div>
-    <!-- /Search -->
 
     <!-- Sort By -->
     <div class="sort-section">
@@ -431,9 +344,9 @@
                                             </div>
                                             <div class="listing-price">
                                                 @if($carPrice)
-                                                    <h6>{{ $carCurrency }}{{ number_format((int) $carPrice) }} <span>{{ __('website.units.per_day') }}</span></h6>
+                                                    <h6>{{ $formatCurrency($carPrice, $carCurrency) }} <span>{{ __('website.units.per_day') }}</span></h6>
                                                     @if($carMainPrice && $carMainPrice > $carPrice)
-                                                        <small class="text-muted text-decoration-line-through">{{ $carCurrency }}{{ number_format((int) $carMainPrice) }}</small>
+                                                        <small class="text-muted text-decoration-line-through">{{ $formatCurrency($carMainPrice, $carCurrency) }}</small>
                                                     @endif
                                                 @else
                                                     <h6>{{ __('website.common.call_for_price') }}</h6>

@@ -2,7 +2,15 @@
 @section('title', $homeTranslation?->meta_title ?? __('website.nav.home'))
 
 @section('content')
-@php use Illuminate\Support\Str; @endphp
+@php
+    use Illuminate\Support\Str;
+
+    $formatCurrency = static function ($price, ?string $currencyLabel): string {
+        $label = trim((string) $currencyLabel);
+
+        return ($label !== '' ? $label . ' ' : '') . number_format((float) $price);
+    };
+@endphp
 
     {{-- BANNER / HERO --}}
     <section class="banner-section-four">
@@ -45,7 +53,7 @@
                                 <div class="amount-icon">
                                     <span class="day-amt">
                                         <p>{{ __('website.home.hero.starting_from') }}</p>
-                                        <h6>{{ $currencySymbol }}{{ $minPrice ?? 650 }} <span>{{ __('website.home.hero.per_day') }}</span></h6>
+                                        <h6>{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ __('website.home.hero.per_day') }}</span></h6>
                                     </span>
                                 </div>
                                 <span class="rent-tag"><i class="bx bxs-circle"></i> {{ __('website.home.hero.available_for_rent') }}</span>
@@ -288,7 +296,7 @@
                                     @if ($car['daily_price'])
                                         <div>
                                             <h4 class="price">
-                                                {{ $car['currency_symbol'] }}{{ $car['daily_price'] }}
+                                                {{ $formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null) }}
                                                 <span>{{ __('website.units.per_day') }}</span>
                                             </h4>
                                         </div>
@@ -468,7 +476,7 @@
                                     <span class="day-amt">
                                         <p>{{ __('website.home.hero.starting_from') }}</p>
                                         <h6>
-                                            {{ $car['currency_symbol'] }}{{ $car['daily_price'] }}
+                                            {{ $formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null) }}
                                             <span>{{ __('website.home.hero.per_day') }}</span>
                                         </h6>
                                     </span>

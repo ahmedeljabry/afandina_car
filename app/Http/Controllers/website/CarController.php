@@ -18,7 +18,7 @@ class CarController extends Controller
     public function index(Request $request)
     {
         $locale = app()->getLocale() ?? 'en';
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext();
+        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
         $translationFor = fn ($model) => $this->translationFor($model, $locale);
 
@@ -197,7 +197,7 @@ class CarController extends Controller
         }
 
         $locale = app()->getLocale() ?? 'en';
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext();
+        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
         $car->load([
             'translations',
@@ -408,7 +408,7 @@ class CarController extends Controller
             'currency_symbol' => $currencySymbol,
         ];
     }
-    private function resolveCurrencyContext(): array
+    private function resolveCurrencyContext(string $locale): array
     {
         $currency = Currency::with('translations')->where('is_default', true)->first();
         if (!$currency) {
@@ -420,7 +420,11 @@ class CarController extends Controller
             $currencyRate = 1;
         }
 
-        $currencySymbol = $currency?->symbol ?? '$';
+        $currencySymbol = $this->translationFor($currency, $locale)?->name
+            ?? $this->translationFor($currency, 'en')?->name
+            ?? $currency?->code
+            ?? $currency?->symbol
+            ?? '$';
 
         return [$currencyRate, $currencySymbol];
     }

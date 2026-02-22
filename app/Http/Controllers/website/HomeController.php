@@ -19,7 +19,7 @@ class HomeController extends Controller
     {
         $locale = app()->getLocale() ?? 'en';
 
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext();
+        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
         // ── Home page settings & section headings ────────────────────────────
         $home = Home::with('translations')
@@ -194,13 +194,19 @@ class HomeController extends Controller
         ];
     }
 
-    private function resolveCurrencyContext(): array
+    private function resolveCurrencyContext(string $locale): array
     {
-        $currency = Currency::where('is_default', true)->first()
-            ?? Currency::first();
+        $currency = Currency::with('translations')
+            ->where('is_default', true)
+            ->first()
+            ?? Currency::with('translations')->first();
 
         $rate   = max((float) ($currency?->exchange_rate ?? 1), 0.0001);
-        $symbol = $currency?->symbol ?? '$';
+        $symbol = $this->translationFor($currency, $locale)?->name
+            ?? $this->translationFor($currency, 'en')?->name
+            ?? $currency?->code
+            ?? $currency?->symbol
+            ?? '$';
 
         return [$rate, $symbol];
     }

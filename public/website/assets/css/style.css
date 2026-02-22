@@ -24889,4 +24889,45 @@ Version      : 1.0
   font-size: 14px;
 }
 
+/* Cars and brands media consistency */
+.car-listing .listing-item .listing-img,
+.car-section .listing-item .listing-img {
+  aspect-ratio: 4/3;
+}
+
+.car-listing .listing-item .listing-img > a,
+.car-section .listing-item .listing-img > a,
+.car-section .listing-item .listing-img .img-slider,
+.car-section .listing-item .listing-img .img-slider .owl-stage-outer,
+.car-section .listing-item .listing-img .img-slider .owl-stage,
+.car-section .listing-item .listing-img .img-slider .owl-item,
+.car-section .listing-item .listing-img .img-slider .slide-images,
+.car-section .listing-item .listing-img .img-slider .slide-images > a {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.car-listing .listing-item .listing-img img,
+.car-section .listing-item .listing-img img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.brand-section .brands-slider .brand-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-section .brands-slider .brand-wrap img {
+  width: clamp(7rem, 12vw, 10rem) !important;
+  height: 5rem;
+  object-fit: contain;
+  object-position: center;
+}
+
 /*# sourceMappingURL=style.css.map */

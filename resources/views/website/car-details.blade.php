@@ -24,7 +24,9 @@
                 return __('website.common.call_for_price');
             }
 
-            return $currencySymbol . number_format((float) $price);
+            $currencyLabel = trim((string) $currencySymbol);
+
+            return ($currencyLabel !== '' ? $currencyLabel . ' ' : '') . number_format((float) $price);
         };
 
         $carName = $carDetails['name'] ?? __('website.common.car');
