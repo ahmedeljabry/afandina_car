@@ -24921,4 +24921,231 @@ Version      : 1.0
   object-position: center;
 }
 
+/* Car details sidebar card */
+.car-details-sidebar-card {
+  background: #fff;
+  border: 1px solid #e9e9e9;
+  border-radius: 18px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 24px rgba(17, 17, 17, 0.06);
+}
+
+.car-details-sidebar-head {
+  margin-bottom: 1rem;
+}
+
+.car-details-sidebar-head h3 {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
+
+.car-details-sidebar-head p {
+  margin-bottom: 0;
+  color: #666;
+}
+
+.car-details-sidebar-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  background: #f6f6f6;
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.car-details-sidebar-stats li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #3f3f3f;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.car-details-sidebar-stats li i {
+  color: #c8a96a;
+}
+
+.car-details-sidebar-overview {
+  margin-bottom: 1rem;
+}
+
+.car-details-sidebar-overview h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1.35rem;
+}
+
+.car-details-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.car-details-overview-item {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 0.75rem;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.car-details-overview-item .overview-label {
+  color: #666;
+  display: block;
+  line-height: 1.2;
+}
+
+.car-details-overview-item strong {
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.car-details-overview-item small {
+  color: #666;
+  margin-top: 0.4rem;
+}
+
+.car-color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #d9d9d9;
+  display: inline-block;
+  margin-top: 0.4rem;
+}
+
+.car-details-sidebar-prices {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.car-details-price-row + .car-details-price-row {
+  margin-top: 0.5rem;
+}
+
+.car-details-price-row {
+  background: #efefef;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+}
+
+.car-details-price-row .price-main-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.car-details-price-row strong {
+  color: #d25600;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.car-details-price-row del {
+  color: #888;
+  font-size: 1.15rem;
+}
+
+.car-details-price-row .price-meta {
+  color: #666;
+  font-weight: 500;
+}
+
+.car-details-sidebar-highlights {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.car-details-sidebar-highlights li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.car-details-sidebar-highlights li i {
+  color: #131313;
+}
+
+.car-details-sidebar-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.car-details-sidebar-actions .sidebar-action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  border-radius: 12px;
+  min-height: 48px;
+}
+
+.sidebar-whatsapp-btn {
+  background: #1faf64;
+  color: #fff;
+}
+
+.sidebar-whatsapp-btn:hover {
+  background: #0f9550;
+  color: #fff;
+}
+
+.sidebar-call-btn {
+  background: #c7a161;
+  color: #111;
+}
+
+.sidebar-call-btn:hover {
+  background: #b68f52;
+  color: #111;
+}
+
+.sidebar-action-btn.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (max-width: 1399.98px) {
+  .car-details-sidebar-head h3 {
+    font-size: 1.75rem;
+  }
+
+  .car-details-price-row strong {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .car-details-sidebar-actions {
+    flex-direction: column;
+  }
+
+  .car-details-sidebar-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .car-details-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .car-details-sidebar-highlights {
+    grid-template-columns: 1fr;
+  }
+}
+
 /*# sourceMappingURL=style.css.map */

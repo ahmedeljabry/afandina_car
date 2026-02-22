@@ -310,6 +310,7 @@ return [
         ],
         'sidebar' => [
             'pricing' => 'الأسعار',
+            'car_overview' => 'نظرة عامة على السيارة',
             'delivery' => 'توصيل',
             'self_pickup' => 'استلام ذاتي',
             'delivery_location' => 'موقع التوصيل',
@@ -319,6 +320,8 @@ return [
             'return_date' => 'تاريخ الإرجاع',
             'book' => 'احجز',
             'enquire_us' => 'استفسر الآن',
+            'call_us' => 'اتصل بنا',
+            'per_month' => '/ شهر',
         ],
         'owner_details' => [
             'title' => 'بيانات المالك',

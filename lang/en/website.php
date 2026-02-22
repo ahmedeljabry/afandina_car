@@ -310,6 +310,7 @@ return [
         ],
         'sidebar' => [
             'pricing' => 'Pricing',
+            'car_overview' => 'Car Over View',
             'delivery' => 'Delivery',
             'self_pickup' => 'Self Pickup',
             'delivery_location' => 'Delivery Location',
@@ -319,6 +320,8 @@ return [
             'return_date' => 'Return Date',
             'book' => 'Book',
             'enquire_us' => 'Enquire Us',
+            'call_us' => 'Call Us',
+            'per_month' => '/ Month',
         ],
         'owner_details' => [
             'title' => 'Listing Owner Details',
