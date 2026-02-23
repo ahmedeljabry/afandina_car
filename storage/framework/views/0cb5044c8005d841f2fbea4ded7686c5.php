@@ -26,13 +26,13 @@
                                 <div class="users-wrap">
                                     <ul class="users-list">
                                         <li>
-                                            <img src="<?php echo e(asset('website/assets/img/profiles/avatar-11.jpg')); ?>" class="img-fluid aos" alt="bannerimage">
+                                            <img src="<?php echo e(asset('admin/dist/img/user1-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                         <li>
-                                            <img src="<?php echo e(asset('website/assets/img/profiles/avatar-15.jpg')); ?>" class="img-fluid aos" alt="bannerimage">
+                                            <img src="<?php echo e(asset('admin/dist/img/user2-160x160.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                         <li>
-                                            <img src="<?php echo e(asset('website/assets/img/profiles/avatar-03.jpg')); ?>" class="img-fluid aos" alt="bannerimage">
+                                            <img src="<?php echo e(asset('admin/dist/img/user8-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                     </ul>
                                     <div class="customer-info">
