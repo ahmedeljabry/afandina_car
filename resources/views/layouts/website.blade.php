@@ -43,7 +43,7 @@
         <link rel="stylesheet" href="{{ asset('website/assets/plugins/boxicons/css/boxicons.min.css') }}">
 
         <!-- Main CSS -->
-        <link rel="stylesheet" href="{{ asset('website/assets/css/style.css?v=0.3') }}">
+        <link rel="stylesheet" href="{{ asset('website/assets/css/style.css?v=0.4') }}">
     @else
         <link rel="stylesheet" href="{{ asset('website/rtl/assets/css/bootstrap.rtl.min.css') }}">
         <!-- Fontawesome CSS -->
@@ -78,7 +78,7 @@
         <link rel="stylesheet" href="{{ asset('website/rtl/assets/plugins/boxicons/css/boxicons.min.css') }}">
 
         <!-- Main CSS -->
-        <link rel="stylesheet" href="{{ asset('website/rtl/assets/css/style.css?v=0.3') }}">
+        <link rel="stylesheet" href="{{ asset('website/rtl/assets/css/style.css?v=0.4') }}">
     @endif
 
 

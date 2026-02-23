@@ -1152,6 +1152,32 @@ Version      : 1.0
 		})
 	}
 
+	if ($('.brands-slider').length > 0) {
+		$('.brands-slider').owlCarousel({
+			loop: true,
+			margin: 70,
+			nav: false,
+			rtl: true,
+			dots: false,
+			smartSpeed: 2000,
+			autoplay: true,
+			responsive: {
+				0: {
+					items: 2
+				},
+				767: {
+					items: 4
+				},
+				1200: {
+					items: 5
+				},
+				1400: {
+					items: 6
+				}
+			}
+		})
+	}
+
 	// Card Image Carousel
 
 	if ($('.blog-slider').length > 0) {

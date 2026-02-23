@@ -43,7 +43,7 @@
         <link rel="stylesheet" href="<?php echo e(asset('website/assets/plugins/boxicons/css/boxicons.min.css')); ?>">
 
         <!-- Main CSS -->
-        <link rel="stylesheet" href="<?php echo e(asset('website/assets/css/style.css')); ?>">
+        <link rel="stylesheet" href="<?php echo e(asset('website/assets/css/style.css?v=0.4')); ?>">
     <?php else: ?>
         <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/css/bootstrap.rtl.min.css')); ?>">
         <!-- Fontawesome CSS -->
@@ -78,7 +78,7 @@
         <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/plugins/boxicons/css/boxicons.min.css')); ?>">
 
         <!-- Main CSS -->
-        <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/css/style.css')); ?>">
+        <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/css/style.css?v=0.4')); ?>">
     <?php endif; ?>
 
 

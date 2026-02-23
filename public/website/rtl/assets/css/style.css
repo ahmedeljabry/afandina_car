@@ -25316,6 +25316,9 @@ Version      : 1.0
     right: 50%;
     left: auto;
     transform: translate(50%, 20px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
     border: 1px solid #e9e4dc;
     border-radius: 12px;
     padding: 16px;
@@ -25327,6 +25330,17 @@ Version      : 1.0
 
   .header .main-menu-wrapper .main-nav > li.has-mega-dropdown:hover > .submenu.header-mega-dropdown {
     transform: translate(50%, 0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    border-color: #ddd5ca;
+  }
+
+  .header .main-menu-wrapper .main-nav > li.has-mega-dropdown:focus-within > .submenu.header-mega-dropdown {
+    transform: translate(50%, 0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     border-color: #ddd5ca;
   }
 
@@ -25335,8 +25349,8 @@ Version      : 1.0
     top: auto;
     left: auto;
     right: auto;
-    opacity: 1;
-    visibility: visible;
+    opacity: inherit;
+    visibility: inherit;
     transform: none;
     min-width: 0;
     margin: 0;
