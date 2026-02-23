@@ -9,6 +9,8 @@ return [
         'categories' => 'فئات السيارات',
         'cars_count' => ':count سيارات',
         'blogs' => 'المدونة',
+        'contact_us' => 'اتصل بنا',
+        'browse_cars' => 'تصفح سيارات :name',
         'language' => 'اللغة',
     ],
 

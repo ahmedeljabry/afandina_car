@@ -44,13 +44,14 @@ Version      : 1.0
 					e.preventDefault();
 				}
 				if(!$(this).hasClass('submenu')) {
-					$('ul', $(this).parents('ul:first')).slideUp(350);
-					$('a', $(this).parents('ul:first')).removeClass('submenu');
-					$(this).next('ul').slideDown(350);
+					var $currentMenu = $(this).closest('ul');
+					$currentMenu.children('li').children('ul.submenu').slideUp(350);
+					$currentMenu.children('li').children('a').removeClass('submenu');
+					$(this).next('ul.submenu').slideDown(350);
 					$(this).addClass('submenu');
 				} else if($(this).hasClass('submenu')) {
 					$(this).removeClass('submenu');
-					$(this).next('ul').slideUp(350);
+					$(this).next('ul.submenu').slideUp(350);
 				}
 			});
 		}

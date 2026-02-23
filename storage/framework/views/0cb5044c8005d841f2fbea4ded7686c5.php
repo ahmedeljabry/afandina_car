@@ -257,7 +257,7 @@
                                 ?>
 
                                 <?php if(count($allImages) > 1): ?>
-                                    <div class="img-slider owl-carousel">
+                                    <div class="img-slider home-car-img-slider owl-carousel">
                                         <?php $__currentLoopData = array_slice($allImages, 0, 3); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="slide-images">
                                                 <a href="<?php echo e($car['details_url']); ?>">

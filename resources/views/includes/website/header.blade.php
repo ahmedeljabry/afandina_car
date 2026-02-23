@@ -1,12 +1,11 @@
 @php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Route;
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
-    $logoLight = asset('admin/dist/logo/website_logos/logo_light.svg');
-    $logoDark = asset('admin/dist/logo/website_logos/logo_dark.svg');
 
     $currentLocale = app()->getLocale();
     $supportedLocales = collect(LaravelLocalization::getSupportedLocales())->only(['ar', 'en']);
+    $contactPageUrl = Route::has('website.contact.index') ? route('website.contact.index') : 'javascript:void(0);';
 @endphp
 
 <!-- Header -->
@@ -23,18 +22,15 @@
                 </a>
 
                 <a href="{{ route('home') }}" class="navbar-brand logo">
-                    <img src="{{ $logoLight }}" class="img-fluid" alt="Logo">
                 </a>
 
                 <a href="{{ route('home') }}" class="navbar-brand logo-small">
-                    <img src="{{ $logoDark }}" class="img-fluid" alt="Logo">
                 </a>
             </div>
 
             <div class="main-menu-wrapper">
                 <div class="menu-header">
                     <a href="{{ route('home') }}" class="menu-logo">
-                        <img src="{{ $logoLight }}" class="img-fluid" alt="Logo">
                     </a>
                     <a id="menu_close" class="menu-close" href="javascript:void(0);">
                         <i class="fas fa-times"></i>
@@ -72,6 +68,9 @@
                                                     <strong>{{ $brandItem['name'] }}</strong>
                                                     <small>{{ __('website.nav.cars_count', ['count' => $brandItem['cars_count']]) }}</small>
                                                 </span>
+                                                <span class="header-mega-item-cta">
+                                                    {{ __('website.nav.browse_cars', ['name' => $brandItem['name']]) }}
+                                                </span>
                                             </a>
                                         </li>
                                     @empty
@@ -107,6 +106,9 @@
                                                     <strong>{{ $categoryItem['name'] }}</strong>
                                                     <small>{{ __('website.nav.cars_count', ['count' => $categoryItem['cars_count']]) }}</small>
                                                 </span>
+                                                <span class="header-mega-item-cta">
+                                                    {{ __('website.nav.browse_cars', ['name' => $categoryItem['name']]) }}
+                                                </span>
                                             </a>
                                         </li>
                                     @empty
@@ -124,6 +126,9 @@
                     </li>
                     <li class="{{ request()->routeIs('website.blogs.*') ? 'active' : '' }}">
                         <a href="{{ route('website.blogs.index') }}">{{ __('website.nav.blogs') }}</a>
+                    </li>
+                    <li class="{{ request()->routeIs('website.contact.*') ? 'active' : '' }}">
+                        <a href="{{ $contactPageUrl }}">{{ __('website.nav.contact_us') }}</a>
                     </li>
 
                     <li class="has-submenu d-lg-none">

@@ -9,6 +9,8 @@ return [
         'categories' => 'Car Categories',
         'cars_count' => ':count Cars',
         'blogs' => 'Blogs',
+        'contact_us' => 'Contact Us',
+        'browse_cars' => 'Browse :name cars',
         'language' => 'Language',
     ],
 

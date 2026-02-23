@@ -255,7 +255,7 @@
                                 @endphp
 
                                 @if (count($allImages) > 1)
-                                    <div class="img-slider owl-carousel">
+                                    <div class="img-slider home-car-img-slider owl-carousel">
                                         @foreach (array_slice($allImages, 0, 3) as $img)
                                             <div class="slide-images">
                                                 <a href="{{ $car['details_url'] }}">
