@@ -650,93 +650,82 @@
                                         $relatedCurrency = $relatedItem['currency_symbol'] ?? $currencySymbol;
                                         $relatedUrl = $relatedItem['details_url'] ?? route('website.cars.index');
                                     ?>
-                                    <!-- owl carousel item -->
-                                    <div class="rental-car-item">
-                                        <div class="listing-item pb-0">
-                                            <div class="listing-img">
-                                                <a href="<?php echo e($relatedUrl); ?>">
-                                                    <img src="<?php echo e($relatedImage); ?>" class="img-fluid" alt="<?php echo e($relatedName); ?>">
-                                                </a>
-                                                <div class="fav-item justify-content-end">
-                                                    <a href="javascript:void(0)" class="fav-icon">
-                                                        <i class="feather-heart"></i>
+                                        <!-- owl carousel item -->
+                                        <div class="rental-car-item">
+                                            <div class="listing-item pb-0">
+                                                <div class="listing-img">
+                                                    <a href="<?php echo e($relatedUrl); ?>">
+                                                        <img src="<?php echo e($relatedImage); ?>" class="img-fluid" alt="<?php echo e($relatedName); ?>">
                                                     </a>
+                                                    <span class="featured-text"><?php echo e($relatedBrand); ?></span>
                                                 </div>
-                                                <span class="featured-text"><?php echo e($relatedBrand); ?></span>
-                                            </div>
-                                            <div class="listing-content">
-                                                <div class="listing-features d-flex align-items-end justify-content-between">
-                                                    <div class="list-rating">
-                                                        <a href="javascript:void(0)" class="author-img">
-                                                            <img src="<?php echo e($assetUrl('img/profiles/avatar-03.jpg')); ?>" alt="author">
-                                                        </a>
-                                                        <h3 class="listing-title">
-                                                            <a href="<?php echo e($relatedUrl); ?>"><?php echo e($relatedName); ?></a>
-                                                        </h3>
+                                                <div class="listing-content">
+                                                    <div class="listing-features d-flex align-items-end justify-content-between">
                                                         <div class="list-rating">
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star filled"></i>
-                                                            <i class="fas fa-star"></i>
-                                                            <span>(<?php echo e(number_format($reviewScore, 1)); ?>) <?php echo e($reviewCount); ?> Reviews</span>
+                                                            <h3 class="listing-title">
+                                                                <a href="<?php echo e($relatedUrl); ?>"><?php echo e($relatedName); ?></a>
+                                                            </h3>
+                                                            <div class="list-rating">
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star filled"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <span>(<?php echo e(number_format($reviewScore, 1)); ?>) <?php echo e($reviewCount); ?> Reviews</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="list-km">
-                                                        <span class="km-count"><img src="<?php echo e($assetUrl('img/icons/map-pin.svg')); ?>" alt="author"><?php echo e($relatedMileage); ?></span>
+                                                    <div class="listing-details-group">
+                                                        <ul>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-01.svg')); ?>" alt="Auto"></span>
+                                                                <p><?php echo e($relatedGear); ?></p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-02.svg')); ?>" alt="Mileage"></span>
+                                                                <p><?php echo e($relatedMileage); ?></p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-03.svg')); ?>" alt="Category"></span>
+                                                                <p><?php echo e($relatedItem['category_name'] ?? __('website.common.category')); ?></p>
+                                                            </li>
+                                                        </ul>
+                                                        <ul>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-04.svg')); ?>" alt="Brand"></span>
+                                                                <p><?php echo e($relatedBrand); ?></p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-05.svg')); ?>" alt="Year"></span>
+                                                                <p><?php echo e($relatedYear); ?></p>
+                                                            </li>
+                                                            <li>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-06.svg')); ?>" alt="Persons"></span>
+                                                                <p><?php echo e($relatedPassenger); ?></p>
+                                                            </li>
+                                                        </ul>
                                                     </div>
-                                                </div>
-                                                <div class="listing-details-group">
-                                                    <ul>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-01.svg')); ?>" alt="Auto"></span>
-                                                            <p><?php echo e($relatedGear); ?></p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-02.svg')); ?>" alt="Mileage"></span>
-                                                            <p><?php echo e($relatedMileage); ?></p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-03.svg')); ?>" alt="Category"></span>
-                                                            <p><?php echo e($relatedItem['category_name'] ?? __('website.common.category')); ?></p>
-                                                        </li>
-                                                    </ul>
-                                                    <ul>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-04.svg')); ?>" alt="Brand"></span>
-                                                            <p><?php echo e($relatedBrand); ?></p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-05.svg')); ?>" alt="Year"></span>
-                                                            <p><?php echo e($relatedYear); ?></p>
-                                                        </li>
-                                                        <li>
-                                                            <span><img src="<?php echo e($assetUrl('img/icons/car-parts-06.svg')); ?>" alt="Persons"></span>
-                                                            <p><?php echo e($relatedPassenger); ?></p>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <div class="listing-location-details">
-                                                    <div class="listing-price">
-                                                        <span><i class="feather-map-pin"></i></span><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?>
+                                                    <div class="listing-location-details">
+                                                        <div class="listing-price">
+                                                            <span><i class="feather-map-pin"></i></span><?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?>
 
+                                                        </div>
+                                                        <div class="listing-price">
+                                                            <h6><?php echo e($formatPrice($relatedPrice, $relatedCurrency)); ?> <span><?php echo e(__('website.units.per_day')); ?></span></h6>
+                                                        </div>
                                                     </div>
-                                                    <div class="listing-price">
-                                                        <h6><?php echo e($formatPrice($relatedPrice, $relatedCurrency)); ?> <span><?php echo e(__('website.units.per_day')); ?></span></h6>
+                                                    <div class="listing-button">
+                                                        <a href="<?php echo e($relatedUrl); ?>" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span><?php echo e(__('website.common.rent_now')); ?></a>
                                                     </div>
                                                 </div>
-                                                <div class="listing-button">
-                                                    <a href="<?php echo e($relatedUrl); ?>" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span><?php echo e(__('website.common.rent_now')); ?></a>
-                                                </div>
+                                                <?php if(($relatedItem['is_featured'] ?? false) === true): ?>
+                                                    <div class="feature-text">
+                                                        <span class="bg-danger"><?php echo e(__('website.common.featured')); ?></span>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
-                                            <?php if(($relatedItem['is_featured'] ?? false) === true): ?>
-                                                <div class="feature-text">
-                                                    <span class="bg-danger"><?php echo e(__('website.common.featured')); ?></span>
-                                                </div>
-                                            <?php endif; ?>
                                         </div>
-                                    </div>
-                                    <!-- /owl carousel item -->
+                                        <!-- /owl carousel item -->
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 						</div>

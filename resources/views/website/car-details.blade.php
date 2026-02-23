@@ -671,9 +671,6 @@
                                                                 <span>({{ number_format($reviewScore, 1) }}) {{ $reviewCount }} Reviews</span>
                                                             </div>
                                                         </div>
-                                                        <div class="list-km">
-                                                            <span class="km-count"><img src="{{ $assetUrl('img/icons/map-pin.svg') }}" alt="author">{{ $relatedMileage }}</span>
-                                                        </div>
                                                     </div>
                                                     <div class="listing-details-group">
                                                         <ul>

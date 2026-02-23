@@ -32,6 +32,78 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
 
+        View::composer('includes.website.header', function ($view): void {
+            $locale = app()->getLocale() ?? 'en';
+
+            $translationFor = function ($model) use ($locale): mixed {
+                if (!$model || !isset($model->translations) || !($model->translations instanceof Collection)) {
+                    return null;
+                }
+
+                return $model->translations->firstWhere('locale', $locale)
+                    ?? $model->translations->first();
+            };
+
+            $headerBrands = Brand::query()
+                ->with('translations')
+                ->withCount([
+                    'cars as cars_count' => fn ($query) => $query->where('is_active', true),
+                ])
+                ->where('is_active', true)
+                ->orderByDesc('cars_count')
+                ->orderBy('id')
+                ->take(24)
+                ->get()
+                ->map(function (Brand $brand) use ($translationFor): ?array {
+                    $name = trim((string) ($translationFor($brand)?->name ?? ''));
+
+                    if ($name === '') {
+                        return null;
+                    }
+
+                    return [
+                        'name' => $name,
+                        'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
+                        'cars_count' => (int) ($brand->cars_count ?? 0),
+                        'url' => route('website.cars.index', ['brand[]' => $brand->id]),
+                    ];
+                })
+                ->filter()
+                ->values();
+
+            $headerCategories = Category::query()
+                ->with('translations')
+                ->withCount([
+                    'cars as cars_count' => fn ($query) => $query->where('is_active', true),
+                ])
+                ->where('is_active', true)
+                ->orderByDesc('cars_count')
+                ->orderBy('id')
+                ->take(24)
+                ->get()
+                ->map(function (Category $category) use ($translationFor): ?array {
+                    $name = trim((string) ($translationFor($category)?->name ?? ''));
+
+                    if ($name === '') {
+                        return null;
+                    }
+
+                    return [
+                        'name' => $name,
+                        'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
+                        'cars_count' => (int) ($category->cars_count ?? 0),
+                        'url' => route('website.cars.index', ['category[]' => $category->id]),
+                    ];
+                })
+                ->filter()
+                ->values();
+
+            $view->with([
+                'headerBrands' => $headerBrands,
+                'headerCategories' => $headerCategories,
+            ]);
+        });
+
         View::composer('includes.website.footer', function ($view): void {
             $locale = app()->getLocale() ?? 'en';
 

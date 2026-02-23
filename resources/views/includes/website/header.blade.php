@@ -1,4 +1,5 @@
 @php
+    use Illuminate\Support\Str;
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
     $logoLight = asset('admin/dist/logo/website_logos/logo_light.svg');
@@ -44,11 +45,74 @@
                     <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
                         <a href="{{ route('home') }}">{{ __('website.nav.home') }}</a>
                     </li>
-                    <li class="{{ request()->routeIs('website.about.*') ? 'active' : '' }}">
-                        <a href="{{ route('website.about.index') }}">{{ __('website.nav.about_us') }}</a>
-                    </li>
                     <li class="{{ request()->routeIs('website.cars.*') ? 'active' : '' }}">
                         <a href="{{ route('website.cars.index') }}">{{ __('website.nav.all_cars') }}</a>
+                    </li>
+
+                    <li class="has-submenu has-mega-dropdown {{ request()->routeIs('website.cars.index') && request()->filled('brand') ? 'active' : '' }}">
+                        <a href="javascript:void(0);">
+                            {{ __('website.nav.brands') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu mega-submenu header-mega-dropdown">
+                            <li class="mega-menu-title d-lg-none">{{ __('website.nav.brands') }}</li>
+                            <li class="mega-menu-body">
+                                <div class="header-mega-grid">
+                                    @forelse ($headerBrands ?? [] as $brandItem)
+                                        <a href="{{ $brandItem['url'] }}" class="header-mega-item">
+                                            <span class="header-mega-item-media">
+                                                @if (filled($brandItem['logo_path'] ?? null))
+                                                    <img src="{{ $brandItem['logo_path'] }}" alt="{{ $brandItem['name'] }}">
+                                                @else
+                                                    <span class="header-mega-item-fallback">{{ Str::substr($brandItem['name'], 0, 1) }}</span>
+                                                @endif
+                                            </span>
+                                            <span class="header-mega-item-content">
+                                                <strong>{{ $brandItem['name'] }}</strong>
+                                                <small>{{ __('website.nav.cars_count', ['count' => $brandItem['cars_count']]) }}</small>
+                                            </span>
+                                        </a>
+                                    @empty
+                                        <span class="header-mega-empty">{{ __('website.home.empty_brands') }}</span>
+                                    @endforelse
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="has-submenu has-mega-dropdown {{ request()->routeIs('website.cars.index') && request()->filled('category') ? 'active' : '' }}">
+                        <a href="javascript:void(0);">
+                            {{ __('website.nav.categories') }}
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="submenu mega-submenu header-mega-dropdown">
+                            <li class="mega-menu-title d-lg-none">{{ __('website.nav.categories') }}</li>
+                            <li class="mega-menu-body">
+                                <div class="header-mega-grid">
+                                    @forelse ($headerCategories ?? [] as $categoryItem)
+                                        <a href="{{ $categoryItem['url'] }}" class="header-mega-item">
+                                            <span class="header-mega-item-media">
+                                                @if (filled($categoryItem['image_path'] ?? null))
+                                                    <img src="{{ $categoryItem['image_path'] }}" alt="{{ $categoryItem['name'] }}">
+                                                @else
+                                                    <span class="header-mega-item-fallback">{{ Str::substr($categoryItem['name'], 0, 1) }}</span>
+                                                @endif
+                                            </span>
+                                            <span class="header-mega-item-content">
+                                                <strong>{{ $categoryItem['name'] }}</strong>
+                                                <small>{{ __('website.nav.cars_count', ['count' => $categoryItem['cars_count']]) }}</small>
+                                            </span>
+                                        </a>
+                                    @empty
+                                        <span class="header-mega-empty">{{ __('website.home.empty_categories') }}</span>
+                                    @endforelse
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="{{ request()->routeIs('website.about.*') ? 'active' : '' }}">
+                        <a href="{{ route('website.about.index') }}">{{ __('website.nav.about_us') }}</a>
                     </li>
                     <li class="{{ request()->routeIs('website.blogs.*') ? 'active' : '' }}">
                         <a href="{{ route('website.blogs.index') }}">{{ __('website.nav.blogs') }}</a>
