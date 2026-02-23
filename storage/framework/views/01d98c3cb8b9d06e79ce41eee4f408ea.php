@@ -30,7 +30,7 @@
         <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/css/owl.carousel.min.css')); ?>">
 
         <!-- Flatpickr CSS -->
-        <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/plugins/flatpickr/flatpickr.min.css')); ?>">
+        <link rel="stylesheet" href="<?php echo e(asset('website/assets/plugins/flatpickr/flatpickr.min.css')); ?>">
 
         <!-- Fancybox CSS -->
         <link rel="stylesheet" href="<?php echo e(asset('website/rtl/assets/plugins/fancybox/fancybox.css')); ?>">
