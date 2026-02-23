@@ -67,5 +67,5 @@
 <script src="{{ $scriptAsset('website/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js', 'website/rtl/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js') }}"></script>
 
 <!-- Custom JS -->
-<script src="{{ $scriptAsset('website/assets/js/script.js', 'website/rtl/assets/js/script.js') }}"></script>
+<script src="{{ $scriptAsset('website/assets/js/script.js?v=0.3', 'website/rtl/assets/js/script.js?v=0.3') }}"></script>
 @stack('js')
