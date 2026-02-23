@@ -57,25 +57,29 @@
                         <ul class="submenu mega-submenu header-mega-dropdown">
                             <li class="mega-menu-title d-lg-none">{{ __('website.nav.brands') }}</li>
                             <li class="mega-menu-body">
-                                <div class="header-mega-grid">
+                                <ul class="header-mega-grid" role="list">
                                     @forelse ($headerBrands ?? [] as $brandItem)
-                                        <a href="{{ $brandItem['url'] }}" class="header-mega-item">
-                                            <span class="header-mega-item-media">
-                                                @if (filled($brandItem['logo_path'] ?? null))
-                                                    <img src="{{ $brandItem['logo_path'] }}" alt="{{ $brandItem['name'] }}">
-                                                @else
-                                                    <span class="header-mega-item-fallback">{{ Str::substr($brandItem['name'], 0, 1) }}</span>
-                                                @endif
-                                            </span>
-                                            <span class="header-mega-item-content">
-                                                <strong>{{ $brandItem['name'] }}</strong>
-                                                <small>{{ __('website.nav.cars_count', ['count' => $brandItem['cars_count']]) }}</small>
-                                            </span>
-                                        </a>
+                                        <li class="header-mega-grid-item">
+                                            <a href="{{ $brandItem['url'] }}" class="header-mega-item">
+                                                <span class="header-mega-item-media">
+                                                    @if (filled($brandItem['logo_path'] ?? null))
+                                                        <img src="{{ $brandItem['logo_path'] }}" alt="{{ $brandItem['name'] }}">
+                                                    @else
+                                                        <span class="header-mega-item-fallback">{{ Str::substr($brandItem['name'], 0, 1) }}</span>
+                                                    @endif
+                                                </span>
+                                                <span class="header-mega-item-content">
+                                                    <strong>{{ $brandItem['name'] }}</strong>
+                                                    <small>{{ __('website.nav.cars_count', ['count' => $brandItem['cars_count']]) }}</small>
+                                                </span>
+                                            </a>
+                                        </li>
                                     @empty
-                                        <span class="header-mega-empty">{{ __('website.home.empty_brands') }}</span>
+                                        <li class="header-mega-grid-item header-mega-grid-empty">
+                                            <span class="header-mega-empty">{{ __('website.home.empty_brands') }}</span>
+                                        </li>
                                     @endforelse
-                                </div>
+                                </ul>
                             </li>
                         </ul>
                     </li>
@@ -88,25 +92,29 @@
                         <ul class="submenu mega-submenu header-mega-dropdown">
                             <li class="mega-menu-title d-lg-none">{{ __('website.nav.categories') }}</li>
                             <li class="mega-menu-body">
-                                <div class="header-mega-grid">
+                                <ul class="header-mega-grid" role="list">
                                     @forelse ($headerCategories ?? [] as $categoryItem)
-                                        <a href="{{ $categoryItem['url'] }}" class="header-mega-item">
-                                            <span class="header-mega-item-media">
-                                                @if (filled($categoryItem['image_path'] ?? null))
-                                                    <img src="{{ $categoryItem['image_path'] }}" alt="{{ $categoryItem['name'] }}">
-                                                @else
-                                                    <span class="header-mega-item-fallback">{{ Str::substr($categoryItem['name'], 0, 1) }}</span>
-                                                @endif
-                                            </span>
-                                            <span class="header-mega-item-content">
-                                                <strong>{{ $categoryItem['name'] }}</strong>
-                                                <small>{{ __('website.nav.cars_count', ['count' => $categoryItem['cars_count']]) }}</small>
-                                            </span>
-                                        </a>
+                                        <li class="header-mega-grid-item">
+                                            <a href="{{ $categoryItem['url'] }}" class="header-mega-item">
+                                                <span class="header-mega-item-media">
+                                                    @if (filled($categoryItem['image_path'] ?? null))
+                                                        <img src="{{ $categoryItem['image_path'] }}" alt="{{ $categoryItem['name'] }}">
+                                                    @else
+                                                        <span class="header-mega-item-fallback">{{ Str::substr($categoryItem['name'], 0, 1) }}</span>
+                                                    @endif
+                                                </span>
+                                                <span class="header-mega-item-content">
+                                                    <strong>{{ $categoryItem['name'] }}</strong>
+                                                    <small>{{ __('website.nav.cars_count', ['count' => $categoryItem['cars_count']]) }}</small>
+                                                </span>
+                                            </a>
+                                        </li>
                                     @empty
-                                        <span class="header-mega-empty">{{ __('website.home.empty_categories') }}</span>
+                                        <li class="header-mega-grid-item header-mega-grid-empty">
+                                            <span class="header-mega-empty">{{ __('website.home.empty_categories') }}</span>
+                                        </li>
                                     @endforelse
-                                </div>
+                                </ul>
                             </li>
                         </ul>
                     </li>
