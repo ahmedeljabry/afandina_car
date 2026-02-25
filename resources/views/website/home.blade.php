@@ -1,6 +1,214 @@
 @extends('layouts.website')
 @section('title', $homeTranslation?->meta_title ?? __('website.nav.home'))
 
+@push('css')
+    <style>
+        .home-category-section {
+            position: relative;
+        }
+
+        .home-category-section .home-category-grid {
+            row-gap: 1rem;
+        }
+
+        .home-category-section .home-category-col {
+            width: 100%;
+        }
+
+        @media (min-width: 1200px) {
+            .home-category-section .home-category-col {
+                flex: 0 0 20%;
+                max-width: 20%;
+            }
+        }
+
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .home-category-section .home-category-col {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .home-category-section .home-category-col {
+                flex: 0 0 33.3333%;
+                max-width: 33.3333%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .home-category-section .home-category-col {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        .home-category-card {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(17, 17, 17, 0.1);
+            border-radius: 14px;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
+            box-shadow: 0 8px 18px rgba(17, 17, 17, 0.08);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .home-category-card::before {
+            content: "";
+            position: absolute;
+            inset-inline-end: -36px;
+            inset-block-start: -36px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 166, 51, 0.2) 0%, rgba(255, 166, 51, 0) 70%);
+            pointer-events: none;
+        }
+
+        .home-category-card:hover {
+            transform: translateY(-4px);
+            border-color: #ffa633;
+            box-shadow: 0 12px 24px rgba(18, 115, 132, 0.16);
+            background: linear-gradient(180deg, #ffffff 0%, #f4fbfc 100%);
+        }
+
+        .home-category-card .category-info {
+            position: relative;
+            z-index: 1;
+            padding: 0;
+        }
+
+        .home-category-card .title {
+            font-size: 15px;
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .home-category-card .title a {
+            color: #111111;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .home-category-card .home-category-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .home-category-card .home-category-count {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            color: #111111;
+            background: rgba(255, 166, 51, 0.2);
+            border: 1px solid rgba(255, 166, 51, 0.3);
+            border-radius: 999px;
+            padding: 6px 10px;
+        }
+
+        .home-category-card .link-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #127384;
+            color: #ffffff;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .home-category-card:hover .title a {
+            color: #111111;
+        }
+
+        .home-category-card:hover .link-icon {
+            background: #ffa633;
+            color: #ffffff;
+        }
+
+        .home-category-card .category-img {
+            margin-top: auto;
+            min-height: 82px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(18, 115, 132, 0.08) 0%, rgba(255, 166, 51, 0.12) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .home-category-card .category-img img {
+            width: auto;
+            max-width: 100%;
+            max-height: 66px;
+            object-fit: contain;
+            transition: transform 0.25s ease;
+        }
+
+        .home-category-card:hover .category-img img {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .home-category-card .home-category-fallback {
+            width: 100%;
+            min-height: 66px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #127384 0%, #111111 100%);
+            color: #ffffff;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .car-section .listing-item.listing-item-two .listing-content .listing-features {
+            gap: 10px;
+        }
+
+        .car-section .listing-item.listing-item-two .listing-content .listing-features .list-rating {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .home-car-card-title {
+            margin-bottom: 0;
+            min-width: 0;
+        }
+
+        .home-car-card-title a {
+            display: block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 991.98px) {
+            .home-category-card {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .home-category-section .home-category-col {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Str;
@@ -71,7 +279,7 @@
     {{-- /Banner --}}
 
     {{-- CATEGORIES --}}
-    <section class="category-section-four">
+    <section class="category-section-four home-category-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -80,27 +288,31 @@
                         <p>{{ $homeTranslation?->category_section_paragraph ?? __('website.home.sections.categories_paragraph') }}</p>
                     </div>
 
-                    <div class="row row-gap-4">
+                    <div class="row home-category-grid">
                         @forelse ($categories as $category)
-                            <div class="col-xl-2 col-md-4 col-sm-6 d-flex">
-                                <div class="category-item flex-fill">
-                                    <div class="category-info d-flex align-items-center justify-content-between">
-                                        <div>
-                                            <h6 class="title">
-                                                <a href="{{ $category['url'] }}">{{ $category['name'] }}</a>
-                                            </h6>
-                                            <p>{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
+                            <div class="home-category-col d-flex">
+                                <div class="category-item home-category-card flex-fill">
+                                    <div class="category-info">
+                                        <h6 class="title">
+                                            <a href="{{ $category['url'] }}" title="{{ $category['name'] }}">{{ $category['name'] }}</a>
+                                        </h6>
+                                        <div class="home-category-meta">
+                                            <p class="home-category-count">{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
+                                            <a href="{{ $category['url'] }}" class="link-icon" aria-label="{{ __('website.home.actions.view_all_cars') }}">
+                                                <i class="bx bx-right-arrow-alt"></i>
+                                            </a>
                                         </div>
-                                        <a href="{{ $category['url'] }}" class="link-icon">
-                                            <i class="bx bx-right-arrow-alt"></i>
-                                        </a>
                                     </div>
-                                    @if ($category['image_path'])
-                                        <div class="category-img">
+                                    <div class="category-img">
+                                        @if ($category['image_path'])
                                             <img src="{{ asset('storage/' . $category['image_path']) }}"
                                                 alt="{{ $category['name'] }}" class="img-fluid">
-                                        </div>
-                                    @endif
+                                        @else
+                                            <span class="home-category-fallback" aria-hidden="true">
+                                                <i class="bx bxs-car"></i>
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         @empty
@@ -289,8 +501,8 @@
                             <div class="listing-content">
                                 <div class="listing-features d-flex align-items-center justify-content-between">
                                     <div class="list-rating">
-                                        <h3 class="listing-title">
-                                            <a href="{{ $car['details_url'] }}">{{ $car['name'] }}</a>
+                                        <h3 class="listing-title home-car-card-title">
+                                            <a href="{{ $car['details_url'] }}" title="{{ $car['name'] }}">{{ Str::limit($car['name'], 46) }}</a>
                                         </h3>
                                     </div>
                                     @if ($car['daily_price'])

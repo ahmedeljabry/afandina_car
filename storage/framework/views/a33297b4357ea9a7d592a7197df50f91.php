@@ -1,12 +1,11 @@
 <?php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Route;
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
-    $logoLight = asset('admin/dist/logo/website_logos/logo_light.svg');
-    $logoDark = asset('admin/dist/logo/website_logos/logo_dark.svg');
 
     $currentLocale = app()->getLocale();
     $supportedLocales = collect(LaravelLocalization::getSupportedLocales())->only(['ar', 'en']);
+    $contactPageUrl = Route::has('website.contact.index') ? route('website.contact.index') : 'javascript:void(0);';
 ?>
 
 <!-- Header -->
@@ -23,18 +22,15 @@
                 </a>
 
                 <a href="<?php echo e(route('home')); ?>" class="navbar-brand logo">
-                    <img src="<?php echo e($logoLight); ?>" class="img-fluid" alt="Logo">
                 </a>
 
                 <a href="<?php echo e(route('home')); ?>" class="navbar-brand logo-small">
-                    <img src="<?php echo e($logoDark); ?>" class="img-fluid" alt="Logo">
                 </a>
             </div>
 
             <div class="main-menu-wrapper">
                 <div class="menu-header">
                     <a href="<?php echo e(route('home')); ?>" class="menu-logo">
-                        <img src="<?php echo e($logoLight); ?>" class="img-fluid" alt="Logo">
                     </a>
                     <a id="menu_close" class="menu-close" href="javascript:void(0);">
                         <i class="fas fa-times"></i>
@@ -58,25 +54,33 @@
                         <ul class="submenu mega-submenu header-mega-dropdown">
                             <li class="mega-menu-title d-lg-none"><?php echo e(__('website.nav.brands')); ?></li>
                             <li class="mega-menu-body">
-                                <div class="header-mega-grid">
+                                <ul class="header-mega-grid" role="list">
                                     <?php $__empty_1 = true; $__currentLoopData = $headerBrands ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brandItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                        <a href="<?php echo e($brandItem['url']); ?>" class="header-mega-item">
-                                            <span class="header-mega-item-media">
-                                                <?php if(filled($brandItem['logo_path'] ?? null)): ?>
-                                                    <img src="<?php echo e($brandItem['logo_path']); ?>" alt="<?php echo e($brandItem['name']); ?>">
-                                                <?php else: ?>
-                                                    <span class="header-mega-item-fallback"><?php echo e(Str::substr($brandItem['name'], 0, 1)); ?></span>
-                                                <?php endif; ?>
-                                            </span>
-                                            <span class="header-mega-item-content">
-                                                <strong><?php echo e($brandItem['name']); ?></strong>
-                                                <small><?php echo e(__('website.nav.cars_count', ['count' => $brandItem['cars_count']])); ?></small>
-                                            </span>
-                                        </a>
+                                        <li class="header-mega-grid-item">
+                                            <a href="<?php echo e($brandItem['url']); ?>" class="header-mega-item">
+                                                <span class="header-mega-item-media">
+                                                    <?php if(filled($brandItem['logo_path'] ?? null)): ?>
+                                                        <img src="<?php echo e($brandItem['logo_path']); ?>" alt="<?php echo e($brandItem['name']); ?>">
+                                                    <?php else: ?>
+                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($brandItem['name'], 0, 1)); ?></span>
+                                                    <?php endif; ?>
+                                                </span>
+                                                <span class="header-mega-item-content">
+                                                    <strong><?php echo e($brandItem['name']); ?></strong>
+                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $brandItem['cars_count']])); ?></small>
+                                                </span>
+                                                <span class="header-mega-item-cta">
+                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $brandItem['name']])); ?>
+
+                                                </span>
+                                            </a>
+                                        </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                        <span class="header-mega-empty"><?php echo e(__('website.home.empty_brands')); ?></span>
+                                        <li class="header-mega-grid-item header-mega-grid-empty">
+                                            <span class="header-mega-empty"><?php echo e(__('website.home.empty_brands')); ?></span>
+                                        </li>
                                     <?php endif; ?>
-                                </div>
+                                </ul>
                             </li>
                         </ul>
                     </li>
@@ -90,25 +94,33 @@
                         <ul class="submenu mega-submenu header-mega-dropdown">
                             <li class="mega-menu-title d-lg-none"><?php echo e(__('website.nav.categories')); ?></li>
                             <li class="mega-menu-body">
-                                <div class="header-mega-grid">
+                                <ul class="header-mega-grid" role="list">
                                     <?php $__empty_1 = true; $__currentLoopData = $headerCategories ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoryItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                        <a href="<?php echo e($categoryItem['url']); ?>" class="header-mega-item">
-                                            <span class="header-mega-item-media">
-                                                <?php if(filled($categoryItem['image_path'] ?? null)): ?>
-                                                    <img src="<?php echo e($categoryItem['image_path']); ?>" alt="<?php echo e($categoryItem['name']); ?>">
-                                                <?php else: ?>
-                                                    <span class="header-mega-item-fallback"><?php echo e(Str::substr($categoryItem['name'], 0, 1)); ?></span>
-                                                <?php endif; ?>
-                                            </span>
-                                            <span class="header-mega-item-content">
-                                                <strong><?php echo e($categoryItem['name']); ?></strong>
-                                                <small><?php echo e(__('website.nav.cars_count', ['count' => $categoryItem['cars_count']])); ?></small>
-                                            </span>
-                                        </a>
+                                        <li class="header-mega-grid-item">
+                                            <a href="<?php echo e($categoryItem['url']); ?>" class="header-mega-item">
+                                                <span class="header-mega-item-media">
+                                                    <?php if(filled($categoryItem['image_path'] ?? null)): ?>
+                                                        <img src="<?php echo e($categoryItem['image_path']); ?>" alt="<?php echo e($categoryItem['name']); ?>">
+                                                    <?php else: ?>
+                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($categoryItem['name'], 0, 1)); ?></span>
+                                                    <?php endif; ?>
+                                                </span>
+                                                <span class="header-mega-item-content">
+                                                    <strong><?php echo e($categoryItem['name']); ?></strong>
+                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $categoryItem['cars_count']])); ?></small>
+                                                </span>
+                                                <span class="header-mega-item-cta">
+                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $categoryItem['name']])); ?>
+
+                                                </span>
+                                            </a>
+                                        </li>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                        <span class="header-mega-empty"><?php echo e(__('website.home.empty_categories')); ?></span>
+                                        <li class="header-mega-grid-item header-mega-grid-empty">
+                                            <span class="header-mega-empty"><?php echo e(__('website.home.empty_categories')); ?></span>
+                                        </li>
                                     <?php endif; ?>
-                                </div>
+                                </ul>
                             </li>
                         </ul>
                     </li>
@@ -118,6 +130,9 @@
                     </li>
                     <li class="<?php echo e(request()->routeIs('website.blogs.*') ? 'active' : ''); ?>">
                         <a href="<?php echo e(route('website.blogs.index')); ?>"><?php echo e(__('website.nav.blogs')); ?></a>
+                    </li>
+                    <li class="<?php echo e(request()->routeIs('website.contact.*') ? 'active' : ''); ?>">
+                        <a href="<?php echo e($contactPageUrl); ?>"><?php echo e(__('website.nav.contact_us')); ?></a>
                     </li>
 
                     <li class="has-submenu d-lg-none">
