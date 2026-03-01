@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <title><?php echo e(config('app.name', 'Afandina')); ?> | Admin Login</title>
+    <title><?php echo e($siteName ?? config('app.name', 'Afandina')); ?> | Admin Login</title>
 
-    <link rel="shortcut icon" href="<?php echo e(asset('website/assets/img/favicon.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e($siteFavicon ?? asset('website/assets/img/favicon.png')); ?>">
 
     <link rel="stylesheet" href="<?php echo e(asset('website/assets/css/bootstrap.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('website/assets/plugins/fontawesome/css/fontawesome.min.css')); ?>">
@@ -38,7 +38,7 @@
 <div class="main-wrapper login-body">
     <header class="log-header">
         <a href="<?php echo e(url('/')); ?>">
-            <img class="img-fluid logo-dark" src="<?php echo e(asset('website/assets/img/logo.svg')); ?>" alt="<?php echo e(config('app.name', 'Afandina')); ?>">
+            <img class="img-fluid logo-dark" src="<?php echo e($siteLogo ?? asset('website/assets/img/logo.svg')); ?>" alt="<?php echo e($siteName ?? config('app.name', 'Afandina')); ?>">
         </a>
     </header>
 
@@ -138,7 +138,7 @@ unset($__errorArgs, $__bag); ?>
         <div class="container-fluid">
             <div class="copyright">
                 <div class="copyright-text">
-                    <p>&copy; <?php echo e(now()->year); ?> <?php echo e(config('app.name', 'Afandina')); ?>. All Rights Reserved.</p>
+                    <p>&copy; <?php echo e(now()->year); ?> <?php echo e($siteName ?? config('app.name', 'Afandina')); ?>. All Rights Reserved.</p>
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ use App\Http\Controllers\admin\GenericController;
 use App\Http\Controllers\admin\MainSettingController;
 use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\SitemapController;
+use App\Http\Controllers\admin\WebsiteSettingController;
 use App\Http\Controllers\HelperController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\StaticTranslationController;
@@ -46,6 +47,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/contacts', [ContactController::class, 'edit'])->name('contacts');
 
     Route::get('/main-settings/about-us', [MainSettingController::class, 'getAboutUs'])->name('get-about-us');
+    Route::get('/website-settings', [WebsiteSettingController::class, 'edit'])->name('website-settings.edit');
+    Route::put('/website-settings', [WebsiteSettingController::class, 'update'])->name('website-settings.update');
 
     Route::resource('cars', 'App\Http\Controllers\admin\old\CarController');
 

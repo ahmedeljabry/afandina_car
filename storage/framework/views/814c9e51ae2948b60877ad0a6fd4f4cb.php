@@ -9,19 +9,23 @@
 	<meta name="keywords" content="admin, estimates, bootstrap, business, html5, responsive, Projects">
 	<meta name="author" content="Dreams technologies - Bootstrap Admin Template">
 	<meta name="robots" content="noindex, nofollow">
-    <title>Afandina Admin Panel | <?php echo $__env->yieldContent('title'); ?></title>
+    <title><?php echo e($adminSiteName ?? config('app.name', 'Afandina')); ?> <?php if (! empty(trim($__env->yieldContent('title')))): ?>| <?php echo $__env->yieldContent('title'); ?><?php endif; ?></title>
 
 	<!-- Favicon -->
-	<link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="<?php echo e($adminFavicon ?? asset('website/assets/img/favicon.png')); ?>">
 
 	<!-- Apple Touch Icon -->
-	<link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="<?php echo e($adminFavicon ?? asset('website/assets/img/favicon.png')); ?>">
 
 	<!-- Theme Settings Js -->
 	<script src="<?php echo e(asset('admin/assets/js/theme-script.js')); ?>"></script>
 
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="<?php echo e(asset('admin/assets/css/bootstrap.min.css')); ?>">
+
+	<!-- Fontawesome CSS -->
+	<link rel="stylesheet" href="<?php echo e(asset('admin/assets/plugins/fontawesome/css/fontawesome.min.css')); ?>">
+	<link rel="stylesheet" href="<?php echo e(asset('admin/assets/plugins/fontawesome/css/all.min.css')); ?>">
 
 	<!-- Tabler Icon CSS -->
 	<link rel="stylesheet" href="<?php echo e(asset('admin/assets/plugins/tabler-icons/tabler-icons.min.css')); ?>">
@@ -31,6 +35,87 @@
 
 	<!-- Main CSS -->
 	<link rel="stylesheet" href="<?php echo e(asset('admin/assets/css/style.css')); ?>">
+	<style>
+		.page-wrapper .table-responsive {
+			border: 1px solid #eef2f7;
+			border-radius: 18px;
+			background: #fff;
+		}
+
+		.page-wrapper .table {
+			margin-bottom: 0;
+			--bs-table-bg: transparent;
+		}
+
+		.page-wrapper .table > :not(caption) > * > * {
+			padding: 0.95rem 0.9rem;
+			vertical-align: middle;
+			border-bottom-color: #eef2f7;
+		}
+
+		.page-wrapper .table thead th {
+			background: #f8fafc;
+			color: #334155;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			border-bottom: 1px solid #e2e8f0;
+			white-space: nowrap;
+		}
+
+		.page-wrapper .table tbody tr:hover {
+			background: rgba(59, 130, 246, 0.04);
+		}
+
+		.page-wrapper .table tbody td:last-child {
+			white-space: nowrap;
+		}
+
+		.page-wrapper .table tbody td .btn-group,
+		.page-wrapper .table tbody tr td .action-icon {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.45rem;
+			flex-wrap: nowrap;
+		}
+
+		.page-wrapper .table tbody td .btn-group form,
+		.page-wrapper .table tbody td form {
+			display: inline-block;
+			margin: 0;
+		}
+
+		.page-wrapper .table tbody td .btn-group > .btn,
+		.page-wrapper .table tbody td a.btn.btn-sm,
+		.page-wrapper .table tbody td button.btn.btn-sm,
+		.page-wrapper .table tbody td form .btn.btn-sm {
+			min-width: 2.45rem;
+			min-height: 2.45rem;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.35rem;
+			padding: 0.45rem 0.7rem;
+			border-radius: 12px;
+			line-height: 1;
+		}
+
+		.page-wrapper .table tbody td .btn i {
+			font-size: 0.95rem;
+			line-height: 1;
+		}
+
+		.page-wrapper .table .badge {
+			border-radius: 999px;
+		}
+
+		@media (max-width: 767.98px) {
+			.page-wrapper .table > :not(caption) > * > * {
+				padding: 0.8rem 0.75rem;
+			}
+		}
+	</style>
     <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 

@@ -1,15 +1,23 @@
+<?php
+    $navbarConfig = is_array($adminNavbar ?? null) ? $adminNavbar : [];
+    $sidebarLogo = $navbarConfig['logo'] ?? asset('admin/dist/logo/website_logos/logo_light.svg');
+    $sidebarSmallLogo = $navbarConfig['small_logo'] ?? $sidebarLogo;
+    $sidebarDarkLogo = $navbarConfig['dark_logo'] ?? $sidebarLogo;
+    $brandName = $adminSiteName ?? config('app.name', 'Admin');
+?>
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <!-- Logo -->
     <div class="sidebar-logo">
         <a href="<?php echo e(route('admin.dashboard')); ?>" class="logo logo-normal">
-            <img src="<?php echo e(asset('admin/assets/img/logo.svg')); ?>" alt="Logo">
+            <img src="<?php echo e($sidebarLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
         <a href="<?php echo e(route('admin.dashboard')); ?>" class="logo-small">
-            <img src="<?php echo e(asset('admin/assets/img/logo-small.svg')); ?>" alt="Logo">
+            <img src="<?php echo e($sidebarSmallLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
         <a href="<?php echo e(route('admin.dashboard')); ?>" class="dark-logo">
-            <img src="<?php echo e(asset('admin/assets/img/logo-white.svg')); ?>" alt="Logo">
+            <img src="<?php echo e($sidebarDarkLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
     </div>
     <!-- /Logo -->
@@ -119,6 +127,9 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
+                                <li class="<?php echo e(request()->routeIs('admin.website-settings.*') ? 'active' : ''); ?>">
+                                    <a href="<?php echo e(route('admin.website-settings.edit')); ?>">Branding</a>
+                                </li>
                                 <li>
                                     <a href="<?php echo e(route('admin.languages.index')); ?>">Language</a>
                                 </li>

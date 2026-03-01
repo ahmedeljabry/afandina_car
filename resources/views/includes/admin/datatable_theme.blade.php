@@ -1,6 +1,6 @@
 @once('admin-datatable-theme')
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap4.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
         <style>
             .management-hero {
                 background: linear-gradient(135deg, #4c6ef5, #6a82fb);
@@ -38,12 +38,65 @@
                 border-bottom: 0;
                 padding: 1.5rem 1.75rem 0;
             }
+            .management-card .table-responsive {
+                border: 1px solid #e5e7eb;
+                border-radius: 18px;
+                background: #fff;
+            }
+            .management-table {
+                margin-bottom: 0;
+            }
             .management-table thead th {
                 text-transform: uppercase;
                 font-size: .8rem;
                 letter-spacing: .05em;
                 border-top: none;
                 border-bottom-width: 1px;
+            }
+            .management-table tbody td {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                border-color: #eef2f7;
+            }
+            .management-table tbody tr:hover {
+                background: rgba(76, 110, 245, .04);
+            }
+            .management-table tbody td .btn-group {
+                display: inline-flex;
+                align-items: center;
+                gap: .5rem;
+            }
+            .management-table tbody td .btn-group > .btn {
+                min-width: 2.5rem;
+                min-height: 2.5rem;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 12px !important;
+                padding: .5rem .75rem;
+                line-height: 1;
+            }
+            .management-table tbody td .btn-outline-info {
+                background: rgba(14, 165, 233, .08);
+                border-color: rgba(14, 165, 233, .35);
+                color: #0284c7;
+            }
+            .management-table tbody td .btn-outline-info:hover,
+            .management-table tbody td .btn-outline-info:focus {
+                background: #0284c7;
+                border-color: #0284c7;
+                color: #fff;
+            }
+            .management-table tbody td .btn-outline-danger {
+                background: rgba(239, 68, 68, .08);
+                border-color: rgba(239, 68, 68, .35);
+                color: #dc2626;
+            }
+            .management-table tbody td .btn-outline-danger:hover,
+            .management-table tbody td .btn-outline-danger:focus {
+                background: #dc2626;
+                border-color: #dc2626;
+                color: #fff;
             }
             .status-pill {
                 display: inline-flex;
@@ -71,6 +124,11 @@
             }
             .dataTables_wrapper .dataTables_length select {
                 border-radius: 12px;
+            }
+            .dataTables_wrapper .dataTables_length label,
+            .dataTables_wrapper .dataTables_filter label {
+                font-weight: 600;
+                color: #475569;
             }
             .dataTables_wrapper .dataTables_paginate .page-link {
                 border-radius: 10px;
@@ -113,6 +171,6 @@
 
     @push('scripts')
         <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap4.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
     @endpush
 @endonce

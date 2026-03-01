@@ -1,15 +1,23 @@
+@php
+    $navbarConfig = is_array($adminNavbar ?? null) ? $adminNavbar : [];
+    $sidebarLogo = $navbarConfig['logo'] ?? asset('admin/dist/logo/website_logos/logo_light.svg');
+    $sidebarSmallLogo = $navbarConfig['small_logo'] ?? $sidebarLogo;
+    $sidebarDarkLogo = $navbarConfig['dark_logo'] ?? $sidebarLogo;
+    $brandName = $adminSiteName ?? config('app.name', 'Admin');
+@endphp
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <!-- Logo -->
     <div class="sidebar-logo">
         <a href="{{ route('admin.dashboard') }}" class="logo logo-normal">
-            <img src="{{ asset('admin/assets/img/logo.svg') }}" alt="Logo">
+            <img src="{{ $sidebarLogo }}" alt="{{ $brandName }}">
         </a>
         <a href="{{ route('admin.dashboard') }}" class="logo-small">
-            <img src="{{ asset('admin/assets/img/logo-small.svg') }}" alt="Logo">
+            <img src="{{ $sidebarSmallLogo }}" alt="{{ $brandName }}">
         </a>
         <a href="{{ route('admin.dashboard') }}" class="dark-logo">
-            <img src="{{ asset('admin/assets/img/logo-white.svg') }}" alt="Logo">
+            <img src="{{ $sidebarDarkLogo }}" alt="{{ $brandName }}">
         </a>
     </div>
     <!-- /Logo -->
@@ -119,6 +127,9 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
+                                <li class="{{ request()->routeIs('admin.website-settings.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.website-settings.edit') }}">Branding</a>
+                                </li>
                                 <li>
                                     <a href="{{ route('admin.languages.index') }}">Language</a>
                                 </li>

@@ -34,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('includes.website.header', function ($view): void {
             $locale = app()->getLocale() ?? 'en';
+            $branding = $this->getBrandingSettings();
 
             $translationFor = function ($model) use ($locale): mixed {
                 if (!$model || !isset($model->translations) || !($model->translations instanceof Collection)) {
@@ -101,11 +102,14 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'headerBrands' => $headerBrands,
                 'headerCategories' => $headerCategories,
+                'headerLogo' => $branding['logo'],
+                'headerSiteName' => $branding['site_name'],
             ]);
         });
 
         View::composer('includes.website.footer', function ($view): void {
             $locale = app()->getLocale() ?? 'en';
+            $branding = $this->getBrandingSettings();
 
             $translationFor = function ($model) use ($locale): mixed {
                 if (!$model || !isset($model->translations) || !($model->translations instanceof Collection)) {
@@ -126,13 +130,6 @@ class AppServiceProvider extends ServiceProvider
                 ->where('is_active', true)
                 ->latest('id')
                 ->first();
-
-            $template = Template::query()->latest('id')->first();
-
-            $footerLogo = $this->normalizeAssetPath(
-                $template?->logo_path,
-                asset('admin/dist/logo/website_logos/logo_light.svg')
-            );
 
             $footerBrands = Brand::query()
                 ->with('translations')
@@ -268,11 +265,11 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'footerHomeTranslation' => $homeTranslation,
-                'footerLogo' => $footerLogo,
+                'footerLogo' => $branding['dark_logo'],
                 'footerDescription' => $homeTranslation?->footer_section_paragraph
                     ?? $homeTranslation?->contact_us_paragraph
                     ?? $contact?->additional_info,
-                'footerCompanyName' => $contact?->name ?? config('app.name', 'Afandina Car Rental'),
+                'footerCompanyName' => $branding['site_name'],
                 'quickLinks' => $quickLinks,
                 'supportItems' => $supportItems,
                 'socialLinks' => $socialLinks,
@@ -282,6 +279,66 @@ class AppServiceProvider extends ServiceProvider
                 'paymentMethods' => $paymentMethods,
             ]);
         });
+
+        View::composer('layouts.website', function ($view): void {
+            $branding = $this->getBrandingSettings();
+
+            $view->with([
+                'websiteSiteName' => $branding['site_name'],
+                'websiteFavicon' => $branding['favicon'],
+            ]);
+        });
+
+        View::composer(['layouts.admin_layout', 'includes.admin.navbar', 'includes.admin.sidebar'], function ($view): void {
+            $branding = $this->getBrandingSettings();
+            $existingConfig = is_array($view->getData()['adminNavbar'] ?? null)
+                ? $view->getData()['adminNavbar']
+                : [];
+
+            $view->with('adminNavbar', array_merge([
+                'logo' => $branding['logo'],
+                'small_logo' => $branding['logo'],
+                'dark_logo' => $branding['dark_logo'],
+            ], $existingConfig));
+
+            $view->with([
+                'adminSiteName' => $branding['site_name'],
+                'adminFavicon' => $branding['favicon'],
+            ]);
+        });
+    }
+
+    private function getBrandingSettings(): array
+    {
+        static $branding = null;
+
+        if ($branding !== null) {
+            return $branding;
+        }
+
+        $template = Template::query()->latest('id')->first();
+        $siteName = filled($template?->site_name)
+            ? trim((string) $template->site_name)
+            : config('app.name', 'Afandina Car Rental');
+        $logo = $this->normalizeAssetPath(
+            $template?->logo_path,
+            asset('website/assets/img/logo.svg')
+        );
+        $darkLogo = $this->normalizeAssetPath(
+            $template?->dark_logo_path ?? $template?->logo_path,
+            $logo
+        );
+        $favicon = $this->normalizeAssetPath(
+            $template?->favicon_path,
+            asset('website/assets/img/favicon.png')
+        );
+
+        return $branding = [
+            'site_name' => $siteName,
+            'logo' => $logo,
+            'dark_logo' => $darkLogo,
+            'favicon' => $favicon,
+        ];
     }
 
     private function normalizeAssetPath(?string $path, string $fallback): string

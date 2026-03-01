@@ -78,9 +78,10 @@
     $archivedNotifications = $notifications->where('archived', true)->values();
 
     $profileUrl = $routeUrl($navbarConfig['profile_route'] ?? 'admin.dashboard');
-    $settingsUrl = $routeUrl($navbarConfig['settings_route'] ?? 'admin.languages.index');
+    $settingsUrl = $routeUrl($navbarConfig['settings_route'] ?? 'admin.website-settings.edit');
     $paymentsUrl = $routeUrl($navbarConfig['payments_route'] ?? 'admin.currencies.index');
     $logoutUrl = $routeUrl('admin.logout');
+    $brandName = $adminSiteName ?? config('app.name', 'Admin');
 @endphp
 
 <!-- Header -->
@@ -88,10 +89,10 @@
     <div class="main-header">
         <div class="header-left">
             <a href="{{ $logoUrl }}" class="logo">
-                <img src="{{ $logo }}" alt="{{ config('app.name', 'Admin') }}">
+                <img src="{{ $logo }}" alt="{{ $brandName }}">
             </a>
             <a href="{{ $logoUrl }}" class="dark-logo">
-                <img src="{{ $darkLogo }}" alt="{{ config('app.name', 'Admin') }}">
+                <img src="{{ $darkLogo }}" alt="{{ $brandName }}">
             </a>
         </div>
 

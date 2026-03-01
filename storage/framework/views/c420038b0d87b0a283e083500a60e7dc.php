@@ -18,6 +18,9 @@
 <!-- Bootstrap Tagsinput JS -->
 <script src="<?php echo e(asset('admin/assets/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js')); ?>"></script>
 
+<!-- Select2 JS -->
+<script src="<?php echo e(asset('admin/assets/plugins/select2/js/select2.min.js')); ?>"></script>
+
 <!-- ApexChart JS -->
 <script src="<?php echo e(asset('admin/assets/plugins/apexchart/apexcharts.min.js')); ?>"></script>
 <script src="<?php echo e(asset('admin/assets/plugins/apexchart/chart-data.js')); ?>"></script>

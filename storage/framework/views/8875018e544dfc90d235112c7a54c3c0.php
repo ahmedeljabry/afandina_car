@@ -3,10 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-	<title><?php echo $__env->yieldContent('title'); ?></title>
+	<title><?php if (! empty(trim($__env->yieldContent('title')))): ?><?php echo $__env->yieldContent('title'); ?> | <?php endif; ?><?php echo e($websiteSiteName ?? config('app.name', 'Afandina Car Rental')); ?></title>
 
 	<!-- Favicon -->
-	<link rel="shortcut icon" href="<?php echo e(asset('website/assets/img/favicon.png')); ?>">
+	<link rel="shortcut icon" href="<?php echo e($websiteFavicon ?? asset('website/assets/img/favicon.png')); ?>">
 
     <?php if(app()->getLocale() == 'en'): ?>
     	<!-- Bootstrap CSS -->

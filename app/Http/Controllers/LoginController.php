@@ -13,12 +13,19 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         $template = Template::query()->latest('id')->first();
+        $siteName = filled($template?->site_name)
+            ? trim((string) $template->site_name)
+            : config('app.name', 'Afandina');
         $siteLogo = $this->resolveAssetPath(
             $template?->logo_path,
-            asset('admin/dist/logo/website_logos/logo_light.svg')
+            asset('website/assets/img/logo.svg')
+        );
+        $siteFavicon = $this->resolveAssetPath(
+            $template?->favicon_path,
+            asset('website/assets/img/favicon.png')
         );
 
-        return view('pages.admin.auth.login', compact('siteLogo'));
+        return view('pages.admin.auth.login', compact('siteLogo', 'siteName', 'siteFavicon'));
     }
 
     public function login(Request $request)

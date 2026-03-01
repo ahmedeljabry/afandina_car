@@ -3,10 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-	<title>@yield('title')</title>
+	<title>@hasSection('title')@yield('title') | @endif{{ $websiteSiteName ?? config('app.name', 'Afandina Car Rental') }}</title>
 
 	<!-- Favicon -->
-	<link rel="shortcut icon" href="{{ asset('website/assets/img/favicon.png') }}">
+	<link rel="shortcut icon" href="{{ $websiteFavicon ?? asset('website/assets/img/favicon.png') }}">
 
     @if (app()->getLocale() == 'en')
     	<!-- Bootstrap CSS -->

@@ -22,15 +22,18 @@
                 </a>
 
                 <a href="<?php echo e(route('home')); ?>" class="navbar-brand logo">
+                    <img src="<?php echo e($headerLogo ?? asset('website/assets/img/logo.svg')); ?>" alt="<?php echo e($headerSiteName ?? config('app.name', 'Afandina Car Rental')); ?>" class="img-fluid">
                 </a>
 
                 <a href="<?php echo e(route('home')); ?>" class="navbar-brand logo-small">
+                    <img src="<?php echo e($headerLogo ?? asset('website/assets/img/logo.svg')); ?>" alt="<?php echo e($headerSiteName ?? config('app.name', 'Afandina Car Rental')); ?>" class="img-fluid">
                 </a>
             </div>
 
             <div class="main-menu-wrapper">
                 <div class="menu-header">
                     <a href="<?php echo e(route('home')); ?>" class="menu-logo">
+                        <img src="<?php echo e($headerLogo ?? asset('website/assets/img/logo.svg')); ?>" alt="<?php echo e($headerSiteName ?? config('app.name', 'Afandina Car Rental')); ?>" class="img-fluid">
                     </a>
                     <a id="menu_close" class="menu-close" href="javascript:void(0);">
                         <i class="fas fa-times"></i>
