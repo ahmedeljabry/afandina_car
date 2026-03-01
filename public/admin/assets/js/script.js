@@ -177,6 +177,100 @@ Template Name: Dreams rent - Bootstrap Admin Template
 	
 	// Sidebar Initiate
 	init();
+
+	// Sidebar Search
+	var $sidebarSearch = $('#sidebar-search');
+	if ($sidebarSearch.length > 0) {
+		var resetSidebarGroup = function($group) {
+			$group.children('ul').children('li').show();
+			$group.children('ul').children('li.submenu').each(function() {
+				var $submenu = $(this);
+				var $toggle = $submenu.children('a').first();
+				var $submenuList = $submenu.children('ul').first();
+
+				$submenuList.children('li').show();
+
+				if ($toggle.hasClass('subdrop') || $toggle.hasClass('active') || $submenuList.find('a.active').length) {
+					$submenuList.show();
+				} else {
+					$submenuList.hide();
+				}
+			});
+		};
+
+		var filterSidebarMenu = function(query) {
+			var normalizedQuery = $.trim(query).toLowerCase();
+
+			$('.sidebar-section-group').each(function() {
+				var $group = $(this);
+				var $title = $group.prev('.sidebar-section-title');
+				var groupHasMatches = false;
+
+				if (!normalizedQuery) {
+					resetSidebarGroup($group);
+					$group.show();
+					$title.show();
+					return;
+				}
+
+				$group.children('ul').children('li').each(function() {
+					var $item = $(this);
+
+					if ($item.hasClass('submenu')) {
+						var $toggle = $item.children('a').first();
+						var $submenuList = $item.children('ul').first();
+						var parentText = $.trim($toggle.text()).toLowerCase();
+						var parentMatch = parentText.indexOf(normalizedQuery) !== -1;
+						var childHasMatch = false;
+
+						$submenuList.children('li').each(function() {
+							var $child = $(this);
+							var childText = $.trim($child.children('a').first().text()).toLowerCase();
+							var childMatch = parentMatch || childText.indexOf(normalizedQuery) !== -1;
+
+							$child.toggle(childMatch);
+							childHasMatch = childHasMatch || childMatch;
+						});
+
+						var showSubmenu = parentMatch || childHasMatch;
+						$item.toggle(showSubmenu);
+
+						if (showSubmenu) {
+							groupHasMatches = true;
+							$toggle.addClass('subdrop');
+							$submenuList.show();
+						} else {
+							$toggle.removeClass('subdrop');
+							$submenuList.hide();
+						}
+
+						return;
+					}
+
+					var itemText = $.trim($item.children('a').first().text()).toLowerCase();
+					var showItem = itemText.indexOf(normalizedQuery) !== -1;
+
+					$item.toggle(showItem);
+					groupHasMatches = groupHasMatches || showItem;
+				});
+
+				$group.toggle(groupHasMatches);
+				$title.toggle(groupHasMatches);
+			});
+		};
+
+		$sidebarSearch.on('input', function() {
+			filterSidebarMenu($(this).val());
+		});
+
+		$sidebarSearch.on('keydown', function(event) {
+			if (event.key === 'Escape') {
+				$(this).val('');
+				filterSidebarMenu('');
+			}
+		});
+	}
+
 	$(document).on('mouseover', function(e) {
         e.stopPropagation();
         if ($('body').hasClass('mini-sidebar') && $('#toggle_btn').is(':visible')) {

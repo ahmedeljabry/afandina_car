@@ -15313,7 +15313,9 @@ button.swal2-cancel {
   margin-top: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 100%;
   height: 100%;
 }
 .sidebar .sidebar-inner {
@@ -15322,6 +15324,9 @@ button.swal2-cancel {
 .sidebar .sidebar-menu {
   margin-top: 57px;
   padding: 0;
+}
+.sidebar .sidebar-menu > ul {
+  width: 100%;
 }
 .sidebar .sidebar-menu > ul > li {
   padding: 0 16px 12px;
@@ -15802,6 +15807,10 @@ button.swal2-cancel {
 }
 .sidebar .form-group {
   padding: 16px;
+  margin-bottom: 0;
+}
+.sidebar .sidebar-search-wrap {
+  flex-shrink: 0;
 }
 .sidebar .input-group {
   width: 100%;

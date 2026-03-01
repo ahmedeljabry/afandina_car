@@ -3,241 +3,198 @@
 @section('title', 'Edit ' . $modelName)
 
 @section('page-title')
-    {{ isset($item) ? __('Edit :entity', ['entity' => $modelName]) : __('Add :entity', ['entity' => $modelName]) }}
+    {{ __('Edit :entity', ['entity' => $modelName]) }}
 @endsection
 
+@section('page-actions')
+    <a href="{{ route('admin.' . $modelName . '.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center mb-2">
+        <i class="fas fa-arrow-left me-1"></i>{{ __('Back to List') }}
+    </a>
+@endsection
 
-@include('includes.admin.form_theme')
-
+@include('includes.admin.blog_editor_theme')
 
 @section('content')
-
     @php
-        $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
-        $formStats = [];
-        if ($languageCount) {
-            $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
-        }
-        $formStats[] = ['icon' => 'fas fa-layer-group', 'label' => __('Guided workflow')];
-        $formStats[] = ['icon' => 'fas fa-save', 'label' => __('Content safety')];
-        $formTitle = isset($item)
-            ? __('Update :entity', ['entity' => $modelName])
-            : __('Add :entity', ['entity' => $modelName]);
-        $formDescription = isset($item)
-            ? __('Review the content, adjust translations and assets, then save confidently.')
-            : __('Complete the details below to publish a polished entry.');
+        $placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='560' viewBox='0 0 800 560'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23dbeafe'/%3E%3Cstop offset='1' stop-color='%23e2e8f0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Cpath d='M0 430L170 280l120 90 165-180 120 115 225-175v430H0z' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='50%25' fill='%23475569' font-size='28' text-anchor='middle' dy='.3em'%3EFeature Image Preview%3C/text%3E%3C/svg%3E";
+        $rawImagePath = ltrim((string) ($item->image_path ?? ''), '/');
+        $imagePreview = $rawImagePath !== ''
+            ? (str_starts_with($rawImagePath, 'storage/') ? asset($rawImagePath) : asset('storage/' . $rawImagePath))
+            : $placeholderImage;
+        $selectedCarIds = collect(old('cars', $item->cars->pluck('id')->all()))->map(fn ($value) => (string) $value)->all();
+        $translationsByLocale = $item->translations->keyBy('locale');
+        $seoQuestionsByLocale = $item->seoQuestions->groupBy('locale');
     @endphp
 
-    @include('includes.admin.form_header', [
-        'title' => $formTitle,
-        'description' => $formDescription,
-        'stats' => $formStats
-    ])
+    <div class="blog-editor-layout">
+        <div>
+            <div class="blog-editor-hero mb-4">
+                <h2>{{ __('Shape the Story') }}</h2>
+                <p>{{ __('Refine the article, improve language coverage, and tighten SEO from one cleaner editing workspace.') }}</p>
+                <div class="blog-editor-hero-metrics">
+                    <span class="blog-editor-chip"><i class="fas fa-language"></i>{{ __(':count Locale(s)', ['count' => $activeLanguages->count()]) }}</span>
+                    <span class="blog-editor-chip"><i class="fas fa-image"></i>{{ __('Cover managed') }}</span>
+                    <span class="blog-editor-chip"><i class="fas fa-search"></i>{{ __('SEO maintained') }}</span>
+                    <span class="blog-editor-chip"><i class="fas fa-pen"></i>{{ __('Live revisions') }}</span>
+                </div>
+            </div>
 
-<!-- Display errors -->
+            @if ($errors->any())
+                <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4">
+                    <strong>{{ __('Please review the highlighted fields.') }}</strong>
+                    <div class="small mt-1">{{ $errors->first() }}</div>
+                </div>
+            @endif
 
-
-    <div class="card form-card card-primary card-outline card-tabs shadow-lg">
-        <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
-            <!-- Tabs Header -->
-            <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill"
-                        href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
-                        <i class="fas fa-info-circle"></i> General Data
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-toggle="pill"
-                        href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated"
-                        aria-selected="false">
-                        <i class="fas fa-language"></i> Translated Data
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-toggle="pill" href="#custom-tabs-seo"
-                        role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
-                        <i class="fas fa-search"></i> SEO Data
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="card-body">
-            <!-- Form -->
-            <form action="{{ route('admin.' . $modelName . '.update', $item->id) }}" method="POST"
-                enctype="multipart/form-data">
+            <form action="{{ route('admin.' . $modelName . '.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="blog-editor">
                 @csrf
                 @method('PUT')
 
-                <div class="tab-content" id="custom-tabs-three-tabContent">
-                    <!-- General Data Tab Content -->
-                    <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel"
-                        aria-labelledby="custom-tabs-general-tab">
-                        <div class="form-group text-center">
-                            <!-- Image Preview with Circular Border and Placeholder -->
-                            <div class="mb-3">
-                                <img id="imagePreviewLogo" src="{{ $item->image_path
-        ? asset('storage/' . $item->image_path)
-        : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' fill='%23555' font-size='20' text-anchor='middle' dy='.3em'%3E400x300%3C/text%3E%3C/svg%3E"
-                                                     }}" alt="Logo Preview" class="shadow image-rectangle-preview"
-                                    style="max-height: 400px; width: 300px; object-fit: cover; border: 2px solid #ddd;">
+                <div class="card blog-editor-main-card">
+                    <div class="blog-editor-tabbar nav nav-pills" role="tablist">
+                        <button class="nav-link active" type="button" data-bs-toggle="pill" data-bs-target="#blog-edit-general" role="tab">
+                            <i class="fas fa-pen-nib"></i>{{ __('General') }}
+                        </button>
+                        <button class="nav-link" type="button" data-bs-toggle="pill" data-bs-target="#blog-edit-translated" role="tab">
+                            <i class="fas fa-language"></i>{{ __('Translated Content') }}
+                        </button>
+                        <button class="nav-link" type="button" data-bs-toggle="pill" data-bs-target="#blog-edit-seo" role="tab">
+                            <i class="fas fa-chart-line"></i>{{ __('SEO & Discovery') }}
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active blog-editor-pane" id="blog-edit-general" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-5">
+                                        <div class="blog-editor-panel h-100">
+                                            <span class="blog-editor-kicker">{{ __('Cover Story') }}</span>
+                                            <h5 class="blog-editor-panel-title">{{ __('Feature Image') }}</h5>
+                                            <div class="blog-editor-preview-box mb-3">
+                                                <img src="{{ $imagePreview }}" alt="{{ __('Blog preview') }}" id="blogImagePreview">
+                                            </div>
+                                            <label for="image_path" class="blog-editor-label">{{ __('Replace Image') }}</label>
+                                            <input type="file" name="image_path" id="image_path" class="form-control @error('image_path') is-invalid @enderror" accept=".jpg,.jpeg,.png,.svg,.webp">
+                                            @error('image_path')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                            <p class="blog-editor-hint mt-3 mb-0">{{ __('Swap the cover only when it improves readability in cards, banners, and social previews.') }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-7">
+                                        <div class="blog-editor-panel">
+                                            <span class="blog-editor-kicker">{{ __('Connections') }}</span>
+                                            <h5 class="blog-editor-panel-title">{{ __('Post Settings') }}</h5>
+
+                                            <div class="mb-4">
+                                                <label for="cars" class="blog-editor-label">{{ __('Cars Related to This Post') }}</label>
+                                                <select class="form-control car-select" name="cars[]" id="cars" multiple="multiple">
+                                                    @foreach ($cars as $car)
+                                                        @php
+                                                            $carTranslation = $car->translations->first();
+                                                            $carImage = $car->default_image_path
+                                                                ? asset('storage/' . ltrim($car->default_image_path, '/'))
+                                                                : asset('admin/assets/img/car/car-01.jpg');
+                                                        @endphp
+                                                        <option value="{{ $car->id }}" data-image="{{ $carImage }}" @selected(in_array((string) $car->id, $selectedCarIds, true))>
+                                                            {{ $carTranslation->name ?? __('Car #:id', ['id' => $car->id]) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <p class="blog-editor-hint mt-2 mb-0">{{ __('Keep related vehicles aligned with the story so editorial content still drives discovery.') }}</p>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="blog-editor-switch">
+                                                        <div>
+                                                            <strong>{{ __('Publish State') }}</strong>
+                                                            <span>{{ __('Control whether this article is active in listings and the storefront.') }}</span>
+                                                        </div>
+                                                        <div class="form-check form-switch m-0">
+                                                            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" @checked((bool) old('is_active', $item->is_active))>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="blog-editor-switch">
+                                                        <div>
+                                                            <strong>{{ __('Homepage Spotlight') }}</strong>
+                                                            <span>{{ __('Decide whether this article should stay featured on the homepage.') }}</span>
+                                                        </div>
+                                                        <div class="form-check form-switch m-0">
+                                                            <input class="form-check-input" type="checkbox" name="show_in_home" id="show_in_home" value="1" @checked((bool) old('show_in_home', $item->show_in_home))>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-
-                            <!-- File Input for Logo Upload -->
-                            <div class="custom-file">
-                                <input type="file" name="image_path"
-                                    class="custom-file-input image-upload @error('image_path') is-invalid @enderror"
-                                    id="image_path" data-preview="imagePreviewLogo">
-                                <label class="custom-file-label" for="image_path">Upload Logo</label>
-                            </div>
-
-                            <!-- Error Handling -->
-                            @error('image_path')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-
-                        @php
-                            $selectedCarIds = $item->cars->pluck('id')->toArray();
-                        @endphp
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="cars" class="font-weight-bold">Cars related to Post</label>
-                                <select class="form-control car-select" name="cars[]" multiple="multiple"
-                                    style="width: 100%;">
-                                    @foreach($cars as $car)
-                                        <option value="{{ $car->id }}"
-                                            data-image="{{ $car->default_image_path ? asset('storage/' . $car->default_image_path) : asset('/admin/dist/logo/empty_image.png') }}"
-                                            {{ in_array($car->id, $selectedCarIds) ? 'selected' : '' }}>
-                                            {{ $car->translations->first()->name }}
-                                        </option>
+                            <div class="tab-pane fade blog-editor-pane" id="blog-edit-translated" role="tabpanel">
+                                <div class="nav nav-pills blog-editor-langbar" role="tablist">
+                                    @foreach ($activeLanguages as $lang)
+                                        <button class="nav-link @if($loop->first) active @endif" type="button" data-bs-toggle="pill" data-bs-target="#blog-edit-lang-{{ $lang->code }}" role="tab">
+                                            {{ $lang->name }}
+                                        </button>
                                     @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="is_active" class="font-weight-bold">Active</label>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="is_active" class="custom-control-input" id="is_active"
-                                            value="{{$item->is_active}}" {{$item->is_active ? 'checked' : ''}}>
-                                        <label class="custom-control-label" for="is_active">Active</label>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="show_in_home" class="font-weight-bold">Show In Home</label>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="show_in_home" class="custom-control-input"
-                                            id="show_in_home" value="{{$item->show_in_home}}"
-                                            {{$item->show_in_home ? 'checked' : ''}}>
-                                        <label class="custom-control-label" for="show_in_home">Show In Home</label>
-                                    </div>
-                                </div>
-                            </div>
 
-                        </div>
-                    </div>
-
-                    <!-- Translated Data Tab Content with Sub-tabs for Languages -->
-                    <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel"
-                        aria-labelledby="custom-tabs-translated-tab">
-                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                            @foreach($activeLanguages as $lang)
-                                <li class="nav-item">
-                                    <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-{{ $lang->code }}-tab" data-toggle="pill" href="#pills-{{ $lang->code }}"
-                                        role="tab" aria-controls="pills-{{ $lang->code }}"
-                                        aria-selected="true">{{ $lang->name }}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-tabContent">
-                            @foreach($activeLanguages as $lang)
-                                @php
-                                    $translation = $item->translations->where('locale', $lang->code)->first();
-                                @endphp
-                                <div class="tab-pane fade @if($loop->first) show active @endif" id="pills-{{ $lang->code }}"
-                                    role="tabpanel" aria-labelledby="pills-{{ $lang->code }}-tab">
-                                    <div class="form-group">
-                                        <label for="title_{{ $lang->code }}" class="font-weight-bold">Title
-                                            ({{ $lang->name }})</label>
-                                        <input type="text" name="title[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm" id="title_{{ $lang->code }}"
-                                            value="{{ old('title.' . $lang->code, $translation->title ?? '') }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="description_{{ $lang->code }}" class="font-weight-bold">Description
-                                            ({{ $lang->name }})</label>
-                                        <textarea name="description[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm"
-                                            id="description_{{ $lang->code }}">{{ $translation->description ?? '' }}</textarea>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="content_{{ $lang->code }}" class="font-weight-bold">Content
-                                            ({{ $lang->name }})</label>
-                                        <textarea name="content[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm tinymce"
-                                            id="content_{{ $lang->code }}">{{ $translation->content ?? '' }}</textarea>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- SEO Data Tab Content -->
-                    <div class="tab-pane fade" id="custom-tabs-seo" role="tabpanel" aria-labelledby="custom-tabs-seo-tab">
-                        <ul class="nav nav-pills mb-3" id="pills-seo-tab" role="tablist">
-                            @foreach($activeLanguages as $lang)
-                                <li class="nav-item">
-                                    <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-seo-{{ $lang->code }}-tab" data-toggle="pill"
-                                        href="#pills-seo-{{ $lang->code }}" role="tab"
-                                        aria-controls="pills-seo-{{ $lang->code }}" aria-selected="true">{{ $lang->name }}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                        <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-seo-tabContent">
-                            @foreach($activeLanguages as $lang)
-                                @php
-                                    $translation = $item->translations->where('locale', $lang->code)->first();
-                                @endphp
-                                <div class="tab-pane fade @if($loop->first) show active @endif" id="pills-seo-{{ $lang->code }}"
-                                    role="tabpanel" aria-labelledby="pills-seo-{{ $lang->code }}-tab">
-                                    <div class="form-group">
-                                        <label for="meta_title_{{ $lang->code }}" class="font-weight-bold">Meta Title
-                                            ({{ $lang->name }})</label>
-                                        <input type="text" name="meta_title[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm" id="meta_title_{{ $lang->code }}"
-                                            value="{{ old('meta_title.' . $lang->code, $translation->meta_title ?? '') }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="meta_description_{{ $lang->code }}" class="font-weight-bold">Meta
-                                            Description ({{ $lang->name }})</label>
-                                        <textarea name="meta_description[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm"
-                                            id="meta_description_{{ $lang->code }}"
-                                            rows="3">{{ old('meta_description.' . $lang->code, $translation->meta_description ?? '') }}</textarea>
-                                    </div>
-                                    <!-- Meta Keywords Field -->
-                                    <div class="form-group">
-                                        <label for="meta_keywords_{{ $lang->code }}" class="font-weight-bold">Meta Keywords
-                                            ({{ $lang->name }})</label>
-
+                                <div class="tab-content">
+                                    @foreach ($activeLanguages as $lang)
                                         @php
-                                            // Decode the JSON meta keywords safely.
+                                            $translation = $translationsByLocale->get($lang->code);
+                                        @endphp
+                                        <div class="tab-pane fade @if($loop->first) show active @endif" id="blog-edit-lang-{{ $lang->code }}" role="tabpanel">
+                                            <div class="blog-editor-langpane">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label for="title_{{ $lang->code }}" class="blog-editor-label">{{ __('Title') }} ({{ $lang->name }})</label>
+                                                        <input type="text" name="title[{{ $lang->code }}]" id="title_{{ $lang->code }}" class="form-control @error('title.' . $lang->code) is-invalid @enderror" value="{{ old('title.' . $lang->code, $translation->title ?? '') }}">
+                                                        @error('title.' . $lang->code)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="description_{{ $lang->code }}" class="blog-editor-label">{{ __('Description') }} ({{ $lang->name }})</label>
+                                                        <textarea name="description[{{ $lang->code }}]" id="description_{{ $lang->code }}" class="form-control @error('description.' . $lang->code) is-invalid @enderror" rows="4">{{ old('description.' . $lang->code, $translation->description ?? '') }}</textarea>
+                                                        @error('description.' . $lang->code)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="content_{{ $lang->code }}" class="blog-editor-label">{{ __('Content') }} ({{ $lang->name }})</label>
+                                                        <textarea name="content[{{ $lang->code }}]" id="content_{{ $lang->code }}" class="form-control tinymce @error('content.' . $lang->code) is-invalid @enderror" rows="10">{{ old('content.' . $lang->code, $translation->content ?? '') }}</textarea>
+                                                        @error('content.' . $lang->code)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade blog-editor-pane" id="blog-edit-seo" role="tabpanel">
+                                <div class="nav nav-pills blog-editor-langbar" role="tablist">
+                                    @foreach ($activeLanguages as $lang)
+                                        <button class="nav-link @if($loop->first) active @endif" type="button" data-bs-toggle="pill" data-bs-target="#blog-edit-seo-lang-{{ $lang->code }}" role="tab">
+                                            {{ $lang->name }}
+                                        </button>
+                                    @endforeach
+                                </div>
+
+                                <div class="tab-content">
+                                    @foreach ($activeLanguages as $lang)
+                                        @php
+                                            $translation = $translationsByLocale->get($lang->code);
                                             $metaKeywords = json_decode($translation->meta_keywords ?? '[]', true);
                                             $metaKeywords = is_array($metaKeywords) ? $metaKeywords : [];
-
-                                            // Support both Tagify objects and plain string arrays.
                                             $keywordString = collect($metaKeywords)
                                                 ->map(function ($keyword) {
                                                     if (is_array($keyword)) {
@@ -248,146 +205,219 @@
                                                 })
                                                 ->filter()
                                                 ->implode(',');
+                                            $seoQuestionRows = old('seo_questions.' . $lang->code);
+                                            if (!is_array($seoQuestionRows)) {
+                                                $seoQuestionRows = $seoQuestionsByLocale->get($lang->code, collect())
+                                                    ->map(fn ($question) => ['question' => $question->question_text, 'answer' => $question->answer_text])
+                                                    ->values()
+                                                    ->all();
+                                            }
+                                            if ($seoQuestionRows === []) {
+                                                $seoQuestionRows = [['question' => '', 'answer' => '']];
+                                            }
                                         @endphp
+                                        <div class="tab-pane fade @if($loop->first) show active @endif" id="blog-edit-seo-lang-{{ $lang->code }}" role="tabpanel">
+                                            <div class="blog-editor-langpane">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label for="meta_title_{{ $lang->code }}" class="blog-editor-label">{{ __('Meta Title') }} ({{ $lang->name }})</label>
+                                                        <input type="text" name="meta_title[{{ $lang->code }}]" id="meta_title_{{ $lang->code }}" class="form-control" value="{{ old('meta_title.' . $lang->code, $translation->meta_title ?? '') }}">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="meta_description_{{ $lang->code }}" class="blog-editor-label">{{ __('Meta Description') }} ({{ $lang->name }})</label>
+                                                        <textarea name="meta_description[{{ $lang->code }}]" id="meta_description_{{ $lang->code }}" class="form-control" rows="4">{{ old('meta_description.' . $lang->code, $translation->meta_description ?? '') }}</textarea>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="meta_keywords_{{ $lang->code }}" class="blog-editor-label">{{ __('Meta Keywords') }} ({{ $lang->name }})</label>
+                                                        <input type="text" name="meta_keywords[{{ $lang->code }}]" id="meta_keywords_{{ $lang->code }}" class="form-control blog-editor-meta-keywords" value="{{ old('meta_keywords.' . $lang->code, $keywordString) }}" placeholder="{{ __('Enter meta keywords') }}">
+                                                    </div>
 
-                                        <input type="text" name="meta_keywords[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm" id="meta_keywords_{{ $lang->code }}"
-                                            value="{{ old('meta_keywords.' . $lang->code, $keywordString) }}"
-                                            data-role="tagsinput" placeholder="Enter meta keywords">
-                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="blog-editor-seo-box">
+                                                            <h6>{{ __('Search Indexing') }}</h6>
+                                                            <p class="blog-editor-hint mb-3">{{ __('Allow search engines to index this locale.') }}</p>
+                                                            <div class="form-check form-switch m-0">
+                                                                <input class="form-check-input" type="checkbox" name="robots_index[{{ $lang->code }}]" id="robots_index_{{ $lang->code }}" value="index" @checked(old('robots_index.' . $lang->code, $translation->robots_index ?? '') === 'index')>
+                                                                <label class="form-check-label ms-2" for="robots_index_{{ $lang->code }}">{{ __('Index') }}</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="blog-editor-seo-box">
+                                                            <h6>{{ __('Link Following') }}</h6>
+                                                            <p class="blog-editor-hint mb-3">{{ __('Allow crawlers to follow outgoing links.') }}</p>
+                                                            <div class="form-check form-switch m-0">
+                                                                <input class="form-check-input" type="checkbox" name="robots_follow[{{ $lang->code }}]" id="robots_follow_{{ $lang->code }}" value="follow" @checked(old('robots_follow.' . $lang->code, $translation->robots_follow ?? '') === 'follow')>
+                                                                <label class="form-check-label ms-2" for="robots_follow_{{ $lang->code }}">{{ __('Follow') }}</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                    <div class="row card">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="robots_index_{{ $lang->code }}" class="font-weight-bold">
-                                                    Robot Index ({{ $lang->name }})
-                                                </label>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="robots_index[{{ $lang->code }}]"
-                                                        class="custom-control-input" id="robots_index_{{ $lang->code }}"
-                                                        value="index" {{ old('meta_title.' . $lang->code, $translation->robots_index ?? '') === 'index' ? 'checked' : '' }}>
-                                                    <label class="custom-control-label"
-                                                        for="robots_index_{{ $lang->code }}">Index</label>
+                                                    <div class="col-12">
+                                                        <label class="blog-editor-label d-block">{{ __('SEO Questions & Answers') }} ({{ $lang->name }})</label>
+                                                        <div class="blog-editor-question-list" id="seo-questions-{{ $lang->code }}" data-next-index="{{ count($seoQuestionRows) }}">
+                                                            @foreach ($seoQuestionRows as $index => $seoQuestion)
+                                                                <div class="blog-editor-question seo-question-group">
+                                                                    <div class="row g-3">
+                                                                        <div class="col-12">
+                                                                            <input type="text" name="seo_questions[{{ $lang->code }}][{{ $index }}][question]" class="form-control" value="{{ $seoQuestion['question'] ?? '' }}" placeholder="{{ __('Enter question') }}">
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <textarea name="seo_questions[{{ $lang->code }}][{{ $index }}][answer]" class="form-control" rows="3" placeholder="{{ __('Enter answer') }}">{{ $seoQuestion['answer'] ?? '' }}</textarea>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="blog-editor-question-actions">
+                                                                        <button type="button" class="btn btn-outline-danger btn-sm remove-question"><i class="fas fa-trash"></i>{{ __('Remove') }}</button>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                        <button type="button" class="btn btn-outline-primary blog-editor-ghost-btn mt-3 add-question" data-lang="{{ $lang->code }}">
+                                                            <i class="fas fa-plus"></i>{{ __('Add Question') }}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="robots_follow_{{ $lang->code }}" class="font-weight-bold">
-                                                    Robot Follow ({{ $lang->name }})
-                                                </label>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="robots_follow[{{ $lang->code }}]"
-                                                        class="custom-control-input" id="robots_follow_{{ $lang->code }}"
-                                                        value="follow" {{ old('meta_title.' . $lang->code, $translation->robots_follow ?? '') === 'follow' ? 'checked' : '' }}>
-                                                    <label class="custom-control-label"
-                                                        for="robots_follow_{{ $lang->code }}">Follow</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Dynamic SEO Questions/Answers Section -->
-                                    <div class="seo-questions-container" id="seo-questions-{{ $lang->code }}">
-                                        <label class="font-weight-bold">SEO Questions/Answers ({{ $lang->name }})</label>
-                                        @foreach($item->seoQuestions->where('locale', $lang->code) as $index => $seoQuestion)
-                                            <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                                                <div class="form-group">
-                                                    <input type="text"
-                                                        name="seo_questions[{{ $lang->code }}][{{ $index }}][question]"
-                                                        class="form-control form-control-lg shadow-sm mb-2"
-                                                        value="{{ old('seo_questions.' . $lang->code . '.' . $index . '.question', $seoQuestion->question_text) }}"
-                                                        placeholder="Enter Question" />
-                                                </div>
-                                                <div class="form-group">
-                                                    <textarea name="seo_questions[{{ $lang->code }}][{{ $index }}][answer]"
-                                                        class="form-control form-control-lg shadow-sm"
-                                                        placeholder="Enter Answer">{{ old('seo_questions.' . $lang->code . '.' . $index . '.answer', $seoQuestion->answer_text) }}</textarea>
-                                                </div>
-                                                <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <button type="button" class="btn btn-info add-question mt-3" data-lang="{{ $lang->code }}">
-                                        <i class="fas fa-plus"></i> Add Question
-                                    </button>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            </div>
+                        </div>
+
+                        <div class="blog-editor-submitbar">
+                            <p>{{ __('Review the updated content across all tabs before saving the changes.') }}</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('admin.' . $modelName . '.index') }}" class="btn btn-outline-secondary blog-editor-ghost-btn">
+                                    <i class="fas fa-arrow-left"></i>{{ __('Back to List') }}
+                                </a>
+                                <button type="submit" class="btn btn-primary blog-editor-ghost-btn">
+                                    <i class="fas fa-save"></i>{{ __('Update') }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-success btn-lg mt-3">
-                    <i class="fas fa-save"></i> Update
-                </button>
             </form>
         </div>
-</div>@endsection
+
+        <div class="card blog-editor-sidecard">
+            <div class="card-body">
+                <span class="blog-editor-kicker">{{ __('Editing Focus') }}</span>
+                <h5 class="blog-editor-panel-title">{{ __('Publishing Checklist') }}</h5>
+                <div class="blog-editor-preview-box mb-3">
+                    <img src="{{ $imagePreview }}" alt="{{ __('Sidebar preview') }}" id="blogImagePreviewMirror">
+                </div>
+                <div class="blog-editor-checklist">
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-image"></i>
+                        <div>
+                            <strong>{{ __('Cover Control') }}</strong>
+                            <span>{{ __('Refresh the image only when the article needs a stronger visual direction.') }}</span>
+                        </div>
+                    </div>
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-language"></i>
+                        <div>
+                            <strong>{{ __('Locale Review') }}</strong>
+                            <span>{{ __('Keep title, description, and content aligned across every active language.') }}</span>
+                        </div>
+                    </div>
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-search"></i>
+                        <div>
+                            <strong>{{ __('SEO Review') }}</strong>
+                            <span>{{ __('Maintain keywords, robots rules, and Q&A content so search coverage stays stable.') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
-            // Function to dynamically add SEO Questions/Answers
-            $('.add-question').on('click', function () {
-                var lang = $(this).data('lang');
-                var container = $('#seo-questions-' + lang);
-                var count = container.find('.seo-question-group').length;
-                var newQuestionGroup = `
-                        <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                            <div class="form-group">
-                                <input type="text" name="seo_questions[` + lang + `][` + count + `][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" />
-                            </div>
-                            <div class="form-group">
-                                <textarea name="seo_questions[` + lang + `][` + count + `][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer"></textarea>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
-                        </div>`;
-                container.append(newQuestionGroup);
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageInput = document.getElementById('image_path');
+            const previews = [document.getElementById('blogImagePreview'), document.getElementById('blogImagePreviewMirror')];
 
-            // Function to remove an SEO Question/Answer
-            $(document).on('click', '.remove-question', function () {
-                $(this).closest('.seo-question-group').remove();
-            });
+            if (imageInput) {
+                imageInput.addEventListener('change', function (event) {
+                    const file = event.target.files && event.target.files[0];
+                    if (!file) {
+                        return;
+                    }
 
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-
-
-        $(document).ready(function () {
-            @foreach($activeLanguages as $lang)
-                var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                if (metaKeywordsInput) {
-                    new Tagify(metaKeywordsInput, {
-                        placeholder: 'Enter meta keywords'
-                    });
-                }
-            @endforeach
-            });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            function formatCar(car) {
-                if (!car.id) {
-                    return car.text;
-                }
-
-                var $car = $(
-                    '<span><img src="' + $(car.element).data('image') + '" style="width: 60px; height: 40px;" /> ' +
-                    $(car.element).text() + '</span>'
-                );
-                return $car;
+                    const reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        previews.forEach(function (preview) {
+                            if (preview) {
+                                preview.src = loadEvent.target.result;
+                            }
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
 
-            $('.car-select').select2({
-                templateResult: formatCar,
-                templateSelection: formatCar,
-                allowClear: true,
-                placeholder: "Select cars"
+            document.querySelectorAll('.add-question').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const lang = this.dataset.lang;
+                    const container = document.getElementById('seo-questions-' + lang);
+                    if (!container) {
+                        return;
+                    }
+
+                    const count = Number(container.dataset.nextIndex || container.querySelectorAll('.seo-question-group').length);
+                    container.dataset.nextIndex = String(count + 1);
+                    const group = document.createElement('div');
+                    group.className = 'blog-editor-question seo-question-group';
+                    group.innerHTML = '<div class="row g-3"><div class="col-12"><input type="text" name="seo_questions[' + lang + '][' + count + '][question]" class="form-control" placeholder="{{ __('Enter question') }}"></div><div class="col-12"><textarea name="seo_questions[' + lang + '][' + count + '][answer]" class="form-control" rows="3" placeholder="{{ __('Enter answer') }}"></textarea></div></div><div class="blog-editor-question-actions"><button type="button" class="btn btn-outline-danger btn-sm remove-question"><i class="fas fa-trash"></i>{{ __('Remove') }}</button></div>';
+                    container.appendChild(group);
+                });
             });
+
+            document.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('.remove-question');
+                if (!removeButton) {
+                    return;
+                }
+
+                const group = removeButton.closest('.seo-question-group');
+                if (group) {
+                    group.remove();
+                }
+            });
+
+            if (window.jQuery && typeof window.jQuery.fn.select2 !== 'undefined') {
+                const $ = window.jQuery;
+
+                function formatCar(option) {
+                    if (!option.id) {
+                        return option.text;
+                    }
+
+                    const image = $(option.element).data('image');
+                    return $('<span class="d-inline-flex align-items-center"><img src="' + image + '" alt="" style="width:44px;height:32px;object-fit:cover;border-radius:8px;margin-right:8px;"><span>' + $(option.element).text() + '</span></span>');
+                }
+
+                $('.car-select').select2({
+                    theme: 'bootstrap4',
+                    width: '100%',
+                    placeholder: @json(__('Select cars')),
+                    allowClear: true,
+                    templateResult: formatCar,
+                    templateSelection: formatCar
+                });
+            }
+
+            if (typeof Tagify !== 'undefined') {
+                document.querySelectorAll('.blog-editor-meta-keywords').forEach(function (input) {
+                    new Tagify(input, {
+                        placeholder: @json(__('Enter meta keywords'))
+                    });
+                });
+            }
         });
     </script>
 @endpush

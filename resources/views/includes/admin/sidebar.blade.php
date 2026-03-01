@@ -24,13 +24,13 @@
     <div class="sidebar-inner slimscroll">
         <div id="sidebar-menu" class="sidebar-menu">
             
-            <div class="form-group">
+            <div class="form-group sidebar-search-wrap">
                 <!-- Search -->
-                <div class="input-group input-group-flat d-inline-flex">
+                <div class="input-group input-group-flat d-inline-flex w-100">
                     <span class="input-icon-addon">
                         <i class="ti ti-search"></i>
                         </span>
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" id="sidebar-search" class="form-control" placeholder="Search" autocomplete="off" aria-label="Search sidebar menu">
                     <span class="group-text">
                         <i class="ti ti-command"></i>
                     </span>
@@ -38,8 +38,8 @@
                 <!-- /Search -->
             </div>
             <ul>
-                <li class="menu-title"><span>Main</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>Main</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                             <a href="{{ route('admin.dashboard') }}">
@@ -48,8 +48,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-title"><span>Manage</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>Manage</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li>
                             <a href="{{ route('admin.locations.index') }}">
@@ -58,8 +58,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-title"><span>RENTALS</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>RENTALS</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li>
                             <a href="{{ route('admin.cars.index') }}">
@@ -80,8 +80,8 @@
                         </li>
                     </ul>
                 </li>	
-                <li class="menu-title"><span>CMS</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>CMS</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li>
                             <a href="{{ route('admin.pages.index') }}" >
@@ -108,8 +108,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-title"><span>SUPPORT</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>SUPPORT</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li>
                             <a href="{{ route('admin.contact-messages.index') }}" >
@@ -118,8 +118,8 @@
                         </li>
                     </ul>
                 </li>
-                <li class="menu-title"><span>SETTINGS & CONFIGURATION</span></li>
-                <li>
+                <li class="menu-title sidebar-section-title"><span>SETTINGS & CONFIGURATION</span></li>
+                <li class="sidebar-section-group">
                     <ul>
                         <li class="submenu">
                             <a href="javascript:void(0);">

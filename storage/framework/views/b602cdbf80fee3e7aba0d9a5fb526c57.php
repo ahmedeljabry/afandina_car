@@ -1,375 +1,461 @@
 <?php $__env->startSection('title', 'Add ' . $modelName); ?>
 
 <?php $__env->startSection('page-title'); ?>
-    <?php echo e(isset($item) ? __('Edit :entity', ['entity' => $modelName]) : __('Add :entity', ['entity' => $modelName])); ?>
+    <?php echo e(__('Add :entity', ['entity' => $modelName])); ?>
 
 <?php $__env->stopSection(); ?>
 
+<?php $__env->startSection('page-actions'); ?>
+    <a href="<?php echo e(route('admin.' . $modelName . '.index')); ?>" class="btn btn-outline-secondary d-inline-flex align-items-center mb-2">
+        <i class="fas fa-arrow-left me-1"></i><?php echo e(__('Back to List')); ?>
 
-<?php echo $__env->make('includes.admin.form_theme', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    </a>
+<?php $__env->stopSection(); ?>
 
+<?php echo $__env->make('includes.admin.blog_editor_theme', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
 <?php $__env->startSection('content'); ?>
-
     <?php
-        $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
-        $formStats = [];
-        if ($languageCount) {
-            $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
-        }
-        $formStats[] = ['icon' => 'fas fa-layer-group', 'label' => __('Guided workflow')];
-        $formStats[] = ['icon' => 'fas fa-save', 'label' => __('Content safety')];
-        $formTitle = isset($item)
-            ? __('Update :entity', ['entity' => $modelName])
-            : __('Add :entity', ['entity' => $modelName]);
-        $formDescription = isset($item)
-            ? __('Review the content, adjust translations and assets, then save confidently.')
-            : __('Complete the details below to publish a polished entry.');
+        $placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='560' viewBox='0 0 800 560'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%23dbeafe'/%3E%3Cstop offset='1' stop-color='%23e2e8f0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Cpath d='M0 430L170 280l120 90 165-180 120 115 225-175v430H0z' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='50%25' fill='%23475569' font-size='28' text-anchor='middle' dy='.3em'%3EFeature Image Preview%3C/text%3E%3C/svg%3E";
+        $selectedCarIds = collect(old('cars', []))->map(fn ($value) => (string) $value)->all();
     ?>
 
-    <?php echo $__env->make('includes.admin.form_header', [
-        'title' => $formTitle,
-        'description' => $formDescription,
-        'stats' => $formStats
-    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <div class="blog-editor-layout">
+        <div>
+            <div class="blog-editor-hero mb-4">
+                <h2><?php echo e(__('Publish a New Story')); ?></h2>
+                <p><?php echo e(__('Build a polished post with a cleaner publishing flow, structured translations, and SEO that is ready before launch.')); ?></p>
+                <div class="blog-editor-hero-metrics">
+                    <span class="blog-editor-chip"><i class="fas fa-language"></i><?php echo e(__(':count Locale(s)', ['count' => $activeLanguages->count()])); ?></span>
+                    <span class="blog-editor-chip"><i class="fas fa-image"></i><?php echo e(__('Cover image')); ?></span>
+                    <span class="blog-editor-chip"><i class="fas fa-search"></i><?php echo e(__('SEO layered')); ?></span>
+                    <span class="blog-editor-chip"><i class="fas fa-car-side"></i><?php echo e(__('Cars linked')); ?></span>
+                </div>
+            </div>
 
+            <?php if($errors->any()): ?>
+                <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4">
+                    <strong><?php echo e(__('Please review the highlighted fields.')); ?></strong>
+                    <div class="small mt-1"><?php echo e($errors->first()); ?></div>
+                </div>
+            <?php endif; ?>
 
-
-
-    <div class="card form-card card-primary card-outline card-tabs shadow-lg">
-        <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
-            <!-- Tabs Header -->
-            <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
-                <!-- General Data Tab -->
-                <li class="nav-item">
-                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill"
-                        href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
-                        <i class="fas fa-info-circle"></i> General Data
-                    </a>
-                </li>
-                <!-- Translated Data Tab -->
-                <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-toggle="pill"
-                        href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated"
-                        aria-selected="false">
-                        <i class="fas fa-language"></i> Translated Data
-                    </a>
-                </li>
-                <!-- SEO Data Tab -->
-                <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-toggle="pill" href="#custom-tabs-seo"
-                        role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
-                        <i class="fas fa-search"></i> SEO Data
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="card-body">
-            <!-- Form -->
-            <form action="<?php echo e(route('admin.' . $modelName . '.store')); ?>" method="POST" enctype="multipart/form-data">
+            <form action="<?php echo e(route('admin.' . $modelName . '.store')); ?>" method="POST" enctype="multipart/form-data" class="blog-editor">
                 <?php echo csrf_field(); ?>
-                <div class="tab-content" id="custom-tabs-three-tabContent">
-                    <!-- General Data Tab Content -->
-                    <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel"
-                        aria-labelledby="custom-tabs-general-tab">
-                        <div class="form-group text-center">
-                            <!-- Image Preview with Circular Border and Placeholder -->
-                            <div class="mb-3">
-                                <img id="imagePreviewLogo"
-                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' fill='%23555' font-size='20' text-anchor='middle' dy='.3em'%3E400x300%3C/text%3E%3C/svg%3E"
-                                    alt="Logo Preview" class="shadow image-rectangle-preview"
-                                    style="max-height: 400px; width: 300px; object-fit: cover; border: 2px solid #ddd;">
-                            </div>
-                            <!-- File Input for Logo Upload -->
-                            <div class="custom-file">
-                                <input type="file" name="image_path"
-                                    class="custom-file-input image-upload <?php $__errorArgs = ['image_path'];
+
+                <div class="card blog-editor-main-card">
+                    <div class="blog-editor-tabbar nav nav-pills" role="tablist">
+                        <button class="nav-link active" type="button" data-bs-toggle="pill" data-bs-target="#blog-create-general" role="tab">
+                            <i class="fas fa-pen-nib"></i><?php echo e(__('General')); ?>
+
+                        </button>
+                        <button class="nav-link" type="button" data-bs-toggle="pill" data-bs-target="#blog-create-translated" role="tab">
+                            <i class="fas fa-language"></i><?php echo e(__('Translated Content')); ?>
+
+                        </button>
+                        <button class="nav-link" type="button" data-bs-toggle="pill" data-bs-target="#blog-create-seo" role="tab">
+                            <i class="fas fa-chart-line"></i><?php echo e(__('SEO & Discovery')); ?>
+
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active blog-editor-pane" id="blog-create-general" role="tabpanel">
+                                <div class="row g-4">
+                                    <div class="col-lg-5">
+                                        <div class="blog-editor-panel h-100">
+                                            <span class="blog-editor-kicker"><?php echo e(__('Cover Story')); ?></span>
+                                            <h5 class="blog-editor-panel-title"><?php echo e(__('Feature Image')); ?></h5>
+                                            <div class="blog-editor-preview-box mb-3">
+                                                <img src="<?php echo e($placeholderImage); ?>" alt="<?php echo e(__('Blog preview')); ?>" id="blogImagePreview">
+                                            </div>
+                                            <label for="image_path" class="blog-editor-label"><?php echo e(__('Upload Image')); ?></label>
+                                            <input type="file" name="image_path" id="image_path" class="form-control <?php $__errorArgs = ['image_path'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                    id="image_path" data-preview="imagePreviewLogo">
-                                <label class="custom-file-label" for="image_path">Upload Image</label>
-                            </div>
-
-                            <!-- Error Handling -->
-                            <?php $__errorArgs = ['image_path'];
+unset($__errorArgs, $__bag); ?>" accept=".jpg,.jpeg,.png,.svg,.webp">
+                                            <?php $__errorArgs = ['image_path'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                <span class="invalid-feedback"><?php echo e($message); ?></span>
-                            <?php unset($message);
+                                                <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                            <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                        </div>
+                                            <p class="blog-editor-hint mt-3 mb-0"><?php echo e(__('Choose a clean landscape image so your post looks sharp in cards, shares, and highlights.')); ?></p>
+                                        </div>
+                                    </div>
 
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="cars" class="font-weight-bold">Cars related to Post</label>
-                                <select class="form-control car-select" name="cars[]" multiple="multiple"
-                                    style="width: 100%;">
-                                    <?php $__currentLoopData = $cars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <option value="<?php echo e($car->id); ?>"
-                                            data-image="<?php echo e($car->default_image_path ? asset('storage/' . $car->default_image_path) : asset('/admin/dist/logo/empty_image.png')); ?>">
-                                            <?php echo e($car->translations->first()->name); ?>
+                                    <div class="col-lg-7">
+                                        <div class="blog-editor-panel">
+                                            <span class="blog-editor-kicker"><?php echo e(__('Connections')); ?></span>
+                                            <h5 class="blog-editor-panel-title"><?php echo e(__('Post Settings')); ?></h5>
 
-                                        </option>
+                                            <div class="mb-4">
+                                                <label for="cars" class="blog-editor-label"><?php echo e(__('Cars Related to This Post')); ?></label>
+                                                <select class="form-control car-select" name="cars[]" id="cars" multiple="multiple">
+                                                    <?php $__currentLoopData = $cars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php
+                                                            $carTranslation = $car->translations->first();
+                                                            $carImage = $car->default_image_path
+                                                                ? asset('storage/' . ltrim($car->default_image_path, '/'))
+                                                                : asset('admin/assets/img/car/car-01.jpg');
+                                                        ?>
+                                                        <option value="<?php echo e($car->id); ?>" data-image="<?php echo e($carImage); ?>" <?php if(in_array((string) $car->id, $selectedCarIds, true)): echo 'selected'; endif; ?>>
+                                                            <?php echo e($carTranslation->name ?? __('Car #:id', ['id' => $car->id])); ?>
+
+                                                        </option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </select>
+                                                <p class="blog-editor-hint mt-2 mb-0"><?php echo e(__('Connect inventory so readers can move from article context directly into relevant cars.')); ?></p>
+                                            </div>
+
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="blog-editor-switch">
+                                                        <div>
+                                                            <strong><?php echo e(__('Publish State')); ?></strong>
+                                                            <span><?php echo e(__('Keep this article visible in listings and available to readers.')); ?></span>
+                                                        </div>
+                                                        <div class="form-check form-switch m-0">
+                                                            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1" <?php if((bool) old('is_active')): echo 'checked'; endif; ?>>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="blog-editor-switch">
+                                                        <div>
+                                                            <strong><?php echo e(__('Homepage Spotlight')); ?></strong>
+                                                            <span><?php echo e(__('Push this story into homepage editorial sections.')); ?></span>
+                                                        </div>
+                                                        <div class="form-check form-switch m-0">
+                                                            <input class="form-check-input" type="checkbox" name="show_in_home" id="show_in_home" value="1" <?php if((bool) old('show_in_home')): echo 'checked'; endif; ?>>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade blog-editor-pane" id="blog-create-translated" role="tabpanel">
+                                <div class="nav nav-pills blog-editor-langbar" role="tablist">
+                                    <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <button class="nav-link <?php if($loop->first): ?> active <?php endif; ?>" type="button" data-bs-toggle="pill" data-bs-target="#blog-create-lang-<?php echo e($lang->code); ?>" role="tab">
+                                            <?php echo e($lang->name); ?>
+
+                                        </button>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="is_active" class="font-weight-bold">Active</label>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="is_active" class="custom-control-input" id="is_active"
-                                            <?php echo e(old('is_active')); ?>>
-                                        <label class="custom-control-label" for="is_active">Active</label>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="show_in_home" class="font-weight-bold">Shows In Home</label>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" name="show_in_home" class="custom-control-input"
-                                            id="show_in_home" <?php echo e(old('show_in_home')); ?>>
-                                        <label class="custom-control-label" for="show_in_home">Shows In Home</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Translated Data Tab Content with Sub-tabs for Languages -->
-                    <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel"
-                        aria-labelledby="custom-tabs-translated-tab">
-                        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="nav-item">
-                                    <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark"
-                                        id="pills-<?php echo e($lang->code); ?>-tab" data-toggle="pill" href="#pills-<?php echo e($lang->code); ?>"
-                                        role="tab" aria-controls="pills-<?php echo e($lang->code); ?>"
-                                        aria-selected="true"><?php echo e($lang->name); ?></a>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
-                        <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-tabContent">
-                            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="pills-<?php echo e($lang->code); ?>"
-                                    role="tabpanel" aria-labelledby="pills-<?php echo e($lang->code); ?>-tab">
-                                    <div class="form-group">
-                                        <label for="title_<?php echo e($lang->code); ?>" class="font-weight-bold">Title
-                                            (<?php echo e($lang->name); ?>)</label>
-                                        <input type="text" name="title[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm" id="title_<?php echo e($lang->code); ?>"
-                                            value="<?php echo e(old('title.' . $lang->code)); ?>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="description_<?php echo e($lang->code); ?>" class="font-weight-bold">Description
-                                            (<?php echo e($lang->name); ?>)</label>
-                                        <textarea name="description[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm"
-                                            id="description_<?php echo e($lang->code); ?>"><?php echo e(old('description.' . $lang->code)); ?></textarea>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="content_<?php echo e($lang->code); ?>" class="font-weight-bold">Content
-                                            (<?php echo e($lang->name); ?>)</label>
-                                        <textarea name="content[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm tinymce"
-                                            id="content_<?php echo e($lang->code); ?>"><?php echo e(old('content.' . $lang->code)); ?></textarea>
-                                    </div>
-                                </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </div>
-                    </div>
-
-                    <!-- SEO Data Tab Content -->
-                    <div class="tab-pane fade" id="custom-tabs-seo" role="tabpanel" aria-labelledby="custom-tabs-seo-tab">
-                        <ul class="nav nav-pills mb-3" id="pills-seo-tab" role="tablist">
-                            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li class="nav-item">
-                                    <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark"
-                                        id="pills-seo-<?php echo e($lang->code); ?>-tab" data-toggle="pill"
-                                        href="#pills-seo-<?php echo e($lang->code); ?>" role="tab"
-                                        aria-controls="pills-seo-<?php echo e($lang->code); ?>" aria-selected="true"><?php echo e($lang->name); ?></a>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </ul>
-                        <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-seo-tabContent">
-                            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="pills-seo-<?php echo e($lang->code); ?>"
-                                    role="tabpanel" aria-labelledby="pills-seo-<?php echo e($lang->code); ?>-tab">
-
-
-
-                                    <div class="form-group">
-                                        <label for="meta_title_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta Title
-                                            (<?php echo e($lang->name); ?>)</label>
-                                        <input type="text" name="meta_title[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm" id="meta_title_<?php echo e($lang->code); ?>"
-                                            value="<?php echo e(old('meta_title.' . $lang->code)); ?>">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="meta_description_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta
-                                            Description (<?php echo e($lang->name); ?>)</label>
-                                        <textarea name="meta_description[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm"
-                                            id="meta_description_<?php echo e($lang->code); ?>"
-                                            rows="3"><?php echo e(old('meta_description.' . $lang->code)); ?></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="meta_keywords_<?php echo e($lang->code); ?>" class="font-weight-bold">Meta Keywords
-                                            (<?php echo e($lang->name); ?>)</label>
-                                        <input type="text" name="meta_keywords[<?php echo e($lang->code); ?>]"
-                                            class="form-control form-control-lg shadow-sm" id="meta_keywords_<?php echo e($lang->code); ?>"
-                                            data-role="tagsinput" value="<?php echo e(old('meta_keywords.' . $lang->code)); ?>">
-                                    </div>
-
-                                    <div class="row card">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="robots_index_<?php echo e($lang->code); ?>" class="font-weight-bold">
-                                                    Robot Index (<?php echo e($lang->name); ?>)
-                                                </label>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="robots_index[<?php echo e($lang->code); ?>]"
-                                                        class="custom-control-input" id="robots_index_<?php echo e($lang->code); ?>"
-                                                        value="index" <?php echo e(old('robots_index.' . $lang->code, $currentValues['robots_index'][$lang->code] ?? '') === 'index' ? 'checked' : ''); ?>>
-                                                    <label class="custom-control-label"
-                                                        for="robots_index_<?php echo e($lang->code); ?>">Index</label>
+                                <div class="tab-content">
+                                    <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="blog-create-lang-<?php echo e($lang->code); ?>" role="tabpanel">
+                                            <div class="blog-editor-langpane">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label for="title_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Title')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <input type="text" name="title[<?php echo e($lang->code); ?>]" id="title_<?php echo e($lang->code); ?>" class="form-control <?php $__errorArgs = ['title.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" value="<?php echo e(old('title.' . $lang->code)); ?>">
+                                                        <?php $__errorArgs = ['title.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="description_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Description')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <textarea name="description[<?php echo e($lang->code); ?>]" id="description_<?php echo e($lang->code); ?>" class="form-control <?php $__errorArgs = ['description.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" rows="4"><?php echo e(old('description.' . $lang->code)); ?></textarea>
+                                                        <?php $__errorArgs = ['description.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="content_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Content')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <textarea name="content[<?php echo e($lang->code); ?>]" id="content_<?php echo e($lang->code); ?>" class="form-control tinymce <?php $__errorArgs = ['content.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" rows="10"><?php echo e(old('content.' . $lang->code)); ?></textarea>
+                                                        <?php $__errorArgs = ['content.' . $lang->code];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
 
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label for="robots_follow_<?php echo e($lang->code); ?>" class="font-weight-bold">
-                                                    Robot Follow (<?php echo e($lang->name); ?>)
-                                                </label>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" name="robots_follow[<?php echo e($lang->code); ?>]"
-                                                        class="custom-control-input" id="robots_follow_<?php echo e($lang->code); ?>"
-                                                        value="follow" <?php echo e(old('robots_follow.' . $lang->code, $currentValues['robots_follow'][$lang->code] ?? '') === 'follow' ? 'checked' : ''); ?>>
-                                                    <label class="custom-control-label"
-                                                        for="robots_follow_<?php echo e($lang->code); ?>">Follow</label>
+                            <div class="tab-pane fade blog-editor-pane" id="blog-create-seo" role="tabpanel">
+                                <div class="nav nav-pills blog-editor-langbar" role="tablist">
+                                    <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <button class="nav-link <?php if($loop->first): ?> active <?php endif; ?>" type="button" data-bs-toggle="pill" data-bs-target="#blog-create-seo-lang-<?php echo e($lang->code); ?>" role="tab">
+                                            <?php echo e($lang->name); ?>
+
+                                        </button>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+
+                                <div class="tab-content">
+                                    <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
+                                            $seoQuestionRows = old('seo_questions.' . $lang->code);
+                                            if (!is_array($seoQuestionRows) || $seoQuestionRows === []) {
+                                                $seoQuestionRows = [['question' => '', 'answer' => '']];
+                                            }
+                                        ?>
+                                        <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="blog-create-seo-lang-<?php echo e($lang->code); ?>" role="tabpanel">
+                                            <div class="blog-editor-langpane">
+                                                <div class="row g-3">
+                                                    <div class="col-12">
+                                                        <label for="meta_title_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Meta Title')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <input type="text" name="meta_title[<?php echo e($lang->code); ?>]" id="meta_title_<?php echo e($lang->code); ?>" class="form-control" value="<?php echo e(old('meta_title.' . $lang->code)); ?>">
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="meta_description_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Meta Description')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <textarea name="meta_description[<?php echo e($lang->code); ?>]" id="meta_description_<?php echo e($lang->code); ?>" class="form-control" rows="4"><?php echo e(old('meta_description.' . $lang->code)); ?></textarea>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <label for="meta_keywords_<?php echo e($lang->code); ?>" class="blog-editor-label"><?php echo e(__('Meta Keywords')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <input type="text" name="meta_keywords[<?php echo e($lang->code); ?>]" id="meta_keywords_<?php echo e($lang->code); ?>" class="form-control blog-editor-meta-keywords" value="<?php echo e(old('meta_keywords.' . $lang->code)); ?>" placeholder="<?php echo e(__('Enter meta keywords')); ?>">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <div class="blog-editor-seo-box">
+                                                            <h6><?php echo e(__('Search Indexing')); ?></h6>
+                                                            <p class="blog-editor-hint mb-3"><?php echo e(__('Allow search engines to index this locale.')); ?></p>
+                                                            <div class="form-check form-switch m-0">
+                                                                <input class="form-check-input" type="checkbox" name="robots_index[<?php echo e($lang->code); ?>]" id="robots_index_<?php echo e($lang->code); ?>" value="index" <?php if(old('robots_index.' . $lang->code) === 'index'): echo 'checked'; endif; ?>>
+                                                                <label class="form-check-label ms-2" for="robots_index_<?php echo e($lang->code); ?>"><?php echo e(__('Index')); ?></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="blog-editor-seo-box">
+                                                            <h6><?php echo e(__('Link Following')); ?></h6>
+                                                            <p class="blog-editor-hint mb-3"><?php echo e(__('Allow crawlers to follow outgoing links.')); ?></p>
+                                                            <div class="form-check form-switch m-0">
+                                                                <input class="form-check-input" type="checkbox" name="robots_follow[<?php echo e($lang->code); ?>]" id="robots_follow_<?php echo e($lang->code); ?>" value="follow" <?php if(old('robots_follow.' . $lang->code) === 'follow'): echo 'checked'; endif; ?>>
+                                                                <label class="form-check-label ms-2" for="robots_follow_<?php echo e($lang->code); ?>"><?php echo e(__('Follow')); ?></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <label class="blog-editor-label d-block"><?php echo e(__('SEO Questions & Answers')); ?> (<?php echo e($lang->name); ?>)</label>
+                                                        <div class="blog-editor-question-list" id="seo-questions-<?php echo e($lang->code); ?>" data-next-index="<?php echo e(count($seoQuestionRows)); ?>">
+                                                            <?php $__currentLoopData = $seoQuestionRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $seoQuestion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                <div class="blog-editor-question seo-question-group">
+                                                                    <div class="row g-3">
+                                                                        <div class="col-12">
+                                                                            <input type="text" name="seo_questions[<?php echo e($lang->code); ?>][<?php echo e($index); ?>][question]" class="form-control" value="<?php echo e($seoQuestion['question'] ?? ''); ?>" placeholder="<?php echo e(__('Enter question')); ?>">
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <textarea name="seo_questions[<?php echo e($lang->code); ?>][<?php echo e($index); ?>][answer]" class="form-control" rows="3" placeholder="<?php echo e(__('Enter answer')); ?>"><?php echo e($seoQuestion['answer'] ?? ''); ?></textarea>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="blog-editor-question-actions">
+                                                                        <button type="button" class="btn btn-outline-danger btn-sm remove-question"><i class="fas fa-trash"></i><?php echo e(__('Remove')); ?></button>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                        </div>
+                                                        <button type="button" class="btn btn-outline-primary blog-editor-ghost-btn mt-3 add-question" data-lang="<?php echo e($lang->code); ?>">
+                                                            <i class="fas fa-plus"></i><?php echo e(__('Add Question')); ?>
+
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-
-
-                                    <!-- Dynamic SEO Questions/Answers Section -->
-                                    <div class="seo-questions-container" id="seo-questions-<?php echo e($lang->code); ?>">
-                                        <label class="font-weight-bold">SEO Questions/Answers (<?php echo e($lang->name); ?>)</label>
-                                        <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                                            <div class="form-group">
-                                                <input type="text" name="seo_questions[<?php echo e($lang->code); ?>][0][question]"
-                                                    class="form-control form-control-lg shadow-sm mb-2"
-                                                    placeholder="Enter Question" />
-                                            </div>
-                                            <div class="form-group">
-                                                <textarea name="seo_questions[<?php echo e($lang->code); ?>][0][answer]"
-                                                    class="form-control form-control-lg shadow-sm"
-                                                    placeholder="Enter Answer"></textarea>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-info add-question mt-3" data-lang="<?php echo e($lang->code); ?>">
-                                        <i class="fas fa-plus"></i> Add Question
-                                    </button>
-
-
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        </div>
+
+                        <div class="blog-editor-submitbar">
+                            <p><?php echo e(__('Finish the three sections, then save the post when the content and SEO are aligned.')); ?></p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="<?php echo e(route('admin.' . $modelName . '.index')); ?>" class="btn btn-outline-secondary blog-editor-ghost-btn">
+                                    <i class="fas fa-arrow-left"></i><?php echo e(__('Back to List')); ?>
+
+                                </a>
+                                <button type="submit" class="btn btn-primary blog-editor-ghost-btn">
+                                    <i class="fas fa-save"></i><?php echo e(__('Save')); ?>
+
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-success btn-lg mt-3">
-                    <i class="fas fa-save"></i> Save
-                </button>
             </form>
         </div>
-</div><?php $__env->stopSection(); ?>
 
+        <div class="card blog-editor-sidecard">
+            <div class="card-body">
+                <span class="blog-editor-kicker"><?php echo e(__('Editing Focus')); ?></span>
+                <h5 class="blog-editor-panel-title"><?php echo e(__('Publishing Checklist')); ?></h5>
+                <div class="blog-editor-preview-box mb-3">
+                    <img src="<?php echo e($placeholderImage); ?>" alt="<?php echo e(__('Sidebar preview')); ?>" id="blogImagePreviewMirror">
+                </div>
+                <div class="blog-editor-checklist">
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-image"></i>
+                        <div>
+                            <strong><?php echo e(__('Cover First')); ?></strong>
+                            <span><?php echo e(__('Use a strong image before writing so the article has a clear visual anchor.')); ?></span>
+                        </div>
+                    </div>
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-language"></i>
+                        <div>
+                            <strong><?php echo e(__('Every Locale')); ?></strong>
+                            <span><?php echo e(__('Complete title, description, and content for each active language.')); ?></span>
+                        </div>
+                    </div>
+                    <div class="blog-editor-checklist-item">
+                        <i class="fas fa-search"></i>
+                        <div>
+                            <strong><?php echo e(__('Search Signals')); ?></strong>
+                            <span><?php echo e(__('Layer meta fields, robots settings, and question blocks to improve discovery.')); ?></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
-
-    <!-- Custom JS -->
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageInput = document.getElementById('image_path');
+            const previews = [document.getElementById('blogImagePreview'), document.getElementById('blogImagePreviewMirror')];
 
+            if (imageInput) {
+                imageInput.addEventListener('change', function (event) {
+                    const file = event.target.files && event.target.files[0];
+                    if (!file) {
+                        return;
+                    }
 
-        $(document).ready(function () {
-            // Function to dynamically add SEO Questions/Answers
-            $('.add-question').on('click', function () {
-                var lang = $(this).data('lang');
-                var container = $('#seo-questions-' + lang);
-                var count = container.find('.seo-question-group').length;
-                console.log('Adding question for language:', lang, 'Count:', count); // Debugging line
-                var newQuestionGroup = `
-                        <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                            <div class="form-group">
-                                <input type="text" name="seo_questions[` + lang + `][` + count + `][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" />
-                            </div>
-                            <div class="form-group">
-                                <textarea name="seo_questions[` + lang + `][` + count + `][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer"></textarea>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
-                        </div>`;
-                container.append(newQuestionGroup);
-            });
-
-            // Function to remove an SEO Question/Answer
-            $(document).on('click', '.remove-question', function () {
-                $(this).closest('.seo-question-group').remove();
-            });
-
-
-            <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                var metaKeywordsInput = document.querySelector('#meta_keywords_<?php echo e($lang->code); ?>');
-                if (metaKeywordsInput) {
-                    new Tagify(metaKeywordsInput, {
-                        placeholder: 'Enter meta keywords'
-                    });
-                }
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-            });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            function formatCar(car) {
-                if (!car.id) {
-                    return car.text;
-                }
-
-                var $car = $(
-                    '<span><img src="' + $(car.element).data('image') + '" style="width: 60px; height: 40px;" /> ' +
-                    $(car.element).text() + '</span>'
-                );
-                return $car;
+                    const reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        previews.forEach(function (preview) {
+                            if (preview) {
+                                preview.src = loadEvent.target.result;
+                            }
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
             }
 
-            $('.car-select').select2({
-                templateResult: formatCar,
-                templateSelection: formatCar,
-                allowClear: true,
-                placeholder: "Select cars"
+            document.querySelectorAll('.add-question').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const lang = this.dataset.lang;
+                    const container = document.getElementById('seo-questions-' + lang);
+                    if (!container) {
+                        return;
+                    }
+
+                    const count = Number(container.dataset.nextIndex || container.querySelectorAll('.seo-question-group').length);
+                    container.dataset.nextIndex = String(count + 1);
+                    const group = document.createElement('div');
+                    group.className = 'blog-editor-question seo-question-group';
+                    group.innerHTML = '<div class="row g-3"><div class="col-12"><input type="text" name="seo_questions[' + lang + '][' + count + '][question]" class="form-control" placeholder="<?php echo e(__('Enter question')); ?>"></div><div class="col-12"><textarea name="seo_questions[' + lang + '][' + count + '][answer]" class="form-control" rows="3" placeholder="<?php echo e(__('Enter answer')); ?>"></textarea></div></div><div class="blog-editor-question-actions"><button type="button" class="btn btn-outline-danger btn-sm remove-question"><i class="fas fa-trash"></i><?php echo e(__('Remove')); ?></button></div>';
+                    container.appendChild(group);
+                });
             });
+
+            document.addEventListener('click', function (event) {
+                const removeButton = event.target.closest('.remove-question');
+                if (!removeButton) {
+                    return;
+                }
+
+                const group = removeButton.closest('.seo-question-group');
+                if (group) {
+                    group.remove();
+                }
+            });
+
+            if (window.jQuery && typeof window.jQuery.fn.select2 !== 'undefined') {
+                const $ = window.jQuery;
+
+                function formatCar(option) {
+                    if (!option.id) {
+                        return option.text;
+                    }
+
+                    const image = $(option.element).data('image');
+                    return $('<span class="d-inline-flex align-items-center"><img src="' + image + '" alt="" style="width:44px;height:32px;object-fit:cover;border-radius:8px;margin-right:8px;"><span>' + $(option.element).text() + '</span></span>');
+                }
+
+                $('.car-select').select2({
+                    theme: 'bootstrap4',
+                    width: '100%',
+                    placeholder: <?php echo json_encode(__('Select cars'), 15, 512) ?>,
+                    allowClear: true,
+                    templateResult: formatCar,
+                    templateSelection: formatCar
+                });
+            }
+
+            if (typeof Tagify !== 'undefined') {
+                document.querySelectorAll('.blog-editor-meta-keywords').forEach(function (input) {
+                    new Tagify(input, {
+                        placeholder: <?php echo json_encode(__('Enter meta keywords'), 15, 512) ?>
+                    });
+                });
+            }
         });
     </script>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views\pages\admin\blogs\create.blade.php ENDPATH**/ ?>
