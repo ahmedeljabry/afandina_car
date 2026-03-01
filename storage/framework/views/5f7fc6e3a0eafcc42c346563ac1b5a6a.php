@@ -246,11 +246,21 @@ unset($__errorArgs, $__bag); ?>
                                             (<?php echo e($lang->name); ?>)</label>
 
                                         <?php
-                                            // Decode the JSON meta_keywords into an array
+                                            // Decode the JSON meta keywords safely.
                                             $metaKeywords = json_decode($translation->meta_keywords ?? '[]', true);
+                                            $metaKeywords = is_array($metaKeywords) ? $metaKeywords : [];
 
-                                            // Convert the array into a comma-separated string of keywords
-                                            $keywordString = implode(',', array_column($metaKeywords, 'value'));
+                                            // Support both Tagify objects and plain string arrays.
+                                            $keywordString = collect($metaKeywords)
+                                                ->map(function ($keyword) {
+                                                    if (is_array($keyword)) {
+                                                        return $keyword['value'] ?? null;
+                                                    }
+
+                                                    return is_string($keyword) ? $keyword : null;
+                                                })
+                                                ->filter()
+                                                ->implode(',');
                                         ?>
 
                                         <input type="text" name="meta_keywords[<?php echo e($lang->code); ?>]"
@@ -394,4 +404,5 @@ unset($__errorArgs, $__bag); ?>
         });
     </script>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views\pages\admin\blogs\edit.blade.php ENDPATH**/ ?>
