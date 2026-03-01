@@ -41,6 +41,10 @@ Route::get('/cars/images/check-status/{carId}', [AdminCarController::class, 'che
 Route::post('/cars/{id}/upload-image', [AdminCarController::class, 'uploadImage'])->name('cars.upload-image');
 Route::post('/cars/{id}/upload-default-image', [AdminCarController::class, 'uploadDefaultImage'])->name('cars.upload-default-image');
 
+Route::middleware('auth')->get('/dashboard', function () {
+    return redirect()->route('admin.dashboard');
+});
+
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/cars/delete-image/{id}', [AdminCarController::class, 'deleteImage'])->name('cars.delete-image');

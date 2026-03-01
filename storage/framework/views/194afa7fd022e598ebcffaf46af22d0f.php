@@ -183,10 +183,13 @@
         .home-car-card-title {
             margin-bottom: 0;
             min-width: 0;
+            display: block;
+            width: 100%;
         }
 
-        .home-car-card-title a {
-            display: block;
+        .car-section .listing-item.listing-item-two .listing-content .listing-features .listing-title.home-car-card-title a {
+            display: block !important;
+            width: 100%;
             max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
@@ -504,7 +507,7 @@
                                 <div class="listing-features d-flex align-items-center justify-content-between">
                                     <div class="list-rating">
                                         <h3 class="listing-title home-car-card-title">
-                                            <a href="<?php echo e($car['details_url']); ?>" title="<?php echo e($car['name']); ?>"><?php echo e(Str::limit($car['name'], 46)); ?></a>
+                                            <a href="<?php echo e($car['details_url']); ?>" title="<?php echo e($car['name']); ?>"><?php echo e(Str::limit($car['name'], 24, '...')); ?></a>
                                         </h3>
                                     </div>
                                     <?php if($car['daily_price']): ?>

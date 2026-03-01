@@ -1,48 +1,155 @@
-@php
-    $menuItems = config('sidebar.menu', []);
-@endphp
-
-<div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
-    <div class="main-menu-content">
-        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-            @foreach($menuItems as $menu)
-                @php
-                    $subMenu = $menu['subMenu'] ?? [];
-                    $hasChildren = filled($subMenu);
-                    $childRoutes = $hasChildren ? collect($subMenu)->pluck('route')->filter()->toArray() : [];
-                    $isActive = $hasChildren
-                        ? collect($childRoutes)->contains(fn ($route) => request()->routeIs($route))
-                        : (isset($menu['route']) ? request()->routeIs($menu['route']) : false);
-                    $iconClass = $menu['icon'] ?? 'ft-circle';
-                    $menuTitle = __($menu['title'] ?? 'Menu');
-                @endphp
-                <li class="nav-item {{ $hasChildren ? 'has-sub' : '' }} {{ $isActive ? 'open active' : '' }}">
-                    @if($hasChildren)
-                        <a href="#">
-                            <i class="menu-icon {{ $iconClass }}"></i>
-                            <span class="menu-title">{{ $menuTitle }}</span>
-                        </a>
-                        <ul class="menu-content">
-                            @foreach($subMenu as $sub)
-                                @php
-                                    $subRouteName = $sub['route'] ?? null;
-                                    $subRouteParams = $sub['parameter'] ?? null;
-                                    $subUrl = $subRouteName ? route($subRouteName, $subRouteParams) : '#';
-                                    $subActive = $subRouteName && request()->routeIs($subRouteName);
-                                @endphp
-                                <li class="{{ $subActive ? 'active' : '' }}">
-                                    <a class="menu-item" href="{{ $subUrl }}">{{ __($sub['title'] ?? 'Link') }}</a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <a href="{{ isset($menu['route']) ? route($menu['route']) : '#' }}">
-                            <i class="menu-icon {{ $iconClass }}"></i>
-                            <span class="menu-title">{{ $menuTitle }}</span>
-                        </a>
-                    @endif
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <a href="{{ route('admin.dashboard') }}" class="logo logo-normal">
+            <img src="{{ asset('admin/assets/img/logo.svg') }}" alt="Logo">
+        </a>
+        <a href="{{ route('admin.dashboard') }}" class="logo-small">
+            <img src="{{ asset('admin/assets/img/logo-small.svg') }}" alt="Logo">
+        </a>
+        <a href="{{ route('admin.dashboard') }}" class="dark-logo">
+            <img src="{{ asset('admin/assets/img/logo-white.svg') }}" alt="Logo">
+        </a>
+    </div>
+    <!-- /Logo -->
+    <div class="sidebar-inner slimscroll">
+        <div id="sidebar-menu" class="sidebar-menu">
+            
+            <div class="form-group">
+                <!-- Search -->
+                <div class="input-group input-group-flat d-inline-flex">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                        </span>
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="group-text">
+                        <i class="ti ti-command"></i>
+                    </span>
+                </div>
+                <!-- /Search -->
+            </div>
+            <ul>
+                <li class="menu-title"><span>Main</span></li>
+                <li>
+                    <ul>
+                        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                            <a href="{{ route('admin.dashboard') }}">
+                                <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
-            @endforeach
-        </ul>
+                <li class="menu-title"><span>Manage</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.locations.index') }}">
+                                <i class="ti ti-map-pin"></i><span>Locations</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-title"><span>RENTALS</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.cars.index') }}">
+                                <i class="ti ti-car"></i><span>Cars</span>
+                            </a>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-device-camera-phone"></i><span>Car Attributes</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li><a href="{{ route('admin.brands.index') }}">Brands</a></li>
+                                <li><a href="{{ route('admin.car_models.index') }}">Models</a></li>
+                                <li><a href="{{ route('admin.colors.index') }}">Colors</a></li>
+                                <li><a href="{{ route('admin.features.index') }}">Features</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>	
+                <li class="menu-title"><span>CMS</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.pages.index') }}" >
+                                <i class="ti ti-file-invoice"></i><span>Pages</span>
+                            </a>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-device-desktop-analytics"></i><span>Blogs</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li><a href="{{ route('admin.blogs.index') }}">All Blogs</a></li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-question-mark"></i><span>FAQ’s</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li><a href="{{ route('admin.faqs.index') }}">FAQ's</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-title"><span>SUPPORT</span></li>
+                <li>
+                    <ul>
+                        <li>
+                            <a href="{{ route('admin.contact-messages.index') }}" >
+                                <i class="ti ti-messages"></i><span>Contact Messages</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-title"><span>SETTINGS & CONFIGURATION</span></li>
+                <li>
+                    <ul>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-world-cog"></i><span>Website Settings</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="{{ route('admin.languages.index') }}">Language</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-settings-dollar"></i><span>Finance Settings</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="{{ route('admin.currencies.index') }}">Currencies</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="submenu">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-settings-2"></i><span>Other Settings</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <ul>
+                                <li>
+                                    <a href="{{ route('admin.sitemap') }}">Sitemap</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+<!-- /Sidebar -->

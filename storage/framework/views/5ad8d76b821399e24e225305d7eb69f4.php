@@ -1,9 +1,18 @@
-<?php $__env->startSection('title', 'Add ' . $modelName); ?>
+<?php $__env->startSection('title', __('Create Car')); ?>
+<?php $__env->startSection('page-title', __('Create Car')); ?>
 
+<?php $__env->startSection('breadcrumbs'); ?>
+    <li class="breadcrumb-item">
+        <a href="<?php echo e(route('admin.cars.index')); ?>"><?php echo e(__('Cars')); ?></a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><?php echo e(__('Create')); ?></li>
+<?php $__env->stopSection(); ?>
 
-<?php $__env->startSection('page-title'); ?>
-    <?php echo e(isset($item) ? __('Edit :entity', ['entity' => $modelName]) : __('Add :entity', ['entity' => $modelName])); ?>
+<?php $__env->startSection('page-actions'); ?>
+    <a href="<?php echo e(route('admin.cars.index')); ?>" class="btn btn-outline-secondary d-inline-flex align-items-center">
+        <i class="ti ti-arrow-left me-1"></i><?php echo e(__('Back to Cars')); ?>
 
+    </a>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('includes.admin.form_theme', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
@@ -194,31 +203,138 @@
         .tinymce {
             min-height: 300px;
         }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .setup-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: #ffffff;
+        }
+
+        .setup-card h6 {
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .setup-card p {
+            margin-bottom: 0;
+            font-size: 13px;
+            color: #64748b;
+        }
     </style>
 <?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('includes.admin.car_form_rebuild', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
 <?php $__env->startSection('content'); ?>
 
     <?php
         $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
-        $formStats = [];
-        if ($languageCount) {
-            $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
-        }
-        $formStats[] = ['icon' => 'fas fa-layer-group', 'label' => __('Guided workflow')];
-        $formStats[] = ['icon' => 'fas fa-save', 'label' => __('Content safety')];
         $formTitle = isset($item)
             ? __('Update :entity', ['entity' => $modelName])
             : __('Add :entity', ['entity' => $modelName]);
-        $formDescription = isset($item)
-            ? __('Review the content, adjust translations and assets, then save confidently.')
-            : __('Complete the details below to publish a polished entry.');
     ?>
 
-    <?php echo $__env->make('includes.admin.form_header', [
-        'title' => $formTitle,
-        'description' => $formDescription,
-        'stats' => $formStats
-    ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <div class="car-workbench">
+        <section class="car-workbench__hero">
+            <div class="car-workbench__hero-copy">
+                <span class="car-workbench__eyebrow"><?php echo e(__('Car Studio')); ?></span>
+                <h2 class="car-workbench__title"><?php echo e($formTitle); ?></h2>
+                <p class="car-workbench__subtitle">
+                    <?php echo e(__('The old layout is gone. This new workspace is built for faster entry: start with core specs, move through translations, then finish with SEO and publish when the listing is complete.')); ?>
+
+                </p>
+                <div class="car-workbench__hero-tags">
+                    <span class="car-workbench__tag"><?php echo e(__('3-stage workflow')); ?></span>
+                    <?php if($languageCount): ?>
+                        <span class="car-workbench__tag"><?php echo e(__(':count locales', ['count' => $languageCount])); ?></span>
+                    <?php endif; ?>
+                    <span class="car-workbench__tag"><?php echo e(__('Media uploads ready')); ?></span>
+                </div>
+            </div>
+            <div class="car-workbench__hero-cards">
+                <div class="car-workbench__metric">
+                    <span class="car-workbench__metric-label"><?php echo e(__('Stage 1')); ?></span>
+                    <strong class="car-workbench__metric-value"><?php echo e(__('Vehicle setup')); ?></strong>
+                    <span class="car-workbench__metric-note"><?php echo e(__('Specs, pricing, media, and switches')); ?></span>
+                </div>
+                <div class="car-workbench__metric">
+                    <span class="car-workbench__metric-label"><?php echo e(__('Stage 2')); ?></span>
+                    <strong class="car-workbench__metric-value"><?php echo e(__('Localized copy')); ?></strong>
+                    <span class="car-workbench__metric-note"><?php echo e(__('Manual or AI-generated content')); ?></span>
+                </div>
+                <div class="car-workbench__metric">
+                    <span class="car-workbench__metric-label"><?php echo e(__('Stage 3')); ?></span>
+                    <strong class="car-workbench__metric-value"><?php echo e(__('SEO finishing')); ?></strong>
+                    <span class="car-workbench__metric-note"><?php echo e(__('Metadata, robots, and Q&A')); ?></span>
+                </div>
+                <div class="car-workbench__metric">
+                    <span class="car-workbench__metric-label"><?php echo e(__('Goal')); ?></span>
+                    <strong class="car-workbench__metric-value"><?php echo e(__('Publish cleanly')); ?></strong>
+                    <span class="car-workbench__metric-note"><?php echo e(__('One focused screen for the full flow')); ?></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="car-workbench__layout">
+            <aside class="car-workbench__aside">
+                <div class="car-workbench__panel">
+                    <div class="car-workbench__panel-head">
+                        <span class="car-workbench__panel-icon"><i class="ti ti-sparkles"></i></span>
+                        <div>
+                            <h3 class="car-workbench__panel-title"><?php echo e(__('Build Flow')); ?></h3>
+                            <p class="car-workbench__panel-copy"><?php echo e(__('Use the tabs as a guided path instead of jumping around the page.')); ?></p>
+                        </div>
+                    </div>
+                    <ul class="car-workbench__steps">
+                        <li>
+                            <span class="car-workbench__step-label"><?php echo e(__('General')); ?></span>
+                            <span class="car-workbench__step-text"><?php echo e(__('Set brand, model, pricing, features, media, and status first.')); ?></span>
+                        </li>
+                        <li>
+                            <span class="car-workbench__step-label"><?php echo e(__('Translations')); ?></span>
+                            <span class="car-workbench__step-text"><?php echo e(__('Fill language-specific name, summary, and long description.')); ?></span>
+                        </li>
+                        <li>
+                            <span class="car-workbench__step-label"><?php echo e(__('SEO')); ?></span>
+                            <span class="car-workbench__step-text"><?php echo e(__('Add metadata, search directives, and question blocks last.')); ?></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="car-workbench__panel">
+                    <div class="car-workbench__panel-head">
+                        <span class="car-workbench__panel-icon"><i class="ti ti-bolt"></i></span>
+                        <div>
+                            <h3 class="car-workbench__panel-title"><?php echo e(__('Quick Notes')); ?></h3>
+                            <p class="car-workbench__panel-copy"><?php echo e(__('A few practical reminders before you save the listing.')); ?></p>
+                        </div>
+                    </div>
+                    <ul class="car-workbench__facts">
+                        <li>
+                            <span class="car-workbench__fact-label"><?php echo e(__('Media')); ?></span>
+                            <span class="car-workbench__fact-value"><?php echo e(__('Upload a default cover image before adding the gallery.')); ?></span>
+                        </li>
+                        <li>
+                            <span class="car-workbench__fact-label"><?php echo e(__('AI')); ?></span>
+                            <span class="car-workbench__fact-value"><?php echo e(__('Use generated text as a draft, then review before publishing.')); ?></span>
+                        </li>
+                        <li>
+                            <span class="car-workbench__fact-label"><?php echo e(__('Publish')); ?></span>
+                            <span class="car-workbench__fact-value"><?php echo e(__('Leave inactive until pricing and translations are reviewed.')); ?></span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="car-workbench__main">
 
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
@@ -228,25 +344,25 @@
         </div>
     </div>
 
-                <div class="card form-card card-primary card-outline card-tabs shadow-lg">
+                <div class="card form-card card-primary card-outline card-tabs shadow-lg studio-shell-card">
                     <div class="card-header p-0 pt-1 border-bottom-0 bg-light">
                         <!-- Tabs Header -->
                         <ul class="nav nav-tabs nav-tabs-modern" id="custom-tabs-three-tab" role="tablist">
                             <!-- General Data Tab -->
                             <li class="nav-item">
-                                <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill" href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
+                                <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-bs-toggle="pill" href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
                                     <i class="fas fa-info-circle"></i> General Data
                                 </a>
                             </li>
                             <!-- Translated Data Tab -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-toggle="pill" href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated" aria-selected="false">
+                                <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-bs-toggle="pill" href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated" aria-selected="false">
                                     <i class="fas fa-language"></i> Translated Data
                                 </a>
                             </li>
                             <!-- SEO Data Tab -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-toggle="pill" href="#custom-tabs-seo" role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
+                                <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-bs-toggle="pill" href="#custom-tabs-seo" role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
                                     <i class="fas fa-search"></i> SEO Data
                                 </a>
                             </li>
@@ -258,11 +374,7 @@
                         <form id="createCarForm" action="<?php echo e(route('admin.'.$modelName.'.store')); ?>" method="POST" enctype="multipart/form-data">
                             <?php echo csrf_field(); ?>
                             <div class="tab-content tab-modern" id="custom-tabs-three-tabContent">
-                                <!-- General Data Tab Content -->
                                 <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel" aria-labelledby="custom-tabs-general-tab">
-
-                                    <!-- General Data Tab Content -->
-                                    <div class="tab-pane fade show active" id="custom-tabs-general" role="tabpanel" aria-labelledby="custom-tabs-general-tab">
                                         <!-- Car Information -->
                                         <div class="card mb-4">
                                             <div class="card-header bg-light">
@@ -306,8 +418,8 @@ unset($__errorArgs, $__bag); ?>
 
                                                     <div class="col-md-6">
                                                         <div class="form-group">
-                                                            <label for="model_id" class="font-weight-bold">Model</label>
-                                                            <select name="model_id" id="model_id" class="form-control shadow-sm select2">
+                                                            <label for="car_model_id" class="font-weight-bold">Model</label>
+                                                            <select name="car_model_id" id="car_model_id" class="form-control shadow-sm select2">
                                                                 <option value="">-- Select Model --</option>
                                                                 <!-- Models will be populated dynamically here -->
                                                             </select>
@@ -902,9 +1014,6 @@ unset($__errorArgs, $__bag); ?>
                                                             <input type="text" class="form-control" name="alt" placeholder="Add alt text for images or videos">
                                                         </div>
 
-                                                        <!-- Preview Section -->
-                                                        <h2 class="mt-5">Preview</h2>
-                                                        <div id="preview" class="row preview-grid"></div>
                                                     </div>
                                                 </div>
 
@@ -971,10 +1080,9 @@ unset($__errorArgs, $__bag); ?>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
                                 <div class="tab-pane fade" id="custom-tabs-translated" role="tabpanel" aria-labelledby="custom-tabs-translated-tab">
-                                    <div class="card shadow-sm border-0 mb-4">
+                                    <div class="card shadow-sm border-0 mb-4 studio-pane-surface">
                                         <div class="card-body d-flex flex-column flex-lg-row justify-content-between align-items-lg-center">
                                             <div class="d-flex align-items-center mb-3 mb-lg-0">
                                                 <span class="badge badge-primary mr-3"><i class="fas fa-robot"></i></span>
@@ -994,11 +1102,11 @@ unset($__errorArgs, $__bag); ?>
                                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                                         <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <li class="nav-item">
-                                                <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark" id="pills-<?php echo e($lang->code); ?>-tab" data-toggle="pill" href="#pills-<?php echo e($lang->code); ?>" role="tab" aria-controls="pills-<?php echo e($lang->code); ?>" aria-selected="true"><?php echo e($lang->name); ?></a>
+                                                <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark" id="pills-<?php echo e($lang->code); ?>-tab" data-bs-toggle="pill" href="#pills-<?php echo e($lang->code); ?>" role="tab" aria-controls="pills-<?php echo e($lang->code); ?>" aria-selected="true"><?php echo e($lang->name); ?></a>
                                             </li>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </ul>
-                                    <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-tabContent">
+                                    <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded studio-pane-surface" id="pills-tabContent">
                                         <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="pills-<?php echo e($lang->code); ?>" role="tabpanel" aria-labelledby="pills-<?php echo e($lang->code); ?>-tab">
                                                 <div class="form-group">
@@ -1082,11 +1190,11 @@ unset($__errorArgs, $__bag); ?>
                                     <ul class="nav nav-pills mb-3" id="pills-seo-tab" role="tablist">
                                         <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <li class="nav-item">
-                                                <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark" id="pills-seo-<?php echo e($lang->code); ?>-tab" data-toggle="pill" href="#pills-seo-<?php echo e($lang->code); ?>" role="tab" aria-controls="pills-seo-<?php echo e($lang->code); ?>" aria-selected="true"><?php echo e($lang->name); ?></a>
+                                                <a class="nav-link <?php if($loop->first): ?> active <?php endif; ?> bg-light text-dark" id="pills-seo-<?php echo e($lang->code); ?>-tab" data-bs-toggle="pill" href="#pills-seo-<?php echo e($lang->code); ?>" role="tab" aria-controls="pills-seo-<?php echo e($lang->code); ?>" aria-selected="true"><?php echo e($lang->name); ?></a>
                                             </li>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </ul>
-                                    <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-seo-tabContent">
+                                    <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded studio-pane-surface" id="pills-seo-tabContent">
                                         <?php $__currentLoopData = $activeLanguages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lang): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="tab-pane fade <?php if($loop->first): ?> show active <?php endif; ?>" id="pills-seo-<?php echo e($lang->code); ?>" role="tabpanel" aria-labelledby="pills-seo-<?php echo e($lang->code); ?>-tab">
                                                 <div class="form-group">
@@ -1159,7 +1267,7 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                                 </div>
 
-                                                <div class="row card">
+                                                <div class="row studio-inline-card">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <label for="robots_index_<?php echo e($lang->code); ?>" class="font-weight-bold">
@@ -1224,6 +1332,9 @@ unset($__errorArgs, $__bag); ?>
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 <?php $__env->stopSection(); ?>
 
 
@@ -1271,7 +1382,7 @@ unset($__errorArgs, $__bag); ?>
             const brandOption = $('#brand_id option:selected');
             context.brand = brandOption.val() ? brandOption.text().trim() : null;
 
-            const modelOption = $('#model_id option:selected');
+            const modelOption = $('#car_model_id option:selected');
             context.model = modelOption.val() ? modelOption.text().trim() : null;
 
             const yearOption = $('#year_id option:selected');
@@ -1520,24 +1631,40 @@ unset($__errorArgs, $__bag); ?>
 
 
         $(document).ready(function() {
-            $('#brand_id').change(function() {
-                var brandId = $(this).val();
-                var modelSelect = $('#model_id');
+            var brandSelect = $('#brand_id');
+            var modelSelect = $('#car_model_id');
+            var initialModelId = '<?php echo e(old('car_model_id')); ?>';
 
+            function loadModels(brandId, selectedModelId = null) {
                 modelSelect.empty().append('<option value="">-- Select Model --</option>');
 
-                if (brandId) {
-                    $.ajax({
-                        url: "<?php echo e(route('admin.get.models', '')); ?>/" + brandId,
-                        type: "GET",
-                        success: function(data) {
-                            data.forEach(function(model) {
-                                modelSelect.append('<option value="' + model.id + '">' + model.name + '</option>');
-                            });
-                        }
-                    });
+                if (!brandId) {
+                    return;
                 }
+
+                $.ajax({
+                    url: "<?php echo e(route('admin.get.models', '')); ?>/" + brandId,
+                    type: "GET",
+                    success: function(data) {
+                        data.forEach(function(model) {
+                            var selected = selectedModelId && selectedModelId == model.id ? 'selected' : '';
+                            modelSelect.append('<option value="' + model.id + '" ' + selected + '>' + model.name + '</option>');
+                        });
+
+                        if (selectedModelId) {
+                            modelSelect.val(selectedModelId).trigger('change');
+                        }
+                    }
+                });
+            }
+
+            brandSelect.on('change', function() {
+                loadModels($(this).val());
             });
+
+            if (brandSelect.val()) {
+                loadModels(brandSelect.val(), initialModelId);
+            }
         });
 
         $(document).ready(function() {
@@ -1705,14 +1832,14 @@ unset($__errorArgs, $__bag); ?>
                     contentType: 'application/json',
                     processData: false,
                     headers: {
-                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
                         if (response && response.success) {
                             populateAiContent(lang, response.data);
-                            const tabTrigger = $('#pills-' + lang + '-tab');
-                            if (tabTrigger.length) {
-                                tabTrigger.tab('show');
+                            const tabTrigger = document.getElementById('pills-' + lang + '-tab');
+                            if (tabTrigger && window.bootstrap && window.bootstrap.Tab) {
+                                window.bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
                             }
                             if (!opts.silent) {
                                 Swal.fire({

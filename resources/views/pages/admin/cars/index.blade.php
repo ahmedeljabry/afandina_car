@@ -1,331 +1,375 @@
 @extends('layouts.admin_layout')
 
-@section('title', 'List of ' . $modelName)
+@section('title', __('Cars'))
+@include('includes.admin.form_theme')
 
-@include('includes.admin.datatable_theme')
+@section('page-title', __('Cars'))
 
-@section('page-title')
-    {{ $modelName }} List
+@section('breadcrumbs')
+    <li class="breadcrumb-item active" aria-current="page">{{ __('Cars') }}</li>
+@endsection
+
+@section('page-actions')
+    <a href="{{ route('admin.cars.create') }}" class="btn btn-primary d-inline-flex align-items-center me-2 mb-2">
+        <i class="ti ti-plus me-1"></i>{{ __('Add Car') }}
+    </a>
+    @if(request()->query())
+        <a href="{{ route('admin.cars.index') }}" class="btn btn-outline-secondary d-inline-flex align-items-center mb-2">
+            <i class="ti ti-x me-1"></i>{{ __('Clear Filters') }}
+        </a>
+    @endif
 @endsection
 
 @push('styles')
     <style>
-        .filter-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        .cars-hero {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 65%, #0ea5e9 100%);
+            color: #fff;
+            overflow: hidden;
+            position: relative;
         }
 
-        .filter-section label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
+        .cars-hero::after {
+            content: "";
+            position: absolute;
+            right: -80px;
+            top: -80px;
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .filter-section .form-control {
-            border: 1px solid #ced4da;
-            border-radius: 4px;
+        .cars-hero .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 8px 12px;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
 
-        .filter-section .form-control:focus {
-            border-color: #80bdff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        .cars-filter-card,
+        .cars-table-card {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 16px;
         }
 
-        .filter-section .btn {
-            padding: 8px 15px;
-            font-weight: 500;
+        .cars-filter-card .form-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
-        .filter-section .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+        .cars-filter-card .form-control {
+            border-radius: 12px;
         }
 
-        .filter-section .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+        .cars-table-card .table th {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
         }
 
-        .filter-section .fas {
-            margin-left: 5px;
+        .cars-table-card .table td {
+            vertical-align: middle;
+            border-color: #eef2f7;
         }
 
-        /* تحسينات للـ select2 */
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            line-height: 38px;
-            border: 1px solid #ced4da;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 38px;
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 36px;
-        }
-
-        .card {
-            box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
-            margin-bottom: 1rem;
-        }
-
-        .table img.car-thumbnail {
-            width: 100px;
-            height: 70px;
+        .car-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
             object-fit: cover;
-            border-radius: 4px;
-            transition: transform 0.3s ease;
+            border: 1px solid #e2e8f0;
         }
 
-        .table img.car-thumbnail:hover {
-            transform: scale(1.5);
-            cursor: pointer;
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-weight: 600;
+            font-size: 12px;
         }
 
-        .btn-group {
-            gap: 5px;
+        .status-pill.ok {
+            color: #0f766e;
+            background: rgba(20, 184, 166, 0.16);
+        }
+
+        .status-pill.no {
+            color: #b91c1c;
+            background: rgba(248, 113, 113, 0.18);
+        }
+
+        .flag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .flag-badge {
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #334155;
         }
     </style>
 @endpush
 
 @section('content')
-
     @php
-        $itemsCollection = $items instanceof \Illuminate\Pagination\AbstractPaginator ? collect($items->items()) : collect($items);
-        $totalCars = $itemsCollection->count();
+        $locale = app()->getLocale() ?: 'en';
+
+        $translateName = function ($entity) use ($locale): string {
+            if (!$entity || !method_exists($entity, 'translations')) {
+                return __('N/A');
+            }
+
+            $translations = $entity->relationLoaded('translations')
+                ? $entity->translations
+                : $entity->translations()->get();
+
+            $translation = $translations->firstWhere('locale', $locale) ?? $translations->first();
+
+            return filled($translation?->name) ? $translation->name : __('N/A');
+        };
+
+        $resolveImage = function (?string $path): string {
+            if (blank($path)) {
+                return asset('admin/assets/img/car/car-01.jpg');
+            }
+
+            if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://', '//'])) {
+                return $path;
+            }
+
+            if (\Illuminate\Support\Str::startsWith($path, 'storage/')) {
+                return asset($path);
+            }
+
+            return asset('storage/' . ltrim($path, '/'));
+        };
+
+        $itemsCollection = $items instanceof \Illuminate\Pagination\AbstractPaginator
+            ? collect($items->items())
+            : collect($items);
+
+        $totalCars = $items instanceof \Illuminate\Pagination\AbstractPaginator ? $items->total() : $itemsCollection->count();
         $activeCars = $itemsCollection->where('is_active', true)->count();
-        $inactiveCars = max($totalCars - $activeCars, 0);
+        $availableCars = $itemsCollection->where('status', 'available')->count();
+        $featuredCars = $itemsCollection->where('is_featured', true)->count();
+
+        $selectedBrand = request()->filled('brand')
+            ? $brands->firstWhere('id', (int) request('brand'))
+            : null;
     @endphp
 
-    <div class="management-hero mb-2">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-            <div>
-                <h2 class="mb-1">{{ __('Manage') }} {{ $modelName }}</h2>
-                <p class="mb-0">{{ __('Refine fleet entries, update filters, and keep availability in sync.') }}</p>
-            </div>
-            <div class="mt-3 mt-md-0">
-                <span class="stat-pill">
-                    <i class="fas fa-layer-group"></i> {{ $totalCars }} {{ __('cars') }}
-                </span>
-                <span class="stat-pill">
-                    <i class="fas fa-toggle-on"></i> {{ $activeCars }} {{ __('active') }}
-                </span>
-                <span class="stat-pill">
-                    <i class="fas fa-toggle-off"></i> {{ $inactiveCars }} {{ __('inactive') }}
-                </span>
+    <div class="card cars-hero mb-3">
+        <div class="card-body p-4 position-relative">
+            <div class="d-flex justify-content-between flex-wrap gap-3">
+                <div>
+                    <h3 class="mb-2">{{ __('Fleet Management') }}</h3>
+                    <p class="mb-0 text-white-50">{{ __('Manage your cars, refine filters, and keep stock visibility aligned with availability.') }}</p>
+                </div>
+                <div class="text-md-end">
+                    <span class="chip"><i class="ti ti-car"></i>{{ __('Total: :count', ['count' => $totalCars]) }}</span>
+                    <span class="chip"><i class="ti ti-check"></i>{{ __('Active (page): :count', ['count' => $activeCars]) }}</span>
+                    <span class="chip"><i class="ti ti-circle-check"></i>{{ __('Available (page): :count', ['count' => $availableCars]) }}</span>
+                    <span class="chip"><i class="ti ti-star"></i>{{ __('Featured (page): :count', ['count' => $featuredCars]) }}</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title">Filter Cars</h4>
+    <div class="card cars-filter-card mb-3">
+        <div class="card-header border-0 pb-0">
+            <h5 class="mb-0">{{ __('Filters') }}</h5>
         </div>
         <div class="card-body">
-            <form id="carFilterForm" method="GET" class="row g-3">
-                <div class="col-md-2">
-                    <label for="brand" class="form-label">Brand</label>
+            <form id="carFilterForm" method="GET" action="{{ route('admin.cars.index') }}" class="row g-3">
+                <div class="col-lg-2 col-md-4">
+                    <label for="brand" class="form-label">{{ __('Brand') }}</label>
                     <select name="brand" id="brand" class="form-control select2">
-                        <option value="">All Brands</option>
+                        <option value="">{{ __('All Brands') }}</option>
                         @foreach($brands as $brand)
-                            <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
-                                @php
-                                    $translation = $brand->translations->where('locale', 'en')->first();
-                                    $name = $translation ? $translation->name : ($brand->translations->first() ? $brand->translations->first()->name : 'N/A');
-                                @endphp
-                                {{ $name }}
+                            <option value="{{ $brand->id }}" {{ (string) request('brand') === (string) $brand->id ? 'selected' : '' }}>
+                                {{ $translateName($brand) }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label for="model" class="form-label">Model</label>
-                    <select name="model" id="model" class="form-control select2" {{ !request('brand') ? 'disabled' : '' }}>
-                        <option value="">All Models</option>
-                        @if(request('brand'))
-                            @foreach($brands->find(request('brand'))->carModels as $model)
-                                @php
-                                    $translation = $model->translations->where('locale', 'en')->first();
-                                    $name = $translation ? $translation->name : ($model->translations->first() ? $model->translations->first()->name : 'N/A');
-                                @endphp
-                                <option value="{{ $model->id }}" {{ request('model') == $model->id ? 'selected' : '' }}>
-                                    {{ $name }}
+                <div class="col-lg-2 col-md-4">
+                    <label for="model" class="form-label">{{ __('Model') }}</label>
+                    <select name="model" id="model" class="form-control select2" {{ $selectedBrand ? '' : 'disabled' }}>
+                        <option value="">{{ __('All Models') }}</option>
+                        @if($selectedBrand)
+                            @foreach($selectedBrand->carModels as $model)
+                                <option value="{{ $model->id }}" {{ (string) request('model') === (string) $model->id ? 'selected' : '' }}>
+                                    {{ $translateName($model) }}
                                 </option>
                             @endforeach
                         @endif
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label for="category" class="form-label">Category</label>
+                <div class="col-lg-2 col-md-4">
+                    <label for="category" class="form-label">{{ __('Category') }}</label>
                     <select name="category" id="category" class="form-control select2">
-                        <option value="">All Categories</option>
+                        <option value="">{{ __('All Categories') }}</option>
                         @foreach($categories as $category)
-                            @php
-                                $translation = $category->translations->where('locale', 'en')->first();
-                                $name = $translation ? $translation->name : ($category->translations->first() ? $category->translations->first()->name : 'N/A');
-                            @endphp
-                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                {{ $name }}
+                            <option value="{{ $category->id }}" {{ (string) request('category') === (string) $category->id ? 'selected' : '' }}>
+                                {{ $translateName($category) }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                {{-- <div class="col-md-2">
-                    <label for="rent_periods" class="form-label">Rent Periods</label>
-                    <select name="rent_periods" id="rent_periods" class="form-control select2">
-                        <option value="">All Rent Periods</option>
-                        @foreach($periods as $rent_period)
-                        @php
-                        $translation = $rent_period->translations->where('locale', 'en')->first();
-                        $name = $translation ? $translation->name : ($rent_period->translations->first() ?
-                        $rent_period->translations->first()->name : 'N/A');
-                        @endphp
-                        <option value="{{ $rent_period->id }}" {{ request('period')==$rent_period->id ? 'selected' : '' }}>
-                            {{ $name }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div> --}}
-
-                <div class="col-md-2">
-                    <label for="year" class="form-label">Year</label>
+                <div class="col-lg-2 col-md-4">
+                    <label for="year" class="form-label">{{ __('Year') }}</label>
                     <select name="year" id="year" class="form-control select2">
-                        <option value="">All Years</option>
+                        <option value="">{{ __('All Years') }}</option>
                         @foreach($years as $year)
-                            <option value="{{ $year->id }}" {{ request('year') == $year->id ? 'selected' : '' }}>
+                            <option value="{{ $year->id }}" {{ (string) request('year') === (string) $year->id ? 'selected' : '' }}>
                                 {{ $year->year }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label for="search" class="form-label">Search</label>
-                    <input type="text" name="search" id="search" class="form-control" placeholder="Search by name..."
-                        value="{{ request('search') }}">
+                <div class="col-lg-3 col-md-6">
+                    <label for="search" class="form-label">{{ __('Search') }}</label>
+                    <input
+                        type="text"
+                        name="search"
+                        id="search"
+                        class="form-control"
+                        value="{{ request('search') }}"
+                        placeholder="{{ __('Search by car name or description') }}"
+                    >
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
-                    <div class="btn-group w-100">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Filter
-                        </button>
-                        <a href="{{ route('admin.cars.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-redo"></i> Reset
-                        </a>
-                    </div>
+                <div class="col-lg-1 col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark w-100 d-inline-flex align-items-center justify-content-center">
+                        <i class="ti ti-filter me-1"></i>{{ __('Go') }}
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Cars List -->
-    <div class="card management-card mt-4">
-        <div class="card-header">
-            <h4 class="card-title">Cars List</h4>
+    <div class="card cars-table-card">
+        <div class="card-header d-flex align-items-center justify-content-between border-0 pb-0">
+            <h5 class="mb-0">{{ __('Cars List') }}</h5>
+            <small class="text-muted">{{ __('Showing :count item(s) on this page', ['count' => $itemsCollection->count()]) }}</small>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="cars-table" class="table table-hover table-modern w-100 datatable">
+                <table class="table align-middle mb-0">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Brand</th>
-                            <th>Model</th>
-                            <th>Category</th>
-                            <th>Rent Periods</th>
-                            <th>Year</th>
-                            <th>Actions</th>
+                            <th>{{ __('Car') }}</th>
+                            <th>{{ __('Category') }}</th>
+                            <th>{{ __('Year') }}</th>
+                            <th>{{ __('Prices') }}</th>
+                            <th>{{ __('Flags') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th class="text-end">{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($items as $item)
+                            @php
+                                $carName = $translateName($item);
+                                $brandName = $translateName($item->brand);
+                                $modelName = $translateName($item->carModel);
+                                $categoryName = $translateName($item->category);
+                                $rowNumber = ($items->currentPage() - 1) * $items->perPage() + $loop->iteration;
+                            @endphp
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $rowNumber }}</td>
                                 <td>
-                                    @if($item->default_image_path)
-                                        <img src="{{ asset('storage/' . $item->default_image_path) }}" alt="Car Image"
-                                            class="car-thumbnail" data-toggle="tooltip" title="Click to enlarge">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ $resolveImage($item->default_image_path) }}" alt="{{ $carName }}" class="car-thumb me-2">
+                                        <div>
+                                            <h6 class="mb-1 fs-14">{{ $carName }}</h6>
+                                            <small class="text-muted">{{ $brandName }} @if($modelName !== __('N/A')) / {{ $modelName }} @endif</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ $categoryName }}</td>
+                                <td>{{ optional($item->year)->year ?? __('N/A') }}</td>
+                                <td>
+                                    <div class="small">
+                                        <div>{{ __('Daily') }}: <strong>{{ is_null($item->daily_main_price) ? '-' : number_format((float) $item->daily_main_price, 2) }}</strong></div>
+                                        <div>{{ __('Weekly') }}: <strong>{{ is_null($item->weekly_main_price) ? '-' : number_format((float) $item->weekly_main_price, 2) }}</strong></div>
+                                        <div>{{ __('Monthly') }}: <strong>{{ is_null($item->monthly_main_price) ? '-' : number_format((float) $item->monthly_main_price, 2) }}</strong></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flag-list">
+                                        @if($item->is_featured)
+                                            <span class="flag-badge">{{ __('Featured') }}</span>
+                                        @endif
+                                        @if($item->is_flash_sale)
+                                            <span class="flag-badge">{{ __('Flash Sale') }}</span>
+                                        @endif
+                                        @if($item->free_delivery)
+                                            <span class="flag-badge">{{ __('Free Delivery') }}</span>
+                                        @endif
+                                        @if($item->insurance_included)
+                                            <span class="flag-badge">{{ __('Insurance') }}</span>
+                                        @endif
+                                        @if(!$item->is_featured && !$item->is_flash_sale && !$item->free_delivery && !$item->insurance_included)
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    @if($item->is_active)
+                                        <span class="status-pill ok"><i class="ti ti-circle-check"></i>{{ __('Active') }}</span>
                                     @else
-                                        <span class="badge bg-secondary">No Image</span>
+                                        <span class="status-pill no"><i class="ti ti-circle-x"></i>{{ __('Inactive') }}</span>
                                     @endif
-                                </td>
-                                <td>
-                                    @php
-                                        $translation = $item->translations->where('locale', 'en')->first();
-                                        $name = $translation ? $translation->name : ($item->translations->first() ? $item->translations->first()->name : 'N/A');
-                                    @endphp
-                                    {{ $name }}
-                                </td>
-                                <td>
-                                    @php
-                                        $brand = $item->brand;
-                                        $brandName = $brand && $brand->translations ?
-                                            ($brand->translations->where('locale', 'en')->first()?->name ??
-                                                $brand->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $brandName }}
-                                </td>
-                                <td>
-                                    @php
-                                        $model = $item->carModel;
-                                        $modelName = $model && $model->translations ?
-                                            ($model->translations->where('locale', 'en')->first()?->name ??
-                                                $model->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $modelName }}
-                                </td>
-                                <td>
-                                    @php
-                                        $category = $item->category;
-                                        $categoryName = $category && $category->translations ?
-                                            ($category->translations->where('locale', 'en')->first()?->name ??
-                                                $category->translations->first()?->name ?? 'N/A') : 'N/A';
-                                    @endphp
-                                    {{ $categoryName }}
-                                </td>
-                                <td>
-                                    @php
-                                        $rentPeriod = $item->periods;
-                                        foreach ($rentPeriod as $period) {
-                                            $periodName = $period && $period->translations ?
-                                                ($period->translations->where('locale', 'en')->first()?->name ??
-                                                    $period->translations->first()?->name ?? 'N/A') : 'N/A';
-                                            echo '<span class="badge bg-warning">' . $periodName . '</span> <br>';
-                                        }
-                                    @endphp
-                                </td>
 
-                                <td>{{ optional($item->year)->year ?? 'N/A' }}</td>
+                                    <div class="mt-1">
+                                        @if($item->status === 'available')
+                                            <span class="badge bg-success-subtle text-success">{{ __('Available') }}</span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger">{{ __('Not Available') }}</span>
+                                        @endif
+                                    </div>
+                                </td>
                                 <td>
-                                    <div class="btn-group">
-                                        <a href="{{ route('admin.cars.edit', $item->id) }}" class="btn btn-sm btn-primary"
-                                            data-toggle="tooltip" title="Edit Car">
-                                            <i class="fas fa-edit"></i>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="{{ route('admin.cars.edit', $item->id) }}" class="btn btn-sm btn-outline-primary" title="{{ __('Edit') }}">
+                                            <i class="ti ti-edit"></i>
                                         </a>
-                                        <a href="{{ route('admin.cars.edit_images', $item->id) }}" class="btn btn-sm btn-info"
-                                            data-toggle="tooltip" title="Manage Images">
-                                            <i class="fas fa-images"></i>
+                                        <a href="{{ route('admin.cars.edit_images', $item->id) }}" class="btn btn-sm btn-outline-info" title="{{ __('Images') }}">
+                                            <i class="ti ti-photo"></i>
                                         </a>
-                                        <form action="{{ route('admin.cars.destroy', $item->id) }}" method="POST"
-                                            class="d-inline">
+                                        <form action="{{ route('admin.cars.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete this car?') }}')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" data-toggle="tooltip"
-                                                title="Delete Car"
-                                                onclick="return confirm('Are you sure you want to delete this car?')">
-                                                <i class="fas fa-trash"></i>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ __('Delete') }}">
+                                                <i class="ti ti-trash"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -333,90 +377,71 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center">No cars found</td>
+                                <td colspan="8" class="text-center text-muted py-5">{{ __('No cars found for the selected filters.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <div class="mt-4">
-                {{ $items->links() }}
-            </div>
+            @if($items instanceof \Illuminate\Pagination\AbstractPaginator)
+                <div class="mt-3">
+                    {{ $items->withQueryString()->links() }}
+                </div>
+            @endif
         </div>
-</div>@endsection
+    </div>
+@endsection
 
 @push('scripts')
     <script>
-        $(document).ready(function () {
-            const $carsTable = $('#cars-table');
-            if ($carsTable.length && $carsTable.find('tbody tr').length) {
-                $carsTable.DataTable({
-                    order: [[2, 'asc']],
-                    autoWidth: false,
-                    pageLength: 10,
-                    columnDefs: [
-                        { orderable: false, targets: [0, 1, 6, 8] }
-                    ],
-                    language: {
-                        search: "",
-                        searchPlaceholder: "{{ __('Search cars') }}",
-                        lengthMenu: "{{ __('Show _MENU_ entries') }}",
-                        info: "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
-                        infoEmpty: "{{ __('Showing 0 to 0 of 0 entries') }}",
-                        zeroRecords: "{{ __('No matching cars found') }}",
-                        paginate: {
-                            first: "{{ __('First') }}",
-                            previous: "{{ __('Previous') }}",
-                            next: "{{ __('Next') }}",
-                            last: "{{ __('Last') }}"
-                        }
-                    },
-                    dom:
-                        "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-right'f>>" +
-                        "t" +
-                        "<'row align-items-center mt-2'<'col-sm-5'i><'col-sm-7'p>>"
+        $(function () {
+            if (typeof $.fn.select2 !== 'undefined') {
+                $('.select2').select2({ width: '100%' });
+            }
+
+            const $brand = $('#brand');
+            const $model = $('#model');
+            const selectedModelId = @json(request('model'));
+            const modelsEndpointTemplate = @json(route('admin.cars.models', ['brand' => '__brand__']));
+            const allModelsLabel = @json(__('All Models'));
+
+            function resetModels() {
+                $model.empty().append(new Option(allModelsLabel, ''));
+                $model.prop('disabled', true);
+            }
+
+            function loadModels(brandId, selectedId = null) {
+                resetModels();
+
+                if (!brandId) {
+                    return;
+                }
+
+                $model.prop('disabled', false);
+
+                $.get(modelsEndpointTemplate.replace('__brand__', brandId), function (models) {
+                    models.forEach(function (model) {
+                        const isSelected = selectedId && String(selectedId) === String(model.id);
+                        const option = new Option(model.name, model.id, false, isSelected);
+                        $model.append(option);
+                    });
+
+                    if (typeof $.fn.select2 !== 'undefined') {
+                        $model.trigger('change.select2');
+                    }
                 });
             }
 
-            // تفعيل tooltips
-            $('[data-toggle="tooltip"]').tooltip();
+            const initialBrand = $brand.val();
+            if (initialBrand) {
+                loadModels(initialBrand, selectedModelId);
+            } else {
+                resetModels();
+            }
 
-            // تفعيل select2 للقوائم المنسدلة
-            $('.select2').select2({
-                width: '100%',
-                dir: 'rtl'
-            });
-
-            // تحديث الموديلات عند تغيير الماركة
-            $('#brand').on('change', function () {
-                var brandId = $(this).val();
-                var modelSelect = $('#model');
-
-                // إعادة تعيين قائمة الموديلات
-                modelSelect.empty().append('<option value="">All Models</option>');
-
-                if (brandId) {
-                    // تفعيل قائمة الموديلات
-                    modelSelect.prop('disabled', false);
-
-                    // جلب الموديلات من السيرفر
-                    $.get('/admin/cars/models/' + brandId, function (models) {
-                        models.forEach(function (model) {
-                            modelSelect.append(new Option(model.name, model.id));
-                        });
-                        modelSelect.trigger('change');
-                    });
-                } else {
-                    // تعطيل قائمة الموديلات إذا لم يتم اختيار ماركة
-                    modelSelect.prop('disabled', true);
-                }
-            });
-
-            // إزالة الأحداث التلقائية وجعل البحث فقط عند الضغط على زر التصفية
-            $('#carFilterForm').on('submit', function (e) {
-                e.preventDefault();
-                this.submit();
+            $brand.on('change', function () {
+                loadModels($(this).val(), null);
             });
         });
     </script>

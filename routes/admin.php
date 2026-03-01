@@ -41,6 +41,7 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/keep-alive', [HelperController::class, 'keepAlive'])->name('keep-alive');
     Route::get('/contacts', [ContactController::class, 'edit'])->name('contacts.create');
     Route::get('/contacts', [ContactController::class, 'edit'])->name('contacts');
 
