@@ -38,7 +38,7 @@
 <div class="main-wrapper login-body">
     <header class="log-header">
         <a href="{{ url('/') }}">
-            <img class="img-fluid logo-dark" src="{{ asset('website/assets/img/logo.svg') }}" alt="{{ config('app.name', 'Afandina') }}">
+            <img class="img-fluid logo-dark" src="{{ $siteLogo ?? asset('admin/dist/logo/website_logos/logo_light.svg') }}" alt="{{ config('app.name', 'Afandina') }}">
         </a>
     </header>
 

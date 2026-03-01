@@ -1,16 +1,24 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Template;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('pages.admin.auth.login');
+        $template = Template::query()->latest('id')->first();
+        $siteLogo = $this->resolveAssetPath(
+            $template?->logo_path,
+            asset('admin/dist/logo/website_logos/logo_light.svg')
+        );
+
+        return view('pages.admin.auth.login', compact('siteLogo'));
     }
 
     public function login(Request $request)
@@ -43,5 +51,24 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('admin/login');
+    }
+
+    private function resolveAssetPath(?string $path, string $fallback): string
+    {
+        if (blank($path)) {
+            return $fallback;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        $normalizedPath = ltrim($path, '/');
+
+        if (Str::startsWith($normalizedPath, ['storage/', 'admin/', 'website/'])) {
+            return asset($normalizedPath);
+        }
+
+        return asset('storage/' . $normalizedPath);
     }
 }
