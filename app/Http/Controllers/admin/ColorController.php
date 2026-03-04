@@ -7,7 +7,6 @@ class ColorController extends GenericController
     public function __construct()
     {
         parent::__construct('color');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name'];
         $this->nonTranslatableFields = ['color_code','is_active'];

@@ -195,6 +195,7 @@ class CarContentGenerator
             'free_delivery' => 'Free delivery',
             'is_flash_sale' => 'Flash sale offer',
             'is_featured' => 'Featured listing',
+            'is_popular' => 'Popular Cars listing',
             'only_on_afandina' => 'Exclusive listing',
             'crypto_payment_accepted' => 'Cryptocurrency payments accepted',
         ];

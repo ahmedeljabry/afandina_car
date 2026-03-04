@@ -688,7 +688,13 @@
                                                     <div class="col-md-6">
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" name="is_featured" class="custom-control-input" id="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
-                                                            <label class="custom-control-label" for="is_featured">Featured</label>
+                                                            <label class="custom-control-label" for="is_featured">Show in Featured Cars</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" name="is_popular" class="custom-control-input" id="is_popular" {{ old('is_popular') ? 'checked' : '' }}>
+                                                            <label class="custom-control-label" for="is_popular">Show in Popular Cars</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -1095,6 +1101,7 @@
             context.free_delivery = $('#free_delivery').is(':checked');
             context.is_flash_sale = $('#is_flash_sale').is(':checked');
             context.is_featured = $('#is_featured').is(':checked');
+            context.is_popular = $('#is_popular').is(':checked');
             context.only_on_afandina = $('#only_on_afandina').is(':checked');
             context.crypto_payment_accepted = $('#crypto_payment_accepted').is(':checked');
 

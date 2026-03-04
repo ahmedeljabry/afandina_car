@@ -4,12 +4,9 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
-use App\Jobs\ProcessImageJob;
 use App\Jobs\ProcessFileJob;
 use App\Traits\ImageProcessingTrait;
 
@@ -18,7 +15,6 @@ class GenericController extends Controller
     use ImageProcessingTrait;
     
     protected $model;
-    protected $seo_question=true;
     protected $data = [];
     protected $modelName;
     public $validationRules = [];
@@ -29,8 +25,6 @@ class GenericController extends Controller
     public $nonTranslatableFields = [];
     public string $defaultLocale;
     public bool $isTranslatable = true;
-    public bool $robots = false;
-
     public function __construct($modelName)
     {
         $this->model = app("App\\Models\\" . ucfirst($modelName));

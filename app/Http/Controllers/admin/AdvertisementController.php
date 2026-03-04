@@ -9,7 +9,6 @@ class AdvertisementController extends GenericController
     public function __construct()
     {
         parent::__construct('advertisement');
-        $this->seo_question =false;
         $this->nonTranslatableFields = ['advertisement_position_id'];
         $this->uploadedfiles = ['mobile_image_path','web_image_path'];
     }

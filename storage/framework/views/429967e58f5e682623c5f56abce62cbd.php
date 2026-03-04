@@ -1,8 +1,7 @@
-@extends('layouts.website')
-@section('title', __('website.cars.page_title'))
+<?php $__env->startSection('title', __('website.cars.page_title')); ?>
 
-@section('content')
-    @php
+<?php $__env->startSection('content'); ?>
+    <?php
         use Illuminate\Support\Str;
 
         $assetUrl = static fn(string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -57,20 +56,20 @@
 
             return implode(' ', array_slice($words, 1, 4));
         };
-    @endphp
+    ?>
 
     <!-- Breadscrumb Section -->
     <div class="breadcrumb-bar">
         <div class="container">
             <div class="row align-items-center text-center">
                 <div class="col-md-12 col-12">
-                    <h2 class="breadcrumb-title">{{ __('website.cars.page_title') }}</h2>
+                    <h2 class="breadcrumb-title"><?php echo e(__('website.cars.page_title')); ?></h2>
                     <nav aria-label="breadcrumb" class="page-breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('website.nav.home') }}</a></li>
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">{{ __('website.nav.all_cars') }}</a>
+                            <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>"><?php echo e(__('website.nav.home')); ?></a></li>
+                            <li class="breadcrumb-item"><a href="javascript:void(0);"><?php echo e(__('website.nav.all_cars')); ?></a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('website.cars.page_title') }}</li>
+                            <li class="breadcrumb-item active" aria-current="page"><?php echo e(__('website.cars.page_title')); ?></li>
                         </ol>
                     </nav>
                 </div>
@@ -87,55 +86,57 @@
                     <div class="row d-flex align-items-center">
                         <div class="col-xl-4 col-lg-3 col-sm-12 col-12">
                             <div class="count-search">
-                                <p>{{ __('website.cars.showing_results', ['from' => $from, 'to' => $to, 'total' => $total]) }}
+                                <p><?php echo e(__('website.cars.showing_results', ['from' => $from, 'to' => $to, 'total' => $total])); ?>
+
                                 </p>
                             </div>
                         </div>
                         <div class="col-xl-8 col-lg-9 col-sm-12 col-12">
-                            <form action="{{ route('website.cars.index') }}" method="GET" class="product-filter-group">
-                                <input type="hidden" name="search" value="{{ $search }}">
-                                @if($availableOnly)
+                            <form action="<?php echo e(route('website.cars.index')); ?>" method="GET" class="product-filter-group">
+                                <input type="hidden" name="search" value="<?php echo e($search); ?>">
+                                <?php if($availableOnly): ?>
                                     <input type="hidden" name="available_only" value="1">
-                                @endif
-                                @foreach($selectedBrandIds as $brandId)
-                                    <input type="hidden" name="brand[]" value="{{ $brandId }}">
-                                @endforeach
-                                @foreach($selectedCategoryIds as $categoryId)
-                                    <input type="hidden" name="category[]" value="{{ $categoryId }}">
-                                @endforeach
-                                @foreach($selectedYearIds as $yearId)
-                                    <input type="hidden" name="year[]" value="{{ $yearId }}">
-                                @endforeach
+                                <?php endif; ?>
+                                <?php $__currentLoopData = $selectedBrandIds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brandId): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <input type="hidden" name="brand[]" value="<?php echo e($brandId); ?>">
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php $__currentLoopData = $selectedCategoryIds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoryId): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <input type="hidden" name="category[]" value="<?php echo e($categoryId); ?>">
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php $__currentLoopData = $selectedYearIds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $yearId): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <input type="hidden" name="year[]" value="<?php echo e($yearId); ?>">
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                                 <div class="sortbyset">
                                     <ul>
                                         <li>
-                                            <span class="sortbytitle">{{ __('website.cars.sort.show') }} : </span>
+                                            <span class="sortbytitle"><?php echo e(__('website.cars.sort.show')); ?> : </span>
                                             <div class="sorting-select select-one">
                                                 <select class="form-control select" name="per_page"
                                                     onchange="this.form.submit()">
-                                                    @foreach([6, 9, 12, 18, 24] as $size)
-                                                        <option value="{{ $size }}" @selected($perPage === $size)>{{ $size }}
+                                                    <?php $__currentLoopData = [6, 9, 12, 18, 24]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($size); ?>" <?php if($perPage === $size): echo 'selected'; endif; ?>><?php echo e($size); ?>
+
                                                         </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </div>
                                         </li>
                                         <li>
-                                            <span class="sortbytitle">{{ __('website.cars.sort.sort_by') }}</span>
+                                            <span class="sortbytitle"><?php echo e(__('website.cars.sort.sort_by')); ?></span>
                                             <div class="sorting-select select-two">
                                                 <select class="form-control select" name="sort"
                                                     onchange="this.form.submit()">
-                                                    <option value="newest" @selected($sort === 'newest')>
-                                                        {{ __('website.cars.sort.newest') }}</option>
-                                                    <option value="price_low" @selected($sort === 'price_low')>
-                                                        {{ __('website.cars.sort.price_low') }}</option>
-                                                    <option value="price_high" @selected($sort === 'price_high')>
-                                                        {{ __('website.cars.sort.price_high') }}</option>
-                                                    <option value="year_new" @selected($sort === 'year_new')>
-                                                        {{ __('website.cars.sort.year_new') }}</option>
-                                                    <option value="year_old" @selected($sort === 'year_old')>
-                                                        {{ __('website.cars.sort.year_old') }}</option>
+                                                    <option value="newest" <?php if($sort === 'newest'): echo 'selected'; endif; ?>>
+                                                        <?php echo e(__('website.cars.sort.newest')); ?></option>
+                                                    <option value="price_low" <?php if($sort === 'price_low'): echo 'selected'; endif; ?>>
+                                                        <?php echo e(__('website.cars.sort.price_low')); ?></option>
+                                                    <option value="price_high" <?php if($sort === 'price_high'): echo 'selected'; endif; ?>>
+                                                        <?php echo e(__('website.cars.sort.price_high')); ?></option>
+                                                    <option value="year_new" <?php if($sort === 'year_new'): echo 'selected'; endif; ?>>
+                                                        <?php echo e(__('website.cars.sort.year_new')); ?></option>
+                                                    <option value="year_old" <?php if($sort === 'year_old'): echo 'selected'; endif; ?>>
+                                                        <?php echo e(__('website.cars.sort.year_old')); ?></option>
                                                 </select>
                                             </div>
                                         </li>
@@ -155,24 +156,24 @@
         <div class="container">
             <div class="row">
                 <div class="col-xl-3 col-lg-4 col-sm-12 col-12 theiaStickySidebar">
-                    <form action="{{ route('website.cars.index') }}" method="GET" autocomplete="off" class="sidebar-form">
+                    <form action="<?php echo e(route('website.cars.index')); ?>" method="GET" autocomplete="off" class="sidebar-form">
                         <div class="sidebar-heading">
-                            <h3>{{ __('website.cars.filters.title') }}</h3>
+                            <h3><?php echo e(__('website.cars.filters.title')); ?></h3>
                         </div>
 
                         <div class="product-search">
                             <div class="form-custom">
-                                <input type="text" class="form-control" name="search" value="{{ $search }}"
-                                    placeholder="{{ __('website.cars.filters.search_placeholder') }}">
-                                <span><img src="{{ $assetUrl('img/icons/search.svg') }}" alt="img"></span>
+                                <input type="text" class="form-control" name="search" value="<?php echo e($search); ?>"
+                                    placeholder="<?php echo e(__('website.cars.filters.search_placeholder')); ?>">
+                                <span><img src="<?php echo e($assetUrl('img/icons/search.svg')); ?>" alt="img"></span>
                             </div>
                         </div>
 
                         <div class="product-availability">
-                            <h6>{{ __('website.cars.filters.availability') }}</h6>
+                            <h6><?php echo e(__('website.cars.filters.availability')); ?></h6>
                             <div class="status-toggle">
                                 <input id="mobile_notifications" class="check" type="checkbox" name="available_only"
-                                    value="1" @checked($availableOnly)>
+                                    value="1" <?php if($availableOnly): echo 'checked'; endif; ?>>
                                 <label for="mobile_notifications" class="checktoggle">checkbox</label>
                             </div>
                         </div>
@@ -183,7 +184,8 @@
                                     <h6 class="filter-title">
                                         <a href="javascript:void(0);" class="w-100" data-bs-toggle="collapse"
                                             data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                            {{ __('website.cars.filters.brand') }}
+                                            <?php echo e(__('website.cars.filters.brand')); ?>
+
                                             <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
                                         </a>
                                     </h6>
@@ -192,14 +194,15 @@
                                     data-bs-parent="#accordionMain1">
                                     <div class="card-body-chat">
                                         <div class="selectBox-cont">
-                                            @foreach($brands as $brand)
+                                            <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <label class="custom_check w-100">
-                                                    <input type="checkbox" name="brand[]" value="{{ $brand['id'] }}"
-                                                        @checked(in_array((int) $brand['id'], $selectedBrandIds, true))>
-                                                    <span class="checkmark"></span>{{ $brand['name'] }}
-                                                    ({{ $brand['cars_count'] ?? 0 }})
+                                                    <input type="checkbox" name="brand[]" value="<?php echo e($brand['id']); ?>"
+                                                        <?php if(in_array((int) $brand['id'], $selectedBrandIds, true)): echo 'checked'; endif; ?>>
+                                                    <span class="checkmark"></span><?php echo e($brand['name']); ?>
+
+                                                    (<?php echo e($brand['cars_count'] ?? 0); ?>)
                                                 </label>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -210,7 +213,8 @@
                                     <h6 class="filter-title">
                                         <a href="javascript:void(0);" class="w-100 collapsed" data-bs-toggle="collapse"
                                             data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                                            {{ __('website.cars.filters.category') }}
+                                            <?php echo e(__('website.cars.filters.category')); ?>
+
                                             <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
                                         </a>
                                     </h6>
@@ -219,14 +223,15 @@
                                     data-bs-parent="#accordionMain2">
                                     <div class="card-body-chat">
                                         <div class="selectBox-cont">
-                                            @foreach($categories as $category)
+                                            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <label class="custom_check w-100">
-                                                    <input type="checkbox" name="category[]" value="{{ $category['id'] }}"
-                                                        @checked(in_array((int) $category['id'], $selectedCategoryIds, true))>
-                                                    <span class="checkmark"></span>{{ $category['name'] }}
-                                                    ({{ $category['cars_count'] ?? 0 }})
+                                                    <input type="checkbox" name="category[]" value="<?php echo e($category['id']); ?>"
+                                                        <?php if(in_array((int) $category['id'], $selectedCategoryIds, true)): echo 'checked'; endif; ?>>
+                                                    <span class="checkmark"></span><?php echo e($category['name']); ?>
+
+                                                    (<?php echo e($category['cars_count'] ?? 0); ?>)
                                                 </label>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +243,8 @@
                                         <a href="javascript:void(0);" class="w-100 collapsed" data-bs-toggle="collapse"
                                             data-bs-target="#collapseYear" aria-expanded="true"
                                             aria-controls="collapseYear">
-                                            {{ __('website.cars.filters.year') }}
+                                            <?php echo e(__('website.cars.filters.year')); ?>
+
                                             <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
                                         </a>
                                     </h6>
@@ -247,36 +253,38 @@
                                     data-bs-parent="#accordionMain3">
                                     <div class="card-body-chat">
                                         <div class="selectBox-cont">
-                                            @foreach($years as $year)
+                                            <?php $__currentLoopData = $years; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $year): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <label class="custom_check w-100">
-                                                    <input type="checkbox" name="year[]" value="{{ $year['id'] }}"
-                                                        @checked(in_array((int) $year['id'], $selectedYearIds, true))>
-                                                    <span class="checkmark"></span>{{ $year['year'] }}
-                                                    ({{ $year['cars_count'] ?? 0 }})
+                                                    <input type="checkbox" name="year[]" value="<?php echo e($year['id']); ?>"
+                                                        <?php if(in_array((int) $year['id'], $selectedYearIds, true)): echo 'checked'; endif; ?>>
+                                                    <span class="checkmark"></span><?php echo e($year['year']); ?>
+
+                                                    (<?php echo e($year['cars_count'] ?? 0); ?>)
                                                 </label>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <input type="hidden" name="sort" value="{{ $sort }}">
-                        <input type="hidden" name="per_page" value="{{ $perPage }}">
+                        <input type="hidden" name="sort" value="<?php echo e($sort); ?>">
+                        <input type="hidden" name="per_page" value="<?php echo e($perPage); ?>">
 
                         <button type="submit"
                             class="d-inline-flex align-items-center justify-content-center btn w-100 btn-primary filter-btn">
-                            <span><i class="feather-filter me-2"></i></span>{{ __('website.cars.filters.apply') }}
+                            <span><i class="feather-filter me-2"></i></span><?php echo e(__('website.cars.filters.apply')); ?>
+
                         </button>
-                        <a href="{{ route('website.cars.index') }}"
-                            class="reset-filter">{{ __('website.cars.filters.reset') }}</a>
+                        <a href="<?php echo e(route('website.cars.index')); ?>"
+                            class="reset-filter"><?php echo e(__('website.cars.filters.reset')); ?></a>
                     </form>
                 </div>
 
                 <div class="col-lg-9">
                     <div class="row">
-                        @forelse($cars as $car)
-                            @php
+                        <?php $__empty_1 = true; $__currentLoopData = $cars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
                                 $carName = $car['name'] ?? __('website.common.car');
                                 $carImage = $storageUrl($car['image_path'] ?? null, $assetUrl('img/cars/car-01.jpg'));
                                 $carBrand = $car['brand_name'] ?? __('website.common.brand');
@@ -291,21 +299,21 @@
                                 $carCurrency = $car['currency_symbol'] ?? '$';
                                 $carUrl = $car['details_url'] ?? 'javascript:void(0);';
                                 $carCardTitle = $formatCarCardTitle($carName);
-                            @endphp
+                            ?>
 
                             <div class="col-xxl-4 col-lg-6 col-md-6 col-12">
                                 <div class="listing-item">
                                     <div class="listing-img">
-                                        <a href="{{ $carUrl }}">
-                                            <img src="{{ $carImage }}" class="img-fluid" alt="{{ $carName }}">
+                                        <a href="<?php echo e($carUrl); ?>">
+                                            <img src="<?php echo e($carImage); ?>" class="img-fluid" alt="<?php echo e($carName); ?>">
                                         </a>
-                                        <span class="featured-text">{{ $carBrand }}</span>
+                                        <span class="featured-text"><?php echo e($carBrand); ?></span>
                                     </div>
                                     <div class="listing-content">
                                         <div class="listing-features d-flex align-items-end justify-content-between">
                                             <div class="list-rating">
                                                 <h3 class="listing-title">
-                                                    <a href="{{ $carUrl }}" title="{{ $carName }}">{{ $carCardTitle }}</a>
+                                                    <a href="<?php echo e($carUrl); ?>" title="<?php echo e($carName); ?>"><?php echo e($carCardTitle); ?></a>
                                                 </h3>
                                                 <div class="list-rating">
                                                     <i class="fas fa-star filled"></i>
@@ -313,49 +321,52 @@
                                                     <i class="fas fa-star filled"></i>
                                                     <i class="fas fa-star filled"></i>
                                                     <i class="fas fa-star"></i>
-                                                    <span>{{ $carStatus }}</span>
+                                                    <span><?php echo e($carStatus); ?></span>
                                                 </div>
                                             </div>
                                             <div class="list-km">
-                                                <span class="km-count"><img src="{{ $assetUrl('img/icons/map-pin.svg') }}"
-                                                        alt="author">{{ $car['year'] ?? '-' }}</span>
+                                                <span class="km-count"><img src="<?php echo e($assetUrl('img/icons/map-pin.svg')); ?>"
+                                                        alt="author"><?php echo e($car['year'] ?? '-'); ?></span>
                                             </div>
                                         </div>
                                         <div class="listing-details-group">
                                             <ul>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-01.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-01.svg')); ?>"
                                                             alt="Auto"></span>
-                                                    <p>{{ $car['gear_type_name'] ?? '-' }}</p>
+                                                    <p><?php echo e($car['gear_type_name'] ?? '-'); ?></p>
                                                 </li>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-02.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-02.svg')); ?>"
                                                             alt="KM"></span>
-                                                    <p>{{ isset($car['daily_mileage_included']) ? __('website.units.km_value', ['count' => $car['daily_mileage_included']]) : '-' }}
+                                                    <p><?php echo e(isset($car['daily_mileage_included']) ? __('website.units.km_value', ['count' => $car['daily_mileage_included']]) : '-'); ?>
+
                                                     </p>
                                                 </li>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-03.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-03.svg')); ?>"
                                                             alt="Category"></span>
-                                                    <p>{{ $carCategory }}</p>
+                                                    <p><?php echo e($carCategory); ?></p>
                                                 </li>
                                             </ul>
                                             <ul>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-04.svg')); ?>"
                                                             alt="Doors"></span>
-                                                    <p>{{ isset($car['door_count']) ? __('website.units.doors', ['count' => $car['door_count']]) : '-' }}
+                                                    <p><?php echo e(isset($car['door_count']) ? __('website.units.doors', ['count' => $car['door_count']]) : '-'); ?>
+
                                                     </p>
                                                 </li>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-05.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-05.svg')); ?>"
                                                             alt="Year"></span>
-                                                    <p>{{ $car['year'] ?? '-' }}</p>
+                                                    <p><?php echo e($car['year'] ?? '-'); ?></p>
                                                 </li>
                                                 <li>
-                                                    <span><img src="{{ $assetUrl('img/icons/car-parts-06.svg') }}"
+                                                    <span><img src="<?php echo e($assetUrl('img/icons/car-parts-06.svg')); ?>"
                                                             alt="Persons"></span>
-                                                    <p>{{ isset($car['passenger_capacity']) ? __('website.units.persons', ['count' => $car['passenger_capacity']]) : '-' }}
+                                                    <p><?php echo e(isset($car['passenger_capacity']) ? __('website.units.persons', ['count' => $car['passenger_capacity']]) : '-'); ?>
+
                                                     </p>
                                                 </li>
                                             </ul>
@@ -368,108 +379,114 @@
                                                     <div
                                                         style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
                                                         <i class="feather-sun" style="font-size: 12px;"></i>
-                                                        {{ __('website.units.per_day') }}
+                                                        <?php echo e(__('website.units.per_day')); ?>
+
                                                     </div>
-                                                    @if($carDailyPrice)
+                                                    <?php if($carDailyPrice): ?>
                                                         <div style="font-size: 16px; font-weight: 700; color: #f66962;">
-                                                            {{ $formatCurrency($carDailyPrice, $carCurrency) }}
+                                                            <?php echo e($formatCurrency($carDailyPrice, $carCurrency)); ?>
+
                                                         </div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <div style="font-size: 13px; color: #6c757d;">
-                                                            {{ __('website.common.call_for_price') }}</div>
-                                                    @endif
+                                                            <?php echo e(__('website.common.call_for_price')); ?></div>
+                                                    <?php endif; ?>
                                                 </div>
                                                 <div class="price-box text-center flex-fill"
                                                     style="background: #fff; border-radius: 6px; padding: 10px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                                                     <div
                                                         style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
                                                         <i class="feather-calendar" style="font-size: 12px;"></i>
-                                                        {{ __('website.units.per_month') }}
+                                                        <?php echo e(__('website.units.per_month')); ?>
+
                                                     </div>
-                                                    @if($carMonthlyPrice)
+                                                    <?php if($carMonthlyPrice): ?>
                                                         <div style="font-size: 16px; font-weight: 700; color: #127384;">
-                                                            {{ $formatCurrency($carMonthlyPrice, $carCurrency) }}
+                                                            <?php echo e($formatCurrency($carMonthlyPrice, $carCurrency)); ?>
+
                                                         </div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <div style="font-size: 13px; color: #6c757d;">-</div>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="listing-button">
-                                            <a href="{{ $carUrl }}" class="btn btn-order"><span><i
-                                                        class="feather-calendar me-2"></i></span>{{ __('website.common.rent_now') }}</a>
+                                            <a href="<?php echo e($carUrl); ?>" class="btn btn-order"><span><i
+                                                        class="feather-calendar me-2"></i></span><?php echo e(__('website.common.rent_now')); ?></a>
                                         </div>
                                     </div>
                                     <div class="feature-text">
-                                        <span class="bg-danger">{{ __('website.units.no_deposit') }}</span>
+                                        <span class="bg-danger"><?php echo e(__('website.units.no_deposit')); ?></span>
                                     </div>
                                 </div>
                             </div>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="col-12">
                                 <div class="text-center py-5">
-                                    <h4>{{ __('website.cars.empty_title') }}</h4>
-                                    <p class="mb-0">{{ __('website.cars.empty_subtitle') }}</p>
+                                    <h4><?php echo e(__('website.cars.empty_title')); ?></h4>
+                                    <p class="mb-0"><?php echo e(__('website.cars.empty_subtitle')); ?></p>
                                 </div>
                             </div>
-                        @endforelse
+                        <?php endif; ?>
                     </div>
 
-                    @if($cars->hasPages())
+                    <?php if($cars->hasPages()): ?>
                         <div class="blog-pagination">
                             <nav>
                                 <ul class="pagination page-item justify-content-center">
-                                    <li class="previtem {{ $cars->onFirstPage() ? 'disabled' : '' }}">
-                                        @if($cars->onFirstPage())
+                                    <li class="previtem <?php echo e($cars->onFirstPage() ? 'disabled' : ''); ?>">
+                                        <?php if($cars->onFirstPage()): ?>
                                             <span class="page-link"><i class="fas fa-regular fa-arrow-left me-2"></i>
-                                                {{ __('website.blog.navigation.previous') }}</span>
-                                        @else
-                                            <a class="page-link" href="{{ $cars->previousPageUrl() }}"><i
+                                                <?php echo e(__('website.blog.navigation.previous')); ?></span>
+                                        <?php else: ?>
+                                            <a class="page-link" href="<?php echo e($cars->previousPageUrl()); ?>"><i
                                                     class="fas fa-regular fa-arrow-left me-2"></i>
-                                                {{ __('website.blog.navigation.previous') }}</a>
-                                        @endif
+                                                <?php echo e(__('website.blog.navigation.previous')); ?></a>
+                                        <?php endif; ?>
                                     </li>
 
                                     <li class="justify-content-center pagination-center">
                                         <div class="page-group">
                                             <ul>
-                                                @if($startPage > 1)
-                                                    <li class="page-item"><a class="page-link" href="{{ $cars->url(1) }}">1</a></li>
-                                                @endif
+                                                <?php if($startPage > 1): ?>
+                                                    <li class="page-item"><a class="page-link" href="<?php echo e($cars->url(1)); ?>">1</a></li>
+                                                <?php endif; ?>
 
-                                                @for($page = $startPage; $page <= $endPage; $page++)
+                                                <?php for($page = $startPage; $page <= $endPage; $page++): ?>
                                                     <li class="page-item">
-                                                        <a class="{{ $page === $currentPage ? 'active ' : '' }}page-link"
-                                                            href="{{ $cars->url($page) }}">{{ $page }}</a>
+                                                        <a class="<?php echo e($page === $currentPage ? 'active ' : ''); ?>page-link"
+                                                            href="<?php echo e($cars->url($page)); ?>"><?php echo e($page); ?></a>
                                                     </li>
-                                                @endfor
+                                                <?php endfor; ?>
 
-                                                @if($endPage < $lastPage)
+                                                <?php if($endPage < $lastPage): ?>
                                                     <li class="page-item"><a class="page-link"
-                                                            href="{{ $cars->url($lastPage) }}">{{ $lastPage }}</a></li>
-                                                @endif
+                                                            href="<?php echo e($cars->url($lastPage)); ?>"><?php echo e($lastPage); ?></a></li>
+                                                <?php endif; ?>
                                             </ul>
                                         </div>
                                     </li>
 
-                                    <li class="nextlink {{ $cars->hasMorePages() ? '' : 'disabled' }}">
-                                        @if($cars->hasMorePages())
+                                    <li class="nextlink <?php echo e($cars->hasMorePages() ? '' : 'disabled'); ?>">
+                                        <?php if($cars->hasMorePages()): ?>
                                             <a class="page-link"
-                                                href="{{ $cars->nextPageUrl() }}">{{ __('website.blog.navigation.next') }} <i
+                                                href="<?php echo e($cars->nextPageUrl()); ?>"><?php echo e(__('website.blog.navigation.next')); ?> <i
                                                     class="fas fa-regular fa-arrow-right ms-2"></i></a>
-                                        @else
-                                            <span class="page-link">{{ __('website.blog.navigation.next') }} <i
+                                        <?php else: ?>
+                                            <span class="page-link"><?php echo e(__('website.blog.navigation.next')); ?> <i
                                                     class="fas fa-regular fa-arrow-right ms-2"></i></span>
-                                        @endif
+                                        <?php endif; ?>
                                     </li>
                                 </ul>
                             </nav>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </section>
     <!-- /Car Grid View -->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.website', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views/website/cars.blade.php ENDPATH**/ ?>

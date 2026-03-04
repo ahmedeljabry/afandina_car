@@ -352,7 +352,9 @@ return [
 
     'units' => [
         'per_day' => '/ Day',
+        'per_month' => '/ Month',
         'km_value' => ':count KM',
+        'no_deposit' => 'No Deposit',
         'km_included' => ':count KM included',
         'doors' => ':count Doors',
         'persons' => ':count Persons',

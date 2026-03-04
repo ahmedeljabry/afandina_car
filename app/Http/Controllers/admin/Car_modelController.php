@@ -8,7 +8,6 @@ class Car_modelController extends GenericController
     public function __construct()
     {
         parent::__construct('car_model');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name'];
         $this->nonTranslatableFields = ['is_active','brand_id'];

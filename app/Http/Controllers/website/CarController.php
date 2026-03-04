@@ -20,23 +20,23 @@ class CarController extends Controller
         $locale = app()->getLocale() ?? 'en';
         [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
-        $translationFor = fn ($model) => $this->translationFor($model, $locale);
+        $translationFor = fn($model) => $this->translationFor($model, $locale);
 
         $brandIds = collect((array) $request->input('brand', []))
-            ->filter(fn ($value) => filled($value))
-            ->map(fn ($value) => (int) $value)
+            ->filter(fn($value) => filled($value))
+            ->map(fn($value) => (int) $value)
             ->values()
             ->all();
 
         $categoryIds = collect((array) $request->input('category', []))
-            ->filter(fn ($value) => filled($value))
-            ->map(fn ($value) => (int) $value)
+            ->filter(fn($value) => filled($value))
+            ->map(fn($value) => (int) $value)
             ->values()
             ->all();
 
         $yearIds = collect((array) $request->input('year', []))
-            ->filter(fn ($value) => filled($value))
-            ->map(fn ($value) => (int) $value)
+            ->filter(fn($value) => filled($value))
+            ->map(fn($value) => (int) $value)
             ->values()
             ->all();
 
@@ -111,7 +111,7 @@ class CarController extends Controller
         $cars = $carsQuery
             ->paginate($perPage)
             ->withQueryString()
-            ->through(fn (Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
+            ->through(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 
         $brands = Brand::query()
             ->with('translations')
@@ -238,7 +238,7 @@ class CarController extends Controller
             ->latest('id')
             ->take(6)
             ->get()
-            ->map(fn (Car $relatedCar) => $this->mapCarCardData($relatedCar, $locale, $currencyRate, $currencySymbol));
+            ->map(fn(Car $relatedCar) => $this->mapCarCardData($relatedCar, $locale, $currencyRate, $currencySymbol));
 
         $faqs = Faq::query()
             ->with('translations')
@@ -281,6 +281,10 @@ class CarController extends Controller
         $dailyDiscountPrice = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
         $effectiveDailyPrice = $dailyDiscountPrice ?? $dailyMainPrice;
 
+        $monthlyMainPrice = $car->monthly_main_price ? (float) $car->monthly_main_price : null;
+        $monthlyDiscountPrice = $car->monthly_discount_price ? (float) $car->monthly_discount_price : null;
+        $effectiveMonthlyPrice = $monthlyDiscountPrice ?? $monthlyMainPrice;
+
         $discountRate = null;
         if ($dailyMainPrice && $dailyDiscountPrice && $dailyDiscountPrice < $dailyMainPrice) {
             $discountRate = (int) ceil((($dailyMainPrice - $dailyDiscountPrice) / $dailyMainPrice) * 100);
@@ -299,6 +303,8 @@ class CarController extends Controller
             'is_featured' => (bool) $car->is_featured,
             'daily_price' => $effectiveDailyPrice ? (int) ceil($effectiveDailyPrice * $currencyRate) : null,
             'daily_main_price' => $dailyMainPrice ? (int) ceil($dailyMainPrice * $currencyRate) : null,
+            'monthly_price' => $effectiveMonthlyPrice ? (int) ceil($effectiveMonthlyPrice * $currencyRate) : null,
+            'monthly_main_price' => $monthlyMainPrice ? (int) ceil($monthlyMainPrice * $currencyRate) : null,
             'daily_mileage_included' => $car->daily_mileage_included,
             'passenger_capacity' => $car->passenger_capacity,
             'door_count' => $car->door_count,
@@ -350,7 +356,7 @@ class CarController extends Controller
 
         return $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
-            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug;
+            ?? $translations->first(fn($translation) => filled($translation->slug))?->slug;
     }
 
     private function mapCarDetailsData(Car $car, string $locale, float $currencyRate, string $currencySymbol): array

@@ -28,8 +28,6 @@ class CarController extends GenericController
     {
         parent::__construct('Car');
         
-        $this->seo_question = true;
-        $this->robots = true;
         $this->slugField = 'name';
         $this->uploadedfiles = ['media', 'default_image_path'];
         $this->translatableFields = ['name', 'description', 'long_description'];
@@ -38,7 +36,7 @@ class CarController extends GenericController
             'daily_main_price', 'daily_discount_price', 'weekly_main_price', 'weekly_discount_price',
             'monthly_main_price', 'monthly_discount_price', 'door_count', 'luggage_capacity',
             'passenger_capacity', 'status', 'gear_type_id', 'insurance_included', 'free_delivery',
-            'is_featured', 'crypto_payment_accepted', 'is_flash_sale', 'only_on_afandina','is_active','period_ids'
+            'is_featured', 'is_popular', 'crypto_payment_accepted', 'is_flash_sale', 'only_on_afandina','is_active','period_ids'
         ];
     }
 
@@ -176,6 +174,7 @@ class CarController extends GenericController
             'insurance_included' => $request->has('insurance_included'),
             'is_flash_sale' => $request->has('is_flash_sale'),
             'is_featured' => $request->has('is_featured'),
+            'is_popular' => $request->has('is_popular'),
             'free_delivery' => $request->has('free_delivery'),
             'is_active' => $request->has('is_active'),
             'crypto_payment_accepted' => $request->has('crypto_payment_accepted'),
@@ -236,6 +235,7 @@ class CarController extends GenericController
             'insurance_included'=>'boolean',
             'is_flash_sale'=>'boolean',
             'is_featured'=>'boolean',
+            'is_popular'=>'boolean',
             'free_delivery'=>'boolean',
             'is_active'=>'boolean',
             'crypto_payment_accepted'=>'boolean',
@@ -353,6 +353,7 @@ class CarController extends GenericController
             'context.free_delivery' => ['nullable', 'boolean'],
             'context.is_flash_sale' => ['nullable', 'boolean'],
             'context.is_featured' => ['nullable', 'boolean'],
+            'context.is_popular' => ['nullable', 'boolean'],
             'context.only_on_afandina' => ['nullable', 'boolean'],
             'context.crypto_payment_accepted' => ['nullable', 'boolean'],
         ]);
@@ -387,6 +388,7 @@ class CarController extends GenericController
         'insurance_included' => $request->has('insurance_included'),
         'is_flash_sale' => $request->has('is_flash_sale'),
         'is_featured' => $request->has('is_featured'),
+        'is_popular' => $request->has('is_popular'),
         'free_delivery' => $request->has('free_delivery'),
         'is_active' => $request->has('is_active'),
         'crypto_payment_accepted' => $request->has('crypto_payment_accepted'),
@@ -433,6 +435,7 @@ class CarController extends GenericController
         'insurance_included'=>'boolean',
         'is_flash_sale'=>'boolean',
         'is_featured'=>'boolean',
+        'is_popular'=>'boolean',
         'free_delivery'=>'boolean',
         'is_active'=>'boolean',
         'crypto_payment_accepted'=>'boolean',

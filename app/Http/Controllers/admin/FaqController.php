@@ -8,7 +8,6 @@ class FaqController extends GenericController
     public function __construct()
     {
         parent::__construct('faq');
-        $this->seo_question = true;
         $this->slugField = 'question';
         $this->translatableFields = ['question', 'answer'];
         $this->nonTranslatableFields = ['is_active', 'show_in_home', 'order'];

@@ -7,7 +7,6 @@ class CurrencyController extends GenericController
     public function __construct()
     {
         parent::__construct('currency');
-        $this->seo_question =false;
         $this->slugField ='name';
         $this->translatableFields = ['name'];
         $this->nonTranslatableFields= ['code','symbol','is_active','is_default'];

@@ -7,8 +7,6 @@ class AboutController extends GenericController
     public function __construct()
     {
         parent::__construct('about');
-        $this->seo_question =true;
-        $this->robots =true;
         $this->slugField ='page_name';
         $this->translatableFields = [
             'about_main_header_title',

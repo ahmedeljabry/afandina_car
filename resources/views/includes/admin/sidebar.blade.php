@@ -83,10 +83,28 @@
                 <li class="menu-title sidebar-section-title"><span>CMS</span></li>
                 <li class="sidebar-section-group">
                     <ul>
-                        <li>
-                            <a href="{{ route('admin.pages.index') }}" >
-                                <i class="ti ti-file-invoice"></i><span>Pages</span>
+                        <li class="submenu {{ request()->routeIs('admin.pages.*', 'admin.homes.*', 'admin.abouts.*', 'admin.contacts.*') ? 'active' : '' }}">
+                            <a href="javascript:void(0);">
+                                <i class="ti ti-home"></i><span>Home</span>
+                                <span class="menu-arrow"></span>
                             </a>
+                            <ul>
+                                <li class="{{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.pages.index') }}">Manage Pages</a>
+                                </li>
+                                <li class="{{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.homes.edit', 1) }}">Home Page</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#our-clients-feedback">Our Clients Feedback</a>
+                                </li>
+                                <li class="{{ request()->routeIs('admin.abouts.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.abouts.edit', 1) }}">About Us Page</a>
+                                </li>
+                                <li class="{{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.contacts.edit') }}">Contact Page</a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="submenu">
                             <a href="javascript:void(0);">

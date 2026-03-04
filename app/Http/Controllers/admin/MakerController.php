@@ -7,7 +7,6 @@ class MakerController extends GenericController
     public function __construct()
     {
         parent::__construct('template');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name','description'];
     }

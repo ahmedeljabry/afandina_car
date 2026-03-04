@@ -51,6 +51,7 @@ class CarResource extends JsonResource
             'insurance_included' => $this->insurance_included,
             'free_delivery' => $this->free_delivery,
             'is_featured' => $this->is_featured,
+            'is_popular' => $this->is_popular,
             'is_flash_sale' => $this->is_flash_sale,
             'status' => $this->status,
             'gear_type' => $this->gearType->translations->where('locale', $locale)->first()->name,

@@ -7,8 +7,6 @@ class CategoryController extends GenericController
     public function __construct()
     {
         parent::__construct('category');
-        $this->seo_question =true;
-        $this->robots =true;
         $this->slugField ='name';
         $this->translatableFields = ['name', 'title','description','article'];
         $this->nonTranslatableFields = ['is_active'];

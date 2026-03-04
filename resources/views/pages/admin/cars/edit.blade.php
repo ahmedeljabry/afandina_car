@@ -21,7 +21,6 @@
 
 @include('includes.admin.form_theme')
 
-
 @push('styles')
     <style>
         .preview-grid {
@@ -838,7 +837,15 @@
                                                         <input type="checkbox" name="is_featured"
                                                             class="custom-control-input" id="is_featured" {{ old('is_featured', $item->is_featured) ? 'checked' : '' }}>
                                                         <label class="custom-control-label"
-                                                            for="is_featured">Featured</label>
+                                                            for="is_featured">Show in Featured Cars</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" name="is_popular"
+                                                            class="custom-control-input" id="is_popular" {{ old('is_popular', $item->is_popular) ? 'checked' : '' }}>
+                                                        <label class="custom-control-label"
+                                                            for="is_popular">Show in Popular Cars</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
@@ -852,7 +859,7 @@
                                                 <div class="col-md-3">
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" name="only_on_afandina"
-                                                            class="custom-control-input" id="only_on_afandina" {{ old('is_flash_sale', $item->only_on_afandina) ? 'checked' : '' }}>
+                                                            class="custom-control-input" id="only_on_afandina" {{ old('only_on_afandina', $item->only_on_afandina) ? 'checked' : '' }}>
                                                         <label class="custom-control-label" for="only_on_afandina">Only On
                                                             Afandina</label>
                                                     </div>
@@ -1137,374 +1144,360 @@
             </div>
         </div>
 @endsection
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            $(document).ready(function () {
-                $('#editCarForm').on('submit', function (e) {
-                    e.preventDefault();
 
-                    if (typeof tinymce !== 'undefined') {
-                        tinymce.triggerSave();
-                    }
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('#editCarForm').on('submit', function (e) {
+                e.preventDefault();
 
-                    showLoader();
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
 
-                    let formData = new FormData(this);
+                showLoader();
 
-                    $.ajax({
-                        url: $(this).attr('action'),
-                        type: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            hideLoader();
-                            if (response.success) {
-                                Swal.fire({
-                                    title: 'Success!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = response.redirect;
-                                    }
-                                });
-                            }
-                        },
-                        error: function (xhr) {
-                            hideLoader();
-                            let errorHtml = '<div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">';
-                            errorHtml += '<div class="d-flex">';
-                            errorHtml += '<i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>';
-                            errorHtml += '<div class="flex-grow-1">';
-                            errorHtml += '<h5 class="alert-heading mb-2">Please correct the following errors:</h5>';
-                            errorHtml += '<ul class="mb-0 pl-3">';
+                let formData = new FormData(this);
 
-                            if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                // Loop through all error messages
-                                Object.entries(xhr.responseJSON.errors).forEach(([field, messages]) => {
-                                    messages.forEach(message => {
-                                        errorHtml += '<li>' + message + '</li>';
-                                    });
-                                });
-                            } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorHtml += '<li>' + xhr.responseJSON.message + '</li>';
-                            } else {
-                                errorHtml += '<li>An unexpected error occurred. Please try again.</li>';
-                            }
-
-                            errorHtml += '</ul>';
-                            errorHtml += '</div>';
-                            errorHtml += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
-                            errorHtml += '<span aria-hidden="true">&times;</span>';
-                            errorHtml += '</button>';
-                            errorHtml += '</div>';
-                            errorHtml += '</div>';
-
-                            // Remove any existing error alerts
-                            $('.alert-danger').remove();
-                            // Add the new error alert at the top of the container
-                            $('.content-body').first().prepend(errorHtml);
-
-                            // Scroll to the top of the page to show the errors
-                            $('html, body').animate({
-                                scrollTop: 0
-                            }, 'slow');
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        hideLoader();
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = response.redirect;
+                                }
+                            });
                         }
-                    });
+                    },
+                    error: function (xhr) {
+                        hideLoader();
+                        let errorHtml = '<div class="alert alert-danger alert-dismissible fade show shadow-sm mt-3 p-4 rounded-lg" role="alert">';
+                        errorHtml += '<div class="d-flex">';
+                        errorHtml += '<i class="fas fa-exclamation-triangle mr-2" style="font-size: 24px;"></i>';
+                        errorHtml += '<div class="flex-grow-1">';
+                        errorHtml += '<h5 class="alert-heading mb-2">Please correct the following errors:</h5>';
+                        errorHtml += '<ul class="mb-0 pl-3">';
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            // Loop through all error messages
+                            Object.entries(xhr.responseJSON.errors).forEach(([field, messages]) => {
+                                messages.forEach(message => {
+                                    errorHtml += '<li>' + message + '</li>';
+                                });
+                            });
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorHtml += '<li>' + xhr.responseJSON.message + '</li>';
+                        } else {
+                            errorHtml += '<li>An unexpected error occurred. Please try again.</li>';
+                        }
+
+                        errorHtml += '</ul>';
+                        errorHtml += '</div>';
+                        errorHtml += '<button type="button" class="close" data-dismiss="alert" aria-label="Close">';
+                        errorHtml += '<span aria-hidden="true">&times;</span>';
+                        errorHtml += '</button>';
+                        errorHtml += '</div>';
+                        errorHtml += '</div>';
+
+                        // Remove any existing error alerts
+                        $('.alert-danger').remove();
+                        // Add the new error alert at the top of the container
+                        $('.content-body').first().prepend(errorHtml);
+
+                        // Scroll to the top of the page to show the errors
+                        $('html, body').animate({
+                            scrollTop: 0
+                        }, 'slow');
+                    }
                 });
             });
+        });
 
-            function showLoader() {
-                $('#loader-overlay').css('display', 'flex');
+        function showLoader() {
+            $('#loader-overlay').css('display', 'flex');
+        }
+
+        function hideLoader() {
+            $('#loader-overlay').css('display', 'none');
+        }
+    </script>
+    <script>
+        const tagifyInstances = {};
+        const aiLanguages = @json($activeLanguages->pluck('code')->toArray());
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) {
+                return '';
             }
 
-            function hideLoader() {
-                $('#loader-overlay').css('display', 'none');
-            }
-        </script>
-        <script>
-            const tagifyInstances = {};
-            const aiLanguages = @json($activeLanguages->pluck('code')->toArray());
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-            function escapeHtml(value) {
-                if (value === null || value === undefined) {
-                    return '';
-                }
+        function buildSeoQuestionGroup(lang, index, qa = { question: '', answer: '' }) {
+            const question = escapeHtml(qa.question ?? '');
+            const answer = escapeHtml(qa.answer ?? '');
 
-                return String(value)
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#039;');
-            }
-
-            function buildSeoQuestionGroup(lang, index, qa = { question: '', answer: '' }) {
-                const question = escapeHtml(qa.question ?? '');
-                const answer = escapeHtml(qa.answer ?? '');
-
-                return `
-                    <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                        <div class="form-group">
-                            <input type="text" name="seo_questions[${lang}][${index}][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" value="${question}" />
-                        </div>
-                        <div class="form-group">
-                            <textarea name="seo_questions[${lang}][${index}][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer">${answer}</textarea>
-                        </div>
-                        <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
+            return `
+                <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
+                    <div class="form-group">
+                        <input type="text" name="seo_questions[${lang}][${index}][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" value="${question}" />
                     </div>
-                `;
+                    <div class="form-group">
+                        <textarea name="seo_questions[${lang}][${index}][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer">${answer}</textarea>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
+                </div>
+            `;
+        }
+
+        function collectAiContext(lang) {
+            const context = {};
+
+            const brandOption = $('#brand_id option:selected');
+            context.brand = brandOption.val() ? brandOption.text().trim() : null;
+
+            const modelSelect = $('#car_model_id');
+            const modelOption = modelSelect.find('option:selected');
+            context.model = modelOption.val() ? modelOption.text().trim() : null;
+
+            const yearOption = $('#year_id option:selected');
+            context.year = yearOption.val() ? yearOption.text().trim() : null;
+
+            const colorOption = $('#color_id option:selected');
+            context.color = colorOption.val() ? colorOption.text().trim() : null;
+
+            const gearTypeOption = $('#gear_type_id option:selected');
+            context.gear_type = gearTypeOption.val() ? gearTypeOption.text().trim() : null;
+
+            const categoryNames = $('#category_id option:selected').map(function () {
+                const value = $(this).val();
+                return value ? $(this).text().trim() : null;
+            }).get().filter(Boolean);
+
+            context.categories = categoryNames;
+            context.primary_category = categoryNames[0] || null;
+
+            const englishNameField = $('#name_en');
+            const englishName = englishNameField.length ? englishNameField.val().trim() : '';
+            if (englishName.length) {
+                context.original_name = englishName;
             }
 
-            function collectAiContext(lang) {
-                const context = {};
+            context.target_language = lang;
 
-                const brandOption = $('#brand_id option:selected');
-                context.brand = brandOption.val() ? brandOption.text().trim() : null;
+            const featureSelect = $('#features').length ? $('#features') : $('select[name="features[]"]');
+            const featureNames = featureSelect.length
+                ? featureSelect.find('option:selected').map(function () {
+                    const text = $(this).text().trim();
+                    return text.length ? text : null;
+                }).get().filter(Boolean)
+                : [];
 
-                const modelSelect = $('#car_model_id');
-                const modelOption = modelSelect.find('option:selected');
-                context.model = modelOption.val() ? modelOption.text().trim() : null;
+            context.features = featureNames;
 
-                const yearOption = $('#year_id option:selected');
-                context.year = yearOption.val() ? yearOption.text().trim() : null;
+            context.daily_price = $('#daily_main_price').val();
+            context.weekly_price = $('#weekly_main_price').val();
+            context.monthly_price = $('#monthly_main_price').val();
+            context.passenger_capacity = $('#passenger_capacity').val();
+            context.door_count = $('#door_count').val();
+            context.luggage_capacity = $('#luggage_capacity').val();
+            context.daily_main_price = $('#daily_main_price').val();
+            context.daily_discount_price = $('#daily_discount_price').val();
+            context.daily_mileage_included = $('#daily_mileage_included').val();
+            context.weekly_main_price = $('#weekly_main_price').val();
+            context.weekly_discount_price = $('#weekly_discount_price').val();
+            context.weekly_mileage_included = $('#weekly_mileage_included').val();
+            context.monthly_main_price = $('#monthly_main_price').val();
+            context.monthly_discount_price = $('#monthly_discount_price').val();
+            context.monthly_mileage_included = $('#monthly_mileage_included').val();
 
-                const colorOption = $('#color_id option:selected');
-                context.color = colorOption.val() ? colorOption.text().trim() : null;
+            context.insurance_included = $('#insurance_included').is(':checked');
+            context.free_delivery = $('#free_delivery').is(':checked');
+            context.is_flash_sale = $('#is_flash_sale').is(':checked');
+            context.is_featured = $('#is_featured').is(':checked');
+            context.is_popular = $('#is_popular').is(':checked');
+            context.only_on_afandina = $('#only_on_afandina').is(':checked');
+            context.crypto_payment_accepted = $('#crypto_payment_accepted').is(':checked');
 
-                const gearTypeOption = $('#gear_type_id option:selected');
-                context.gear_type = gearTypeOption.val() ? gearTypeOption.text().trim() : null;
+            return context;
+        }
 
-                const categoryNames = $('#category_id option:selected').map(function () {
-                    const value = $(this).val();
-                    return value ? $(this).text().trim() : null;
-                }).get().filter(Boolean);
+        function populateAiContent(lang, data) {
+            if (!data) {
+                return;
+            }
 
-                context.categories = categoryNames;
-                context.primary_category = categoryNames[0] || null;
+            if (data.name) {
+                $('#name_' + lang).val(data.name);
+            }
 
+            if (data.description) {
+                $('#description_' + lang).val(data.description);
+            }
+
+            if (data.long_description) {
+                const editor = typeof tinymce !== 'undefined'
+                    ? tinymce.get('long_description_' + lang)
+                    : null;
+                if (editor) {
+                    editor.setContent(data.long_description);
+                } else {
+                    $('#long_description_' + lang).val(data.long_description);
+                }
+            }
+
+            if (data.meta_title) {
+                $('#meta_title_' + lang).val(data.meta_title);
+            }
+
+            if (data.meta_description) {
+                $('#meta_description_' + lang).val(data.meta_description);
+            }
+
+            if (Array.isArray(data.meta_keywords)) {
+                if (tagifyInstances[lang]) {
+                    tagifyInstances[lang].removeAllTags();
+                    tagifyInstances[lang].addTags(data.meta_keywords);
+                } else {
+                    $('#meta_keywords_' + lang).val(data.meta_keywords.join(', '));
+                }
+            }
+
+            if (Array.isArray(data.seo_questions)) {
+                const container = $('#seo-questions-' + lang);
+                container.empty();
+
+                data.seo_questions.forEach(function (qa, index) {
+                    container.append(buildSeoQuestionGroup(lang, index, qa));
+                });
+
+                if (data.seo_questions.length === 0) {
+                    container.append(buildSeoQuestionGroup(lang, 0));
+                }
+            }
+        }
+
+        function populateGeneralFields(data) {
+            if (!data || typeof data !== 'object') {
+                return;
+            }
+
+            const mappings = {
+                door_count: '#door_count',
+                luggage_capacity: '#luggage_capacity',
+                passenger_capacity: '#passenger_capacity',
+                daily_main_price: '#daily_main_price',
+                daily_discount_price: '#daily_discount_price',
+                daily_mileage_included: '#daily_mileage_included',
+                weekly_main_price: '#weekly_main_price',
+                weekly_discount_price: '#weekly_discount_price',
+                weekly_mileage_included: '#weekly_mileage_included',
+                monthly_main_price: '#monthly_main_price',
+                monthly_discount_price: '#monthly_discount_price',
+                monthly_mileage_included: '#monthly_mileage_included'
+            };
+
+            Object.entries(mappings).forEach(([key, selector]) => {
+                const value = data[key];
+                if (value !== undefined && value !== null && value !== '') {
+                    const input = $(selector);
+                    if (input.length) {
+                        input.val(value);
+                    }
+                }
+            });
+        }
+
+        function generateContentForLanguage(lang, options = {}) {
+            const opts = Object.assign({
+                button: null,
+                manageLoader: true,
+                silent: false
+            }, options);
+
+            return new Promise((resolve, reject) => {
+                const nameField = $('#name_' + lang);
+                let nameValue = (nameField.val() || '').trim();
                 const englishNameField = $('#name_en');
                 const englishName = englishNameField.length ? englishNameField.val().trim() : '';
-                if (englishName.length) {
-                    context.original_name = englishName;
+
+                if (!nameValue.length && lang !== 'en' && englishName.length) {
+                    nameValue = englishName;
                 }
 
-                context.target_language = lang;
-
-                const featureSelect = $('#features').length ? $('#features') : $('select[name="features[]"]');
-                const featureNames = featureSelect.length
-                    ? featureSelect.find('option:selected').map(function () {
-                        const text = $(this).text().trim();
-                        return text.length ? text : null;
-                    }).get().filter(Boolean)
-                    : [];
-
-                context.features = featureNames;
-
-                context.daily_price = $('#daily_main_price').val();
-                context.weekly_price = $('#weekly_main_price').val();
-                context.monthly_price = $('#monthly_main_price').val();
-                context.passenger_capacity = $('#passenger_capacity').val();
-                context.door_count = $('#door_count').val();
-                context.luggage_capacity = $('#luggage_capacity').val();
-                context.daily_main_price = $('#daily_main_price').val();
-                context.daily_discount_price = $('#daily_discount_price').val();
-                context.daily_mileage_included = $('#daily_mileage_included').val();
-                context.weekly_main_price = $('#weekly_main_price').val();
-                context.weekly_discount_price = $('#weekly_discount_price').val();
-                context.weekly_mileage_included = $('#weekly_mileage_included').val();
-                context.monthly_main_price = $('#monthly_main_price').val();
-                context.monthly_discount_price = $('#monthly_discount_price').val();
-                context.monthly_mileage_included = $('#monthly_mileage_included').val();
-
-                context.insurance_included = $('#insurance_included').is(':checked');
-                context.free_delivery = $('#free_delivery').is(':checked');
-                context.is_flash_sale = $('#is_flash_sale').is(':checked');
-                context.is_featured = $('#is_featured').is(':checked');
-                context.only_on_afandina = $('#only_on_afandina').is(':checked');
-                context.crypto_payment_accepted = $('#crypto_payment_accepted').is(':checked');
-
-                return context;
-            }
-
-            function populateAiContent(lang, data) {
-                if (!data) {
-                    return;
-                }
-
-                if (data.name) {
-                    $('#name_' + lang).val(data.name);
-                }
-
-                if (data.description) {
-                    $('#description_' + lang).val(data.description);
-                }
-
-                if (data.long_description) {
-                    const editor = typeof tinymce !== 'undefined'
-                        ? tinymce.get('long_description_' + lang)
-                        : null;
-                    if (editor) {
-                        editor.setContent(data.long_description);
-                    } else {
-                        $('#long_description_' + lang).val(data.long_description);
-                    }
-                }
-
-                if (data.meta_title) {
-                    $('#meta_title_' + lang).val(data.meta_title);
-                }
-
-                if (data.meta_description) {
-                    $('#meta_description_' + lang).val(data.meta_description);
-                }
-
-                if (Array.isArray(data.meta_keywords)) {
-                    if (tagifyInstances[lang]) {
-                        tagifyInstances[lang].removeAllTags();
-                        tagifyInstances[lang].addTags(data.meta_keywords);
-                    } else {
-                        $('#meta_keywords_' + lang).val(data.meta_keywords.join(', '));
-                    }
-                }
-
-                if (Array.isArray(data.seo_questions)) {
-                    const container = $('#seo-questions-' + lang);
-                    container.empty();
-
-                    data.seo_questions.forEach(function (qa, index) {
-                        container.append(buildSeoQuestionGroup(lang, index, qa));
+                if (!nameValue.length) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Car name required',
+                        text: 'Please enter at least one car name so the AI can generate content.'
                     });
-
-                    if (data.seo_questions.length === 0) {
-                        container.append(buildSeoQuestionGroup(lang, 0));
-                    }
-                }
-            }
-
-            function populateGeneralFields(data) {
-                if (!data || typeof data !== 'object') {
-                    return;
+                    nameField.focus();
+                    return reject(new Error('Car name required for AI generation (' + lang.toUpperCase() + ')'));
                 }
 
-                const mappings = {
-                    door_count: '#door_count',
-                    luggage_capacity: '#luggage_capacity',
-                    passenger_capacity: '#passenger_capacity',
-                    daily_main_price: '#daily_main_price',
-                    daily_discount_price: '#daily_discount_price',
-                    daily_mileage_included: '#daily_mileage_included',
-                    weekly_main_price: '#weekly_main_price',
-                    weekly_discount_price: '#weekly_discount_price',
-                    weekly_mileage_included: '#weekly_mileage_included',
-                    monthly_main_price: '#monthly_main_price',
-                    monthly_discount_price: '#monthly_discount_price',
-                    monthly_mileage_included: '#monthly_mileage_included'
+                const payload = {
+                    language: lang,
+                    name: nameValue,
+                    context: collectAiContext(lang)
                 };
 
-                Object.entries(mappings).forEach(([key, selector]) => {
-                    const value = data[key];
-                    if (value !== undefined && value !== null && value !== '') {
-                        const input = $(selector);
-                        if (input.length) {
-                            input.val(value);
-                        }
-                    }
-                });
-            }
+                const button = opts.button && opts.button.length ? opts.button : null;
+                let originalHtml = null;
+                if (button) {
+                    originalHtml = button.html();
+                    button.data('original-html', originalHtml);
+                    button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
+                }
 
-            function generateContentForLanguage(lang, options = {}) {
-                const opts = Object.assign({
-                    button: null,
-                    manageLoader: true,
-                    silent: false
-                }, options);
+                if (opts.manageLoader) {
+                    $('#loader-overlay').css('display', 'flex');
+                }
 
-                return new Promise((resolve, reject) => {
-                    const nameField = $('#name_' + lang);
-                    let nameValue = (nameField.val() || '').trim();
-                    const englishNameField = $('#name_en');
-                    const englishName = englishNameField.length ? englishNameField.val().trim() : '';
-
-                    if (!nameValue.length && lang !== 'en' && englishName.length) {
-                        nameValue = englishName;
-                    }
-
-                    if (!nameValue.length) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Car name required',
-                            text: 'Please enter at least one car name so the AI can generate content.'
-                        });
-                        nameField.focus();
-                        return reject(new Error('Car name required for AI generation (' + lang.toUpperCase() + ')'));
-                    }
-
-                    const payload = {
-                        language: lang,
-                        name: nameValue,
-                        context: collectAiContext(lang)
-                    };
-
-                    const button = opts.button && opts.button.length ? opts.button : null;
-                    let originalHtml = null;
-                    if (button) {
-                        originalHtml = button.html();
-                        button.data('original-html', originalHtml);
-                        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
-                    }
-
-                    if (opts.manageLoader) {
-                        $('#loader-overlay').css('display', 'flex');
-                    }
-
-                    $.ajax({
-                        url: "{{ route('admin.cars.generate-content') }}",
-                        method: 'POST',
-                        data: JSON.stringify(payload),
-                        contentType: 'application/json',
-                        processData: false,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function (response) {
-                            if (response && response.success) {
-                                populateAiContent(lang, response.data);
-                                const tabTrigger = document.getElementById('pills-' + lang + '-tab');
-                                if (tabTrigger && window.bootstrap && window.bootstrap.Tab) {
-                                    window.bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
-                                }
-                                if (!opts.silent) {
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: 'AI content generated',
-                                        text: 'Review the generated ' + lang.toUpperCase() + ' copy and adjust it as needed.',
-                                        timer: 2500,
-                                        showConfirmButton: false
-                                    });
-                                }
-                                resolve(response.data);
-                            } else {
-                                const message = response && response.message ? response.message : 'Unable to generate AI content right now.';
-                                if (!opts.silent) {
-                                    Swal.fire({
-                                        icon: 'error',
-                                        title: 'Generation failed',
-                                        text: message
-                                    });
-                                }
-                                reject(new Error(message));
+                $.ajax({
+                    url: "{{ route('admin.cars.generate-content') }}",
+                    method: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json',
+                    processData: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        if (response && response.success) {
+                            populateAiContent(lang, response.data);
+                            const tabTrigger = document.getElementById('pills-' + lang + '-tab');
+                            if (tabTrigger && window.bootstrap && window.bootstrap.Tab) {
+                                window.bootstrap.Tab.getOrCreateInstance(tabTrigger).show();
                             }
-                        },
-                        error: function (xhr) {
-                            let message = 'Unable to generate AI content right now.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                message = xhr.responseJSON.message;
+                            if (!opts.silent) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'AI content generated',
+                                    text: 'Review the generated ' + lang.toUpperCase() + ' copy and adjust it as needed.',
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                });
                             }
-
+                            resolve(response.data);
+                        } else {
+                            const message = response && response.message ? response.message : 'Unable to generate AI content right now.';
                             if (!opts.silent) {
                                 Swal.fire({
                                     icon: 'error',
@@ -1513,187 +1506,203 @@
                                 });
                             }
                             reject(new Error(message));
-                        },
-                        complete: function () {
-                            if (opts.manageLoader) {
-                                $('#loader-overlay').hide();
-                            }
-                            if (button) {
-                                button.prop('disabled', false).html(button.data('original-html'));
+                        }
+                    },
+                    error: function (xhr) {
+                        let message = 'Unable to generate AI content right now.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+
+                        if (!opts.silent) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Generation failed',
+                                text: message
+                            });
+                        }
+                        reject(new Error(message));
+                    },
+                    complete: function () {
+                        if (opts.manageLoader) {
+                            $('#loader-overlay').hide();
+                        }
+                        if (button) {
+                            button.prop('disabled', false).html(button.data('original-html'));
+                        }
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function () {
+            $(document).on('click', '.generate-ai-content', function () {
+                const $button = $(this);
+                const lang = $button.data('lang');
+                generateContentForLanguage(lang, { button: $button })
+                    .catch(() => { });
+            });
+
+            $(document).on('click', '.generate-ai-all', async function () {
+                const $button = $(this);
+                if (!aiLanguages.length) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'No languages configured',
+                        text: 'Please add at least one active language before using AI generation.'
+                    });
+                    return;
+                }
+
+                const englishNameField = $('#name_en');
+                const englishName = englishNameField.length ? englishNameField.val().trim() : '';
+
+                if (!englishName) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Add English name',
+                        text: 'Enter the car name in English before generating AI content.'
+                    });
+                    if (englishNameField.length) {
+                        englishNameField.focus();
+                    }
+                    return;
+                }
+
+                const originalHtml = $button.html();
+                $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
+                $('#loader-overlay').css('display', 'flex');
+
+                const languages = Array.from(new Set(['en', ...aiLanguages]));
+
+                try {
+                    for (const lang of languages) {
+                        const data = await generateContentForLanguage(lang, {
+                            manageLoader: false,
+                            silent: true
+                        });
+
+                        if (lang === 'en') {
+                            populateGeneralFields(data);
+                        }
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'All content generated',
+                        text: 'General details and translations were filled automatically. Review before saving.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                } catch (error) {
+                    const message = error && error.message ? error.message : 'Unable to generate AI content right now.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Generation interrupted',
+                        text: message
+                    });
+                } finally {
+                    $('#loader-overlay').hide();
+                    $button.prop('disabled', false).html(originalHtml);
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Function to dynamically add SEO Questions/Answers
+            $('.add-question').on('click', function () {
+                var lang = $(this).data('lang');
+                var container = $('#seo-questions-' + lang);
+                var count = container.find('.seo-question-group').length;
+                var newQuestionGroup = `
+                        <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
+                            <div class="form-group">
+                                <input type="text" name="seo_questions[${lang}][${count}][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" />
+                            </div>
+                            <div class="form-group">
+                                <textarea name="seo_questions[${lang}][${count}][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
+                        </div>`;
+                container.append(newQuestionGroup);
+            });
+            // Function to remove an SEO Question/Answer
+            $(document).on('click', '.remove-question', function () {
+                $(this).closest('.seo-question-group').remove();
+            });
+            @foreach($activeLanguages as $lang)
+                {
+                    const metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
+                    if (metaKeywordsInput && typeof Tagify !== 'undefined') {
+                        tagifyInstances['{{ $lang->code }}'] = new Tagify(metaKeywordsInput, {
+                            placeholder: 'Enter meta keywords'
+                        });
+                    } else if (metaKeywordsInput) {
+                        metaKeywordsInput.setAttribute('placeholder', 'Enter meta keywords (comma separated)');
+                    }
+                }
+            @endforeach
+            });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var brandSelect = $('#brand_id');
+            var modelSelect = $('#car_model_id');
+            var initialModelId = '{{ old('car_model_id', $item->car_model_id) }}';
+
+            function loadModels(brandId, selectedModelId = null) {
+                modelSelect.empty().append('<option value="">-- Select Model --</option>');
+                if (brandId) {
+                    $.ajax({
+                        url: "{{ route('admin.get.models', '') }}/" + brandId,
+                        type: "GET",
+                        success: function (data) {
+                            data.forEach(function (model) {
+                                var selected = (selectedModelId && selectedModelId == model.id) ? 'selected' : '';
+                                modelSelect.append('<option value="' + model.id + '" ' + selected + '>' + model.name + '</option>');
+                            });
+                            // Set the selected value after populating options
+                            if (selectedModelId) {
+                                modelSelect.val(selectedModelId).trigger('change');
                             }
                         }
                     });
-                });
+                }
             }
 
-            $(document).ready(function () {
-                $(document).on('click', '.generate-ai-content', function () {
-                    const $button = $(this);
-                    const lang = $button.data('lang');
-                    generateContentForLanguage(lang, { button: $button })
-                        .catch(() => { });
-                });
-
-                $(document).on('click', '.generate-ai-all', async function () {
-                    const $button = $(this);
-                    if (!aiLanguages.length) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'No languages configured',
-                            text: 'Please add at least one active language before using AI generation.'
-                        });
-                        return;
-                    }
-
-                    const englishNameField = $('#name_en');
-                    const englishName = englishNameField.length ? englishNameField.val().trim() : '';
-
-                    if (!englishName) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Add English name',
-                            text: 'Enter the car name in English before generating AI content.'
-                        });
-                        if (englishNameField.length) {
-                            englishNameField.focus();
-                        }
-                        return;
-                    }
-
-                    const originalHtml = $button.html();
-                    $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Generating...');
-                    $('#loader-overlay').css('display', 'flex');
-
-                    const languages = Array.from(new Set(['en', ...aiLanguages]));
-
-                    try {
-                        for (const lang of languages) {
-                            const data = await generateContentForLanguage(lang, {
-                                manageLoader: false,
-                                silent: true
-                            });
-
-                            if (lang === 'en') {
-                                populateGeneralFields(data);
-                            }
-                        }
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'All content generated',
-                            text: 'General details and translations were filled automatically. Review before saving.',
-                            timer: 3000,
-                            showConfirmButton: false
-                        });
-                    } catch (error) {
-                        const message = error && error.message ? error.message : 'Unable to generate AI content right now.';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Generation interrupted',
-                            text: message
-                        });
-                    } finally {
-                        $('#loader-overlay').hide();
-                        $button.prop('disabled', false).html(originalHtml);
-                    }
-                });
+            // Load models on brand change
+            brandSelect.change(function () {
+                var selectedBrandId = $(this).val();
+                // When brand changes, only pass the selected model if it's the initial load
+                loadModels(selectedBrandId, $(this).data('initial-load') ? initialModelId : null);
+                $(this).removeData('initial-load');
             });
-        </script>
-        <script>
-            $(document).ready(function () {
-                // Function to dynamically add SEO Questions/Answers
-                $('.add-question').on('click', function () {
-                    var lang = $(this).data('lang');
-                    var container = $('#seo-questions-' + lang);
-                    var count = container.find('.seo-question-group').length;
-                    var newQuestionGroup = `
-                            <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
-                                <div class="form-group">
-                                    <input type="text" name="seo_questions[${lang}][${count}][question]" class="form-control form-control-lg shadow-sm mb-2" placeholder="Enter Question" />
-                                </div>
-                                <div class="form-group">
-                                    <textarea name="seo_questions[${lang}][${count}][answer]" class="form-control form-control-lg shadow-sm" placeholder="Enter Answer"></textarea>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-danger remove-question">Remove</button>
-                            </div>`;
-                    container.append(newQuestionGroup);
-                });
-                // Function to remove an SEO Question/Answer
-                $(document).on('click', '.remove-question', function () {
-                    $(this).closest('.seo-question-group').remove();
-                });
-                @foreach($activeLanguages as $lang)
-                    {
-                        const metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                        if (metaKeywordsInput && typeof Tagify !== 'undefined') {
-                            tagifyInstances['{{ $lang->code }}'] = new Tagify(metaKeywordsInput, {
-                                placeholder: 'Enter meta keywords'
-                            });
-                        } else if (metaKeywordsInput) {
-                            metaKeywordsInput.setAttribute('placeholder', 'Enter meta keywords (comma separated)');
-                        }
-                    }
-                @endforeach
-                });
-        </script>
-        <script>
-            $(document).ready(function () {
-                var brandSelect = $('#brand_id');
-                var modelSelect = $('#car_model_id');
-                var initialModelId = '{{ old('car_model_id', $item->car_model_id) }}';
 
-                function loadModels(brandId, selectedModelId = null) {
-                    modelSelect.empty().append('<option value="">-- Select Model --</option>');
-                    if (brandId) {
-                        $.ajax({
-                            url: "{{ route('admin.get.models', '') }}/" + brandId,
-                            type: "GET",
-                            success: function (data) {
-                                data.forEach(function (model) {
-                                    var selected = (selectedModelId && selectedModelId == model.id) ? 'selected' : '';
-                                    modelSelect.append('<option value="' + model.id + '" ' + selected + '>' + model.name + '</option>');
-                                });
-                                // Set the selected value after populating options
-                                if (selectedModelId) {
-                                    modelSelect.val(selectedModelId).trigger('change');
-                                }
-                            }
-                        });
-                    }
+            // Load models on page load if a brand is already selected
+            var initialBrandId = brandSelect.val();
+            if (initialBrandId) {
+                // Set a flag for initial load
+                brandSelect.data('initial-load', true);
+                loadModels(initialBrandId, initialModelId);
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            function formatFeature(feature) {
+                if (!feature.id) {
+                    return feature.text;
                 }
-
-                // Load models on brand change
-                brandSelect.change(function () {
-                    var selectedBrandId = $(this).val();
-                    // When brand changes, only pass the selected model if it's the initial load
-                    loadModels(selectedBrandId, $(this).data('initial-load') ? initialModelId : null);
-                    $(this).removeData('initial-load');
-                });
-
-                // Load models on page load if a brand is already selected
-                var initialBrandId = brandSelect.val();
-                if (initialBrandId) {
-                    // Set a flag for initial load
-                    brandSelect.data('initial-load', true);
-                    loadModels(initialBrandId, initialModelId);
-                }
+                var $feature = $('<span><i class="' + $(feature.element).data('icon') + '"></i> ' + feature.text + '</span>');
+                return $feature;
+            }
+            $('.feature-select').select2({
+                templateResult: formatFeature,
+                templateSelection: formatFeature,
+                allowClear: true,
+                placeholder: "Select features"
             });
-        </script>
-        <script>
-            $(document).ready(function () {
-                function formatFeature(feature) {
-                    if (!feature.id) {
-                        return feature.text;
-                    }
-                    var $feature = $('<span><i class="' + $(feature.element).data('icon') + '"></i> ' + feature.text + '</span>');
-                    return $feature;
-                }
-                $('.feature-select').select2({
-                    templateResult: formatFeature,
-                    templateSelection: formatFeature,
-                    allowClear: true,
-                    placeholder: "Select features"
-                });
-            });
-        </script>
-    @endpush
+        });
+    </script>
+@endpush

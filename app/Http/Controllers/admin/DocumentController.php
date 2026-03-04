@@ -7,7 +7,6 @@ class DocumentController extends GenericController
     public function __construct()
     {
         parent::__construct('document');
-        $this->seo_question =true;
         $this->slugField ='content';
         $this->translatableFields = ['content'];
         $this->nonTranslatableFields = ['is_active','for'];

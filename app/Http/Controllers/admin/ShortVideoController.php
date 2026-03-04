@@ -7,7 +7,6 @@ class ShortVideoController extends GenericController
     public function __construct()
     {
         parent::__construct('short_video');
-        $this->seo_question =true;
         $this->slugField ='title';
         $this->translatableFields = ['title','description'];
         $this->nonTranslatableFields = ['is_active'];

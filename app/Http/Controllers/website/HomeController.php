@@ -53,26 +53,15 @@ class HomeController extends Controller
             ->get()
             ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 
-        // ── Popular / Slider Cars (flash-sale → featured fallback) ───────────
+        // ── Popular / Slider Cars ─────────────────────────────────────────────
         $popularCars = Car::query()
             ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
             ->where('is_active', true)
-            ->where('is_flash_sale', true)
+            ->where('is_popular', true)
             ->latest()
             ->take(6)
-            ->get();
-
-        if ($popularCars->isEmpty()) {
-            $popularCars = Car::query()
-                ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
-                ->where('is_active', true)
-                ->where('is_featured', true)
-                ->latest()
-                ->take(6)
-                ->get();
-        }
-
-        $popularCars = $popularCars->map(
+            ->get()
+            ->map(
             fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol)
         );
 
@@ -184,6 +173,7 @@ class HomeController extends Controller
             'year'             => $car->year?->year,
             'status'           => $car->status,
             'is_featured'      => (bool) $car->is_featured,
+            'is_popular'       => (bool) $car->is_popular,
             'image_path'       => $car->default_image_path,
             'images'           => $images,
             'daily_price'      => $effectivePrice ? (int) ceil($effectivePrice * $currencyRate) : null,

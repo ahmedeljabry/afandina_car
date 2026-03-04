@@ -352,6 +352,8 @@ return [
 
     'units' => [
         'per_day' => '/ يوم',
+        'per_month' => '/ شهر',
+        'no_deposit' => 'بدون تأمين',
         'km_value' => ':count كم',
         'km_included' => ':count كم متضمنة',
         'doors' => ':count أبواب',

@@ -72,6 +72,7 @@ class DetailedCarResource extends JsonResource
             ],
             'year' => $this->year->year??null,
             'is_featured' => $this->is_featured,
+            'is_popular' => $this->is_popular,
             'is_flash_sale' => $this->is_flash_sale,
             'status' => $this->status,
             'gear_type' => $gearTypeName,

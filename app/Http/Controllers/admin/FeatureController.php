@@ -8,7 +8,6 @@ class FeatureController extends GenericController
     public function __construct()
     {
         parent::__construct('feature');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name'];
         $this->nonTranslatableFields = ['is_active','icon_id'];

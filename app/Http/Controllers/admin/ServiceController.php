@@ -7,7 +7,6 @@ class ServiceController extends GenericController
     public function __construct()
     {
         parent::__construct('service');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name','description'];
         $this->nonTranslatableFields = ['is_active','show_in_home'];

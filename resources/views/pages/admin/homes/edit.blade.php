@@ -273,6 +273,95 @@
                                             rows="4">{{ old('blog_section_paragraph.' . $lang->code, $translation->blog_section_paragraph ?? '') }}</textarea>
                                     </div>
 
+                                    <div class="card border shadow-sm mb-4" @if($loop->first) id="our-clients-feedback" @endif>
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-1">Our Clients Feedback ({{ $lang->name }})</h6>
+                                            <p class="text-muted mb-0">Manage the testimonial content shown on the frontend home page.</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="testimonial_section_title_[{{ $lang->code }}]" class="font-weight-bold">Section Title ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_section_title[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_section_title_[{{ $lang->code }}]"
+                                                    value="{{ old('testimonial_section_title.' . $lang->code, $translation->testimonial_section_title ?? '') }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_section_paragraph_{{ $lang->code }}" class="font-weight-bold">Section Paragraph ({{ $lang->name }})</label>
+                                                <textarea name="testimonial_section_paragraph[{{ $lang->code }}]"
+                                                    class="form-control form-control-lg shadow-sm"
+                                                    id="testimonial_section_paragraph_{{ $lang->code }}"
+                                                    rows="4">{{ old('testimonial_section_paragraph.' . $lang->code, $translation->testimonial_section_paragraph ?? '') }}</textarea>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="testimonial_review_1_{{ $lang->code }}" class="font-weight-bold">Review 1 ({{ $lang->name }})</label>
+                                                <textarea name="testimonial_review_1[{{ $lang->code }}]"
+                                                    class="form-control form-control-lg shadow-sm"
+                                                    id="testimonial_review_1_{{ $lang->code }}"
+                                                    rows="4">{{ old('testimonial_review_1.' . $lang->code, $translation->testimonial_review_1 ?? '') }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_1_name_{{ $lang->code }}" class="font-weight-bold">Client 1 Name ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_1_name[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_1_name_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_1_name.' . $lang->code, $translation->testimonial_client_1_name ?? '') }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_1_location_{{ $lang->code }}" class="font-weight-bold">Client 1 Location ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_1_location[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_1_location_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_1_location.' . $lang->code, $translation->testimonial_client_1_location ?? '') }}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="testimonial_review_2_{{ $lang->code }}" class="font-weight-bold">Review 2 ({{ $lang->name }})</label>
+                                                <textarea name="testimonial_review_2[{{ $lang->code }}]"
+                                                    class="form-control form-control-lg shadow-sm"
+                                                    id="testimonial_review_2_{{ $lang->code }}"
+                                                    rows="4">{{ old('testimonial_review_2.' . $lang->code, $translation->testimonial_review_2 ?? '') }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_2_name_{{ $lang->code }}" class="font-weight-bold">Client 2 Name ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_2_name[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_2_name_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_2_name.' . $lang->code, $translation->testimonial_client_2_name ?? '') }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_2_location_{{ $lang->code }}" class="font-weight-bold">Client 2 Location ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_2_location[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_2_location_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_2_location.' . $lang->code, $translation->testimonial_client_2_location ?? '') }}">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="testimonial_review_3_{{ $lang->code }}" class="font-weight-bold">Review 3 ({{ $lang->name }})</label>
+                                                <textarea name="testimonial_review_3[{{ $lang->code }}]"
+                                                    class="form-control form-control-lg shadow-sm"
+                                                    id="testimonial_review_3_{{ $lang->code }}"
+                                                    rows="4">{{ old('testimonial_review_3.' . $lang->code, $translation->testimonial_review_3 ?? '') }}</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_3_name_{{ $lang->code }}" class="font-weight-bold">Client 3 Name ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_3_name[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_3_name_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_3_name.' . $lang->code, $translation->testimonial_client_3_name ?? '') }}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="testimonial_client_3_location_{{ $lang->code }}" class="font-weight-bold">Client 3 Location ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_client_3_location[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_client_3_location_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_client_3_location.' . $lang->code, $translation->testimonial_client_3_location ?? '') }}">
+                                            </div>
+
+                                            <div class="form-group mb-0">
+                                                <label for="testimonial_cta_label_{{ $lang->code }}" class="font-weight-bold">CTA Button Label ({{ $lang->name }})</label>
+                                                <input type="text" name="testimonial_cta_label[{{ $lang->code }}]"
+                                                    class="form-control shadow-sm" id="testimonial_cta_label_{{ $lang->code }}"
+                                                    value="{{ old('testimonial_cta_label.' . $lang->code, $translation->testimonial_cta_label ?? '') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="contact_us_detail_title_[{{ $lang->code }}]" class="font-weight-bold">FAQ
                                             Section Title ({{ $lang->name }})</label>

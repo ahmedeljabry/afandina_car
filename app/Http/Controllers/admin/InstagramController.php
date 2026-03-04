@@ -8,7 +8,6 @@ class InstagramController extends GenericController
     public function __construct()
     {
         parent::__construct('instagram');
-        $this->seo_question =false;
         $this->nonTranslatableFields = ['show_in_home', 'is_active'];
         $this->uploadedfiles = ['instagram_url'];
         $this->isTranslatable = false;

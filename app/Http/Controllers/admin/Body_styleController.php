@@ -7,7 +7,6 @@ class Body_styleController extends GenericController
     public function __construct()
     {
         parent::__construct('body_style');
-        $this->seo_question =true;
         $this->slugField ='name';
         $this->translatableFields = ['name'];
         $this->nonTranslatableFields = ['is_active'];

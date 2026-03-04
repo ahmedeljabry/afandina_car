@@ -7,8 +7,6 @@ class LocationController extends GenericController
     public function __construct()
     {
         parent::__construct('location');
-        $this->seo_question =true;
-        $this->robots =true;
         $this->slugField ='name';
         $this->translatableFields = ['name','title','description','article'];
         $this->nonTranslatableFields = ['is_active'];

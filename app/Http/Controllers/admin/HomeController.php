@@ -1,6 +1,5 @@
 <?php
 namespace App\Http\Controllers\admin;
-use App\Models\Car;
 use Illuminate\Http\Request;
 
 class HomeController extends GenericController
@@ -8,9 +7,6 @@ class HomeController extends GenericController
     public function __construct()
     {
         parent::__construct('home');
-        $this->seo_question =true;
-        $this->robots =true;
-        $this->slugField ='page_name';
         $this->translatableFields = [
             'hero_header_title',
             'featured_cars_section_title',
@@ -23,6 +19,18 @@ class HomeController extends GenericController
             'brand_section_paragraph',
             'blog_section_title',
             'blog_section_paragraph',
+            'testimonial_section_title',
+            'testimonial_section_paragraph',
+            'testimonial_review_1',
+            'testimonial_client_1_name',
+            'testimonial_client_1_location',
+            'testimonial_review_2',
+            'testimonial_client_2_name',
+            'testimonial_client_2_location',
+            'testimonial_review_3',
+            'testimonial_client_3_name',
+            'testimonial_client_3_location',
+            'testimonial_cta_label',
             'contact_us_title',
             'contact_us_paragraph',
             'contact_us_detail_title',
@@ -48,109 +56,33 @@ class HomeController extends GenericController
         ];
     }
 
-    public function edit($id)
-    {
-        $locale = $this->data['defaultLocale'];
-        $this->data['cars'] = Car::with(['translations' => function ($query) use ($locale) {
-            $query->where('locale', $locale);}])->get();
-        return parent::edit($id);
-    }
-
     public function store(Request $request)
     {
-        $request->merge([
-            'is_active' => $request->has('is_active') ? true : false,
-
-        ]);
-        $this->validationRules = [
-            'page_name' => 'required|string|max:255',
-            'hero_type' => 'required|in:video,image',
-            'featured_cars_section_title.*' => 'nullable|string',
-            'featured_cars_section_paragraph.*' => 'nullable|string',
-            'car_only_section_title.*' => 'nullable|string',
-            'car_only_section_paragraph.*' => 'nullable|string',
-            'category_section_title.*' => 'nullable|string',
-            'category_section_paragraph.*' => 'nullable|string',
-            'brand_section_title.*' => 'nullable|string',
-            'brand_section_paragraph.*' => 'nullable|string',
-            'blog_section_title.*' => 'nullable|string',
-            'blog_section_paragraph.*' => 'nullable|string',
-            'contact_us_title.*' => 'nullable|string',
-            'contact_us_paragraph.*' => 'nullable|string',
-            'contact_us_detail_title.*' => 'nullable|string',
-            'contact_us_detail_paragraph.*' => 'nullable|string',
-            'special_offers_section_title.*' => 'nullable|string',
-            'special_offers_section_paragraph.*' => 'nullable|string',
-            'why_choose_us_section_title.*' => 'nullable|string',
-            'why_choose_us_section_paragraph.*' => 'nullable|string',
-            'faq_section_paragraph.*' => 'nullable|string',
-            'where_find_us_section_title.*' => 'nullable|string',
-            'where_find_us_section_paragraph.*' => 'nullable|string',
-            'faq_section_title.*' => 'nullable|string',
-            'required_documents_section_title.*' => 'nullable|string',
-            'required_documents_section_paragraph.*' => 'nullable|string',
-            'hero_header_title.*' => 'nullable|string',
-            'hero_header_image_path' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:10000',
-            'instagram_section_title.*' => 'nullable|string',
-            'instagram_section_paragraph.*' => 'nullable|string',
-            'footer_section_paragraph.*' => 'nullable|string',
-            'meta_title.*' => 'nullable|string|max:255',
-            'meta_description.*' => 'nullable|string',
-            'meta_keywords.*' => 'nullable|string',
-            'seo_questions.*.*.question' => 'nullable|string',
-            'seo_questions.*.*.answer' => 'nullable|string',
-            'robots_index.*' => 'nullable',
-            'robots_follow.*' => 'nullable',
-            'is_active' => 'boolean',
-            'hero_header_video_path' => 'mimetypes:video/mp4,video/x-matroska,video/quicktime,video/webm',
-
-        ];
-
-        $this->validationMessages = [
-
-        ];
+        $this->syncActiveFlag($request);
+        $this->validationRules = $this->buildValidationRules();
         return parent::store($request);
-
     }
 
     public function update(Request $request, $id)
     {
-        $request->merge([
-            'is_active' => $request->has('is_active') ? true : false,
+        $this->syncActiveFlag($request);
+        $this->validationRules = $this->buildValidationRules();
+        parent::update($request, $id);
+        return back()->with('success', 'Home Page updated successfully.');
+    }
 
+    private function syncActiveFlag(Request $request): void
+    {
+        $request->merge([
+            'is_active' => $request->boolean('is_active'),
         ]);
-        // Define validation rules
-        $this->validationRules = [
+    }
+
+    private function buildValidationRules(): array
+    {
+        $rules = [
             'page_name' => 'required|string|max:255',
             'hero_type' => 'required|in:video,image',
-            'featured_cars_section_title.*' => 'nullable|string',
-            'featured_cars_section_paragraph.*' => 'nullable|string',
-            'car_only_section_title.*' => 'nullable|string',
-            'car_only_section_paragraph.*' => 'nullable|string',
-            'category_section_title.*' => 'nullable|string',
-            'category_section_paragraph.*' => 'nullable|string',
-            'brand_section_title.*' => 'nullable|string',
-            'brand_section_paragraph.*' => 'nullable|string',
-            'blog_section_title.*' => 'nullable|string',
-            'blog_section_paragraph.*' => 'nullable|string',
-            'contact_us_title.*' => 'nullable|string',
-            'contact_us_paragraph.*' => 'nullable|string',
-            'contact_us_detail_title.*' => 'nullable|string',
-            'contact_us_detail_paragraph.*' => 'nullable|string',
-            'special_offers_section_title.*' => 'nullable|string',
-            'special_offers_section_paragraph.*' => 'nullable|string',
-            'why_choose_us_section_title.*' => 'nullable|string',
-            'why_choose_us_section_paragraph.*' => 'nullable|string',
-            'faq_section_paragraph.*' => 'nullable|string',
-            'where_find_us_section_title.*' => 'nullable|string',
-            'where_find_us_section_paragraph.*' => 'nullable|string',
-            'faq_section_title.*' => 'nullable|string',
-            'required_documents_section_title.*' => 'nullable|string',
-            'required_documents_section_paragraph.*' => 'nullable|string',
-            'hero_header_title.*' => 'nullable|string',
-            'instagram_section_title.*' => 'nullable|string',
-            'instagram_section_paragraph.*' => 'nullable|string',
-            'footer_section_paragraph.*' => 'nullable|string',
             'meta_title.*' => 'nullable|string|max:255',
             'meta_description.*' => 'nullable|string',
             'meta_keywords.*' => 'nullable|string',
@@ -159,17 +91,13 @@ class HomeController extends GenericController
             'robots_index.*' => 'nullable',
             'robots_follow.*' => 'nullable',
             'is_active' => 'boolean',
-            'hero_header_video_path' => 'mimetypes:video/mp4,video/x-matroska,video/quicktime,video/webm',
         ];
 
-        // Custom validation messages
-        $this->validationMessages = [
-            // Define any custom messages if necessary
-        ];
+        foreach ($this->translatableFields as $field) {
+            $rules[$field . '.*'] = 'nullable|string';
+        }
 
-        // Delegate to the generic controller's update function
-        parent::update($request, $id);
-        return back()->with('success', 'Home Page updated successfully.');
+        return $rules;
     }
 
 }
