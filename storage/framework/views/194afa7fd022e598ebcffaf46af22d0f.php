@@ -1,7 +1,6 @@
-@extends('layouts.website')
-@section('title', $homeTranslation?->meta_title ?? __('website.nav.home'))
+<?php $__env->startSection('title', $homeTranslation?->meta_title ?? __('website.nav.home')); ?>
 
-@push('css')
+<?php $__env->startPush('css'); ?>
     <style>
         .home-category-section {
             position: relative;
@@ -250,10 +249,10 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
-@php
+<?php $__env->startSection('content'); ?>
+<?php
     use Illuminate\Support\Str;
 
     $formatCurrency = static function ($price, ?string $currencyLabel): string {
@@ -398,39 +397,40 @@
     $heroMediaType = $home?->hero_type === 'video' ? 'video' : 'image';
     $heroVideoPath = $home?->hero_header_video_path ? asset('storage/' . $home->hero_header_video_path) : null;
     $heroImagePath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
-@endphp
+?>
 
-    {{-- BANNER / HERO --}}
+    
     <section class="banner-section-four">
         <div class="container">
             <div class="home-banner">
                 <div class="row align-items-center">
                     <div class="col-lg-5" data-aos="fade-down">
                         <div class="banner-content">
-                            <h1>{{ $heroCopy['title_prefix'] }} <span>{{ $heroCopy['title_highlight'] }}</span> {{ $heroCopy['title_suffix'] }}</h1>
-                            <p>{{ $heroCopy['banner_paragraph'] }}
+                            <h1><?php echo e($heroCopy['title_prefix']); ?> <span><?php echo e($heroCopy['title_highlight']); ?></span> <?php echo e($heroCopy['title_suffix']); ?></h1>
+                            <p><?php echo e($heroCopy['banner_paragraph']); ?>
+
                             </p>
                             <div class="customer-list">
                                 <div class="users-wrap">
                                     <ul class="users-list">
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user1-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user2-160x160.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user8-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
                                         </li>
                                     </ul>
                                     <div class="customer-info">
-                                        <h4>{{ $heroCopy['customers_label'] }}</h4>
-                                        <p>{{ $heroCopy['customers_subtitle'] }}</p>
+                                        <h4><?php echo e($heroCopy['customers_label']); ?></h4>
+                                        <p><?php echo e($heroCopy['customers_subtitle']); ?></p>
                                     </div>
                                 </div>
                                 <div class="view-all d-flex align-items-center gap-3">
-                                    <a href="{{ route('website.cars.index') }}" class="btn btn-primary d-inline-flex align-items-center">{{ $heroCopy['browse_cars_label'] }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
-                                    <a href="{{ route('website.blogs.index') }}" class="btn btn-secondary d-inline-flex align-items-center"><i class="bx bxs-plus-circle me-1"></i>{{ $heroCopy['browse_blogs_label'] }}</a>
+                                    <a href="<?php echo e(route('website.cars.index')); ?>" class="btn btn-primary d-inline-flex align-items-center"><?php echo e($heroCopy['browse_cars_label']); ?><i class="bx bx-right-arrow-alt ms-1"></i></a>
+                                    <a href="<?php echo e(route('website.blogs.index')); ?>" class="btn btn-secondary d-inline-flex align-items-center"><i class="bx bxs-plus-circle me-1"></i><?php echo e($heroCopy['browse_blogs_label']); ?></a>
                                 </div>
                             </div>
                         </div>
@@ -440,18 +440,18 @@
                             <div class="banner-img" data-aos="fade-down">
                                 <div class="amount-icon">
                                     <span class="day-amt">
-                                        <p>{{ $heroCopy['starting_from_label'] }}</p>
-                                        <h6>{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ $heroCopy['per_day_label'] }}</span></h6>
+                                        <p><?php echo e($heroCopy['starting_from_label']); ?></p>
+                                        <h6><?php echo e($formatCurrency($minPrice ?? 650, $currencySymbol)); ?> <span><?php echo e($heroCopy['per_day_label']); ?></span></h6>
                                     </span>
                                 </div>
-                                <span class="rent-tag"><i class="bx bxs-circle"></i> {{ $heroCopy['available_for_rent_label'] }}</span>
-                                @if ($heroMediaType === 'video' && $heroVideoPath)
+                                <span class="rent-tag"><i class="bx bxs-circle"></i> <?php echo e($heroCopy['available_for_rent_label']); ?></span>
+                                <?php if($heroMediaType === 'video' && $heroVideoPath): ?>
                                     <video class="img-fluid" autoplay muted loop playsinline>
-                                        <source src="{{ $heroVideoPath }}">
+                                        <source src="<?php echo e($heroVideoPath); ?>">
                                     </video>
-                                @else
-                                    <img src="{{ $heroImagePath }}" class="img-fluid" alt="img">
-                                @endif
+                                <?php else: ?>
+                                    <img src="<?php echo e($heroImagePath); ?>" class="img-fluid" alt="img">
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -459,58 +459,60 @@
             </div>
         </div>
         <div class="banner-bgs">
-            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img">
+            <img src="<?php echo e(asset('website/assets/img/bg/banner-bg-01.png')); ?>" class="bg-01 img-fluid" alt="img">
         </div>
     </section>
-    {{-- /Banner --}}
+    
 
-    {{-- CATEGORIES --}}
+    
     <section class="category-section-four home-category-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     <div class="section-heading heading-four" data-aos="fade-down">
-                        <h2>{{ $homeTranslation?->category_section_title ?? __('website.home.sections.categories_title') }}</h2>
-                        <p>{{ $homeTranslation?->category_section_paragraph ?? __('website.home.sections.categories_paragraph') }}</p>
+                        <h2><?php echo e($homeTranslation?->category_section_title ?? __('website.home.sections.categories_title')); ?></h2>
+                        <p><?php echo e($homeTranslation?->category_section_paragraph ?? __('website.home.sections.categories_paragraph')); ?></p>
                     </div>
 
                     <div class="row home-category-grid">
-                        @forelse ($categories as $category)
+                        <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <div class="home-category-col d-flex">
                                 <div class="category-item home-category-card flex-fill">
                                     <div class="category-info">
                                         <h6 class="title">
-                                            <a href="{{ $category['url'] }}" title="{{ $category['name'] }}">{{ $category['name'] }}</a>
+                                            <a href="<?php echo e($category['url']); ?>" title="<?php echo e($category['name']); ?>"><?php echo e($category['name']); ?></a>
                                         </h6>
                                         <div class="home-category-meta">
-                                            <p class="home-category-count">{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
-                                            <a href="{{ $category['url'] }}" class="link-icon" aria-label="{{ __('website.home.actions.view_all_cars') }}">
+                                            <p class="home-category-count"><?php echo e(__('website.home.labels.cars_count', ['count' => $category['cars_count']])); ?></p>
+                                            <a href="<?php echo e($category['url']); ?>" class="link-icon" aria-label="<?php echo e(__('website.home.actions.view_all_cars')); ?>">
                                                 <i class="bx bx-right-arrow-alt"></i>
                                             </a>
                                         </div>
                                     </div>
                                     <div class="category-img">
-                                        @if ($category['image_path'])
-                                            <img src="{{ asset('storage/' . $category['image_path']) }}"
-                                                alt="{{ $category['name'] }}" class="img-fluid">
-                                        @else
+                                        <?php if($category['image_path']): ?>
+                                            <img src="<?php echo e(asset('storage/' . $category['image_path'])); ?>"
+                                                alt="<?php echo e($category['name']); ?>" class="img-fluid">
+                                        <?php else: ?>
                                             <span class="home-category-fallback" aria-hidden="true">
                                                 <i class="bx bxs-car"></i>
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="col-12 text-center text-muted py-4">
-                                {{ __('website.home.empty.categories') }}
+                                <?php echo e(__('website.home.empty.categories')); ?>
+
                             </div>
-                        @endforelse
+                        <?php endif; ?>
                     </div>
 
                     <div class="view-all-btn text-center aos" data-aos="fade-down">
-                        <a href="{{ route('website.cars.index') }}" class="btn btn-secondary">
-                            {{ __('website.home.actions.view_all_cars') }}
+                        <a href="<?php echo e(route('website.cars.index')); ?>" class="btn btn-secondary">
+                            <?php echo e(__('website.home.actions.view_all_cars')); ?>
+
                             <i class="bx bx-right-arrow-alt ms-1"></i>
                         </a>
                     </div>
@@ -518,9 +520,9 @@
             </div>
         </div>
     </section>
-    {{-- /Categories --}}
+    
 
-    {{-- Feature Section --}}
+    
     <section class="feature-section pt-0">
         <div class="container">
             <div class="row align-items-center">
@@ -528,81 +530,81 @@
 
                     <div class="feature-img">
                         <div class="section-heading heading-four text-start" data-aos="fade-down">
-                            <h2>{{ $homeTranslation?->feature_section_title ?: __('website.home.features.section_title') }}</h2>
-                            <p>{{ $homeTranslation?->feature_section_paragraph ?: __('website.home.features.section_paragraph') }}</p>
+                            <h2><?php echo e($homeTranslation?->feature_section_title ?: __('website.home.features.section_title')); ?></h2>
+                            <p><?php echo e($homeTranslation?->feature_section_paragraph ?: __('website.home.features.section_paragraph')); ?></p>
                         </div>
-                        <img src="{{ asset('website/assets/img/cars/car.png') }}" alt="img" class="img-fluid">
+                        <img src="<?php echo e(asset('website/assets/img/cars/car.png')); ?>" alt="img" class="img-fluid">
                     </div>
 
                 </div>
 
                 <div class="col-lg-6">
                     <div class="row row-gap-4">
-                        @foreach ($featureItems as $featureItem)
+                        <?php $__currentLoopData = $featureItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $featureItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-md-6 d-flex">
                                 <div class="feature-item flex-fill">
                                     <span class="feature-icon">
-                                        <i class="{{ $featureItem['icon'] }}"></i>
+                                        <i class="<?php echo e($featureItem['icon']); ?>"></i>
                                     </span>
                                     <div>
-                                        <h6 class="mb-1">{{ $featureItem['title'] }}</h6>
-                                        <p>{{ $featureItem['description'] }}</p>
+                                        <h6 class="mb-1"><?php echo e($featureItem['title']); ?></h6>
+                                        <p><?php echo e($featureItem['description']); ?></p>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-	{{-- /Feature Section --}}
+	
 
-    {{-- FEATURED CARS --}}
-    @if ($featuredCars->isNotEmpty())
+    
+    <?php if($featuredCars->isNotEmpty()): ?>
     <section class="car-section">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
-                <h2>{{ $homeTranslation?->featured_cars_section_title ?? __('website.home.sections.featured_cars_title') }}</h2>
-                <p>{{ $homeTranslation?->featured_cars_section_paragraph ?? __('website.home.sections.featured_cars_paragraph') }}</p>
+                <h2><?php echo e($homeTranslation?->featured_cars_section_title ?? __('website.home.sections.featured_cars_title')); ?></h2>
+                <p><?php echo e($homeTranslation?->featured_cars_section_paragraph ?? __('website.home.sections.featured_cars_paragraph')); ?></p>
             </div>
 
             <div class="row">
-                @foreach ($featuredCars as $car)
+                <?php $__currentLoopData = $featuredCars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-lg-4 col-md-6">
                         <div class="listing-item listing-item-two">
                             <div class="listing-img">
-                                @php
+                                <?php
                                     $allImages = array_values(array_filter(array_merge(
                                         $car['image_path'] ? [$car['image_path']] : [],
                                         $car['images'] ?? []
                                     )));
-                                @endphp
+                                ?>
 
-                                @if (count($allImages) > 1)
+                                <?php if(count($allImages) > 1): ?>
                                     <div class="img-slider home-car-img-slider owl-carousel">
-                                        @foreach (array_slice($allImages, 0, 3) as $img)
+                                        <?php $__currentLoopData = array_slice($allImages, 0, 3); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $img): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="slide-images">
-                                                <a href="{{ $car['details_url'] }}">
-                                                    <img src="{{ asset('storage/' . $img) }}"
-                                                        class="img-fluid" alt="{{ $car['name'] }}">
+                                                <a href="<?php echo e($car['details_url']); ?>">
+                                                    <img src="<?php echo e(asset('storage/' . $img)); ?>"
+                                                        class="img-fluid" alt="<?php echo e($car['name']); ?>">
                                                 </a>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
-                                @else
-                                    <a href="{{ $car['details_url'] }}">
-                                        <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg') }}"
-                                            class="img-fluid" alt="{{ $car['name'] }}">
+                                <?php else: ?>
+                                    <a href="<?php echo e($car['details_url']); ?>">
+                                        <img src="<?php echo e($car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg')); ?>"
+                                            class="img-fluid" alt="<?php echo e($car['name']); ?>">
                                     </a>
-                                @endif
+                                <?php endif; ?>
 
                                 <div class="fav-item">
                                     <div class="home-card-badges">
-                                        @if ($car['brand_name'])
-                                            <span class="featured-text">{{ $car['brand_name'] }}</span>
-                                        @endif
-                                        <span class="home-no-deposit-label" aria-label="{{ $noDepositLabel }}">{{ $noDepositLabel }}</span>
+                                        <?php if($car['brand_name']): ?>
+                                            <span class="featured-text"><?php echo e($car['brand_name']); ?></span>
+                                        <?php endif; ?>
+                                        <span class="home-no-deposit-label" aria-label="<?php echo e($noDepositLabel); ?>"><?php echo e($noDepositLabel); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -610,216 +612,223 @@
                             <div class="listing-content">
                                 <div class="listing-features d-flex align-items-center justify-content-between">
                                     <div class="list-rating">
-                                        @php $featuredCardTitle = $formatCarCardTitle($car['name']); @endphp
+                                        <?php $featuredCardTitle = $formatCarCardTitle($car['name']); ?>
                                         <h3 class="listing-title home-car-card-title">
-                                            <a href="{{ $car['details_url'] }}" title="{{ $car['name'] }}">{{ $featuredCardTitle }}</a>
+                                            <a href="<?php echo e($car['details_url']); ?>" title="<?php echo e($car['name']); ?>"><?php echo e($featuredCardTitle); ?></a>
                                         </h3>
                                     </div>
-                                    @if ($car['daily_price'])
+                                    <?php if($car['daily_price']): ?>
                                         <div>
                                             <h4 class="price">
-                                                {{ $formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null) }}
-                                                <span>{{ __('website.units.per_day') }}</span>
+                                                <?php echo e($formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null)); ?>
+
+                                                <span><?php echo e(__('website.units.per_day')); ?></span>
                                             </h4>
                                         </div>
-                                    @else
+                                    <?php else: ?>
                                         <div>
-                                            <h4 class="price text-muted">{{ __('website.common.call_for_price') }}</h4>
+                                            <h4 class="price text-muted"><?php echo e(__('website.common.call_for_price')); ?></h4>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
 
                                 <div class="listing-details-group">
                                     <ul>
-                                        @if ($car['gear_type'])
+                                        <?php if($car['gear_type']): ?>
                                             <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-01.svg') }}" alt="gear">
-                                                <p>{{ $car['gear_type'] }}</p>
+                                                <img src="<?php echo e(asset('website/assets/img/icons/car-parts-01.svg')); ?>" alt="gear">
+                                                <p><?php echo e($car['gear_type']); ?></p>
                                             </li>
-                                        @endif
-                                        @if ($car['passenger_capacity'])
+                                        <?php endif; ?>
+                                        <?php if($car['passenger_capacity']): ?>
                                             <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="passengers">
-                                                <p>{{ __('website.units.persons', ['count' => $car['passenger_capacity']]) }}</p>
+                                                <img src="<?php echo e(asset('website/assets/img/icons/car-parts-05.svg')); ?>" alt="passengers">
+                                                <p><?php echo e(__('website.units.persons', ['count' => $car['passenger_capacity']])); ?></p>
                                             </li>
-                                        @endif
-                                        @if ($car['year'])
+                                        <?php endif; ?>
+                                        <?php if($car['year']): ?>
                                             <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="year">
-                                                <p>{{ $car['year'] }}</p>
+                                                <img src="<?php echo e(asset('website/assets/img/icons/car-parts-05.svg')); ?>" alt="year">
+                                                <p><?php echo e($car['year']); ?></p>
                                             </li>
-                                        @endif
+                                        <?php endif; ?>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <div class="view-all-btn text-center aos" data-aos="fade-down">
-                <a href="{{ route('website.cars.index') }}"
+                <a href="<?php echo e(route('website.cars.index')); ?>"
                     class="btn btn-secondary d-inline-flex align-items-center">
-                    {{ __('website.home.actions.view_all_cars') }}
+                    <?php echo e(__('website.home.actions.view_all_cars')); ?>
+
                     <i class="bx bx-right-arrow-alt ms-1"></i>
                 </a>
             </div>
         </div>
     </section>
-    @endif
-    {{-- /Featured Cars --}}
+    <?php endif; ?>
+    
 
-    {{-- BRANDS --}}
-    @if ($brands->isNotEmpty())
+    
+    <?php if($brands->isNotEmpty()): ?>
     <section class="brand-section">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
-                <h2 class="text-white">{{ $homeTranslation?->brand_section_title ?? __('website.home.sections.brands_title') }}</h2>
-                <p>{{ $homeTranslation?->brand_section_paragraph ?? __('website.home.sections.brands_paragraph') }}</p>
+                <h2 class="text-white"><?php echo e($homeTranslation?->brand_section_title ?? __('website.home.sections.brands_title')); ?></h2>
+                <p><?php echo e($homeTranslation?->brand_section_paragraph ?? __('website.home.sections.brands_paragraph')); ?></p>
             </div>
             <div class="brands-slider owl-carousel">
-                @foreach ($brands as $brand)
+                <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="brand-wrap">
-                        @if ($brand['logo_path'])
-                            <img src="{{ asset('storage/' . $brand['logo_path']) }}" alt="{{ $brand['name'] }}">
-                        @endif
-                        <p>{{ $brand['name'] }}</p>
+                        <?php if($brand['logo_path']): ?>
+                            <img src="<?php echo e(asset('storage/' . $brand['logo_path'])); ?>" alt="<?php echo e($brand['name']); ?>">
+                        <?php endif; ?>
+                        <p><?php echo e($brand['name']); ?></p>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
             <div class="brand-img text-center">
-                <img src="{{ asset('website/assets/img/bg/brand.png') }}" alt="img" class="img-fluid">
+                <img src="<?php echo e(asset('website/assets/img/bg/brand.png')); ?>" alt="img" class="img-fluid">
             </div>
         </div>
     </section>
-    @endif
-    {{-- /Brands --}}
+    <?php endif; ?>
+    
 
-    {{-- HOW IT WORKS + STATS --}}
+    
     <section class="rental-section-four">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="rental-img">
-                        <img src="{{ asset('website/assets/img/about/rent-car.png') }}" alt="img" class="img-fluid">
+                        <img src="<?php echo e(asset('website/assets/img/about/rent-car.png')); ?>" alt="img" class="img-fluid">
                         <div class="grid-img">
-                            <img src="{{ asset('website/assets/img/about/car-grid.png') }}" alt="img" class="img-fluid">
+                            <img src="<?php echo e(asset('website/assets/img/about/car-grid.png')); ?>" alt="img" class="img-fluid">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-5">
                     <div class="rental-content">
                         <div class="section-heading heading-four text-start" data-aos="fade-down">
-                            <h2>{{ $homeTranslation?->rental_section_title ?: __('website.home.rental.title') }}</h2>
-                            <p>{{ $homeTranslation?->rental_section_paragraph ?: __('website.home.rental.paragraph') }}</p>
+                            <h2><?php echo e($homeTranslation?->rental_section_title ?: __('website.home.rental.title')); ?></h2>
+                            <p><?php echo e($homeTranslation?->rental_section_paragraph ?: __('website.home.rental.paragraph')); ?></p>
                         </div>
-                        @foreach ($rentalSteps as $rentalStep)
+                        <?php $__currentLoopData = $rentalSteps; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rentalStep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="step-item d-flex align-items-center">
-                                <span class="step-icon {{ $rentalStep['icon_bg_class'] }} me-3">
-                                    <i class="{{ $rentalStep['icon_class'] }}"></i>
+                                <span class="step-icon <?php echo e($rentalStep['icon_bg_class']); ?> me-3">
+                                    <i class="<?php echo e($rentalStep['icon_class']); ?>"></i>
                                 </span>
                                 <div>
-                                    <h5>{{ $rentalStep['title'] }}</h5>
-                                    <p>{{ $rentalStep['description'] }}</p>
+                                    <h5><?php echo e($rentalStep['title']); ?></h5>
+                                    <p><?php echo e($rentalStep['description']); ?></p>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             </div>
             <div class="count-sec">
                 <div class="row row-gap-4" >
-                    @foreach ($rentalStats as $rentalStat)
+                    <?php $__currentLoopData = $rentalStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $rentalStat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="col-lg-3 col-md-6 d-flex">
                             <div class="count-item flex-fill">
-                                <h3><span class="counterUp">{{ $rentalStat['value'] }}</span>{{ $rentalStat['suffix'] }}</h3>
-                                <p>{{ $rentalStat['label'] }}</p>
+                                <h3><span class="counterUp"><?php echo e($rentalStat['value']); ?></span><?php echo e($rentalStat['suffix']); ?></h3>
+                                <p><?php echo e($rentalStat['label']); ?></p>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
     </section>
-    {{-- /How It Works --}}
+    
 
-    {{-- POPULAR CARS SLIDER --}}
-    @if ($popularCars->isNotEmpty())
+    
+    <?php if($popularCars->isNotEmpty()): ?>
     <section class="popular-section-four">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
-                <h2>{{ $homeTranslation?->car_only_section_title ?? __('website.home.sections.only_on_title') }}</h2>
-                <p>{{ $homeTranslation?->car_only_section_paragraph ?? __('website.home.sections.only_on_paragraph') }}</p>
+                <h2><?php echo e($homeTranslation?->car_only_section_title ?? __('website.home.sections.only_on_title')); ?></h2>
+                <p><?php echo e($homeTranslation?->car_only_section_paragraph ?? __('website.home.sections.only_on_paragraph')); ?></p>
             </div>
             <div class="car-slider owl-carousel">
-                @foreach ($popularCars as $car)
+                <?php $__currentLoopData = $popularCars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="car-item">
-                        @if ($car['brand_name'])
-                            <h6>{{ Str::upper($car['brand_name']) }}</h6>
-                        @endif
-                        <h2 class="display-1">{{ Str::upper($car['name']) }}</h2>
+                        <?php if($car['brand_name']): ?>
+                            <h6><?php echo e(Str::upper($car['brand_name'])); ?></h6>
+                        <?php endif; ?>
+                        <h2 class="display-1"><?php echo e(Str::upper($car['name'])); ?></h2>
                         <div class="car-img">
-                            <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-15.png') }}"
-                                alt="{{ $car['name'] }}" class="img-fluid">
-                            @if ($car['daily_price'])
+                            <img src="<?php echo e($car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-15.png')); ?>"
+                                alt="<?php echo e($car['name']); ?>" class="img-fluid">
+                            <?php if($car['daily_price']): ?>
                                 <div class="amount-icon">
                                     <span class="day-amt">
-                                        <p>{{ $heroCopy['starting_from_label'] }}</p>
+                                        <p><?php echo e($heroCopy['starting_from_label']); ?></p>
                                         <h6>
-                                            {{ $formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null) }}
-                                            <span>{{ $heroCopy['per_day_label'] }}</span>
+                                            <?php echo e($formatCurrency($car['daily_price'], $car['currency_symbol'] ?? null)); ?>
+
+                                            <span><?php echo e($heroCopy['per_day_label']); ?></span>
                                         </h6>
                                     </span>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="spec-list">
-                            @if ($car['gear_type'])
+                            <?php if($car['gear_type']): ?>
                                 <span>
-                                    <img src="{{ asset('website/assets/img/icons/spec-01.svg') }}" alt="gear">
-                                    {{ $car['gear_type'] }}
+                                    <img src="<?php echo e(asset('website/assets/img/icons/spec-01.svg')); ?>" alt="gear">
+                                    <?php echo e($car['gear_type']); ?>
+
                                 </span>
-                            @endif
-                            @if ($car['passenger_capacity'])
+                            <?php endif; ?>
+                            <?php if($car['passenger_capacity']): ?>
                                 <span>
-                                    <img src="{{ asset('website/assets/img/icons/spec-05.svg') }}" alt="persons">
-                                    {{ __('website.units.persons', ['count' => $car['passenger_capacity']]) }}
+                                    <img src="<?php echo e(asset('website/assets/img/icons/spec-05.svg')); ?>" alt="persons">
+                                    <?php echo e(__('website.units.persons', ['count' => $car['passenger_capacity']])); ?>
+
                                 </span>
-                            @endif
-                            @if ($car['year'])
+                            <?php endif; ?>
+                            <?php if($car['year']): ?>
                                 <span>
-                                    <img src="{{ asset('website/assets/img/icons/spec-03.svg') }}" alt="year">
-                                    {{ $car['year'] }}
+                                    <img src="<?php echo e(asset('website/assets/img/icons/spec-03.svg')); ?>" alt="year">
+                                    <?php echo e($car['year']); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </div>
-                        <a href="{{ $car['details_url'] }}" class="btn btn-primary">
-                            {{ __('website.common.rent_now') }}
+                        <a href="<?php echo e($car['details_url']); ?>" class="btn btn-primary">
+                            <?php echo e(__('website.common.rent_now')); ?>
+
                         </a>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </section>
-    @endif
-    {{-- /Popular Cars --}}
+    <?php endif; ?>
+    
 
     <!-- Testimonial Section -->
     <section class="testimonial-section">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
-                <h2>{{ $homeTranslation?->testimonial_section_title ?: __('website.home.testimonials.title') }}</h2>
-                <p>{{ $homeTranslation?->testimonial_section_paragraph ?: __('website.home.testimonials.paragraph') }}</p>
+                <h2><?php echo e($homeTranslation?->testimonial_section_title ?: __('website.home.testimonials.title')); ?></h2>
+                <p><?php echo e($homeTranslation?->testimonial_section_paragraph ?: __('website.home.testimonials.paragraph')); ?></p>
             </div>
 
             <div class="row row-gap-4 justify-content-center">
-                @foreach ($testimonialItems as $testimonial)
+                <?php $__currentLoopData = $testimonialItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-lg-4 col-md-6 d-flex">
                         <div class="testimonial-item testimonial-item-two flex-fill">
                             <div class="user-img">
-                                <img src="{{ $testimonial['image'] }}" class="img-fluid" alt="{{ $testimonial['name'] }}">
+                                <img src="<?php echo e($testimonial['image']); ?>" class="img-fluid" alt="<?php echo e($testimonial['name']); ?>">
                             </div>
-                            <p>{{ $testimonial['review'] }}</p>
+                            <p><?php echo e($testimonial['review']); ?></p>
                             <div class="rating">
                                 <i class="fas fa-star filled"></i>
                                 <i class="fas fa-star filled"></i>
@@ -828,36 +837,36 @@
                                 <i class="fas fa-star filled"></i>
                             </div>
                             <div class="user-info">
-                                <h6>{{ $testimonial['name'] }}</h6>
-                                <p>{{ $testimonial['location'] }}</p>
+                                <h6><?php echo e($testimonial['name']); ?></h6>
+                                <p><?php echo e($testimonial['location']); ?></p>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <div class="view-all-btn text-center aos" data-aos="fade-down">
-                <a href="{{ route('website.cars.index') }}" class="btn btn-secondary">{{ $homeTranslation?->testimonial_cta_label ?: __('website.home.actions.view_all') }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
+                <a href="<?php echo e(route('website.cars.index')); ?>" class="btn btn-secondary"><?php echo e($homeTranslation?->testimonial_cta_label ?: __('website.home.actions.view_all')); ?><i class="bx bx-right-arrow-alt ms-1"></i></a>
             </div>
 
             <div class="client-slider owl-carousel">
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-01.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-01.svg')); ?>" alt="img">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-02.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-02.svg')); ?>" alt="img">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-03.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-03.svg')); ?>" alt="img">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-04.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-04.svg')); ?>" alt="img">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-05.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-05.svg')); ?>" alt="img">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-06.svg') }}" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-06.svg')); ?>" alt="img">
                 </div>
             </div>
         </div>
@@ -868,115 +877,118 @@
     <section class="support-section">
         <div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
             <div class="slide-list d-flex">
-                @foreach ($supportItems as $supportItem)
+                <?php $__currentLoopData = $supportItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supportItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="support-item">
-                        <h2>{{ $supportItem }}</h2>
+                        <h2><?php echo e($supportItem); ?></h2>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </section>
     <!-- /Support Section -->
 
-    {{-- BLOGS --}}
+    
     <section class="blog-section-four">
         <div class="container">
-            @if ($blogs->isNotEmpty())
+            <?php if($blogs->isNotEmpty()): ?>
                 <div class="section-heading heading-four" data-aos="fade-down">
-                    <h2>{{ $homeTranslation?->blog_section_title ?? __('website.home.sections.blogs_title') }}</h2>
-                    <p>{{ $homeTranslation?->blog_section_paragraph ?? __('website.home.sections.blogs_paragraph') }}</p>
+                    <h2><?php echo e($homeTranslation?->blog_section_title ?? __('website.home.sections.blogs_title')); ?></h2>
+                    <p><?php echo e($homeTranslation?->blog_section_paragraph ?? __('website.home.sections.blogs_paragraph')); ?></p>
                 </div>
 
                 <div class="row row-gap-3 justify-content-center">
-                    @foreach ($blogs as $blog)
+                    <?php $__currentLoopData = $blogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $blog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <!-- Blog Item -->
                         <div class="col-lg-4 col-md-6 d-flex">
                             <div class="blog-item flex-fill">
-                                @if ($blog['image_path'])
+                                <?php if($blog['image_path']): ?>
                                     <div class="blog-img">
-                                        <a href="{{ $blog['url'] }}">
-                                            <img src="{{ asset('storage/' . $blog['image_path']) }}"
-                                                class="img-fluid" alt="{{ $blog['title'] }}">
+                                        <a href="<?php echo e($blog['url']); ?>">
+                                            <img src="<?php echo e(asset('storage/' . $blog['image_path'])); ?>"
+                                                class="img-fluid" alt="<?php echo e($blog['title']); ?>">
                                         </a>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="blog-content">
                                     <div class="d-flex align-center justify-content-between blog-category">
-                                        @if ($blog['category_name'] ?? null)
-                                            <a href="javascript:void(0);" class="category">{{ $blog['category_name'] }}</a>
-                                        @endif
-                                        @if ($blog['published_on'])
+                                        <?php if($blog['category_name'] ?? null): ?>
+                                            <a href="javascript:void(0);" class="category"><?php echo e($blog['category_name']); ?></a>
+                                        <?php endif; ?>
+                                        <?php if($blog['published_on']): ?>
                                             <p class="date d-inline-flex align-center">
-                                                <i class="bx bx-calendar me-1"></i>{{ $blog['published_on'] }}
+                                                <i class="bx bx-calendar me-1"></i><?php echo e($blog['published_on']); ?>
+
                                             </p>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <h5 class="title">
-                                        <a href="{{ $blog['url'] }}">{{ $blog['title'] }}</a>
+                                        <a href="<?php echo e($blog['url']); ?>"><?php echo e($blog['title']); ?></a>
                                     </h5>
                                 </div>
                             </div>
                         </div>
                         <!-- /Blog Item -->
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
 
                 <div class="view-all-btn text-center aos" data-aos="fade-down">
-                    <a href="{{ route('website.blogs.index') }}"
+                    <a href="<?php echo e(route('website.blogs.index')); ?>"
                         class="btn btn-secondary d-inline-flex align-center">
-                        {{ __('website.home.actions.view_all_blogs') }}
+                        <?php echo e(__('website.home.actions.view_all_blogs')); ?>
+
                         <i class="bx bx-right-arrow-alt ms-1"></i>
                     </a>
                 </div>
-            @endif
+            <?php endif; ?>
 
         </div>
     </section>
-    {{-- /Blogs --}}
+    
 
-    {{-- FAQ --}}
-    @if ($faqs->isNotEmpty())
+    
+    <?php if($faqs->isNotEmpty()): ?>
     <section class="faq-section-four pt-0">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
                     <div class="section-heading heading-four" data-aos="fade-down">
-                        <h2>{{ $homeTranslation?->faq_section_title ?? __('website.home.sections.faq_title') }}</h2>
-                        <p>{{ $homeTranslation?->faq_section_paragraph ?? __('website.home.sections.faq_paragraph') }}</p>
+                        <h2><?php echo e($homeTranslation?->faq_section_title ?? __('website.home.sections.faq_title')); ?></h2>
+                        <p><?php echo e($homeTranslation?->faq_section_paragraph ?? __('website.home.sections.faq_paragraph')); ?></p>
                     </div>
                     <div class="accordion faq-accordion" id="faqAccordion">
-                        @foreach ($faqs as $index => $faq)
-                            @php $faqId = 'faqItem' . $faq['id']; @endphp
+                        <?php $__currentLoopData = $faqs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $faq): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $faqId = 'faqItem' . $faq['id']; ?>
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button {{ $index > 0 ? 'collapsed' : '' }}"
+                                    <button class="accordion-button <?php echo e($index > 0 ? 'collapsed' : ''); ?>"
                                         type="button"
                                         data-bs-toggle="collapse"
-                                        data-bs-target="#{{ $faqId }}"
-                                        aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
-                                        aria-controls="{{ $faqId }}">
-                                        {{ $faq['question'] }}
+                                        data-bs-target="#<?php echo e($faqId); ?>"
+                                        aria-expanded="<?php echo e($index === 0 ? 'true' : 'false'); ?>"
+                                        aria-controls="<?php echo e($faqId); ?>">
+                                        <?php echo e($faq['question']); ?>
+
                                     </button>
                                 </h2>
-                                <div id="{{ $faqId }}"
-                                    class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                <div id="<?php echo e($faqId); ?>"
+                                    class="accordion-collapse collapse <?php echo e($index === 0 ? 'show' : ''); ?>"
                                     data-bs-parent="#faqAccordion">
                                     <div class="accordion-body">
-                                        <p>{{ $faq['answer'] }}</p>
+                                        <p><?php echo e($faq['answer']); ?></p>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    @endif
-    {{-- /FAQ --}}
+    <?php endif; ?>
+    
 
-    {{-- ALL CATEGORIES & BRANDS ACCORDION --}}
-    @if ($allCategories->isNotEmpty() || $allBrands->isNotEmpty())
+    
+    <?php if($allCategories->isNotEmpty() || $allBrands->isNotEmpty()): ?>
     <section class="categories-section">
         <div class="container">
             <div class="accordion custom-accordion" id="catalogAccordion">
@@ -985,28 +997,29 @@
                         <button class="accordion-button" type="button"
                             data-bs-toggle="collapse" data-bs-target="#catalogPanel"
                             aria-expanded="true" aria-controls="catalogPanel">
-                            {{ __('website.home.catalog.title') }}
+                            <?php echo e(__('website.home.catalog.title')); ?>
+
                         </button>
                     </h2>
                     <div id="catalogPanel" class="accordion-collapse collapse show"
                         data-bs-parent="#catalogAccordion">
                         <div class="accordion-body">
                             <div class="row row-gap-3">
-                                @php
+                                <?php
                                     $catalogItems = $allCategories->merge($allBrands);
                                     $chunks = $catalogItems->chunk(6);
-                                @endphp
-                                @foreach ($chunks as $chunk)
+                                ?>
+                                <?php $__currentLoopData = $chunks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chunk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="col-lg-2 col-md-4 col-sm-6">
                                         <ul class="category-list">
-                                            @foreach ($chunk as $item)
+                                            <?php $__currentLoopData = $chunk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <li>
-                                                    <a href="{{ $item['url'] }}">{{ $item['name'] }}</a>
+                                                    <a href="<?php echo e($item['url']); ?>"><?php echo e($item['name']); ?></a>
                                                 </li>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                     </div>
@@ -1014,7 +1027,9 @@
             </div>
         </div>
     </section>
-    @endif
-    {{-- /Catalog --}}
+    <?php endif; ?>
+    
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.website', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views\website\home.blade.php ENDPATH**/ ?>

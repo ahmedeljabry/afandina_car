@@ -1,23 +1,23 @@
-@php
+<?php
     $navbarConfig = is_array($adminNavbar ?? null) ? $adminNavbar : [];
     $sidebarLogo = $navbarConfig['logo'] ?? asset('admin/dist/logo/website_logos/logo_light.svg');
     $sidebarSmallLogo = $navbarConfig['small_logo'] ?? $sidebarLogo;
     $sidebarDarkLogo = $navbarConfig['dark_logo'] ?? $sidebarLogo;
     $brandName = $adminSiteName ?? config('app.name', 'Admin');
-@endphp
+?>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <!-- Logo -->
     <div class="sidebar-logo">
-        <a href="{{ route('admin.dashboard') }}" class="logo logo-normal">
-            <img src="{{ $sidebarLogo }}" alt="{{ $brandName }}">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="logo logo-normal">
+            <img src="<?php echo e($sidebarLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
-        <a href="{{ route('admin.dashboard') }}" class="logo-small">
-            <img src="{{ $sidebarSmallLogo }}" alt="{{ $brandName }}">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="logo-small">
+            <img src="<?php echo e($sidebarSmallLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
-        <a href="{{ route('admin.dashboard') }}" class="dark-logo">
-            <img src="{{ $sidebarDarkLogo }}" alt="{{ $brandName }}">
+        <a href="<?php echo e(route('admin.dashboard')); ?>" class="dark-logo">
+            <img src="<?php echo e($sidebarDarkLogo); ?>" alt="<?php echo e($brandName); ?>">
         </a>
     </div>
     <!-- /Logo -->
@@ -41,8 +41,8 @@
                 <li class="menu-title sidebar-section-title"><span>Main</span></li>
                 <li class="sidebar-section-group">
                     <ul>
-                        <li class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                            <a href="{{ route('admin.dashboard') }}">
+                        <li class="<?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
+                            <a href="<?php echo e(route('admin.dashboard')); ?>">
                                 <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
                             </a>
                         </li>
@@ -52,7 +52,7 @@
                 <li class="sidebar-section-group">
                     <ul>
                         <li>
-                            <a href="{{ route('admin.locations.index') }}">
+                            <a href="<?php echo e(route('admin.locations.index')); ?>">
                                 <i class="ti ti-map-pin"></i><span>Locations</span>
                             </a>
                         </li>
@@ -62,7 +62,7 @@
                 <li class="sidebar-section-group">
                     <ul>
                         <li>
-                            <a href="{{ route('admin.cars.index') }}">
+                            <a href="<?php echo e(route('admin.cars.index')); ?>">
                                 <i class="ti ti-car"></i><span>Cars</span>
                             </a>
                         </li>
@@ -72,10 +72,10 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="{{ route('admin.brands.index') }}">Brands</a></li>
-                                <li><a href="{{ route('admin.car_models.index') }}">Models</a></li>
-                                <li><a href="{{ route('admin.colors.index') }}">Colors</a></li>
-                                <li><a href="{{ route('admin.features.index') }}">Features</a></li>
+                                <li><a href="<?php echo e(route('admin.brands.index')); ?>">Brands</a></li>
+                                <li><a href="<?php echo e(route('admin.car_models.index')); ?>">Models</a></li>
+                                <li><a href="<?php echo e(route('admin.colors.index')); ?>">Colors</a></li>
+                                <li><a href="<?php echo e(route('admin.features.index')); ?>">Features</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -83,53 +83,53 @@
                 <li class="menu-title sidebar-section-title"><span>CMS</span></li>
                 <li class="sidebar-section-group">
                     <ul>
-                        <li class="submenu {{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
+                        <li class="submenu <?php echo e(request()->routeIs('admin.homes.*') ? 'active' : ''); ?>">
                             <a href="javascript:void(0);">
                                 <i class="ti ti-home"></i><span>Home</span>
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li class="{{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-general">Home Overview</a>
+                                <li class="<?php echo e(request()->routeIs('admin.homes.*') ? 'active' : ''); ?>">
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-general">Home Overview</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-hero">Hero Banner</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-hero">Hero Banner</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-features">Features</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-features">Features</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-rental">Rental &amp; Stats</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-rental">Rental &amp; Stats</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-headings">Section Headings</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-headings">Section Headings</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-testimonials">Testimonials</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-testimonials">Testimonials</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-support">Support Ticker</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-support">Support Ticker</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-shared">Shared Content</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-shared">Shared Content</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-seo">SEO</a>
+                                    <a href="<?php echo e(route('admin.homes.edit', 1)); ?>#home-section-seo">SEO</a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="{{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.pages.index') }}">
+                        <li class="<?php echo e(request()->routeIs('admin.pages.*') ? 'active' : ''); ?>">
+                            <a href="<?php echo e(route('admin.pages.index')); ?>">
                                 <i class="ti ti-file-text"></i><span>Manage Pages</span>
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('admin.abouts.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.abouts.edit', 1) }}">
+                        <li class="<?php echo e(request()->routeIs('admin.abouts.*') ? 'active' : ''); ?>">
+                            <a href="<?php echo e(route('admin.abouts.edit', 1)); ?>">
                                 <i class="ti ti-info-circle"></i><span>About Us Page</span>
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
-                            <a href="{{ route('admin.contacts.edit') }}">
+                        <li class="<?php echo e(request()->routeIs('admin.contacts.*') ? 'active' : ''); ?>">
+                            <a href="<?php echo e(route('admin.contacts.edit')); ?>">
                                 <i class="ti ti-address-book"></i><span>Contact Page</span>
                             </a>
                         </li>
@@ -139,7 +139,7 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="{{ route('admin.blogs.index') }}">All Blogs</a></li>
+                                <li><a href="<?php echo e(route('admin.blogs.index')); ?>">All Blogs</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
@@ -148,7 +148,7 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="{{ route('admin.faqs.index') }}">FAQ's</a></li>
+                                <li><a href="<?php echo e(route('admin.faqs.index')); ?>">FAQ's</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -157,7 +157,7 @@
                 <li class="sidebar-section-group">
                     <ul>
                         <li>
-                            <a href="{{ route('admin.contact-messages.index') }}" >
+                            <a href="<?php echo e(route('admin.contact-messages.index')); ?>" >
                                 <i class="ti ti-messages"></i><span>Contact Messages</span>
                             </a>
                         </li>
@@ -172,11 +172,11 @@
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li class="{{ request()->routeIs('admin.website-settings.*') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.website-settings.edit') }}">Branding</a>
+                                <li class="<?php echo e(request()->routeIs('admin.website-settings.*') ? 'active' : ''); ?>">
+                                    <a href="<?php echo e(route('admin.website-settings.edit')); ?>">Branding</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.languages.index') }}">Language</a>
+                                    <a href="<?php echo e(route('admin.languages.index')); ?>">Language</a>
                                 </li>
                             </ul>
                         </li>
@@ -187,7 +187,7 @@
                             </a>
                             <ul>
                                 <li>
-                                    <a href="{{ route('admin.currencies.index') }}">Currencies</a>
+                                    <a href="<?php echo e(route('admin.currencies.index')); ?>">Currencies</a>
                                 </li>
                             </ul>
                         </li>
@@ -198,7 +198,7 @@
                             </a>
                             <ul>
                                 <li>
-                                    <a href="{{ route('admin.sitemap') }}">Sitemap</a>
+                                    <a href="<?php echo e(route('admin.sitemap')); ?>">Sitemap</a>
                                 </li>
                             </ul>
                         </li>
@@ -209,3 +209,4 @@
     </div>
 </div>
 <!-- /Sidebar -->
+<?php /**PATH D:\afandina\resources\views\includes\admin\sidebar.blade.php ENDPATH**/ ?>

@@ -1,13 +1,11 @@
-@extends('layouts.admin_layout')
+<?php $__env->startSection('title', 'Home CMS'); ?>
 
-@section('title', 'Home CMS')
-
-@section('page-title')
+<?php $__env->startSection('page-title'); ?>
     Home CMS
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('content')
-    @php
+<?php $__env->startSection('content'); ?>
+    <?php
         $activeLanguageMap = collect($activeLanguages ?? [])->keyBy('code');
         $homeLocales = [
             ['code' => 'en', 'name' => data_get($activeLanguageMap, 'en.name', 'English')],
@@ -92,7 +90,7 @@
             ['anchor' => 'home-section-shared', 'label' => 'Shared Content'],
             ['anchor' => 'home-section-seo', 'label' => 'SEO'],
         ];
-    @endphp
+    ?>
 
     <style>
         .home-sections-nav {
@@ -132,7 +130,7 @@
         }
     </style>
 
-    @php
+    <?php
         $sections = [
             [
                 'anchor' => 'home-section-hero',
@@ -276,12 +274,12 @@
         ];
 
         $seoQuestionsByLocale = $item->seoQuestions->groupBy('locale');
-    @endphp
+    ?>
 
-    <form action="{{ route('admin.' . $modelName . '.update', $item->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        <input type="hidden" name="page_name" value="{{ old('page_name', $item->page_name) }}">
+    <form action="<?php echo e(route('admin.' . $modelName . '.update', $item->id)); ?>" method="POST" enctype="multipart/form-data">
+        <?php echo csrf_field(); ?>
+        <?php echo method_field('PUT'); ?>
+        <input type="hidden" name="page_name" value="<?php echo e(old('page_name', $item->page_name)); ?>">
 
         <div class="card card-primary card-outline shadow-sm mb-4">
             <div class="card-body">
@@ -298,9 +296,9 @@
         </div>
 
         <div class="home-sections-nav mb-4">
-            @foreach ($sectionLinks as $sectionLink)
-                <a href="#{{ $sectionLink['anchor'] }}" class="btn btn-sm btn-outline-primary">{{ $sectionLink['label'] }}</a>
-            @endforeach
+            <?php $__currentLoopData = $sectionLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sectionLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="#<?php echo e($sectionLink['anchor']); ?>" class="btn btn-sm btn-outline-primary"><?php echo e($sectionLink['label']); ?></a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
 
         <div class="card card-primary card-outline shadow-sm mb-4" id="home-section-general">
@@ -313,22 +311,36 @@
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label class="font-weight-bold">Current Hero Video</label>
-                            @if ($item->hero_header_video_path)
+                            <?php if($item->hero_header_video_path): ?>
                                 <video id="hero_video_preview" class="home-media-preview" controls>
-                                    <source src="{{ asset('storage/' . $item->hero_header_video_path) }}">
+                                    <source src="<?php echo e(asset('storage/' . $item->hero_header_video_path)); ?>">
                                 </video>
-                            @else
+                            <?php else: ?>
                                 <div class="home-media-empty" id="hero_video_empty">No hero video uploaded yet.</div>
                                 <video id="hero_video_preview" class="home-media-preview d-none" controls></video>
-                            @endif
+                            <?php endif; ?>
                             <div class="custom-file mt-3">
                                 <input type="file" name="hero_header_video_path" id="hero_header_video_path"
-                                    class="custom-file-input @error('hero_header_video_path') is-invalid @enderror"
+                                    class="custom-file-input <?php $__errorArgs = ['hero_header_video_path'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                     accept="video/*" data-preview-target="hero_video_preview" data-empty-target="hero_video_empty">
                                 <label class="custom-file-label" for="hero_header_video_path">Upload Hero Video</label>
-                                @error('hero_header_video_path')
-                                    <span class="invalid-feedback d-block">{{ $message }}</span>
-                                @enderror
+                                <?php $__errorArgs = ['hero_header_video_path'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
@@ -336,21 +348,35 @@
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label class="font-weight-bold">Current Hero Image</label>
-                            @if ($item->hero_header_image_path)
-                                <img id="hero_image_preview" src="{{ asset('storage/' . $item->hero_header_image_path) }}"
+                            <?php if($item->hero_header_image_path): ?>
+                                <img id="hero_image_preview" src="<?php echo e(asset('storage/' . $item->hero_header_image_path)); ?>"
                                     alt="Hero image preview" class="home-media-preview">
-                            @else
+                            <?php else: ?>
                                 <div class="home-media-empty" id="hero_image_empty">No hero image uploaded yet.</div>
                                 <img id="hero_image_preview" src="" alt="Hero image preview" class="home-media-preview d-none">
-                            @endif
+                            <?php endif; ?>
                             <div class="custom-file mt-3">
                                 <input type="file" name="hero_header_image_path" id="hero_header_image_path"
-                                    class="custom-file-input @error('hero_header_image_path') is-invalid @enderror"
+                                    class="custom-file-input <?php $__errorArgs = ['hero_header_image_path'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                     accept="image/*" data-preview-target="hero_image_preview" data-empty-target="hero_image_empty">
                                 <label class="custom-file-label" for="hero_header_image_path">Upload Hero Image</label>
-                                @error('hero_header_image_path')
-                                    <span class="invalid-feedback d-block">{{ $message }}</span>
-                                @enderror
+                                <?php $__errorArgs = ['hero_header_image_path'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
                     </div>
@@ -360,13 +386,27 @@
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label for="hero_type" class="font-weight-bold">Hero Media Type</label>
-                            <select name="hero_type" id="hero_type" class="form-control @error('hero_type') is-invalid @enderror">
-                                <option value="video" @selected(old('hero_type', $item->hero_type) === 'video')>Video</option>
-                                <option value="image" @selected(old('hero_type', $item->hero_type) === 'image')>Image</option>
+                            <select name="hero_type" id="hero_type" class="form-control <?php $__errorArgs = ['hero_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                <option value="video" <?php if(old('hero_type', $item->hero_type) === 'video'): echo 'selected'; endif; ?>>Video</option>
+                                <option value="image" <?php if(old('hero_type', $item->hero_type) === 'image'): echo 'selected'; endif; ?>>Image</option>
                             </select>
-                            @error('hero_type')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
-                            @enderror
+                            <?php $__errorArgs = ['hero_type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
 
@@ -375,7 +415,7 @@
                             <label for="is_active" class="font-weight-bold d-block">Status</label>
                             <div class="custom-control custom-switch mt-2">
                                 <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    class="custom-control-input" @checked((bool) old('is_active', $item->is_active))>
+                                    class="custom-control-input" <?php if((bool) old('is_active', $item->is_active)): echo 'checked'; endif; ?>>
                                 <label class="custom-control-label" for="is_active">Homepage is active</label>
                             </div>
                         </div>
@@ -384,14 +424,14 @@
             </div>
         </div>
 
-        @foreach ($sections as $section)
-            @include('pages.admin.homes.partials.section-panel', [
+        <?php $__currentLoopData = $sections; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $section): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php echo $__env->make('pages.admin.homes.partials.section-panel', [
                 'section' => $section,
                 'homeLocales' => $homeLocales,
                 'translationsByLocale' => $translationsByLocale,
                 'prefillValues' => $prefillValues,
-            ])
-        @endforeach
+            ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         <div class="card card-primary card-outline shadow-sm mb-4" id="home-section-seo">
             <div class="card-header bg-white">
@@ -400,8 +440,8 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    @foreach ($homeLocales as $locale)
-                        @php
+                    <?php $__currentLoopData = $homeLocales; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $locale): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $localeCode = $locale['code'];
                             $translation = $translationsByLocale[$localeCode] ?? null;
                             $metaKeywordsJson = $translation?->meta_keywords ?? '';
@@ -433,55 +473,97 @@
                             if (empty($seoRows)) {
                                 $seoRows = [['question' => '', 'answer' => '']];
                             }
-                        @endphp
+                        ?>
 
                         <div class="col-lg-6 d-flex">
                             <div class="border rounded p-3 mb-3 flex-fill">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h6 class="mb-0">{{ $locale['name'] }}</h6>
-                                    <span class="badge badge-secondary">{{ strtoupper($localeCode) }}</span>
+                                    <h6 class="mb-0"><?php echo e($locale['name']); ?></h6>
+                                    <span class="badge badge-secondary"><?php echo e(strtoupper($localeCode)); ?></span>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="meta_title_{{ $localeCode }}" class="font-weight-bold">Meta Title</label>
-                                    <input type="text" name="meta_title[{{ $localeCode }}]" id="meta_title_{{ $localeCode }}"
-                                        class="form-control @error('meta_title.' . $localeCode) is-invalid @enderror"
-                                        value="{{ old('meta_title.' . $localeCode, $translation?->meta_title ?? '') }}">
-                                    @error('meta_title.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                                    <label for="meta_title_<?php echo e($localeCode); ?>" class="font-weight-bold">Meta Title</label>
+                                    <input type="text" name="meta_title[<?php echo e($localeCode); ?>]" id="meta_title_<?php echo e($localeCode); ?>"
+                                        class="form-control <?php $__errorArgs = ['meta_title.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                        value="<?php echo e(old('meta_title.' . $localeCode, $translation?->meta_title ?? '')); ?>">
+                                    <?php $__errorArgs = ['meta_title.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="meta_description_{{ $localeCode }}" class="font-weight-bold">Meta Description</label>
-                                    <textarea name="meta_description[{{ $localeCode }}]" id="meta_description_{{ $localeCode }}"
-                                        class="form-control @error('meta_description.' . $localeCode) is-invalid @enderror"
-                                        rows="3">{{ old('meta_description.' . $localeCode, $translation?->meta_description ?? '') }}</textarea>
-                                    @error('meta_description.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                                    <label for="meta_description_<?php echo e($localeCode); ?>" class="font-weight-bold">Meta Description</label>
+                                    <textarea name="meta_description[<?php echo e($localeCode); ?>]" id="meta_description_<?php echo e($localeCode); ?>"
+                                        class="form-control <?php $__errorArgs = ['meta_description.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                        rows="3"><?php echo e(old('meta_description.' . $localeCode, $translation?->meta_description ?? '')); ?></textarea>
+                                    <?php $__errorArgs = ['meta_description.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="meta_keywords_{{ $localeCode }}" class="font-weight-bold">Meta Keywords</label>
-                                    <input type="text" name="meta_keywords[{{ $localeCode }}]" id="meta_keywords_{{ $localeCode }}"
-                                        class="form-control @error('meta_keywords.' . $localeCode) is-invalid @enderror"
-                                        value="{{ old('meta_keywords.' . $localeCode, $metaKeywordsValue) }}"
+                                    <label for="meta_keywords_<?php echo e($localeCode); ?>" class="font-weight-bold">Meta Keywords</label>
+                                    <input type="text" name="meta_keywords[<?php echo e($localeCode); ?>]" id="meta_keywords_<?php echo e($localeCode); ?>"
+                                        class="form-control <?php $__errorArgs = ['meta_keywords.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                        value="<?php echo e(old('meta_keywords.' . $localeCode, $metaKeywordsValue)); ?>"
                                         placeholder="keyword one, keyword two">
-                                    @error('meta_keywords.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                                    <?php $__errorArgs = ['meta_keywords.' . $localeCode];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback d-block"><?php echo e($message); ?></span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group border rounded p-3 h-100">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" name="robots_index[{{ $localeCode }}]"
-                                                    id="robots_index_{{ $localeCode }}" class="custom-control-input"
+                                                <input type="checkbox" name="robots_index[<?php echo e($localeCode); ?>]"
+                                                    id="robots_index_<?php echo e($localeCode); ?>" class="custom-control-input"
                                                     value="index"
-                                                    @checked(old('robots_index.' . $localeCode, $translation?->robots_index ?? 'index') === 'index')>
-                                                <label class="custom-control-label" for="robots_index_{{ $localeCode }}">Allow indexing</label>
+                                                    <?php if(old('robots_index.' . $localeCode, $translation?->robots_index ?? 'index') === 'index'): echo 'checked'; endif; ?>>
+                                                <label class="custom-control-label" for="robots_index_<?php echo e($localeCode); ?>">Allow indexing</label>
                                             </div>
                                         </div>
                                     </div>
@@ -489,11 +571,11 @@
                                     <div class="col-md-6">
                                         <div class="form-group border rounded p-3 h-100">
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" name="robots_follow[{{ $localeCode }}]"
-                                                    id="robots_follow_{{ $localeCode }}" class="custom-control-input"
+                                                <input type="checkbox" name="robots_follow[<?php echo e($localeCode); ?>]"
+                                                    id="robots_follow_<?php echo e($localeCode); ?>" class="custom-control-input"
                                                     value="follow"
-                                                    @checked(old('robots_follow.' . $localeCode, $translation?->robots_follow ?? 'follow') === 'follow')>
-                                                <label class="custom-control-label" for="robots_follow_{{ $localeCode }}">Allow link follow</label>
+                                                    <?php if(old('robots_follow.' . $localeCode, $translation?->robots_follow ?? 'follow') === 'follow'): echo 'checked'; endif; ?>>
+                                                <label class="custom-control-label" for="robots_follow_<?php echo e($localeCode); ?>">Allow link follow</label>
                                             </div>
                                         </div>
                                     </div>
@@ -505,31 +587,31 @@
                                         <p class="text-muted mb-0">Optional structured content for search engines.</p>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-primary add-seo-question"
-                                        data-lang="{{ $localeCode }}">Add Question</button>
+                                        data-lang="<?php echo e($localeCode); ?>">Add Question</button>
                                 </div>
 
-                                <div class="seo-questions-container" id="seo-questions-{{ $localeCode }}">
-                                    @foreach ($seoRows as $index => $seoRow)
+                                <div class="seo-questions-container" id="seo-questions-<?php echo e($localeCode); ?>">
+                                    <?php $__currentLoopData = $seoRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $seoRow): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="seo-question-group border rounded p-3 mb-3">
                                             <div class="form-group">
                                                 <label class="font-weight-bold">Question</label>
                                                 <input type="text"
-                                                    name="seo_questions[{{ $localeCode }}][{{ $index }}][question]"
+                                                    name="seo_questions[<?php echo e($localeCode); ?>][<?php echo e($index); ?>][question]"
                                                     class="form-control"
-                                                    value="{{ data_get($seoRow, 'question', '') }}">
+                                                    value="<?php echo e(data_get($seoRow, 'question', '')); ?>">
                                             </div>
                                             <div class="form-group mb-2">
                                                 <label class="font-weight-bold">Answer</label>
-                                                <textarea name="seo_questions[{{ $localeCode }}][{{ $index }}][answer]"
-                                                    class="form-control" rows="3">{{ data_get($seoRow, 'answer', '') }}</textarea>
+                                                <textarea name="seo_questions[<?php echo e($localeCode); ?>][<?php echo e($index); ?>][answer]"
+                                                    class="form-control" rows="3"><?php echo e(data_get($seoRow, 'answer', '')); ?></textarea>
                                             </div>
                                             <button type="button" class="btn btn-sm btn-outline-danger remove-seo-question">Remove</button>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
@@ -540,9 +622,9 @@
             </button>
         </div>
     </form>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         document.querySelectorAll('.custom-file-input').forEach(function (input) {
             input.addEventListener('change', function () {
@@ -623,4 +705,6 @@
             group.remove();
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin_layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views\pages\admin\homes\edit.blade.php ENDPATH**/ ?>
