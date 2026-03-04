@@ -688,13 +688,7 @@
                                                     <div class="col-md-6">
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" name="is_featured" class="custom-control-input" id="is_featured" {{ old('is_featured') ? 'checked' : '' }}>
-                                                            <label class="custom-control-label" for="is_featured">Show in Featured Cars</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type="checkbox" name="is_popular" class="custom-control-input" id="is_popular" {{ old('is_popular') ? 'checked' : '' }}>
-                                                            <label class="custom-control-label" for="is_popular">Show in Popular Cars</label>
+                                                            <label class="custom-control-label" for="is_featured">Add to Home Featured Cars Section</label>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -706,7 +700,7 @@
                                                     <div class="col-md-6">
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" name="only_on_afandina" class="custom-control-input" id="only_on_afandina" {{ old('only_on_afandina') ? 'checked' : '' }}>
-                                                            <label class="custom-control-label" for="only_on_afandina">Only On Afandina</label>
+                                                            <label class="custom-control-label" for="only_on_afandina">Add to Home Car Only Section</label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1101,7 +1095,6 @@
             context.free_delivery = $('#free_delivery').is(':checked');
             context.is_flash_sale = $('#is_flash_sale').is(':checked');
             context.is_featured = $('#is_featured').is(':checked');
-            context.is_popular = $('#is_popular').is(':checked');
             context.only_on_afandina = $('#only_on_afandina').is(':checked');
             context.crypto_payment_accepted = $('#crypto_payment_accepted').is(':checked');
 

@@ -53,11 +53,11 @@ class HomeController extends Controller
             ->get()
             ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 
-        // ── Popular / Slider Cars ─────────────────────────────────────────────
+        // ── Car Only / Slider Cars ────────────────────────────────────────────
         $popularCars = Car::query()
             ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
             ->where('is_active', true)
-            ->where('is_popular', true)
+            ->where('only_on_afandina', true)
             ->latest()
             ->take(6)
             ->get()
