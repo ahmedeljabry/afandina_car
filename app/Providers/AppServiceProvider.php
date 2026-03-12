@@ -57,6 +57,8 @@ class AppServiceProvider extends ServiceProvider
                 ->get()
                 ->map(function (Brand $brand) use ($translationFor): ?array {
                     $name = trim((string) ($translationFor($brand)?->name ?? ''));
+                    $slug = $translationFor($brand)?->slug
+                        ?: $brand->translations->firstWhere('locale', 'en')?->slug;
 
                     if ($name === '') {
                         return null;
@@ -66,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
                         'cars_count' => (int) ($brand->cars_count ?? 0),
-                        'url' => route('website.cars.index', ['brand[]' => $brand->id]),
+                        'url' => route('website.cars.brand', ['brand' => $slug ?: $brand->id]),
                     ];
                 })
                 ->filter()
@@ -84,6 +86,8 @@ class AppServiceProvider extends ServiceProvider
                 ->get()
                 ->map(function (Category $category) use ($translationFor): ?array {
                     $name = trim((string) ($translationFor($category)?->name ?? ''));
+                    $slug = $translationFor($category)?->slug
+                        ?: $category->translations->firstWhere('locale', 'en')?->slug;
 
                     if ($name === '') {
                         return null;
@@ -93,7 +97,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
                         'cars_count' => (int) ($category->cars_count ?? 0),
-                        'url' => route('website.cars.index', ['category[]' => $category->id]),
+                        'url' => route('website.cars.category', ['category' => $slug ?: $category->id]),
                     ];
                 })
                 ->filter()
@@ -139,6 +143,8 @@ class AppServiceProvider extends ServiceProvider
                 ->get()
                 ->map(function (Brand $brand) use ($translationFor): ?array {
                     $name = $translationFor($brand)?->name;
+                    $slug = $translationFor($brand)?->slug
+                        ?: $brand->translations->firstWhere('locale', 'en')?->slug;
 
                     if (blank($name)) {
                         return null;
@@ -146,7 +152,7 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => route('website.cars.index', ['brand[]' => $brand->id]),
+                        'url' => route('website.cars.brand', ['brand' => $slug ?: $brand->id]),
                     ];
                 })
                 ->filter()
@@ -160,6 +166,8 @@ class AppServiceProvider extends ServiceProvider
                 ->get()
                 ->map(function (Category $category) use ($translationFor): ?array {
                     $name = $translationFor($category)?->name;
+                    $slug = $translationFor($category)?->slug
+                        ?: $category->translations->firstWhere('locale', 'en')?->slug;
 
                     if (blank($name)) {
                         return null;
@@ -167,7 +175,7 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => route('website.cars.index', ['category[]' => $category->id]),
+                        'url' => route('website.cars.category', ['category' => $slug ?: $category->id]),
                     ];
                 })
                 ->filter()

@@ -28,9 +28,36 @@ class CarController extends Controller
             ->values()
             ->all();
 
-        $categoryIds = collect((array) $request->input('category', []))
+        $categoryFilters = collect((array) $request->input('category', []))
+            ->map(fn($value) => is_string($value) ? trim($value) : (string) $value)
             ->filter(fn($value) => filled($value))
+            ->values();
+
+        $categoryIdsFromQuery = $categoryFilters
+            ->filter(fn($value) => ctype_digit((string) $value))
             ->map(fn($value) => (int) $value)
+            ->filter(fn($value) => $value > 0)
+            ->values();
+
+        $categorySlugs = $categoryFilters
+            ->filter(fn($value) => !ctype_digit((string) $value))
+            ->map(fn($value) => (string) $value)
+            ->values();
+
+        $categoryIdsFromSlugs = collect();
+        if ($categorySlugs->isNotEmpty()) {
+            $categoryIdsFromSlugs = Category::query()
+                ->whereHas('translations', function ($query) use ($categorySlugs) {
+                    $query->whereIn('slug', $categorySlugs);
+                })
+                ->pluck('id');
+        }
+
+        $categoryIds = $categoryIdsFromQuery
+            ->merge($categoryIdsFromSlugs)
+            ->map(fn($value) => (int) $value)
+            ->filter(fn($value) => $value > 0)
+            ->unique()
             ->values()
             ->all();
 
@@ -187,7 +214,100 @@ class CarController extends Controller
             'per_page' => $perPage,
         ];
 
-        return view('website.cars', compact('cars', 'filters'));
+        $contact = Contact::query()
+            ->where('is_active', true)
+            ->latest('id')
+            ->first()
+            ?? Contact::query()->latest('id')->first();
+
+        return view('website.cars', compact('cars', 'filters', 'contact'));
+    }
+
+    public function brand(Request $request, string $brand)
+    {
+        $locale = app()->getLocale() ?? 'en';
+        $requestedIdentifier = trim(urldecode($brand));
+        $brandModel = $this->resolveBrand($requestedIdentifier, $locale);
+
+        if (!$brandModel || !$brandModel->is_active) {
+            abort(404);
+        }
+
+        $canonicalKey = $this->brandRouteKey($brandModel, $locale);
+        if ($requestedIdentifier !== $canonicalKey) {
+            return redirect()->route('website.cars.brand', ['brand' => $canonicalKey]);
+        }
+
+        $brandName = $this->translationFor($brandModel, $locale)?->name
+            ?? $this->translationFor($brandModel, 'en')?->name
+            ?? __('website.common.brand');
+        $brandTranslation = $this->translationFor($brandModel, $locale)
+            ?? $this->translationFor($brandModel, 'en');
+        $brandContentTitle = filled($brandTranslation?->title)
+            ? $brandTranslation->title
+            : (filled($brandTranslation?->meta_title) ? $brandTranslation->meta_title : $brandName);
+        $brandContentDescription = filled($brandTranslation?->description)
+            ? $brandTranslation->description
+            : ($brandTranslation?->meta_description ?? '');
+        $brandContentArticle = filled($brandTranslation?->article)
+            ? $brandTranslation->article
+            : '';
+
+        $listingRequest = $this->buildScopedListingRequest($request, [
+            'brand' => [(int) $brandModel->id],
+        ]);
+
+        return $this->index($listingRequest)->with('listingContext', [
+            'show_filters' => false,
+            'action_url' => route('website.cars.brand', ['brand' => $canonicalKey]),
+            'reset_url' => route('website.cars.brand', ['brand' => $canonicalKey]),
+            'page_title' => $brandName,
+            'meta_title' => $brandName . ' - ' . __('website.nav.all_cars'),
+            'breadcrumb_parent_label' => __('website.nav.brands'),
+            'breadcrumb_parent_url' => 'javascript:void(0);',
+            'content_title' => $brandContentTitle,
+            'content_description' => $brandContentDescription,
+            'content_article' => $brandContentArticle,
+        ]);
+    }
+
+    public function category(Request $request, string $category)
+    {
+        $locale = app()->getLocale() ?? 'en';
+        $requestedIdentifier = trim(urldecode($category));
+        $categoryModel = $this->resolveCategory($requestedIdentifier, $locale);
+
+        if (!$categoryModel || !$categoryModel->is_active) {
+            abort(404);
+        }
+
+        $canonicalKey = $this->categoryRouteKey($categoryModel, $locale);
+        if ($requestedIdentifier !== $canonicalKey) {
+            return redirect()->route('website.cars.category', ['category' => $canonicalKey]);
+        }
+
+        $categoryName = $this->translationFor($categoryModel, $locale)?->name
+            ?? $this->translationFor($categoryModel, 'en')?->name
+            ?? __('website.common.category');
+        $categoryTranslation = $this->translationFor($categoryModel, $locale)
+            ?? $this->translationFor($categoryModel, 'en');
+
+        $listingRequest = $this->buildScopedListingRequest($request, [
+            'category' => [(int) $categoryModel->id],
+        ]);
+
+        return $this->index($listingRequest)->with('listingContext', [
+            'show_filters' => false,
+            'action_url' => route('website.cars.category', ['category' => $canonicalKey]),
+            'reset_url' => route('website.cars.category', ['category' => $canonicalKey]),
+            'page_title' => $categoryName,
+            'meta_title' => $categoryName . ' - ' . __('website.nav.all_cars'),
+            'breadcrumb_parent_label' => __('website.nav.categories'),
+            'breadcrumb_parent_url' => 'javascript:void(0);',
+            'content_title' => $categoryTranslation?->title,
+            'content_description' => $categoryTranslation?->description,
+            'content_article' => $categoryTranslation?->article,
+        ]);
     }
 
     public function show(string $car)
@@ -430,6 +550,7 @@ class CarController extends Controller
 
         return [
             'id' => $car->id,
+            'slug' => $this->carRouteKey($car, $locale),
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'description' => $carTranslation?->description,
             'long_description' => $carTranslation?->long_description,
@@ -496,5 +617,116 @@ class CarController extends Controller
         }
 
         return $model->translations->firstWhere('locale', $locale) ?? $model->translations->first();
+    }
+
+    private function buildScopedListingRequest(Request $request, array $forcedFilters): Request
+    {
+        $query = [
+            'sort' => $request->query('sort', 'newest'),
+            'per_page' => $request->query('per_page', 9),
+            'page' => $request->query('page'),
+        ];
+
+        foreach ($forcedFilters as $key => $value) {
+            $query[$key] = $value;
+        }
+
+        return $request->duplicate($query);
+    }
+
+    private function resolveBrand(string $identifier, string $locale): ?Brand
+    {
+        $brand = Brand::query()
+            ->with('translations')
+            ->whereHas('translations', function ($query) use ($identifier, $locale) {
+                $query->where('locale', $locale)
+                    ->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($brand) {
+            return $brand;
+        }
+
+        $brand = Brand::query()
+            ->with('translations')
+            ->whereHas('translations', function ($query) use ($identifier) {
+                $query->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($brand) {
+            return $brand;
+        }
+
+        if (ctype_digit($identifier)) {
+            return Brand::query()
+                ->with('translations')
+                ->find((int) $identifier);
+        }
+
+        return null;
+    }
+
+    private function resolveCategory(string $identifier, string $locale): ?Category
+    {
+        $category = Category::query()
+            ->with('translations')
+            ->whereHas('translations', function ($query) use ($identifier, $locale) {
+                $query->where('locale', $locale)
+                    ->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($category) {
+            return $category;
+        }
+
+        $category = Category::query()
+            ->with('translations')
+            ->whereHas('translations', function ($query) use ($identifier) {
+                $query->where('slug', $identifier);
+            })
+            ->first();
+
+        if ($category) {
+            return $category;
+        }
+
+        if (ctype_digit($identifier)) {
+            return Category::query()
+                ->with('translations')
+                ->find((int) $identifier);
+        }
+
+        return null;
+    }
+
+    private function brandRouteKey(Brand $brand, string $locale): string
+    {
+        $translations = $brand->relationLoaded('translations')
+            ? $brand->translations
+            : $brand->translations()->get();
+
+        return (string) (
+            $translations->firstWhere('locale', $locale)?->slug
+            ?? $translations->firstWhere('locale', 'en')?->slug
+            ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
+            ?? $brand->id
+        );
+    }
+
+    private function categoryRouteKey(Category $category, string $locale): string
+    {
+        $translations = $category->relationLoaded('translations')
+            ? $category->translations
+            : $category->translations()->get();
+
+        return (string) (
+            $translations->firstWhere('locale', $locale)?->slug
+            ?? $translations->firstWhere('locale', 'en')?->slug
+            ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
+            ?? $category->id
+        );
     }
 }

@@ -38,8 +38,8 @@
 
         @media (max-width: 767.98px) {
             .home-category-section .home-category-col {
-                flex: 0 0 50%;
-                max-width: 50%;
+                flex: 0 0 33.3333%;
+                max-width: 33.3333%;
             }
         }
 
@@ -204,6 +204,28 @@
             gap: 8px;
         }
 
+        .home-card-badges .featured-text {
+            display: inline-block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .car-section .home-featured-action-group .listing-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 46px;
+            white-space: nowrap;
+        }
+
+        .car-section .home-featured-action-group .listing-action-btn.disabled {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
         .home-no-deposit-label {
             display: inline-block;
             font-size: 12px;
@@ -245,8 +267,14 @@
 
         @media (max-width: 575.98px) {
             .home-category-section .home-category-col {
-                flex: 0 0 100%;
-                max-width: 100%;
+                flex: 0 0 33.3333%;
+                max-width: 33.3333%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .banner-section-four .hero-media-column {
+                display: none;
             }
         }
     </style>
@@ -274,6 +302,13 @@
     };
 
     $noDepositLabel = Str::title(str_replace('_', ' ', __('no_deposit')));
+    $phoneValue = $contact?->phone ?: $contact?->alternative_phone;
+    $phoneHref = filled($phoneValue) ? 'tel:' . preg_replace('/\s+/', '', $phoneValue) : 'javascript:void(0);';
+    $whatsAppHref = filled($contact?->whatsapp)
+        ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
+            ? $contact->whatsapp
+            : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
+        : 'javascript:void(0);';
 
     $testimonialItems = [
         [
@@ -435,7 +470,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-7">
+                    <div class="col-lg-7 hero-media-column">
                         <div class="banner-image">
                             <div class="banner-img" data-aos="fade-down">
                                 <div class="amount-icon">
@@ -599,9 +634,6 @@
 
                                 <div class="fav-item">
                                     <div class="home-card-badges">
-                                        @if ($car['brand_name'])
-                                            <span class="featured-text">{{ $car['brand_name'] }}</span>
-                                        @endif
                                         <span class="home-no-deposit-label" aria-label="{{ $noDepositLabel }}">{{ $noDepositLabel }}</span>
                                     </div>
                                 </div>
@@ -650,6 +682,23 @@
                                             </li>
                                         @endif
                                     </ul>
+                                </div>
+                                <div class="listing-button d-flex gap-2 home-featured-action-group">
+                                    <a href="{{ $whatsAppHref }}"
+                                       class="btn btn-order flex-fill listing-action-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
+                                       @if ($whatsAppHref !== 'javascript:void(0);')
+                                           target="_blank" rel="noopener noreferrer"
+                                       @endif
+                                       aria-disabled="{{ $whatsAppHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                        <span>{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                    </a>
+                                    <a href="{{ $phoneHref }}"
+                                       class="btn btn-outline-dark flex-fill listing-action-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
+                                       aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <span>{{ __('website.car_details.sidebar.call_us') }}</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>

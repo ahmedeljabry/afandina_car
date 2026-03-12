@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Models\Brand;
 use App\Models\Car;
 use App\Models\Category;
+use App\Models\Contact;
 use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\Home;
@@ -34,14 +35,20 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->withCount(['cars as cars_count' => fn($q) => $q->where('is_active', true)])
             ->get()
-            ->map(fn(Category $category) => [
-                'id'         => $category->id,
-                'name'       => $this->translationFor($category, $locale)?->name ?? '',
-                'slug'       => $this->translationFor($category, $locale)?->slug,
-                'image_path' => $category->image_path,
-                'cars_count' => (int) $category->cars_count,
-                'url'        => route('website.cars.index', ['category[]' => $category->id]),
-            ]);
+            ->map(function (Category $category) use ($locale) {
+                $translation = $this->translationFor($category, $locale);
+                $categorySlug = $translation?->slug
+                    ?: $this->translationFor($category, 'en')?->slug;
+
+                return [
+                    'id'         => $category->id,
+                    'name'       => $translation?->name ?? '',
+                    'slug'       => $categorySlug,
+                    'image_path' => $category->image_path,
+                    'cars_count' => (int) $category->cars_count,
+                    'url'        => route('website.cars.category', ['category' => $categorySlug ?: $category->id]),
+                ];
+            });
 
         // ── Featured Cars ─────────────────────────────────────────────────────
         $featuredCars = Car::query()
@@ -70,11 +77,16 @@ class HomeController extends Controller
             ->with('translations')
             ->where('is_active', true)
             ->get()
-            ->map(fn(Brand $brand) => [
-                'name'      => $this->translationFor($brand, $locale)?->name ?? '',
-                'logo_path' => $brand->logo_path,
-                'url'       => route('website.cars.index', ['brand[]' => $brand->id]),
-            ]);
+            ->map(function (Brand $brand) use ($locale) {
+                $brandSlug = $this->translationFor($brand, $locale)?->slug
+                    ?: $this->translationFor($brand, 'en')?->slug;
+
+                return [
+                    'name'      => $this->translationFor($brand, $locale)?->name ?? '',
+                    'logo_path' => $brand->logo_path,
+                    'url'       => route('website.cars.brand', ['brand' => $brandSlug ?: $brand->id]),
+                ];
+            });
 
         // ── Blogs ─────────────────────────────────────────────────────────────
         $blogs = Blog::query()
@@ -119,19 +131,35 @@ class HomeController extends Controller
             ->with('translations')
             ->where('is_active', true)
             ->get()
-            ->map(fn(Category $c) => [
-                'name' => $this->translationFor($c, $locale)?->name ?? '',
-                'url'  => route('website.cars.index', ['category[]' => $c->id]),
-            ]);
+            ->map(function (Category $category) use ($locale) {
+                $categorySlug = $this->translationFor($category, $locale)?->slug
+                    ?: $this->translationFor($category, 'en')?->slug;
+
+                return [
+                    'name' => $this->translationFor($category, $locale)?->name ?? '',
+                    'url'  => route('website.cars.category', ['category' => $categorySlug ?: $category->id]),
+                ];
+            });
 
         $allBrands = Brand::query()
             ->with('translations')
             ->where('is_active', true)
             ->get()
-            ->map(fn(Brand $b) => [
-                'name' => $this->translationFor($b, $locale)?->name ?? '',
-                'url'  => route('website.cars.index', ['brand[]' => $b->id]),
-            ]);
+            ->map(function (Brand $brand) use ($locale) {
+                $brandSlug = $this->translationFor($brand, $locale)?->slug
+                    ?: $this->translationFor($brand, 'en')?->slug;
+
+                return [
+                    'name' => $this->translationFor($brand, $locale)?->name ?? '',
+                    'url'  => route('website.cars.brand', ['brand' => $brandSlug ?: $brand->id]),
+                ];
+            });
+
+        $contact = Contact::query()
+            ->where('is_active', true)
+            ->latest('id')
+            ->first()
+            ?? Contact::query()->latest('id')->first();
 
         return view('website.home', compact(
             'home',
@@ -146,6 +174,7 @@ class HomeController extends Controller
             'currencySymbol',
             'allCategories',
             'allBrands',
+            'contact',
         ));
     }
 

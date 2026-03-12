@@ -28,6 +28,16 @@
 
             return ($currencyLabel !== '' ? $currencyLabel . ' ' : '') . number_format((float) $price);
         };
+        $formatCarCardTitle = static function (?string $name): string {
+            $fullName = trim((string) $name);
+            $words = preg_split('/\s+/', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+            if (count($words) <= 1) {
+                return $fullName;
+            }
+
+            return implode(' ', array_slice($words, 1, 4));
+        };
         $formatAmount = static fn ($price): string => number_format((float) $price);
 
         $carName = $carDetails['name'] ?? __('website.common.car');
@@ -141,7 +151,8 @@
         }
 
         $sidebarTitle = trim($carName . (filled($carDetails['year'] ?? null) ? ' - ' . $carDetails['year'] : ''));
-        $sidebarDescription = Str::limit($descriptionParagraphs->first(), 200);
+        $sidebarDescription = $descriptionParagraphs->first();
+        $carSlug = $carDetails['slug'] ?? __('website.car_details.not_available');
         $sidebarPassengerValue = isset($carDetails['passenger_capacity'])
             ? (string) $carDetails['passenger_capacity']
             : __('website.car_details.not_available');
@@ -239,55 +250,6 @@
                 : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
             : 'javascript:void(0);';
 
-        $reviewItems = collect([
-            [
-                'name' => $contact?->name ?: $brandName,
-                'date' => $listedOn,
-                'content' => trim(strip_tags((string) ($carDetails['description'] ?? ''))),
-                'image' => $assetUrl('img/profiles/avatar-01.jpg'),
-            ],
-            [
-                'name' => $brandName,
-                'date' => $listedOn,
-                'content' => trim(strip_tags((string) ($carDetails['long_description'] ?? ''))),
-                'image' => $assetUrl('img/profiles/avatar-02.jpg'),
-            ],
-            [
-                'name' => $categoryName,
-                'date' => $listedOn,
-                'content' => trim(strip_tags((string) ($contact?->additional_info ?? ''))),
-                'image' => $assetUrl('img/profiles/avatar-03.jpg'),
-            ],
-        ])->map(function ($review) {
-            $review['content'] = filled($review['content'])
-                ? Str::limit($review['content'], 260)
-                : __('website.car_details.not_available');
-
-            return $review;
-        })->filter(fn ($review) => filled($review['name']))->values();
-
-        if ($reviewItems->isEmpty()) {
-            $reviewItems = collect([
-                [
-                    'name' => $carName,
-                    'date' => $listedOn,
-                    'content' => __('website.car_details.not_available'),
-                    'image' => $assetUrl('img/profiles/avatar-01.jpg'),
-                ],
-            ]);
-        }
-
-        $ratingBreakdown = collect([
-            ['label' => 'Service', 'score' => ($carDetails['free_delivery'] ?? false) ? 4.8 : 4.2],
-            ['label' => 'Location', 'score' => filled($fullAddress) ? 4.7 : 4.0],
-            ['label' => 'Value for Money', 'score' => filled($carDetails['discount_rate'] ?? null) ? 4.9 : 4.3],
-            ['label' => 'Facilities', 'score' => min(5, max(3.8, 4 + ($features->count() / 10)))],
-            ['label' => 'Cleanliness', 'score' => ($carDetails['is_featured'] ?? false) ? 4.9 : 4.4],
-        ]);
-
-        $reviewScore = round((float) $ratingBreakdown->avg('score'), 1);
-        $reviewCount = $reviewItems->count();
-
         $relatedItems = collect($relatedCars ?? [])->values();
         if ($relatedItems->isEmpty()) {
             $relatedItems = collect([
@@ -299,7 +261,9 @@
                     'year' => $yearValue,
                     'passenger_capacity' => $carDetails['passenger_capacity'] ?? null,
                     'daily_mileage_included' => $carDetails['daily_mileage_included'] ?? null,
+                    'door_count' => $carDetails['door_count'] ?? null,
                     'daily_price' => $dailyPrice,
+                    'monthly_price' => $monthlyPrice,
                     'currency_symbol' => $currencySymbol,
                     'image_path' => $carDetails['image_path'] ?? null,
                     'is_featured' => (bool) ($carDetails['is_featured'] ?? false),
@@ -308,6 +272,87 @@
             ]);
         }
     @endphp
+    <style>
+        .details-car-grid .related-cars-card .related-card-title a {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-car-grid .related-cars-card .listing-details-group ul li {
+            min-width: 0;
+        }
+
+        .details-car-grid .related-cars-card .listing-details-group ul li p {
+            min-width: 0;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .listing-action-btn {
+            flex: 1 1 0;
+            width: 0;
+            min-width: 0;
+            height: 48px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            padding: 0 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .listing-action-btn .action-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn {
+            background: #121212;
+            border-color: #121212;
+            color: #fff;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:hover,
+        .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:focus {
+            background: #252525;
+            border-color: #252525;
+            color: #fff;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .call-btn {
+            background: #fff;
+            border: 1px solid #121212;
+            color: #121212;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .call-btn:hover,
+        .details-car-grid .related-cars-card .listing-action-group .call-btn:focus {
+            background: #121212;
+            color: #fff;
+        }
+
+        .details-car-grid .related-cars-card .listing-action-group .disabled {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        @media (max-width: 575.98px) {
+            .details-car-grid .related-cars-card .listing-action-group .listing-action-btn {
+                height: 46px;
+                font-size: 14px;
+                padding: 0 10px;
+            }
+        }
+    </style>
 
         <!-- Detail Page Head-->
         <section class="product-detail-head">
@@ -327,14 +372,6 @@
                                 <li>
                                     <span class="year">{{ $yearValue }}</span>
                                 </li>
-                                <li class="ratings">
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <i class="fas fa-star filled"></i>
-                                    <span class="d-inline-block average-list-rating">({{ number_format($reviewScore, 1) }})</span>
-                                </li>
                             </ul>
                             <div class="camaro-info">
                                 <h3>{{ $carName }}</h3>
@@ -350,6 +387,10 @@
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-car'></i>
                                         <span>{{ __('website.car_details.labels.listed_on') }} : {{ $listedOn }}</span>
+                                    </div>
+                                    <div class="camaro-location-inner">
+                                        <i class='bx bx-purchase-tag-alt'></i>
+                                        <span>Slug : {{ $carSlug }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -371,10 +412,6 @@
                     <div class="col-lg-8">
                         <div class="detail-product">
                             <div class="pro-info">
-                                <div class="pro-badge">
-                                    <span class="badge-km"><i class="fa-solid fa-person-walking"></i>{{ $statusLabel }}</span>
-                                    <a href="javascript:void(0);" class="fav-icon"><i class="fa-regular fa-heart"></i></a>
-                                </div>
                                 <ul>
                                     <li class="del-airport"><i class="fa-solid fa-check"></i>{{ __('website.car_details.highlights.free_delivery') }} : {{ ($carDetails['free_delivery'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no') }}</li>
                                     <li class="del-home"><i class="fa-solid fa-check"></i>{{ __('website.car_details.highlights.insurance_included') }} : {{ ($carDetails['insurance_included'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no') }}</li>
@@ -520,32 +557,6 @@
                         </div>
                         <!-- /Tariff -->
 
-                        <!-- Gallery -->
-                        <div class="review-sec mb-0 pb-0">
-                            <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.gallery') }}</h4>
-                            </div>
-                            <div class="gallery-list">
-                                <ul>
-                                    @foreach ($galleryImages->take(6) as $galleryImage)
-                                        @php
-                                            $galleryBig = $storageUrl($galleryImage['file_path'] ?? null, $mainImage);
-                                            $galleryThumb = $storageUrl($galleryImage['thumbnail_path'] ?? ($galleryImage['file_path'] ?? null), $mainImage);
-                                            $galleryAlt = $galleryImage['alt'] ?? $carName;
-                                        @endphp
-                                        <li>
-                                            <div class="gallery-widget">
-                                                <a href="{{ $galleryBig }}" data-fancybox="gallery1">
-                                                    <img class="img-fluid" alt="{{ $galleryAlt }}" src="{{ $galleryThumb }}">
-                                                </a>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                        <!-- /Gallery -->
-
                     </div>
                     <div class="col-lg-4 theiaStickySidebar">
                         <aside class="car-details-sidebar-card">
@@ -638,38 +649,42 @@
                                     @php
                                         $relatedImage = $storageUrl($relatedItem['image_path'] ?? null, $assetUrl('img/cars/car-03.jpg'));
                                         $relatedName = $relatedItem['name'] ?? __('website.common.car');
+                                        $relatedCardTitle = $formatCarCardTitle($relatedName);
                                         $relatedBrand = $relatedItem['brand_name'] ?? __('website.common.brand');
+                                        $relatedCategory = $relatedItem['category_name'] ?? __('website.common.category');
                                         $relatedGear = $relatedItem['gear_type_name'] ?? __('website.car_details.not_available');
                                         $relatedYear = $relatedItem['year'] ?? __('website.car_details.not_available');
                                         $relatedPassenger = isset($relatedItem['passenger_capacity']) ? __('website.units.persons', ['count' => $relatedItem['passenger_capacity']]) : __('website.car_details.not_available');
+                                        $relatedDoors = isset($relatedItem['door_count']) ? __('website.units.doors', ['count' => $relatedItem['door_count']]) : __('website.car_details.not_available');
                                         $relatedMileage = isset($relatedItem['daily_mileage_included']) ? __('website.units.km_value', ['count' => $relatedItem['daily_mileage_included']]) : __('website.car_details.not_available');
-                                        $relatedPrice = $relatedItem['daily_price'] ?? null;
+                                        $relatedDailyPrice = $relatedItem['daily_price'] ?? null;
+                                        $relatedMonthlyPrice = $relatedItem['monthly_price'] ?? null;
                                         $relatedCurrency = $relatedItem['currency_symbol'] ?? $currencySymbol;
                                         $relatedUrl = $relatedItem['details_url'] ?? route('website.cars.index');
                                     @endphp
                                         <!-- owl carousel item -->
                                         <div class="rental-car-item">
-                                            <div class="listing-item pb-0">
+                                            <div class="listing-item related-cars-card pb-0">
                                                 <div class="listing-img">
                                                     <a href="{{ $relatedUrl }}">
                                                         <img src="{{ $relatedImage }}" class="img-fluid" alt="{{ $relatedName }}">
                                                     </a>
-                                                    <span class="featured-text">{{ $relatedBrand }}</span>
+                                                    <span class="featured-text d-inline-block"
+                                                          style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                        {{ $relatedBrand }}
+                                                    </span>
                                                 </div>
                                                 <div class="listing-content">
                                                     <div class="listing-features d-flex align-items-end justify-content-between">
                                                         <div class="list-rating">
-                                                            <h3 class="listing-title">
-                                                                <a href="{{ $relatedUrl }}">{{ $relatedName }}</a>
+                                                            <h3 class="listing-title related-card-title mb-0">
+                                                                <a href="{{ $relatedUrl }}" title="{{ $relatedName }}">{{ $relatedCardTitle }}</a>
                                                             </h3>
-                                                            <div class="list-rating">
-                                                                <i class="fas fa-star filled"></i>
-                                                                <i class="fas fa-star filled"></i>
-                                                                <i class="fas fa-star filled"></i>
-                                                                <i class="fas fa-star filled"></i>
-                                                                <i class="fas fa-star"></i>
-                                                                <span>({{ number_format($reviewScore, 1) }}) {{ $reviewCount }} Reviews</span>
-                                                            </div>
+                                                        </div>
+                                                        <div class="list-km">
+                                                            <span class="km-count">
+                                                                <img src="{{ $assetUrl('img/icons/map-pin.svg') }}" alt="Year">{{ $relatedYear }}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div class="listing-details-group">
@@ -684,13 +699,13 @@
                                                             </li>
                                                             <li>
                                                                 <span><img src="{{ $assetUrl('img/icons/car-parts-03.svg') }}" alt="Category"></span>
-                                                                <p>{{ $relatedItem['category_name'] ?? __('website.common.category') }}</p>
+                                                                <p>{{ $relatedCategory }}</p>
                                                             </li>
                                                         </ul>
                                                         <ul>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}" alt="Brand"></span>
-                                                                <p>{{ $relatedBrand }}</p>
+                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}" alt="Doors"></span>
+                                                                <p>{{ $relatedDoors }}</p>
                                                             </li>
                                                             <li>
                                                                 <span><img src="{{ $assetUrl('img/icons/car-parts-05.svg') }}" alt="Year"></span>
@@ -702,16 +717,57 @@
                                                             </li>
                                                         </ul>
                                                     </div>
-                                                    <div class="listing-location-details">
-                                                        <div class="listing-price">
-                                                            <span><i class="feather-map-pin"></i></span>{{ filled($fullAddress) ? $fullAddress : __('website.car_details.not_available') }}
-                                                        </div>
-                                                        <div class="listing-price">
-                                                            <h6>{{ $formatPrice($relatedPrice, $relatedCurrency) }} <span>{{ __('website.units.per_day') }}</span></h6>
+                                                    <div class="listing-price-section"
+                                                         style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                                                        <div class="d-flex justify-content-between align-items-center gap-2">
+                                                            <div class="price-box text-center flex-fill"
+                                                                 style="background: #fff; border-radius: 6px; padding: 10px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                                                <div style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
+                                                                    <i class="feather-sun" style="font-size: 12px;"></i>
+                                                                    {{ __('website.units.per_day') }}
+                                                                </div>
+                                                                @if($relatedDailyPrice)
+                                                                    <div style="font-size: 16px; font-weight: 700; color: #f66962;">
+                                                                        {{ $formatPrice($relatedDailyPrice, $relatedCurrency) }}
+                                                                    </div>
+                                                                @else
+                                                                    <div style="font-size: 13px; color: #6c757d;">
+                                                                        {{ __('website.common.call_for_price') }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <div class="price-box text-center flex-fill"
+                                                                 style="background: #fff; border-radius: 6px; padding: 10px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                                                                <div style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
+                                                                    <i class="feather-calendar" style="font-size: 12px;"></i>
+                                                                    {{ __('website.units.per_month') }}
+                                                                </div>
+                                                                @if($relatedMonthlyPrice)
+                                                                    <div style="font-size: 16px; font-weight: 700; color: #127384;">
+                                                                        {{ $formatPrice($relatedMonthlyPrice, $relatedCurrency) }}
+                                                                    </div>
+                                                                @else
+                                                                    <div style="font-size: 13px; color: #6c757d;">-</div>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div class="listing-button">
-                                                        <a href="{{ $relatedUrl }}" class="btn btn-order"><span><i class="feather-calendar me-2"></i></span>{{ __('website.common.rent_now') }}</a>
+                                                    <div class="listing-button d-flex gap-2 listing-action-group">
+                                                        <a href="{{ $whatsAppHref }}"
+                                                           class="btn listing-action-btn whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
+                                                           @if ($whatsAppHref !== 'javascript:void(0);')
+                                                               target="_blank" rel="noopener noreferrer"
+                                                           @endif
+                                                           aria-disabled="{{ $whatsAppHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                                            <i class="fa-brands fa-whatsapp"></i>
+                                                            <span class="action-label">{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                                        </a>
+                                                        <a href="{{ $phoneHref }}"
+                                                           class="btn listing-action-btn call-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
+                                                           aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                                            <i class="fa-solid fa-phone"></i>
+                                                            <span class="action-label">{{ __('website.car_details.sidebar.call_us') }}</span>
+                                                        </a>
                                                     </div>
                                                 </div>
                                                 @if (($relatedItem['is_featured'] ?? false) === true)

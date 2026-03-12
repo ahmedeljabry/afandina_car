@@ -29,8 +29,10 @@ Route::group(
         Route::get('/about-us', [WebsiteAboutController::class, 'index'])->name('website.about.index');
         Route::get('/contact-us', [WebsiteContactController::class, 'index'])->name('website.contact.index');
         Route::post('/contact-us', [WebsiteContactController::class, 'store'])->name('website.contact.store');
-        Route::get('/cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
-        Route::get('/cars/{car}', [WebsiteCarController::class, 'show'])->name('website.cars.show');
+        Route::get('/all-cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
+        Route::get('/brand/{brand}', [WebsiteCarController::class, 'brand'])->name('website.cars.brand');
+        Route::get('/category/{category}', [WebsiteCarController::class, 'category'])->name('website.cars.category');
+        Route::get('/product/{car}', [WebsiteCarController::class, 'show'])->name('website.cars.show');
         Route::get('/blogs', [WebsiteBlogController::class, 'index'])->name('website.blogs.index');
         Route::get('/blogs/{blog}', [WebsiteBlogController::class, 'show'])->name('website.blogs.show');
     }
