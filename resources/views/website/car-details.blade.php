@@ -72,7 +72,9 @@
         $descriptionParagraphs = collect([
             trim(strip_tags((string) ($carDetails['description'] ?? ''))),
             trim(strip_tags((string) ($carDetails['long_description'] ?? ''))),
-        ])->filter(fn ($value) => filled($value))->values();
+        ])->filter(fn ($value) => filled($value))
+            ->unique()
+            ->values();
 
         if ($descriptionParagraphs->isEmpty()) {
             $descriptionParagraphs = collect([__('website.car_details.not_available')]);
