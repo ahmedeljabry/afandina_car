@@ -661,28 +661,6 @@
                                     @endif
                                 </div>
 
-                                <div class="listing-details-group">
-                                    <ul>
-                                        @if ($car['gear_type'])
-                                            <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-01.svg') }}" alt="gear">
-                                                <p>{{ $car['gear_type'] }}</p>
-                                            </li>
-                                        @endif
-                                        @if ($car['passenger_capacity'])
-                                            <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="passengers">
-                                                <p>{{ __('website.units.persons', ['count' => $car['passenger_capacity']]) }}</p>
-                                            </li>
-                                        @endif
-                                        @if ($car['year'])
-                                            <li>
-                                                <img src="{{ asset('website/assets/img/icons/car-parts-05.svg') }}" alt="year">
-                                                <p>{{ $car['year'] }}</p>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
                                 <div class="listing-button d-flex gap-2 home-featured-action-group">
                                     <a href="{{ $whatsAppHref }}"
                                        class="btn btn-order flex-fill listing-action-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
