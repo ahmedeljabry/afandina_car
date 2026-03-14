@@ -288,22 +288,24 @@ class GenericController extends Controller
             if ($langCode === 'en' && $this->slugField) {
                 // Generate base slug from the English field value
                 $baseSlug = Str::slug($validatedData[$this->slugField][$langCode] ?? 'default-slug');
-                
-                // Check if slug exists
+
+                // Check uniqueness against the translation table
+                $translationRelation = $model->translations();
+                $fkName = $translationRelation->getForeignKeyName();
+                $translationModel = $translationRelation->getRelated();
+
                 $slug = $baseSlug;
                 $counter = 1;
-                
-                while ($this->model::where('slug', $slug)
-                    ->when($id, function ($query) use ($id) {
-                        return $query->where('id', '!=', $id);
-                    })
+
+                while ($translationModel::where('slug', $slug)
+                    ->where('locale', 'en')
+                    ->where($fkName, '!=', $model->id)
                     ->exists()) {
                     $slug = $baseSlug . '-' . $counter++;
                 }
-                
-                // Add the unique slug to the model data
-                $model->slug = $slug;
-                $model->save();
+
+                // Save slug into the English translation record
+                $model->translations()->where('locale', 'en')->update(['slug' => $slug]);
             }
         }
     }
