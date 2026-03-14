@@ -280,6 +280,15 @@
     </style>
 @endpush
 
+@push('head')
+    @php
+        $heroPreloadPath = $home?->hero_header_image_path
+            ? asset('storage/' . $home->hero_header_image_path)
+            : asset('website/assets/img/banner/banner.png');
+    @endphp
+    <link rel="preload" as="image" href="{{ $heroPreloadPath }}" fetchpriority="high">
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Str;
@@ -432,7 +441,9 @@
 
     $heroMediaType = $home?->hero_type === 'video' ? 'video' : 'image';
     $heroVideoPath = $home?->hero_header_video_path ? asset('storage/' . $home->hero_header_video_path) : null;
-    $heroImagePath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
+    $heroPosterPath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
+    $heroImagePath = $heroPosterPath;
+    $heroAlt = trim($heroCopy['title_prefix'] . ' ' . $heroCopy['title_highlight'] . ' ' . $heroCopy['title_suffix']);
 @endphp
 
     {{-- BANNER / HERO --}}
@@ -449,13 +460,13 @@
                                 <div class="users-wrap">
                                     <ul class="users-list">
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                         <li>
-                                            <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" class="img-fluid aos" alt="customer image">
+                                            <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                     </ul>
                                     <div class="customer-info">
@@ -481,11 +492,11 @@
                                 </div>
                                 <span class="rent-tag"><i class="bx bxs-circle"></i> {{ $heroCopy['available_for_rent_label'] }}</span>
                                 @if ($heroMediaType === 'video' && $heroVideoPath)
-                                    <video class="img-fluid" autoplay muted loop playsinline>
+                                    <video class="img-fluid" autoplay muted loop playsinline preload="metadata" poster="{{ $heroPosterPath }}" aria-hidden="true">
                                         <source src="{{ $heroVideoPath }}">
                                     </video>
                                 @else
-                                    <img src="{{ $heroImagePath }}" class="img-fluid" alt="img">
+                                    <img src="{{ $heroImagePath }}" class="img-fluid" alt="{{ $heroAlt }}" loading="eager" fetchpriority="high" decoding="async">
                                 @endif
                             </div>
                         </div>
@@ -494,13 +505,13 @@
             </div>
         </div>
         <div class="banner-bgs">
-            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img">
+            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img" loading="lazy" fetchpriority="low" decoding="async">
         </div>
     </section>
     {{-- /Banner --}}
 
     {{-- CATEGORIES --}}
-    <section class="category-section-four home-category-section">
+    <section id="home-categories" class="category-section-four home-category-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -527,7 +538,7 @@
                                     <div class="category-img">
                                         @if ($category['image_path'])
                                             <img src="{{ asset('storage/' . $category['image_path']) }}"
-                                                alt="{{ $category['name'] }}" class="img-fluid">
+                                                alt="{{ $category['name'] }}" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                                         @else
                                             <span class="home-category-fallback" aria-hidden="true">
                                                 <i class="bx bxs-car"></i>
@@ -566,7 +577,7 @@
                             <h2>{{ $homeTranslation?->feature_section_title ?: __('website.home.features.section_title') }}</h2>
                             <p>{{ $homeTranslation?->feature_section_paragraph ?: __('website.home.features.section_paragraph') }}</p>
                         </div>
-                        <img src="{{ asset('website/assets/img/cars/car.png') }}" alt="img" class="img-fluid">
+                        <img src="{{ asset('website/assets/img/cars/car.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                     </div>
 
                 </div>
@@ -620,7 +631,7 @@
                                             <div class="slide-images">
                                                 <a href="{{ $car['details_url'] }}">
                                                     <img src="{{ asset('storage/' . $img) }}"
-                                                        class="img-fluid" alt="{{ $car['name'] }}">
+                                                        class="img-fluid" alt="{{ $car['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
                                                 </a>
                                             </div>
                                         @endforeach
@@ -628,7 +639,7 @@
                                 @else
                                     <a href="{{ $car['details_url'] }}">
                                         <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg') }}"
-                                            class="img-fluid" alt="{{ $car['name'] }}">
+                                            class="img-fluid" alt="{{ $car['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
                                     </a>
                                 @endif
 
@@ -698,7 +709,7 @@
 
     {{-- BRANDS --}}
     @if ($brands->isNotEmpty())
-    <section class="brand-section">
+    <section id="home-brands" class="brand-section">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
                 <h2 class="text-white">{{ $homeTranslation?->brand_section_title ?? __('website.home.sections.brands_title') }}</h2>
@@ -707,15 +718,17 @@
             <div class="brands-slider owl-carousel">
                 @foreach ($brands as $brand)
                     <div class="brand-wrap">
-                        @if ($brand['logo_path'])
-                            <img src="{{ asset('storage/' . $brand['logo_path']) }}" alt="{{ $brand['name'] }}">
-                        @endif
-                        <p>{{ $brand['name'] }}</p>
+                        <a href="{{ $brand['url'] }}" class="d-block text-center text-reset text-decoration-none">
+                            @if ($brand['logo_path'])
+                                <img src="{{ asset('storage/' . $brand['logo_path']) }}" alt="{{ $brand['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
+                            @endif
+                            <p>{{ $brand['name'] }}</p>
+                        </a>
                     </div>
                 @endforeach
             </div>
             <div class="brand-img text-center">
-                <img src="{{ asset('website/assets/img/bg/brand.png') }}" alt="img" class="img-fluid">
+                <img src="{{ asset('website/assets/img/bg/brand.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
             </div>
         </div>
     </section>
@@ -728,9 +741,9 @@
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="rental-img">
-                        <img src="{{ asset('website/assets/img/about/rent-car.png') }}" alt="img" class="img-fluid">
+                        <img src="{{ asset('website/assets/img/about/rent-car.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         <div class="grid-img">
-                            <img src="{{ asset('website/assets/img/about/car-grid.png') }}" alt="img" class="img-fluid">
+                            <img src="{{ asset('website/assets/img/about/car-grid.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         </div>
                     </div>
                 </div>
@@ -782,12 +795,12 @@
                 @foreach ($popularCars as $car)
                     <div class="car-item">
                         @if ($car['brand_name'])
-                            <h6>{{ Str::upper($car['brand_name']) }}</h6>
+                            <h6><a href="{{ $car['brand_url'] ?? route('website.cars.index') }}" class="text-reset text-decoration-none">{{ Str::upper($car['brand_name']) }}</a></h6>
                         @endif
                         <h2 class="display-1">{{ Str::upper($car['name']) }}</h2>
                         <div class="car-img">
                             <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-15.png') }}"
-                                alt="{{ $car['name'] }}" class="img-fluid">
+                                alt="{{ $car['name'] }}" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                             @if ($car['daily_price'])
                                 <div class="amount-icon">
                                     <span class="day-amt">
@@ -840,11 +853,11 @@
             </div>
 
             <div class="row row-gap-4 justify-content-center">
-                @foreach ($testimonialItems as $testimonial)
+                        @foreach ($testimonialItems as $testimonial)
                     <div class="col-lg-4 col-md-6 d-flex">
                         <div class="testimonial-item testimonial-item-two flex-fill">
                             <div class="user-img">
-                                <img src="{{ $testimonial['image'] }}" class="img-fluid" alt="{{ $testimonial['name'] }}">
+                                <img src="{{ $testimonial['image'] }}" class="img-fluid" alt="{{ $testimonial['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
                             </div>
                             <p>{{ $testimonial['review'] }}</p>
                             <div class="rating">
@@ -869,22 +882,22 @@
 
             <div class="client-slider owl-carousel">
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-01.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-01.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-02.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-02.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-03.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-03.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-04.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-04.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-05.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-05.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="{{ asset('website/assets/img/clients/client-06.svg') }}" alt="img">
+                    <img src="{{ asset('website/assets/img/clients/client-06.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
             </div>
         </div>
@@ -923,14 +936,14 @@
                                     <div class="blog-img">
                                         <a href="{{ $blog['url'] }}">
                                             <img src="{{ asset('storage/' . $blog['image_path']) }}"
-                                                class="img-fluid" alt="{{ $blog['title'] }}">
+                                                class="img-fluid" alt="{{ $blog['title'] }}" loading="lazy" fetchpriority="low" decoding="async">
                                         </a>
                                     </div>
                                 @endif
                                 <div class="blog-content">
                                     <div class="d-flex align-center justify-content-between blog-category">
-                                        @if ($blog['category_name'] ?? null)
-                                            <a href="javascript:void(0);" class="category">{{ $blog['category_name'] }}</a>
+                                        @if (filled($blog['slug'] ?? null))
+                                            <a href="{{ $blog['url'] }}" class="category">{{ Str::headline($blog['slug']) }}</a>
                                         @endif
                                         @if ($blog['published_on'])
                                             <p class="date d-inline-flex align-center">

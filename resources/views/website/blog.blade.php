@@ -110,7 +110,7 @@
                             @foreach($blogs as $blog)
                                 @php
                                     $blogTitle = $blog['title'] ?? __('website.blog.common.untitled');
-                                    $blogUrl = $blog['details_url'] ?? 'javascript:void(0);';
+                                    $blogUrl = $blog['details_url'] ?? route('website.blogs.index');
                                     $blogImage = $storageUrl($blog['image_path'] ?? null, $assetUrl('img/blog/blog-1.jpg'));
                                     $blogExcerpt = $blog['excerpt'] ?? null;
                                     $blogSlug = $blog['slug'] ?? null;
@@ -123,7 +123,7 @@
                                         <div class="blog-content">
                                             @if(filled($blogSlug))
                                                 <p class="blog-category">
-                                                    <a href="{{ route('website.blogs.index') }}"><span>{{ Str::headline($blogSlug) }}</span></a>
+                                                    <a href="{{ $blogUrl }}"><span>{{ Str::headline($blogSlug) }}</span></a>
                                                 </p>
                                             @endif
 
@@ -178,7 +178,7 @@
                                 @foreach($recentBlogs as $recentBlog)
                                     @php
                                         $recentTitle = $recentBlog['title'] ?? __('website.blog.common.untitled');
-                                        $recentUrl = $recentBlog['details_url'] ?? 'javascript:void(0);';
+                                        $recentUrl = $recentBlog['details_url'] ?? route('website.blogs.index');
                                         $recentImage = $storageUrl($recentBlog['image_path'] ?? null, $assetUrl('img/blog/blog-3.jpg'));
                                     @endphp
                                     <div class="article">

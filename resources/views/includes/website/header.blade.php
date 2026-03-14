@@ -1,11 +1,12 @@
 @php
     use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\Route;
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
     $currentLocale = app()->getLocale();
     $supportedLocales = collect(LaravelLocalization::getSupportedLocales())->only(['ar', 'en']);
-    $contactPageUrl = Route::has('website.contact.index') ? route('website.contact.index') : 'javascript:void(0);';
+    $contactPageUrl = route('website.contact.index');
+    $brandsSectionUrl = route('home') . '#home-brands';
+    $categoriesSectionUrl = route('home') . '#home-categories';
 @endphp
 
 <style>
@@ -144,7 +145,7 @@
                     </li>
 
                     <li class="has-submenu has-mega-dropdown {{ request()->routeIs('website.cars.brand') ? 'active' : '' }}">
-                        <a href="javascript:void(0);">
+                        <a href="{{ $brandsSectionUrl }}">
                             {{ __('website.nav.brands') }}
                             <i class="fas fa-chevron-down"></i>
                         </a>
@@ -182,7 +183,7 @@
                     </li>
 
                     <li class="has-submenu has-mega-dropdown {{ request()->routeIs('website.cars.category') ? 'active' : '' }}">
-                        <a href="javascript:void(0);">
+                        <a href="{{ $categoriesSectionUrl }}">
                             {{ __('website.nav.categories') }}
                             <i class="fas fa-chevron-down"></i>
                         </a>

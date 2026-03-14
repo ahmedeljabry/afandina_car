@@ -703,7 +703,7 @@
                                 $carDailyPrice = $car['daily_price'] ?? null;
                                 $carMonthlyPrice = $car['monthly_price'] ?? null;
                                 $carCurrency = $car['currency_symbol'] ?? '$';
-                                $carUrl = $car['details_url'] ?? 'javascript:void(0);';
+                                $carUrl = $car['details_url'] ?? route('website.cars.index');
                                 $carCardTitle = $formatCarCardTitle($carName);
                             ?>
 

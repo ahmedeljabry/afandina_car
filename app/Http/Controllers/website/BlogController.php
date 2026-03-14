@@ -172,7 +172,7 @@ class BlogController extends Controller
         $carRouteKey = $this->carRouteKey($car, $locale);
         $detailsUrl = filled($carRouteKey)
             ? route('website.cars.show', ['car' => $carRouteKey])
-            : 'javascript:void(0);';
+            : route('website.cars.index');
 
         return [
             'id' => $car->id,

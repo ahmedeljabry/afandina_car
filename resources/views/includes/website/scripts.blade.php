@@ -3,6 +3,7 @@
 
     $normalizedLocale = Str::of((string) app()->getLocale())->replace('_', '-')->lower()->value();
     $isRtlLocale = Str::startsWith($normalizedLocale, 'ar');
+    $isHomePage = request()->routeIs('home');
 
     $scriptAsset = static function (string $ltrPath, ?string $rtlPath = null) use ($isRtlLocale): string {
         $preferredPath = $isRtlLocale ? ($rtlPath ?? $ltrPath) : $ltrPath;
@@ -28,44 +29,46 @@
 <!-- scrollToTop end -->
 
 <!-- jQuery -->
-<script src="{{ $scriptAsset('website/assets/js/jquery-3.7.1.min.js', 'website/rtl/assets/js/jquery-3.7.1.min.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/jquery-3.7.1.min.js', 'website/rtl/assets/js/jquery-3.7.1.min.js') }}"></script>
 
 <!-- Bootstrap Core JS -->
-<script src="{{ $scriptAsset('website/assets/js/bootstrap.bundle.min.js', 'website/rtl/assets/js/bootstrap.bundle.min.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/bootstrap.bundle.min.js', 'website/rtl/assets/js/bootstrap.bundle.min.js') }}"></script>
 
 <!-- counterup JS -->
-<script src="{{ $scriptAsset('website/assets/js/jquery.waypoints.js', 'website/rtl/assets/js/jquery.waypoints.js') }}"></script>
-<script src="{{ $scriptAsset('website/assets/js/jquery.counterup.min.js', 'website/rtl/assets/js/jquery.counterup.min.js') }}"></script>
-
-<!-- Select2 JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/select2/js/select2.min.js', 'website/rtl/assets/plugins/select2/js/select2.min.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/jquery.waypoints.js', 'website/rtl/assets/js/jquery.waypoints.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/jquery.counterup.min.js', 'website/rtl/assets/js/jquery.counterup.min.js') }}"></script>
 
 <!-- Aos -->
-<script src="{{ $scriptAsset('website/assets/plugins/aos/aos.js', 'website/rtl/assets/plugins/aos/aos.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/plugins/aos/aos.js', 'website/rtl/assets/plugins/aos/aos.js') }}"></script>
 
 <!-- Top JS -->
-<script src="{{ $scriptAsset('website/assets/js/backToTop.js', 'website/rtl/assets/js/backToTop.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/backToTop.js', 'website/rtl/assets/js/backToTop.js') }}"></script>
 
 <!-- Owl Carousel JS -->
-<script src="{{ $scriptAsset('website/assets/js/owl.carousel.min.js', 'website/rtl/assets/js/owl.carousel.min.js') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/owl.carousel.min.js', 'website/rtl/assets/js/owl.carousel.min.js') }}"></script>
 
-<!-- Slick JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/slick/slick.js', 'website/rtl/assets/plugins/slick/slick.js') }}"></script>
+@unless ($isHomePage)
+    <!-- Select2 JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/select2/js/select2.min.js', 'website/rtl/assets/plugins/select2/js/select2.min.js') }}"></script>
 
-<!-- Flatpickr JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/flatpickr/flatpickr.min.js') }}"></script>
-<script src="{{ $scriptAsset('website/assets/plugins/flatpickr/forms-pickers.js') }}"></script>
+    <!-- Slick JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/slick/slick.js', 'website/rtl/assets/plugins/slick/slick.js') }}"></script>
 
-<!-- Datepicker Core JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/moment/moment.min.js', 'website/rtl/assets/plugins/moment/moment.min.js') }}"></script>
-<script src="{{ $scriptAsset('website/assets/js/bootstrap-datetimepicker.min.js', 'website/rtl/assets/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <!-- Flatpickr JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/flatpickr/flatpickr.min.js') }}"></script>
+    <script defer src="{{ $scriptAsset('website/assets/plugins/flatpickr/forms-pickers.js') }}"></script>
 
-<!-- Fancybox JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/fancybox/fancybox.umd.js', 'website/rtl/assets/plugins/fancybox/fancybox.umd.js') }}"></script>
+    <!-- Datepicker Core JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/moment/moment.min.js', 'website/rtl/assets/plugins/moment/moment.min.js') }}"></script>
+    <script defer src="{{ $scriptAsset('website/assets/js/bootstrap-datetimepicker.min.js', 'website/rtl/assets/js/bootstrap-datetimepicker.min.js') }}"></script>
 
-<!-- Theia Sticky Sidebar JS -->
-<script src="{{ $scriptAsset('website/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js', 'website/rtl/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js') }}"></script>
+    <!-- Fancybox JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/fancybox/fancybox.umd.js', 'website/rtl/assets/plugins/fancybox/fancybox.umd.js') }}"></script>
+
+    <!-- Theia Sticky Sidebar JS -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js', 'website/rtl/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.min.js') }}"></script>
+@endunless
 
 <!-- Custom JS -->
-<script src="{{ $scriptAsset('website/assets/js/script.js?v=0.5', 'website/rtl/assets/js/script.js?v=0.5') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/script.js?v=0.5', 'website/rtl/assets/js/script.js?v=0.5') }}"></script>
 @stack('js')

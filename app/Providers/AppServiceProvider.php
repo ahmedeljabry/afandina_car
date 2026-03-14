@@ -10,7 +10,6 @@ use App\Models\Location;
 use App\Models\Template;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -70,7 +69,7 @@ class AppServiceProvider extends ServiceProvider
                         'cars_count' => (int) ($brand->cars_count ?? 0),
                         'url' => filled($slug)
                             ? route('website.cars.brand', ['brand' => $slug])
-                            : 'javascript:void(0);',
+                            : route('website.cars.index'),
                     ];
                 })
                 ->filter()
@@ -101,7 +100,7 @@ class AppServiceProvider extends ServiceProvider
                         'cars_count' => (int) ($category->cars_count ?? 0),
                         'url' => filled($slug)
                             ? route('website.cars.category', ['category' => $slug])
-                            : 'javascript:void(0);',
+                            : route('website.cars.index'),
                     ];
                 })
                 ->filter()
@@ -158,7 +157,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'url' => filled($slug)
                             ? route('website.cars.brand', ['brand' => $slug])
-                            : 'javascript:void(0);',
+                            : route('website.cars.index'),
                     ];
                 })
                 ->filter()
@@ -183,7 +182,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'url' => filled($slug)
                             ? route('website.cars.category', ['category' => $slug])
-                            : 'javascript:void(0);',
+                            : route('website.cars.index'),
                     ];
                 })
                 ->filter()
@@ -213,9 +212,7 @@ class AppServiceProvider extends ServiceProvider
             $quickLinks = collect([
                 [
                     'label' => __('website.footer.links.about_us'),
-                    'url' => Route::has('website.about.index')
-                        ? route('website.about.index')
-                        : 'javascript:void(0);',
+                    'url' => route('website.about.index'),
                     'icon' => 'bx bxs-info-circle',
                 ],
                 [
@@ -225,9 +222,7 @@ class AppServiceProvider extends ServiceProvider
                 ],
                 [
                     'label' => __('website.footer.links.contact_us'),
-                    'url' => Route::has('website.contact.index')
-                        ? route('website.contact.index')
-                        : 'javascript:void(0);',
+                    'url' => route('website.contact.index'),
                     'icon' => 'bx bxs-envelope',
                 ],
             ]);

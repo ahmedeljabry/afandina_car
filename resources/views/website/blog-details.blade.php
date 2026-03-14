@@ -98,7 +98,7 @@
                         @foreach($relatedCars as $car)
                             @php
                                 $carTitle = $car['name'] ?? __('website.common.car');
-                                $carUrl = $car['details_url'] ?? 'javascript:void(0);';
+                                $carUrl = $car['details_url'] ?? route('website.cars.index');
                                 $carImage = $storageUrl($car['image_path'] ?? null, $assetUrl('img/cars/car-01.jpg'));
                             @endphp
                             <div class="col-lg-3 col-md-6 d-flex">
@@ -139,7 +139,7 @@
                         @foreach($relatedBlogs as $relatedBlog)
                             @php
                                 $relatedTitle = $relatedBlog['title'] ?? __('website.blog.common.untitled');
-                                $relatedUrl = $relatedBlog['details_url'] ?? 'javascript:void(0);';
+                                $relatedUrl = $relatedBlog['details_url'] ?? route('website.blogs.index');
                                 $relatedImage = $storageUrl($relatedBlog['image_path'] ?? null, $assetUrl('img/blog/blog-11.jpg'));
                             @endphp
                             <div class="col-lg-4 col-md-6 d-flex">

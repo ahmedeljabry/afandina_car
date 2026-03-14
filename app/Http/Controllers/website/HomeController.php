@@ -48,7 +48,7 @@ class HomeController extends Controller
                     'cars_count' => (int) $category->cars_count,
                     'url'        => filled($categorySlug)
                         ? route('website.cars.category', ['category' => $categorySlug])
-                        : 'javascript:void(0);',
+                        : route('website.cars.index'),
                 ];
             });
 
@@ -88,7 +88,7 @@ class HomeController extends Controller
                     'logo_path' => $brand->logo_path,
                     'url'       => filled($brandSlug)
                         ? route('website.cars.brand', ['brand' => $brandSlug])
-                        : 'javascript:void(0);',
+                        : route('website.cars.index'),
                 ];
             });
 
@@ -102,6 +102,7 @@ class HomeController extends Controller
             ->get()
             ->map(fn(Blog $blog) => [
                 'id'           => $blog->id,
+                'slug'         => $blog->slug,
                 'title'        => $this->translationFor($blog, $locale)?->title ?? '',
                 'description'  => $this->translationFor($blog, $locale)?->description,
                 'image_path'   => $blog->image_path,
@@ -143,7 +144,7 @@ class HomeController extends Controller
                     'name' => $this->translationFor($category, $locale)?->name ?? '',
                     'url'  => filled($categorySlug)
                         ? route('website.cars.category', ['category' => $categorySlug])
-                        : 'javascript:void(0);',
+                        : route('website.cars.index'),
                 ];
             });
 
@@ -159,7 +160,7 @@ class HomeController extends Controller
                     'name' => $this->translationFor($brand, $locale)?->name ?? '',
                     'url'  => filled($brandSlug)
                         ? route('website.cars.brand', ['brand' => $brandSlug])
-                        : 'javascript:void(0);',
+                        : route('website.cars.index'),
                 ];
             });
 
@@ -194,9 +195,10 @@ class HomeController extends Controller
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $gearTranslation  = $this->translationFor($car->gearType, $locale);
         $carRouteKey = $this->carRouteKey($car, $locale);
+        $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : '';
         $detailsUrl = filled($carRouteKey)
             ? route('website.cars.show', ['car' => $carRouteKey])
-            : 'javascript:void(0);';
+            : route('website.cars.index');
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
         $dailyDiscount = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -210,6 +212,9 @@ class HomeController extends Controller
             'id'               => $car->id,
             'name'             => $carTranslation?->name ?? '',
             'brand_name'       => $brandTranslation?->name,
+            'brand_url'        => filled($brandRouteKey)
+                ? route('website.cars.brand', ['brand' => $brandRouteKey])
+                : route('website.cars.index'),
             'gear_type'        => $gearTranslation?->name,
             'year'             => $car->year?->year,
             'status'           => $car->status,
@@ -232,6 +237,19 @@ class HomeController extends Controller
             ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
 
         return (string) $slug;
+    }
+
+    private function brandRouteKey(Brand $brand, string $locale): string
+    {
+        $translations = $brand->relationLoaded('translations')
+            ? $brand->translations
+            : $brand->translations()->get();
+
+        return (string) (
+            $translations->firstWhere('locale', $locale)?->slug
+            ?? $translations->firstWhere('locale', 'en')?->slug
+            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
+        );
     }
 
     private function resolveCurrencyContext(string $locale): array

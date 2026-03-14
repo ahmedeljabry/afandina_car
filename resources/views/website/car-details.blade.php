@@ -157,6 +157,9 @@
         $sidebarTitle = trim($carName . (filled($carDetails['year'] ?? null) ? ' - ' . $carDetails['year'] : ''));
         $sidebarDescription = $descriptionParagraphs->first();
         $carSlug = $carDetails['slug'] ?? __('website.car_details.not_available');
+        $carDetailsUrl = $carDetails['details_url'] ?? url()->current();
+        $brandUrl = $carDetails['brand_url'] ?? route('website.cars.index');
+        $categoryUrl = $carDetails['category_url'] ?? route('website.cars.index');
         $sidebarPassengerValue = isset($carDetails['passenger_capacity'])
             ? (string) $carDetails['passenger_capacity']
             : __('website.car_details.not_available');
@@ -370,7 +373,7 @@
                                         <span>
                                             <img src="{{ $assetUrl('img/icons/car-icon.svg') }}" alt="img">
                                         </span>
-                                        {{ $categoryName }}
+                                        <a href="{{ $categoryUrl }}" class="text-reset text-decoration-none">{{ $categoryName }}</a>
                                     </div>
                                 </li>
                                 <li>
@@ -386,7 +389,7 @@
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-show'></i>
-                                        <span>{{ __('website.car_details.labels.brand') }} : {{ $brandName }}</span>
+                                        <span>{{ __('website.car_details.labels.brand') }} : <a href="{{ $brandUrl }}" class="text-reset text-decoration-none">{{ $brandName }}</a></span>
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-car'></i>
@@ -394,7 +397,7 @@
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-purchase-tag-alt'></i>
-                                        <span>Slug : {{ $carSlug }}</span>
+                                        <span>Slug : <a href="{{ $carDetailsUrl }}" class="text-reset text-decoration-none">{{ $carSlug }}</a></span>
                                     </div>
                                 </div>
                             </div>
