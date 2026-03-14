@@ -1,14 +1,12 @@
-@extends('layouts.website')
-
 <?php
     $listingContext = $listingContext ?? [];
     $pageHeading = (string) ($listingContext['page_title'] ?? __('website.cars.page_title'));
     $metaTitle = (string) ($listingContext['meta_title'] ?? $pageHeading);
 ?>
 
-@section('title', $metaTitle)
+<?php $__env->startSection('title', $metaTitle); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <?php
         use Illuminate\Support\Str;
 
@@ -918,4 +916,6 @@
         </div>
     </section>
     <!-- /Car Grid View -->
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.website', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views/website/cars.blade.php ENDPATH**/ ?>

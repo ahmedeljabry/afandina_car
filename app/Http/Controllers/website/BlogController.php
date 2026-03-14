@@ -187,7 +187,7 @@ class BlogController extends Controller
             ?? $this->translationFor($car, 'en')?->slug
             ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
 
-        return (string) ($slug ?: $car->id);
+        return (string) $slug;
     }
 
     private function buildExcerpt(mixed $description, mixed $content, int $limit = 160): ?string

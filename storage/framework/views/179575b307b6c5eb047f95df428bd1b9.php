@@ -1,8 +1,8 @@
-﻿@extends('layouts.website')
-@section('title', $carDetails['name'] ?? __('website.car_details.page_title'))
+﻿
+<?php $__env->startSection('title', $carDetails['name'] ?? __('website.car_details.page_title')); ?>
 
-@section('content')
-    @php
+<?php $__env->startSection('content'); ?>
+    <?php
         use Illuminate\Support\Str;
 
         $assetUrl = static fn (string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -275,7 +275,7 @@
                 ],
             ]);
         }
-    @endphp
+    ?>
     <style>
         .details-car-grid .related-cars-card .related-card-title a {
             display: block;
@@ -368,33 +368,34 @@
                                 <li>
                                     <div class="car-brand">
                                         <span>
-                                            <img src="{{ $assetUrl('img/icons/car-icon.svg') }}" alt="img">
+                                            <img src="<?php echo e($assetUrl('img/icons/car-icon.svg')); ?>" alt="img">
                                         </span>
-                                        {{ $categoryName }}
+                                        <?php echo e($categoryName); ?>
+
                                     </div>
                                 </li>
                                 <li>
-                                    <span class="year">{{ $yearValue }}</span>
+                                    <span class="year"><?php echo e($yearValue); ?></span>
                                 </li>
                             </ul>
                             <div class="camaro-info">
-                                <h3>{{ $carName }}</h3>
+                                <h3><?php echo e($carName); ?></h3>
                                 <div class="camaro-location">
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-map'></i>
-                                        <span>{{ __('website.car_details.labels.location') }} : {{ filled($fullAddress) ? $fullAddress : __('website.car_details.not_available') }}</span>
+                                        <span><?php echo e(__('website.car_details.labels.location')); ?> : <?php echo e(filled($fullAddress) ? $fullAddress : __('website.car_details.not_available')); ?></span>
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-show'></i>
-                                        <span>{{ __('website.car_details.labels.brand') }} : {{ $brandName }}</span>
+                                        <span><?php echo e(__('website.car_details.labels.brand')); ?> : <?php echo e($brandName); ?></span>
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-car'></i>
-                                        <span>{{ __('website.car_details.labels.listed_on') }} : {{ $listedOn }}</span>
+                                        <span><?php echo e(__('website.car_details.labels.listed_on')); ?> : <?php echo e($listedOn); ?></span>
                                     </div>
                                     <div class="camaro-location-inner">
                                         <i class='bx bx-purchase-tag-alt'></i>
-                                        <span>Slug : {{ $carSlug }}</span>
+                                        <span>Slug : <?php echo e($carSlug); ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -402,8 +403,8 @@
                         </div>
                     </div>
                     <div class="details-btn">
-                        <span class="total-badge"><i class='bx bx-calendar-edit'></i>{{ __('website.car_details.labels.status') }} : {{ $statusLabel }}</span>
-                        <a href="{{ route('website.cars.index') }}"> <i class='bx bx-git-compare'></i>{{ __('website.nav.all_cars') }}</a>
+                        <span class="total-badge"><i class='bx bx-calendar-edit'></i><?php echo e(__('website.car_details.labels.status')); ?> : <?php echo e($statusLabel); ?></span>
+                        <a href="<?php echo e(route('website.cars.index')); ?>"> <i class='bx bx-git-compare'></i><?php echo e(__('website.nav.all_cars')); ?></a>
                     </div>
                 </div>
             </div>
@@ -417,47 +418,47 @@
                         <div class="detail-product">
                             <div class="pro-info">
                                 <ul>
-                                    <li class="del-airport"><i class="fa-solid fa-check"></i>{{ __('website.car_details.highlights.free_delivery') }} : {{ ($carDetails['free_delivery'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no') }}</li>
-                                    <li class="del-home"><i class="fa-solid fa-check"></i>{{ __('website.car_details.highlights.insurance_included') }} : {{ ($carDetails['insurance_included'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no') }}</li>
+                                    <li class="del-airport"><i class="fa-solid fa-check"></i><?php echo e(__('website.car_details.highlights.free_delivery')); ?> : <?php echo e(($carDetails['free_delivery'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no')); ?></li>
+                                    <li class="del-home"><i class="fa-solid fa-check"></i><?php echo e(__('website.car_details.highlights.insurance_included')); ?> : <?php echo e(($carDetails['insurance_included'] ?? false) ? __('website.car_details.yes') : __('website.car_details.no')); ?></li>
                                 </ul>
                             </div>
                             <div class="slider detail-bigimg">
-                                @foreach ($galleryImages as $image)
-                                    @php
+                                <?php $__currentLoopData = $galleryImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
                                         $imageUrl = $storageUrl($image['file_path'] ?? null, $mainImage);
                                         $imageAlt = $image['alt'] ?? $carName;
-                                    @endphp
+                                    ?>
                                     <div class="product-img">
-                                        <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}">
+                                        <img src="<?php echo e($imageUrl); ?>" alt="<?php echo e($imageAlt); ?>">
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                             <div class="slider slider-nav-thumbnails">
-                                @foreach ($galleryImages as $image)
-                                    @php
+                                <?php $__currentLoopData = $galleryImages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
                                         $thumbnailUrl = $storageUrl($image['thumbnail_path'] ?? ($image['file_path'] ?? null), $mainImage);
                                         $thumbnailAlt = $image['alt'] ?? $carName;
-                                    @endphp
-                                    <div><img src="{{ $thumbnailUrl }}" alt="{{ $thumbnailAlt }}"></div>
-                                @endforeach
+                                    ?>
+                                    <div><img src="<?php echo e($thumbnailUrl); ?>" alt="<?php echo e($thumbnailAlt); ?>"></div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
                         <div class="review-sec pb-0">
                             <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.extra_services') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sections.extra_services')); ?></h4>
                             </div>
                             <div class="lisiting-service">
                                 <div class="row">
-                                    @foreach ($serviceItems as $serviceItem)
+                                    <?php $__currentLoopData = $serviceItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $serviceItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="servicelist d-flex align-items-center col-xxl-3 col-xl-4 col-sm-6">
                                             <div class="service-img">
-                                                <img src="{{ $assetUrl($serviceItem['icon']) }}" alt="Icon">
+                                                <img src="<?php echo e($assetUrl($serviceItem['icon'])); ?>" alt="Icon">
                                             </div>
                                             <div class="service-info">
-                                                <p>{{ $serviceItem['name'] }}</p>
+                                                <p><?php echo e($serviceItem['name']); ?></p>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
                         </div>
@@ -465,22 +466,22 @@
 						<!-- Listing Section -->
                         <div class="review-sec mb-0">
                             <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.description') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sections.description')); ?></h4>
                             </div>
                             <div class="description-list">
-                                @foreach ($primaryDescription as $paragraph)
-                                    <p>{{ $paragraph }}</p>
-                                @endforeach
-                                @if ($moreDescription->isNotEmpty())
+                                <?php $__currentLoopData = $primaryDescription; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paragraph): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <p><?php echo e($paragraph); ?></p>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php if($moreDescription->isNotEmpty()): ?>
                                     <div class="read-more">
                                         <div class="more-text">
-                                            @foreach ($moreDescription as $paragraph)
-                                                <p>{{ $paragraph }}</p>
-                                            @endforeach
+                                            <?php $__currentLoopData = $moreDescription; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paragraph): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <p><?php echo e($paragraph); ?></p>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </div>
-                                        <a href="javascript:void(0);" class="more-link">{{ __('website.car_details.show_more') }}</a>
+                                        <a href="javascript:void(0);" class="more-link"><?php echo e(__('website.car_details.show_more')); ?></a>
                                    </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
                         <!-- /Listing Section -->
@@ -488,22 +489,22 @@
                         <!-- Specifications -->
                         <div class="review-sec specification-card ">
                             <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.specifications') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sections.specifications')); ?></h4>
                             </div>
                             <div class="card-body">
                                 <div class="lisiting-featues">
                                     <div class="row">
-                                        @foreach ($specificationItems as $specificationItem)
+                                        <?php $__currentLoopData = $specificationItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $specificationItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="featureslist d-flex align-items-center col-xl-3 col-md-4 col-sm-6">
                                                 <div class="feature-img">
-                                                    <img src="{{ $assetUrl($specificationItem['icon']) }}" alt="Icon">
+                                                    <img src="<?php echo e($assetUrl($specificationItem['icon'])); ?>" alt="Icon">
                                                 </div>
                                                 <div class="featues-info">
-                                                    <span>{{ $specificationItem['label'] }}</span>
-                                                    <h6>{{ $specificationItem['value'] }}</h6>
+                                                    <span><?php echo e($specificationItem['label']); ?></span>
+                                                    <h6><?php echo e($specificationItem['value']); ?></h6>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
                                 </div>
                             </div>
@@ -513,19 +514,19 @@
                         <!-- Car Features -->
                         <div class="review-sec listing-feature">
                             <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.features') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sections.features')); ?></h4>
                             </div>
                             <div class="listing-description">
                                 <div class="row">
-                                    @foreach ($featureColumns as $featureColumn)
+                                    <?php $__currentLoopData = $featureColumns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $featureColumn): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="col-md-4">
                                             <ul>
-                                                @foreach ($featureColumn as $feature)
-                                                    <li><span><i class="bx bx-check-double"></i></span>{{ $feature['name'] }}</li>
-                                                @endforeach
+                                                <?php $__currentLoopData = $featureColumn; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feature): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <li><span><i class="bx bx-check-double"></i></span><?php echo e($feature['name']); ?></li>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </ul>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
                         </div>
@@ -534,27 +535,27 @@
                         <!-- Tariff -->
                         <div class="review-sec listing-feature">
                             <div class="review-header">
-                                <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sections.rental_prices')); ?></h4>
                             </div>
                             <div class="table-responsive">
 								<table class="table border mb-3">
 									<thead class="thead-dark">
 										<tr>
-											<th>{{ __('website.car_details.pricing.table_plan') }}</th>
-											<th>{{ __('website.car_details.pricing.table_price') }}</th>
-											<th>{{ __('website.car_details.pricing.table_included_mileage') }}</th>
-											<th>{{ __('website.car_details.pricing.table_extra_mileage') }}</th>
+											<th><?php echo e(__('website.car_details.pricing.table_plan')); ?></th>
+											<th><?php echo e(__('website.car_details.pricing.table_price')); ?></th>
+											<th><?php echo e(__('website.car_details.pricing.table_included_mileage')); ?></th>
+											<th><?php echo e(__('website.car_details.pricing.table_extra_mileage')); ?></th>
 										</tr>
 									</thead>
 									<tbody>
-                                        @foreach ($tariffRows as $tariffRow)
+                                        <?php $__currentLoopData = $tariffRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tariffRow): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td>{{ $tariffRow['name'] }}</td>
-                                                <td>{{ $formatPrice($tariffRow['price'], $currencySymbol) }}</td>
-                                                <td>{{ filled($tariffRow['mileage']) ? __('website.units.km_included', ['count' => $tariffRow['mileage']]) : __('website.car_details.not_available') }}</td>
-                                                <td>{{ __('website.car_details.contact_for_pricing') }}</td>
+                                                <td><?php echo e($tariffRow['name']); ?></td>
+                                                <td><?php echo e($formatPrice($tariffRow['price'], $currencySymbol)); ?></td>
+                                                <td><?php echo e(filled($tariffRow['mileage']) ? __('website.units.km_included', ['count' => $tariffRow['mileage']]) : __('website.car_details.not_available')); ?></td>
+                                                <td><?php echo e(__('website.car_details.contact_for_pricing')); ?></td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 									</tbody>
 								</table>
 							</div>
@@ -565,76 +566,78 @@
                     <div class="col-lg-4 theiaStickySidebar">
                         <aside class="car-details-sidebar-card">
                             <div class="car-details-sidebar-head">
-                                <h3>{{ $sidebarTitle }}</h3>
-                                <p>{{ $sidebarDescription }}</p>
+                                <h3><?php echo e($sidebarTitle); ?></h3>
+                                <p><?php echo e($sidebarDescription); ?></p>
                             </div>
 
                             <ul class="car-details-sidebar-stats">
-                                @foreach ($carSidebarStats as $sidebarStat)
+                                <?php $__currentLoopData = $carSidebarStats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarStat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <li>
-                                        <i class="{{ $sidebarStat['icon'] }}"></i>
-                                        <span>{{ $sidebarStat['value'] }}</span>
+                                        <i class="<?php echo e($sidebarStat['icon']); ?>"></i>
+                                        <span><?php echo e($sidebarStat['value']); ?></span>
                                     </li>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
 
                             <div class="car-details-sidebar-overview">
-                                <h4>{{ __('website.car_details.sidebar.car_overview') }}</h4>
+                                <h4><?php echo e(__('website.car_details.sidebar.car_overview')); ?></h4>
                                 <div class="car-details-overview-grid">
-                                    @foreach ($carOverviewItems as $overviewItem)
+                                    <?php $__currentLoopData = $carOverviewItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $overviewItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="car-details-overview-item">
-                                            <span class="overview-label">{{ $overviewItem['label'] }}</span>
-                                            @if (($overviewItem['type'] ?? '') === 'color')
-                                                <span class="car-color-dot" style="background-color: {{ $colorDotHex }};" title="{{ $overviewItem['value'] }}"></span>
-                                                <small>{{ $overviewItem['value'] }}</small>
-                                            @else
-                                                <strong>{{ $overviewItem['value'] }}</strong>
-                                            @endif
+                                            <span class="overview-label"><?php echo e($overviewItem['label']); ?></span>
+                                            <?php if(($overviewItem['type'] ?? '') === 'color'): ?>
+                                                <span class="car-color-dot" style="background-color: <?php echo e($colorDotHex); ?>;" title="<?php echo e($overviewItem['value']); ?>"></span>
+                                                <small><?php echo e($overviewItem['value']); ?></small>
+                                            <?php else: ?>
+                                                <strong><?php echo e($overviewItem['value']); ?></strong>
+                                            <?php endif; ?>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
                             </div>
 
-                            @if ($sidebarPriceRows->isNotEmpty())
+                            <?php if($sidebarPriceRows->isNotEmpty()): ?>
                                 <div class="car-details-sidebar-prices">
-                                    @foreach ($sidebarPriceRows as $sidebarPriceRow)
+                                    <?php $__currentLoopData = $sidebarPriceRows; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarPriceRow): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <div class="car-details-price-row">
                                             <div class="price-main-wrap">
-                                                <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
-                                                @if (filled($sidebarPriceRow['old']))
-                                                    <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
-                                                @endif
+                                                <strong><?php echo e($formatAmount($sidebarPriceRow['current'])); ?></strong>
+                                                <?php if(filled($sidebarPriceRow['old'])): ?>
+                                                    <del><?php echo e($formatAmount($sidebarPriceRow['old'])); ?></del>
+                                                <?php endif; ?>
                                             </div>
-                                            <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
+                                            <span class="price-meta"><?php echo e(trim($currencySymbol . ' ' . $sidebarPriceRow['unit'])); ?></span>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
-                            @endif
+                            <?php endif; ?>
 
-                            @if ($sidebarHighlights->isNotEmpty())
+                            <?php if($sidebarHighlights->isNotEmpty()): ?>
                                 <ul class="car-details-sidebar-highlights">
-                                    @foreach ($sidebarHighlights as $sidebarHighlight)
+                                    <?php $__currentLoopData = $sidebarHighlights; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sidebarHighlight): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <li>
                                             <i class="fa-solid fa-circle-check"></i>
-                                            <span>{{ $sidebarHighlight['label'] }}</span>
+                                            <span><?php echo e($sidebarHighlight['label']); ?></span>
                                         </li>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </ul>
-                            @endif
+                            <?php endif; ?>
 
                             <div class="car-details-sidebar-actions">
-                                <a href="{{ $whatsAppHref }}"
-                                   class="btn sidebar-action-btn sidebar-whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') is-disabled @endif"
-                                   @if ($whatsAppHref !== 'javascript:void(0);')
+                                <a href="<?php echo e($whatsAppHref); ?>"
+                                   class="btn sidebar-action-btn sidebar-whatsapp-btn <?php if($whatsAppHref === 'javascript:void(0);'): ?> is-disabled <?php endif; ?>"
+                                   <?php if($whatsAppHref !== 'javascript:void(0);'): ?>
                                        target="_blank" rel="noopener noreferrer"
-                                   @endif>
+                                   <?php endif; ?>>
                                     <i class="fa-brands fa-whatsapp"></i>
-                                    {{ __('website.car_details.owner_details.chat_whatsapp') }}
+                                    <?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?>
+
                                 </a>
-                                <a href="{{ $phoneHref }}"
-                                   class="btn sidebar-action-btn sidebar-call-btn @if ($phoneHref === 'javascript:void(0);') is-disabled @endif">
+                                <a href="<?php echo e($phoneHref); ?>"
+                                   class="btn sidebar-action-btn sidebar-call-btn <?php if($phoneHref === 'javascript:void(0);'): ?> is-disabled <?php endif; ?>">
                                     <i class="fa-solid fa-phone"></i>
-                                    {{ __('website.car_details.sidebar.call_us') }}
+                                    <?php echo e(__('website.car_details.sidebar.call_us')); ?>
+
                                 </a>
                             </div>
                         </aside>
@@ -644,13 +647,13 @@
                     <div class="col-md-12">
                         <div class="details-car-grid">
                             <div class="details-slider-heading">
-                                <h3>{{ __('website.car_details.sections.related_cars') }}</h3>
-                                <p>{{ __('website.car_details.related_cars_subtitle') }}</p>
+                                <h3><?php echo e(__('website.car_details.sections.related_cars')); ?></h3>
+                                <p><?php echo e(__('website.car_details.related_cars_subtitle')); ?></p>
                             </div>
                             <div class="owl-carousel rental-deal-slider details-car owl-theme">
 
-                                @foreach ($relatedItems as $relatedItem)
-                                    @php
+                                <?php $__currentLoopData = $relatedItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $relatedItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
                                         $relatedImage = $storageUrl($relatedItem['image_path'] ?? null, $assetUrl('img/cars/car-03.jpg'));
                                         $relatedName = $relatedItem['name'] ?? __('website.common.car');
                                         $relatedCardTitle = $formatCarCardTitle($relatedName);
@@ -665,59 +668,61 @@
                                         $relatedMonthlyPrice = $relatedItem['monthly_price'] ?? null;
                                         $relatedCurrency = $relatedItem['currency_symbol'] ?? $currencySymbol;
                                         $relatedUrl = $relatedItem['details_url'] ?? route('website.cars.index');
-                                    @endphp
+                                    ?>
                                         <!-- owl carousel item -->
                                         <div class="rental-car-item">
                                             <div class="listing-item related-cars-card pb-0">
                                                 <div class="listing-img">
-                                                    <a href="{{ $relatedUrl }}">
-                                                        <img src="{{ $relatedImage }}" class="img-fluid" alt="{{ $relatedName }}">
+                                                    <a href="<?php echo e($relatedUrl); ?>">
+                                                        <img src="<?php echo e($relatedImage); ?>" class="img-fluid" alt="<?php echo e($relatedName); ?>">
                                                     </a>
                                                     <span class="featured-text d-inline-block"
                                                           style="max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                                        {{ $relatedBrand }}
+                                                        <?php echo e($relatedBrand); ?>
+
                                                     </span>
                                                 </div>
                                                 <div class="listing-content">
                                                     <div class="listing-features d-flex align-items-end justify-content-between">
                                                         <div class="list-rating">
                                                             <h3 class="listing-title related-card-title mb-0">
-                                                                <a href="{{ $relatedUrl }}" title="{{ $relatedName }}">{{ $relatedCardTitle }}</a>
+                                                                <a href="<?php echo e($relatedUrl); ?>" title="<?php echo e($relatedName); ?>"><?php echo e($relatedCardTitle); ?></a>
                                                             </h3>
                                                         </div>
                                                         <div class="list-km">
                                                             <span class="km-count">
-                                                                <img src="{{ $assetUrl('img/icons/map-pin.svg') }}" alt="Year">{{ $relatedYear }}
+                                                                <img src="<?php echo e($assetUrl('img/icons/map-pin.svg')); ?>" alt="Year"><?php echo e($relatedYear); ?>
+
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <div class="listing-details-group">
                                                         <ul>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-01.svg') }}" alt="Auto"></span>
-                                                                <p>{{ $relatedGear }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-01.svg')); ?>" alt="Auto"></span>
+                                                                <p><?php echo e($relatedGear); ?></p>
                                                             </li>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-02.svg') }}" alt="Mileage"></span>
-                                                                <p>{{ $relatedMileage }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-02.svg')); ?>" alt="Mileage"></span>
+                                                                <p><?php echo e($relatedMileage); ?></p>
                                                             </li>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-03.svg') }}" alt="Category"></span>
-                                                                <p>{{ $relatedCategory }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-03.svg')); ?>" alt="Category"></span>
+                                                                <p><?php echo e($relatedCategory); ?></p>
                                                             </li>
                                                         </ul>
                                                         <ul>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-04.svg') }}" alt="Doors"></span>
-                                                                <p>{{ $relatedDoors }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-04.svg')); ?>" alt="Doors"></span>
+                                                                <p><?php echo e($relatedDoors); ?></p>
                                                             </li>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-05.svg') }}" alt="Year"></span>
-                                                                <p>{{ $relatedYear }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-05.svg')); ?>" alt="Year"></span>
+                                                                <p><?php echo e($relatedYear); ?></p>
                                                             </li>
                                                             <li>
-                                                                <span><img src="{{ $assetUrl('img/icons/car-parts-06.svg') }}" alt="Persons"></span>
-                                                                <p>{{ $relatedPassenger }}</p>
+                                                                <span><img src="<?php echo e($assetUrl('img/icons/car-parts-06.svg')); ?>" alt="Persons"></span>
+                                                                <p><?php echo e($relatedPassenger); ?></p>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -728,61 +733,66 @@
                                                                  style="background: #fff; border-radius: 6px; padding: 10px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                                                                 <div style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
                                                                     <i class="feather-sun" style="font-size: 12px;"></i>
-                                                                    {{ __('website.units.per_day') }}
+                                                                    <?php echo e(__('website.units.per_day')); ?>
+
                                                                 </div>
-                                                                @if($relatedDailyPrice)
+                                                                <?php if($relatedDailyPrice): ?>
                                                                     <div style="font-size: 16px; font-weight: 700; color: #f66962;">
-                                                                        {{ $formatPrice($relatedDailyPrice, $relatedCurrency) }}
+                                                                        <?php echo e($formatPrice($relatedDailyPrice, $relatedCurrency)); ?>
+
                                                                     </div>
-                                                                @else
+                                                                <?php else: ?>
                                                                     <div style="font-size: 13px; color: #6c757d;">
-                                                                        {{ __('website.common.call_for_price') }}
+                                                                        <?php echo e(__('website.common.call_for_price')); ?>
+
                                                                     </div>
-                                                                @endif
+                                                                <?php endif; ?>
                                                             </div>
                                                             <div class="price-box text-center flex-fill"
                                                                  style="background: #fff; border-radius: 6px; padding: 10px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                                                                 <div style="font-size: 11px; color: #6c757d; font-weight: 500; text-transform: uppercase; margin-bottom: 4px;">
                                                                     <i class="feather-calendar" style="font-size: 12px;"></i>
-                                                                    {{ __('website.units.per_month') }}
+                                                                    <?php echo e(__('website.units.per_month')); ?>
+
                                                                 </div>
-                                                                @if($relatedMonthlyPrice)
+                                                                <?php if($relatedMonthlyPrice): ?>
                                                                     <div style="font-size: 16px; font-weight: 700; color: #127384;">
-                                                                        {{ $formatPrice($relatedMonthlyPrice, $relatedCurrency) }}
+                                                                        <?php echo e($formatPrice($relatedMonthlyPrice, $relatedCurrency)); ?>
+
                                                                     </div>
-                                                                @else
+                                                                <?php else: ?>
                                                                     <div style="font-size: 13px; color: #6c757d;">-</div>
-                                                                @endif
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="listing-button d-flex gap-2 listing-action-group">
-                                                        <a href="{{ $whatsAppHref }}"
-                                                           class="btn listing-action-btn whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
-                                                           @if ($whatsAppHref !== 'javascript:void(0);')
+                                                        <a href="<?php echo e($whatsAppHref); ?>"
+                                                           class="btn listing-action-btn whatsapp-btn <?php if($whatsAppHref === 'javascript:void(0);'): ?> disabled <?php endif; ?>"
+                                                           <?php if($whatsAppHref !== 'javascript:void(0);'): ?>
                                                                target="_blank" rel="noopener noreferrer"
-                                                           @endif
-                                                           aria-disabled="{{ $whatsAppHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                                           <?php endif; ?>
+                                                           aria-disabled="<?php echo e($whatsAppHref === 'javascript:void(0);' ? 'true' : 'false'); ?>">
                                                             <i class="fa-brands fa-whatsapp"></i>
-                                                            <span class="action-label">{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                                            <span class="action-label"><?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?></span>
                                                         </a>
-                                                        <a href="{{ $phoneHref }}"
-                                                           class="btn listing-action-btn call-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
-                                                           aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
+                                                        <a href="<?php echo e($phoneHref); ?>"
+                                                           class="btn listing-action-btn call-btn <?php if($phoneHref === 'javascript:void(0);'): ?> disabled <?php endif; ?>"
+                                                           aria-disabled="<?php echo e($phoneHref === 'javascript:void(0);' ? 'true' : 'false'); ?>">
                                                             <i class="fa-solid fa-phone"></i>
-                                                            <span class="action-label">{{ __('website.car_details.sidebar.call_us') }}</span>
+                                                            <span class="action-label"><?php echo e(__('website.car_details.sidebar.call_us')); ?></span>
                                                         </a>
                                                     </div>
                                                 </div>
-                                                @if (($relatedItem['is_featured'] ?? false) === true)
+                                                <?php if(($relatedItem['is_featured'] ?? false) === true): ?>
                                                     <div class="feature-text">
-                                                        <span class="bg-danger">{{ __('website.common.featured') }}</span>
+                                                        <span class="bg-danger"><?php echo e(__('website.common.featured')); ?></span>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                         <!-- /owl carousel item -->
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 						</div>
                         </div>
@@ -790,4 +800,6 @@
                 </div>
             </div>
         </section>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.website', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\afandina\resources\views/website/car-details.blade.php ENDPATH**/ ?>

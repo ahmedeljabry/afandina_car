@@ -265,6 +265,7 @@ class CarController extends Controller
             'meta_title' => $brandName . ' - ' . __('website.nav.all_cars'),
             'breadcrumb_parent_label' => __('website.nav.brands'),
             'breadcrumb_parent_url' => 'javascript:void(0);',
+            'seo_content_in_breadcrumb' => true,
             'content_title' => $brandContentTitle,
             'content_description' => $brandContentDescription,
             'content_article' => $brandContentArticle,
@@ -304,6 +305,7 @@ class CarController extends Controller
             'meta_title' => $categoryName . ' - ' . __('website.nav.all_cars'),
             'breadcrumb_parent_label' => __('website.nav.categories'),
             'breadcrumb_parent_url' => 'javascript:void(0);',
+            'seo_content_in_breadcrumb' => true,
             'content_title' => $categoryTranslation?->title,
             'content_description' => $categoryTranslation?->description,
             'content_article' => $categoryTranslation?->article,
@@ -465,7 +467,7 @@ class CarController extends Controller
 
     private function carRouteKey(Car $car, string $locale): string
     {
-        return (string) ($this->carSlugForLocale($car, $locale) ?: $car->id);
+        return (string) $this->carSlugForLocale($car, $locale);
     }
 
     private function carSlugForLocale(Car $car, string $locale): ?string
