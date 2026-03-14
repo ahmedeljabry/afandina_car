@@ -67,9 +67,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
                         'cars_count' => (int) ($brand->cars_count ?? 0),
-                        'url' => filled($slug)
-                            ? route('website.cars.brand', ['brand' => $slug])
-                            : route('website.cars.index'),
+                        'slug' => $slug,
                     ];
                 })
                 ->filter()
@@ -98,9 +96,7 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
                         'cars_count' => (int) ($category->cars_count ?? 0),
-                        'url' => filled($slug)
-                            ? route('website.cars.category', ['category' => $slug])
-                            : route('website.cars.index'),
+                        'slug' => $slug,
                     ];
                 })
                 ->filter()
@@ -155,9 +151,7 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => filled($slug)
-                            ? route('website.cars.brand', ['brand' => $slug])
-                            : route('website.cars.index'),
+                        'slug' => $slug,
                     ];
                 })
                 ->filter()
@@ -180,9 +174,7 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => filled($slug)
-                            ? route('website.cars.category', ['category' => $slug])
-                            : route('website.cars.index'),
+                        'slug' => $slug,
                     ];
                 })
                 ->filter()
@@ -203,29 +195,10 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => 'javascript:void(0);',
                     ];
                 })
                 ->filter()
                 ->values();
-
-            $quickLinks = collect([
-                [
-                    'label' => __('website.footer.links.about_us'),
-                    'url' => route('website.about.index'),
-                    'icon' => 'bx bxs-info-circle',
-                ],
-                [
-                    'label' => __('website.footer.links.blog'),
-                    'url' => route('website.blogs.index'),
-                    'icon' => 'bx bxs-notepad',
-                ],
-                [
-                    'label' => __('website.footer.links.contact_us'),
-                    'url' => route('website.contact.index'),
-                    'icon' => 'bx bxs-envelope',
-                ],
-            ]);
 
             $supportItems = collect([
                 [
@@ -281,7 +254,6 @@ class AppServiceProvider extends ServiceProvider
                     ?? $homeTranslation?->contact_us_paragraph
                     ?? $contact?->additional_info,
                 'footerCompanyName' => $branding['site_name'],
-                'quickLinks' => $quickLinks,
                 'supportItems' => $supportItems,
                 'socialLinks' => $socialLinks,
                 'footerBrands' => $footerBrands,

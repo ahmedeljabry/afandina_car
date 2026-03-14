@@ -3,7 +3,6 @@
     $footerDescription = $footerDescription ?? null;
     $footerCompanyName = $footerCompanyName ?? config('app.name', 'Afandina Car Rental');
     $footerHomeTranslation = $footerHomeTranslation ?? null;
-    $quickLinks = $quickLinks ?? collect();
     $supportItems = $supportItems ?? collect();
     $socialLinks = $socialLinks ?? collect();
     $footerBrands = $footerBrands ?? collect();
@@ -48,13 +47,21 @@
                             <i class="bx bx-link-alt me-1"></i>{{ __('website.footer.quick_links') }}
                         </h5>
                         <ul>
-                            @foreach ($quickLinks as $link)
-                                <li>
-                                    <a href="{{ $link['url'] }}">
-                                        <i class="{{ $link['icon'] }} me-1"></i>{{ $link['label'] }}
-                                    </a>
-                                </li>
-                            @endforeach
+                            <li>
+                                <a href="{{ route('website.about.index') }}">
+                                    <i class="bx bxs-info-circle me-1"></i>{{ __('website.footer.links.about_us') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('website.blogs.index') }}">
+                                    <i class="bx bxs-notepad me-1"></i>{{ __('website.footer.links.blog') }}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('website.contact.index') }}">
+                                    <i class="bx bxs-envelope me-1"></i>{{ __('website.footer.links.contact_us') }}
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -89,7 +96,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                <a href="{{ $brand['url'] }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="{{ filled($brand['slug'] ?? null) ? route('website.cars.brand', ['brand' => $brand['slug']]) : route('website.cars.index') }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $brand['name'] }}
                                 </a>
                             @empty
@@ -108,7 +115,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerCategories as $category)
-                                <a href="{{ $category['url'] }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="{{ filled($category['slug'] ?? null) ? route('website.cars.category', ['category' => $category['slug']]) : route('website.cars.index') }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $category['name'] }}
                                 </a>
                             @empty
@@ -127,9 +134,9 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerLocations as $location)
-                                <a href="{{ $location['url'] }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <span class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $location['name'] }}
-                                </a>
+                                </span>
                             @empty
                                 <span class="text-muted">{{ __('website.footer.empty_locations') }}</span>
                             @endforelse

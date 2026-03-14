@@ -155,7 +155,7 @@
                                 <ul class="header-mega-grid" role="list">
                                     @forelse ($headerBrands ?? [] as $brandItem)
                                         <li class="header-mega-grid-item">
-                                            <a href="{{ $brandItem['url'] }}" class="header-mega-item">
+                                            <a href="{{ filled($brandItem['slug'] ?? null) ? route('website.cars.brand', ['brand' => $brandItem['slug']]) : route('website.cars.index') }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
                                                     @if (filled($brandItem['logo_path'] ?? null))
                                                         <img src="{{ $brandItem['logo_path'] }}" alt="{{ $brandItem['name'] }}">
@@ -193,7 +193,7 @@
                                 <ul class="header-mega-grid" role="list">
                                     @forelse ($headerCategories ?? [] as $categoryItem)
                                         <li class="header-mega-grid-item">
-                                            <a href="{{ $categoryItem['url'] }}" class="header-mega-item">
+                                            <a href="{{ filled($categoryItem['slug'] ?? null) ? route('website.cars.category', ['category' => $categoryItem['slug']]) : route('website.cars.index') }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
                                                     @if (filled($categoryItem['image_path'] ?? null))
                                                         <img src="{{ $categoryItem['image_path'] }}" alt="{{ $categoryItem['name'] }}">
