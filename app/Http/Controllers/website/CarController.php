@@ -398,6 +398,10 @@ class CarController extends Controller
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $categoryTranslation = $this->translationFor($car->category, $locale);
         $gearTypeTranslation = $this->translationFor($car->gearType, $locale);
+        $carRouteKey = $this->carRouteKey($car, $locale);
+        $detailsUrl = filled($carRouteKey)
+            ? route('website.cars.show', ['car' => $carRouteKey])
+            : 'javascript:void(0);';
 
         $dailyMainPrice = $car->daily_main_price ? (float) $car->daily_main_price : null;
         $dailyDiscountPrice = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -414,7 +418,7 @@ class CarController extends Controller
 
         return [
             'id' => $car->id,
-            'details_url' => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
+            'details_url' => $detailsUrl,
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'brand_name' => $brandTranslation?->name,
             'category_name' => $categoryTranslation?->name,

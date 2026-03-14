@@ -185,6 +185,10 @@ class HomeController extends Controller
         $carTranslation   = $this->translationFor($car, $locale);
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $gearTranslation  = $this->translationFor($car->gearType, $locale);
+        $carRouteKey = $this->carRouteKey($car, $locale);
+        $detailsUrl = filled($carRouteKey)
+            ? route('website.cars.show', ['car' => $carRouteKey])
+            : 'javascript:void(0);';
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
         $dailyDiscount = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -209,7 +213,7 @@ class HomeController extends Controller
             'daily_main_price' => $dailyMain ? (int) ceil($dailyMain * $currencyRate) : null,
             'currency_symbol'  => $currencySymbol,
             'passenger_capacity' => $car->passenger_capacity,
-            'details_url'      => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
+            'details_url'      => $detailsUrl,
         ];
     }
 

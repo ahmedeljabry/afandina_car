@@ -169,6 +169,10 @@ class BlogController extends Controller
         $carTranslation = $this->translationFor($car, $locale);
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $categoryTranslation = $this->translationFor($car->category, $locale);
+        $carRouteKey = $this->carRouteKey($car, $locale);
+        $detailsUrl = filled($carRouteKey)
+            ? route('website.cars.show', ['car' => $carRouteKey])
+            : 'javascript:void(0);';
 
         return [
             'id' => $car->id,
@@ -177,7 +181,7 @@ class BlogController extends Controller
             'category_name' => $categoryTranslation?->name,
             'year' => $car->year?->year,
             'image_path' => $car->default_image_path,
-            'details_url' => route('website.cars.show', ['car' => $this->carRouteKey($car, $locale)]),
+            'details_url' => $detailsUrl,
         ];
     }
 
