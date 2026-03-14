@@ -409,9 +409,7 @@ class CarController extends Controller
         $carRouteKey = $this->carRouteKey($car, $locale);
         $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : '';
         $categoryRouteKey = $car->category ? $this->categoryRouteKey($car->category, $locale) : '';
-        $detailsUrl = filled($carRouteKey)
-            ? route('website.cars.show', ['car' => $carRouteKey])
-            : route('website.cars.index');
+        $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
 
         $dailyMainPrice = $car->daily_main_price ? (float) $car->daily_main_price : null;
         $dailyDiscountPrice = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -431,13 +429,9 @@ class CarController extends Controller
             'details_url' => $detailsUrl,
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'brand_name' => $brandTranslation?->name,
-            'brand_url' => filled($brandRouteKey)
-                ? route('website.cars.brand', ['brand' => $brandRouteKey])
-                : route('website.cars.index'),
+            'brand_url' => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
             'category_name' => $categoryTranslation?->name,
-            'category_url' => filled($categoryRouteKey)
-                ? route('website.cars.category', ['category' => $categoryRouteKey])
-                : route('website.cars.index'),
+            'category_url' => $car->category ? route('website.cars.category', ['category' => $categoryRouteKey]) : route('website.cars.index'),
             'gear_type_name' => $gearTypeTranslation?->name,
             'year' => $car->year?->year,
             'image_path' => $car->default_image_path,
@@ -487,7 +481,9 @@ class CarController extends Controller
 
     private function carRouteKey(Car $car, string $locale): string
     {
-        return (string) $this->carSlugForLocale($car, $locale);
+        $slug = $this->carSlugForLocale($car, $locale);
+
+        return filled($slug) ? (string) $slug : (string) $car->id;
     }
 
     private function carSlugForLocale(Car $car, string $locale): ?string
@@ -576,9 +572,7 @@ class CarController extends Controller
         return [
             'id' => $car->id,
             'slug' => $carRouteKey,
-            'details_url' => filled($carRouteKey)
-                ? route('website.cars.show', ['car' => $carRouteKey])
-                : route('website.cars.index'),
+            'details_url' => route('website.cars.show', ['car' => $carRouteKey]),
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'description' => $carTranslation?->description,
             'long_description' => $carTranslation?->long_description,
@@ -589,13 +583,9 @@ class CarController extends Controller
             'discount_rate' => $discountRate,
             'listed_on' => $car->created_at?->translatedFormat('d M, Y'),
             'brand_name' => $brandTranslation?->name,
-            'brand_url' => filled($brandRouteKey)
-                ? route('website.cars.brand', ['brand' => $brandRouteKey])
-                : route('website.cars.index'),
+            'brand_url' => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
             'category_name' => $categoryTranslation?->name,
-            'category_url' => filled($categoryRouteKey)
-                ? route('website.cars.category', ['category' => $categoryRouteKey])
-                : route('website.cars.index'),
+            'category_url' => $car->category ? route('website.cars.category', ['category' => $categoryRouteKey]) : route('website.cars.index'),
             'gear_type_name' => $gearTypeTranslation?->name,
             'color_name' => $colorTranslation?->name,
             'model_name' => $carModelTranslation?->name,
@@ -742,11 +732,13 @@ class CarController extends Controller
             ? $brand->translations
             : $brand->translations()->get();
 
-        return (string) (
+        $slug = (
             $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
             ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
         );
+
+        return filled($slug) ? (string) $slug : (string) $brand->id;
     }
 
     private function categoryRouteKey(Category $category, string $locale): string
@@ -755,10 +747,12 @@ class CarController extends Controller
             ? $category->translations
             : $category->translations()->get();
 
-        return (string) (
+        $slug = (
             $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
             ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
         );
+
+        return filled($slug) ? (string) $slug : (string) $category->id;
     }
 }

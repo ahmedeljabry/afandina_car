@@ -37,8 +37,8 @@ class HomeController extends Controller
             ->get()
             ->map(function (Category $category) use ($locale) {
                 $translation = $this->translationFor($category, $locale);
-                $categorySlug = $translation?->slug
-                    ?: $this->translationFor($category, 'en')?->slug;
+                $categoryRouteKey = $this->categoryRouteKey($category, $locale);
+                $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
 
                 return [
                     'id'         => $category->id,
@@ -46,9 +46,7 @@ class HomeController extends Controller
                     'slug'       => $categorySlug,
                     'image_path' => $category->image_path,
                     'cars_count' => (int) $category->cars_count,
-                    'url'        => filled($categorySlug)
-                        ? route('website.cars.category', ['category' => $categorySlug])
-                        : route('website.cars.index'),
+                    'url'        => route('website.cars.category', ['category' => $categoryRouteKey]),
                 ];
             });
 
@@ -80,15 +78,15 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function (Brand $brand) use ($locale) {
-                $brandSlug = $this->translationFor($brand, $locale)?->slug
-                    ?: $this->translationFor($brand, 'en')?->slug;
+                $brandRouteKey = $this->brandRouteKey($brand, $locale);
+                $brandSlug = ctype_digit($brandRouteKey) ? null : $brandRouteKey;
 
                 return [
+                    'id' => $brand->id,
                     'name'      => $this->translationFor($brand, $locale)?->name ?? '',
                     'logo_path' => $brand->logo_path,
-                    'url'       => filled($brandSlug)
-                        ? route('website.cars.brand', ['brand' => $brandSlug])
-                        : route('website.cars.index'),
+                    'slug'      => $brandSlug,
+                    'url'       => route('website.cars.brand', ['brand' => $brandRouteKey]),
                 ];
             });
 
@@ -137,14 +135,14 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function (Category $category) use ($locale) {
-                $categorySlug = $this->translationFor($category, $locale)?->slug
-                    ?: $this->translationFor($category, 'en')?->slug;
+                $categoryRouteKey = $this->categoryRouteKey($category, $locale);
+                $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
 
                 return [
+                    'id' => $category->id,
                     'name' => $this->translationFor($category, $locale)?->name ?? '',
-                    'url'  => filled($categorySlug)
-                        ? route('website.cars.category', ['category' => $categorySlug])
-                        : route('website.cars.index'),
+                    'slug' => $categorySlug,
+                    'url'  => route('website.cars.category', ['category' => $categoryRouteKey]),
                 ];
             });
 
@@ -153,14 +151,14 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function (Brand $brand) use ($locale) {
-                $brandSlug = $this->translationFor($brand, $locale)?->slug
-                    ?: $this->translationFor($brand, 'en')?->slug;
+                $brandRouteKey = $this->brandRouteKey($brand, $locale);
+                $brandSlug = ctype_digit($brandRouteKey) ? null : $brandRouteKey;
 
                 return [
+                    'id' => $brand->id,
                     'name' => $this->translationFor($brand, $locale)?->name ?? '',
-                    'url'  => filled($brandSlug)
-                        ? route('website.cars.brand', ['brand' => $brandSlug])
-                        : route('website.cars.index'),
+                    'slug' => $brandSlug,
+                    'url'  => route('website.cars.brand', ['brand' => $brandRouteKey]),
                 ];
             });
 
@@ -196,9 +194,7 @@ class HomeController extends Controller
         $gearTranslation  = $this->translationFor($car->gearType, $locale);
         $carRouteKey = $this->carRouteKey($car, $locale);
         $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : '';
-        $detailsUrl = filled($carRouteKey)
-            ? route('website.cars.show', ['car' => $carRouteKey])
-            : route('website.cars.index');
+        $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
         $dailyDiscount = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -212,9 +208,7 @@ class HomeController extends Controller
             'id'               => $car->id,
             'name'             => $carTranslation?->name ?? '',
             'brand_name'       => $brandTranslation?->name,
-            'brand_url'        => filled($brandRouteKey)
-                ? route('website.cars.brand', ['brand' => $brandRouteKey])
-                : route('website.cars.index'),
+            'brand_url'        => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
             'gear_type'        => $gearTranslation?->name,
             'year'             => $car->year?->year,
             'status'           => $car->status,
@@ -236,7 +230,7 @@ class HomeController extends Controller
             ?? $this->translationFor($car, 'en')?->slug
             ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
 
-        return (string) $slug;
+        return filled($slug) ? (string) $slug : (string) $car->id;
     }
 
     private function brandRouteKey(Brand $brand, string $locale): string
@@ -245,11 +239,28 @@ class HomeController extends Controller
             ? $brand->translations
             : $brand->translations()->get();
 
-        return (string) (
+        $slug = (
             $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
             ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
         );
+
+        return filled($slug) ? (string) $slug : (string) $brand->id;
+    }
+
+    private function categoryRouteKey(Category $category, string $locale): string
+    {
+        $translations = $category->relationLoaded('translations')
+            ? $category->translations
+            : $category->translations()->get();
+
+        $slug = (
+            $translations->firstWhere('locale', $locale)?->slug
+            ?? $translations->firstWhere('locale', 'en')?->slug
+            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
+        );
+
+        return filled($slug) ? (string) $slug : (string) $category->id;
     }
 
     private function resolveCurrencyContext(string $locale): array

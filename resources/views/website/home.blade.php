@@ -431,7 +431,7 @@
         ],
     ];
 
-    $supportItems = [
+    $supportTickerItems = [
         $homeTranslation?->support_item_1_text ?: __('website.home.support.best_rate'),
         $homeTranslation?->support_item_2_text ?: __('website.home.support.free_cancellation'),
         $homeTranslation?->support_item_3_text ?: __('website.home.support.best_security'),
@@ -522,15 +522,18 @@
 
                     <div class="row home-category-grid">
                         @forelse ($categories as $category)
+                            @php
+                                $categoryUrl = data_get($category, 'url', route('website.cars.index'));
+                            @endphp
                             <div class="home-category-col d-flex">
                                 <div class="category-item home-category-card flex-fill">
                                     <div class="category-info">
                                         <h6 class="title">
-                                            <a href="{{ $category['url'] }}" title="{{ $category['name'] }}">{{ $category['name'] }}</a>
+                                            <a href="{{ $categoryUrl }}" title="{{ $category['name'] }}">{{ $category['name'] }}</a>
                                         </h6>
                                         <div class="home-category-meta">
                                             <p class="home-category-count">{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
-                                            <a href="{{ $category['url'] }}" class="link-icon" aria-label="{{ __('website.home.actions.view_all_cars') }}">
+                                            <a href="{{ $categoryUrl }}" class="link-icon" aria-label="{{ __('website.home.actions.view_all_cars') }}">
                                                 <i class="bx bx-right-arrow-alt"></i>
                                             </a>
                                         </div>
@@ -717,8 +720,11 @@
             </div>
             <div class="brands-slider owl-carousel">
                 @foreach ($brands as $brand)
+                    @php
+                        $brandUrl = data_get($brand, 'url', route('website.cars.index'));
+                    @endphp
                     <div class="brand-wrap">
-                        <a href="{{ $brand['url'] }}" class="d-block text-center text-reset text-decoration-none">
+                        <a href="{{ $brandUrl }}" class="d-block text-center text-reset text-decoration-none">
                             @if ($brand['logo_path'])
                                 <img src="{{ asset('storage/' . $brand['logo_path']) }}" alt="{{ $brand['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
                             @endif
@@ -908,7 +914,7 @@
     <section class="support-section">
         <div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
             <div class="slide-list d-flex">
-                @foreach ($supportItems as $supportItem)
+                @foreach ($supportTickerItems as $supportItem)
                     <div class="support-item">
                         <h2>{{ $supportItem }}</h2>
                     </div>
@@ -929,12 +935,15 @@
 
                 <div class="row row-gap-3 justify-content-center">
                     @foreach ($blogs as $blog)
+                        @php
+                            $blogUrl = data_get($blog, 'details_url', data_get($blog, 'url', route('website.blogs.index')));
+                        @endphp
                         <!-- Blog Item -->
                         <div class="col-lg-4 col-md-6 d-flex">
                             <div class="blog-item flex-fill">
                                 @if ($blog['image_path'])
                                     <div class="blog-img">
-                                        <a href="{{ $blog['url'] }}">
+                                        <a href="{{ $blogUrl }}">
                                             <img src="{{ asset('storage/' . $blog['image_path']) }}"
                                                 class="img-fluid" alt="{{ $blog['title'] }}" loading="lazy" fetchpriority="low" decoding="async">
                                         </a>
@@ -943,7 +952,7 @@
                                 <div class="blog-content">
                                     <div class="d-flex align-center justify-content-between blog-category">
                                         @if (filled($blog['slug'] ?? null))
-                                            <a href="{{ $blog['url'] }}" class="category">{{ Str::headline($blog['slug']) }}</a>
+                                            <a href="{{ $blogUrl }}" class="category">{{ Str::headline($blog['slug']) }}</a>
                                         @endif
                                         @if ($blog['published_on'])
                                             <p class="date d-inline-flex align-center">
@@ -952,7 +961,7 @@
                                         @endif
                                     </div>
                                     <h5 class="title">
-                                        <a href="{{ $blog['url'] }}">{{ $blog['title'] }}</a>
+                                        <a href="{{ $blogUrl }}">{{ $blog['title'] }}</a>
                                     </h5>
                                 </div>
                             </div>
@@ -1040,8 +1049,11 @@
                                     <div class="col-lg-2 col-md-4 col-sm-6">
                                         <ul class="category-list">
                                             @foreach ($chunk as $item)
+                                                @php
+                                                    $catalogItemUrl = data_get($item, 'url', route('website.cars.index'));
+                                                @endphp
                                                 <li>
-                                                    <a href="{{ $item['url'] }}">{{ $item['name'] }}</a>
+                                                    <a href="{{ $catalogItemUrl }}">{{ $item['name'] }}</a>
                                                 </li>
                                             @endforeach
                                         </ul>

@@ -72,16 +72,22 @@
                 <div class="blogdetails-pagination">
                     <ul>
                         @if($previousPost)
+                            @php
+                                $previousUrl = data_get($previousPost, 'details_url', data_get($previousPost, 'url', route('website.blogs.index')));
+                            @endphp
                             <li>
-                                <a href="{{ $previousPost['url'] }}" class="prev-link"><i class="fas fa-regular fa-arrow-left"></i> {{ __('website.blog.navigation.previous') }}</a>
-                                <a href="{{ $previousPost['url'] }}"><h3>{{ Str::limit($previousPost['title'], 70) }}</h3></a>
+                                <a href="{{ $previousUrl }}" class="prev-link"><i class="fas fa-regular fa-arrow-left"></i> {{ __('website.blog.navigation.previous') }}</a>
+                                <a href="{{ $previousUrl }}"><h3>{{ Str::limit($previousPost['title'], 70) }}</h3></a>
                             </li>
                         @endif
 
                         @if($nextPost)
+                            @php
+                                $nextUrl = data_get($nextPost, 'details_url', data_get($nextPost, 'url', route('website.blogs.index')));
+                            @endphp
                             <li>
-                                <a href="{{ $nextPost['url'] }}" class="next-link">{{ __('website.blog.navigation.next') }} <i class="fas fa-regular fa-arrow-right"></i></a>
-                                <a href="{{ $nextPost['url'] }}"><h3>{{ Str::limit($nextPost['title'], 70) }}</h3></a>
+                                <a href="{{ $nextUrl }}" class="next-link">{{ __('website.blog.navigation.next') }} <i class="fas fa-regular fa-arrow-right"></i></a>
+                                <a href="{{ $nextUrl }}"><h3>{{ Str::limit($nextPost['title'], 70) }}</h3></a>
                             </li>
                         @endif
                     </ul>

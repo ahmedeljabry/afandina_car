@@ -56,14 +56,19 @@ function formatNumbersToArabic($data)
 if (!function_exists('website_entity_link')) {
     function website_entity_link(mixed $item, string $routeName, string $parameterName, string $fallbackRoute = 'website.cars.index'): string
     {
-        $directUrl = data_get($item, 'url');
-        if (filled($directUrl)) {
-            return (string) $directUrl;
-        }
-
         $slug = data_get($item, 'slug');
         if (filled($slug)) {
             return route($routeName, [$parameterName => $slug]);
+        }
+
+        $id = data_get($item, 'id');
+        if (filled($id)) {
+            return route($routeName, [$parameterName => $id]);
+        }
+
+        $directUrl = data_get($item, 'url');
+        if (filled($directUrl)) {
+            return (string) $directUrl;
         }
 
         return route($fallbackRoute);

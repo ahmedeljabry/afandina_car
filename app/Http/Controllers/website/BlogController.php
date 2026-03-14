@@ -170,9 +170,7 @@ class BlogController extends Controller
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $categoryTranslation = $this->translationFor($car->category, $locale);
         $carRouteKey = $this->carRouteKey($car, $locale);
-        $detailsUrl = filled($carRouteKey)
-            ? route('website.cars.show', ['car' => $carRouteKey])
-            : route('website.cars.index');
+        $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
 
         return [
             'id' => $car->id,
@@ -191,7 +189,7 @@ class BlogController extends Controller
             ?? $this->translationFor($car, 'en')?->slug
             ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
 
-        return (string) $slug;
+        return filled($slug) ? (string) $slug : (string) $car->id;
     }
 
     private function buildExcerpt(mixed $description, mixed $content, int $limit = 160): ?string

@@ -64,10 +64,12 @@ class AppServiceProvider extends ServiceProvider
                     }
 
                     return [
+                        'id' => $brand->id,
                         'name' => $name,
                         'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
                         'cars_count' => (int) ($brand->cars_count ?? 0),
                         'slug' => $slug,
+                        'url' => route('website.cars.brand', ['brand' => filled($slug) ? $slug : $brand->id]),
                     ];
                 })
                 ->filter()
@@ -93,10 +95,12 @@ class AppServiceProvider extends ServiceProvider
                     }
 
                     return [
+                        'id' => $category->id,
                         'name' => $name,
                         'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
                         'cars_count' => (int) ($category->cars_count ?? 0),
                         'slug' => $slug,
+                        'url' => route('website.cars.category', ['category' => filled($slug) ? $slug : $category->id]),
                     ];
                 })
                 ->filter()
@@ -150,8 +154,10 @@ class AppServiceProvider extends ServiceProvider
                     }
 
                     return [
+                        'id' => $brand->id,
                         'name' => $name,
                         'slug' => $slug,
+                        'url' => route('website.cars.brand', ['brand' => filled($slug) ? $slug : $brand->id]),
                     ];
                 })
                 ->filter()
@@ -173,8 +179,10 @@ class AppServiceProvider extends ServiceProvider
                     }
 
                     return [
+                        'id' => $category->id,
                         'name' => $name,
                         'slug' => $slug,
+                        'url' => route('website.cars.category', ['category' => filled($slug) ? $slug : $category->id]),
                     ];
                 })
                 ->filter()
@@ -254,12 +262,12 @@ class AppServiceProvider extends ServiceProvider
                     ?? $homeTranslation?->contact_us_paragraph
                     ?? $contact?->additional_info,
                 'footerCompanyName' => $branding['site_name'],
-                'supportItems' => $supportItems,
-                'socialLinks' => $socialLinks,
+                'footerSupportItems' => $supportItems,
+                'footerSocialLinks' => $socialLinks,
                 'footerBrands' => $footerBrands,
                 'footerCategories' => $footerCategories,
                 'footerLocations' => $footerLocations,
-                'paymentMethods' => $paymentMethods,
+                'footerPaymentMethods' => $paymentMethods,
             ]);
         });
 

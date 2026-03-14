@@ -3,12 +3,16 @@
     $footerDescription = $footerDescription ?? null;
     $footerCompanyName = $footerCompanyName ?? config('app.name', 'Afandina Car Rental');
     $footerHomeTranslation = $footerHomeTranslation ?? null;
-    $supportItems = $supportItems ?? collect();
-    $socialLinks = $socialLinks ?? collect();
-    $footerBrands = $footerBrands ?? collect();
-    $footerCategories = $footerCategories ?? collect();
-    $footerLocations = $footerLocations ?? collect();
-    $paymentMethods = $paymentMethods ?? collect();
+    $footerSupportItems = collect($footerSupportItems ?? $supportItems ?? [])
+        ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'label')))
+        ->values();
+    $footerSocialLinks = collect($footerSocialLinks ?? $socialLinks ?? [])
+        ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
+        ->values();
+    $footerBrands = collect($footerBrands ?? []);
+    $footerCategories = collect($footerCategories ?? []);
+    $footerLocations = collect($footerLocations ?? []);
+    $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);
 @endphp
 
 <footer class="footer footer-four">
@@ -27,12 +31,16 @@
                             </div>
                         @endif
 
-                        @if ($socialLinks->isNotEmpty())
+                        @if ($footerSocialLinks->isNotEmpty())
                             <ul class="social-icon">
-                                @foreach ($socialLinks as $socialLink)
+                                @foreach ($footerSocialLinks as $socialLink)
+                                    @php
+                                        $socialUrl = data_get($socialLink, 'url');
+                                        $socialIcon = data_get($socialLink, 'icon', 'fa-solid fa-link');
+                                    @endphp
                                     <li>
-                                        <a href="{{ $socialLink['url'] }}" target="_blank" rel="noopener noreferrer">
-                                            <i class="{{ $socialLink['icon'] }}"></i>
+                                        <a href="{{ $socialUrl }}" target="_blank" rel="noopener noreferrer">
+                                            <i class="{{ $socialIcon }}"></i>
                                         </a>
                                     </li>
                                 @endforeach
@@ -72,11 +80,22 @@
                             <i class="bx bx-headphone me-1"></i>{{ __('website.footer.support') }}
                         </h5>
                         <ul>
-                            @forelse ($supportItems as $supportItem)
+                            @forelse ($footerSupportItems as $supportItem)
+                                @php
+                                    $supportUrl = data_get($supportItem, 'url');
+                                    $supportIcon = data_get($supportItem, 'icon', 'bx bx-link');
+                                    $supportLabel = data_get($supportItem, 'label');
+                                @endphp
                                 <li>
-                                    <a href="{{ $supportItem['url'] ?: 'javascript:void(0);' }}">
-                                        <i class="{{ $supportItem['icon'] }} me-1"></i>{{ $supportItem['label'] }}
-                                    </a>
+                                    @if (filled($supportUrl))
+                                        <a href="{{ $supportUrl }}">
+                                            <i class="{{ $supportIcon }} me-1"></i>{{ $supportLabel }}
+                                        </a>
+                                    @else
+                                        <span>
+                                            <i class="{{ $supportIcon }} me-1"></i>{{ $supportLabel }}
+                                        </span>
+                                    @endif
                                 </li>
                             @empty
                                 <li>{{ __('website.footer.no_support_details') }}</li>
@@ -96,7 +115,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                <a href="{{ filled($brand['slug'] ?? null) ? route('website.cars.brand', ['brand' => $brand['slug']]) : route('website.cars.index') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="{{ website_entity_link($brand, 'website.cars.brand', 'brand') }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $brand['name'] }}
                                 </a>
                             @empty
@@ -115,7 +134,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerCategories as $category)
-                                <a href="{{ filled($category['slug'] ?? null) ? route('website.cars.category', ['category' => $category['slug']]) : route('website.cars.index') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="{{ website_entity_link($category, 'website.cars.category', 'category') }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $category['name'] }}
                                 </a>
                             @empty
@@ -160,10 +179,10 @@
                     <div class="col-lg-4">
                         <div class="text-center mb-2 text-white-50">{{ __('website.footer.available_payment_methods') }}</div>
                         <div class="payment-list">
-                            @foreach ($paymentMethods as $paymentMethod)
-                                <a href="javascript:void(0);">
+                            @foreach ($footerPaymentMethods as $paymentMethod)
+                                <span>
                                     <img src="{{ $paymentMethod }}" alt="payment">
-                                </a>
+                                </span>
                             @endforeach
                         </div>
                     </div>
