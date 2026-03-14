@@ -68,7 +68,9 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
                         'cars_count' => (int) ($brand->cars_count ?? 0),
-                        'url' => route('website.cars.brand', ['brand' => $slug ?: $brand->id]),
+                        'url' => filled($slug)
+                            ? route('website.cars.brand', ['brand' => $slug])
+                            : 'javascript:void(0);',
                     ];
                 })
                 ->filter()
@@ -97,7 +99,9 @@ class AppServiceProvider extends ServiceProvider
                         'name' => $name,
                         'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
                         'cars_count' => (int) ($category->cars_count ?? 0),
-                        'url' => route('website.cars.category', ['category' => $slug ?: $category->id]),
+                        'url' => filled($slug)
+                            ? route('website.cars.category', ['category' => $slug])
+                            : 'javascript:void(0);',
                     ];
                 })
                 ->filter()
@@ -152,7 +156,9 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => route('website.cars.brand', ['brand' => $slug ?: $brand->id]),
+                        'url' => filled($slug)
+                            ? route('website.cars.brand', ['brand' => $slug])
+                            : 'javascript:void(0);',
                     ];
                 })
                 ->filter()
@@ -175,7 +181,9 @@ class AppServiceProvider extends ServiceProvider
 
                     return [
                         'name' => $name,
-                        'url' => route('website.cars.category', ['category' => $slug ?: $category->id]),
+                        'url' => filled($slug)
+                            ? route('website.cars.category', ['category' => $slug])
+                            : 'javascript:void(0);',
                     ];
                 })
                 ->filter()

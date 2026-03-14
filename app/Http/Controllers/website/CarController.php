@@ -234,6 +234,10 @@ class CarController extends Controller
         }
 
         $canonicalKey = $this->brandRouteKey($brandModel, $locale);
+        if (blank($canonicalKey)) {
+            abort(404);
+        }
+
         if ($requestedIdentifier !== $canonicalKey) {
             return redirect()->route('website.cars.brand', ['brand' => $canonicalKey]);
         }
@@ -283,6 +287,10 @@ class CarController extends Controller
         }
 
         $canonicalKey = $this->categoryRouteKey($categoryModel, $locale);
+        if (blank($canonicalKey)) {
+            abort(404);
+        }
+
         if ($requestedIdentifier !== $canonicalKey) {
             return redirect()->route('website.cars.category', ['category' => $canonicalKey]);
         }
@@ -718,7 +726,6 @@ class CarController extends Controller
             $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
             ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
-            ?? $brand->id
         );
     }
 
@@ -732,7 +739,6 @@ class CarController extends Controller
             $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
             ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
-            ?? $category->id
         );
     }
 }

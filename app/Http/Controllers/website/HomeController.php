@@ -46,7 +46,9 @@ class HomeController extends Controller
                     'slug'       => $categorySlug,
                     'image_path' => $category->image_path,
                     'cars_count' => (int) $category->cars_count,
-                    'url'        => route('website.cars.category', ['category' => $categorySlug ?: $category->id]),
+                    'url'        => filled($categorySlug)
+                        ? route('website.cars.category', ['category' => $categorySlug])
+                        : 'javascript:void(0);',
                 ];
             });
 
@@ -84,7 +86,9 @@ class HomeController extends Controller
                 return [
                     'name'      => $this->translationFor($brand, $locale)?->name ?? '',
                     'logo_path' => $brand->logo_path,
-                    'url'       => route('website.cars.brand', ['brand' => $brandSlug ?: $brand->id]),
+                    'url'       => filled($brandSlug)
+                        ? route('website.cars.brand', ['brand' => $brandSlug])
+                        : 'javascript:void(0);',
                 ];
             });
 
@@ -137,7 +141,9 @@ class HomeController extends Controller
 
                 return [
                     'name' => $this->translationFor($category, $locale)?->name ?? '',
-                    'url'  => route('website.cars.category', ['category' => $categorySlug ?: $category->id]),
+                    'url'  => filled($categorySlug)
+                        ? route('website.cars.category', ['category' => $categorySlug])
+                        : 'javascript:void(0);',
                 ];
             });
 
@@ -151,7 +157,9 @@ class HomeController extends Controller
 
                 return [
                     'name' => $this->translationFor($brand, $locale)?->name ?? '',
-                    'url'  => route('website.cars.brand', ['brand' => $brandSlug ?: $brand->id]),
+                    'url'  => filled($brandSlug)
+                        ? route('website.cars.brand', ['brand' => $brandSlug])
+                        : 'javascript:void(0);',
                 ];
             });
 
