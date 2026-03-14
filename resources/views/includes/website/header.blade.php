@@ -154,21 +154,27 @@
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
                                     @forelse ($headerBrands ?? [] as $brandItem)
+                                        @php
+                                            $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
+                                            $brandLogoPath = data_get($brandItem, 'logo_path');
+                                            $brandCarsCount = (int) data_get($brandItem, 'cars_count', 0);
+                                            $brandHref = website_entity_link($brandItem, 'website.cars.brand', 'brand');
+                                        @endphp
                                         <li class="header-mega-grid-item">
-                                            <a href="{{ filled($brandItem['slug'] ?? null) ? route('website.cars.brand', ['brand' => $brandItem['slug']]) : route('website.cars.index') }}" class="header-mega-item">
+                                            <a href="{{ $brandHref }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
-                                                    @if (filled($brandItem['logo_path'] ?? null))
-                                                        <img src="{{ $brandItem['logo_path'] }}" alt="{{ $brandItem['name'] }}">
+                                                    @if (filled($brandLogoPath))
+                                                        <img src="{{ $brandLogoPath }}" alt="{{ $brandName }}">
                                                     @else
-                                                        <span class="header-mega-item-fallback">{{ Str::substr($brandItem['name'], 0, 1) }}</span>
+                                                        <span class="header-mega-item-fallback">{{ Str::substr($brandName, 0, 1) }}</span>
                                                     @endif
                                                 </span>
                                                 <span class="header-mega-item-content">
-                                                    <strong>{{ $brandItem['name'] }}</strong>
-                                                    <small>{{ __('website.nav.cars_count', ['count' => $brandItem['cars_count']]) }}</small>
+                                                    <strong>{{ $brandName }}</strong>
+                                                    <small>{{ __('website.nav.cars_count', ['count' => $brandCarsCount]) }}</small>
                                                 </span>
                                                 <span class="header-mega-item-cta">
-                                                    {{ __('website.nav.browse_cars', ['name' => $brandItem['name']]) }}
+                                                    {{ __('website.nav.browse_cars', ['name' => $brandName]) }}
                                                 </span>
                                             </a>
                                         </li>
@@ -192,21 +198,27 @@
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
                                     @forelse ($headerCategories ?? [] as $categoryItem)
+                                        @php
+                                            $categoryName = (string) data_get($categoryItem, 'name', __('website.common.category'));
+                                            $categoryImagePath = data_get($categoryItem, 'image_path');
+                                            $categoryCarsCount = (int) data_get($categoryItem, 'cars_count', 0);
+                                            $categoryHref = website_entity_link($categoryItem, 'website.cars.category', 'category');
+                                        @endphp
                                         <li class="header-mega-grid-item">
-                                            <a href="{{ filled($categoryItem['slug'] ?? null) ? route('website.cars.category', ['category' => $categoryItem['slug']]) : route('website.cars.index') }}" class="header-mega-item">
+                                            <a href="{{ $categoryHref }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
-                                                    @if (filled($categoryItem['image_path'] ?? null))
-                                                        <img src="{{ $categoryItem['image_path'] }}" alt="{{ $categoryItem['name'] }}">
+                                                    @if (filled($categoryImagePath))
+                                                        <img src="{{ $categoryImagePath }}" alt="{{ $categoryName }}">
                                                     @else
-                                                        <span class="header-mega-item-fallback">{{ Str::substr($categoryItem['name'], 0, 1) }}</span>
+                                                        <span class="header-mega-item-fallback">{{ Str::substr($categoryName, 0, 1) }}</span>
                                                     @endif
                                                 </span>
                                                 <span class="header-mega-item-content">
-                                                    <strong>{{ $categoryItem['name'] }}</strong>
-                                                    <small>{{ __('website.nav.cars_count', ['count' => $categoryItem['cars_count']]) }}</small>
+                                                    <strong>{{ $categoryName }}</strong>
+                                                    <small>{{ __('website.nav.cars_count', ['count' => $categoryCarsCount]) }}</small>
                                                 </span>
                                                 <span class="header-mega-item-cta">
-                                                    {{ __('website.nav.browse_cars', ['name' => $categoryItem['name']]) }}
+                                                    {{ __('website.nav.browse_cars', ['name' => $categoryName]) }}
                                                 </span>
                                             </a>
                                         </li>
