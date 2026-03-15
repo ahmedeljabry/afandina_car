@@ -5,15 +5,12 @@ namespace App\Http\Controllers\website;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\Car;
-use App\Traits\HasLocalizedCardNames;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
-    use HasLocalizedCardNames;
-
     public function index(Request $request)
     {
         $locale = app()->getLocale() ?? 'en';
@@ -148,7 +145,6 @@ class BlogController extends Controller
         return [
             'id' => $blog->id,
             'title' => $translation?->title ?? __('website.blog.common.untitled'),
-            ...$this->localizedCardNames($blog, 'title'),
             'description' => $translation?->description,
             'excerpt' => $this->buildExcerpt($translation?->description, $translation?->content),
             'slug' => $blog->slug,
@@ -179,7 +175,6 @@ class BlogController extends Controller
         return [
             'id' => $car->id,
             'name' => $carTranslation?->name ?? __('website.common.car'),
-            ...$this->localizedCardNames($car, 'name', $carTranslation?->name ?? __('website.common.car')),
             'brand_name' => $brandTranslation?->name,
             'category_name' => $categoryTranslation?->name,
             'year' => $car->year?->year,

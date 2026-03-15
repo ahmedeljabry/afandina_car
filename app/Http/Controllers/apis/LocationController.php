@@ -19,7 +19,9 @@ class LocationController extends Controller
 
         $homeData = $this->getHome($language);
         // Start with a base query
-        $query = Location::where('is_active',true)->with('translations');
+        $query = Location::where('is_active',true)->with(['translations' => function ($query) use ($language) {
+            $query->where('locale', $language);
+        }]);
         // 1. Filter by brand name (translated)
         if ($request->has('filters')) {
             $filters = $request->input('filters');

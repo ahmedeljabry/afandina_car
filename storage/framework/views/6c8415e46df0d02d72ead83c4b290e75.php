@@ -123,7 +123,12 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="<?php echo e(route('website.cars.brand', $brand['slug'])); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                <?php
+                                    $brandSlug = data_get($brand, 'slug');
+                                    $brandId = data_get($brand, 'id');
+                                    $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                ?>
+                                <a href="<?php echo e($brandHref); ?>" class="btn btn-outline-light btn-sm rounded-pill">
                                     <?php echo e($brand['name']); ?>
 
                                 </a>
@@ -144,7 +149,12 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="<?php echo e(website_entity_link($category, 'website.cars.category', 'category')); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                <?php
+                                    $categorySlug = data_get($category, 'slug');
+                                    $categoryId = data_get($category, 'id');
+                                    $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
+                                ?>
+                                <a href="<?php echo e($categoryHref); ?>" class="btn btn-outline-light btn-sm rounded-pill">
                                     <?php echo e($category['name']); ?>
 
                                 </a>

@@ -23,7 +23,9 @@ class CategoryController extends Controller
         $result = Cache::remember($cacheKey, 3600, function() use ($request, $language) {
             $homeData = $this->getHome($language);
             
-            $query = Category::where('is_active',true)->with('translations');
+            $query = Category::where('is_active',true)->with(['translations' => function ($query) use ($language) {
+                $query->where('locale', $language);
+            }]);
 
             if ($request->has('filters')) {
                 $filters = $request->input('filters');

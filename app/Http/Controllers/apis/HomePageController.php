@@ -66,27 +66,12 @@ class HomePageController extends Controller
             $join->on('categories.id', '=', 'category_translations.category_id')
                 ->where('category_translations.locale', '=', $language);
         })
-            ->leftJoin('category_translations as category_translations_en', function ($join) {
-                $join->on('categories.id', '=', 'category_translations_en.category_id')
-                    ->where('category_translations_en.locale', '=', 'en');
-            })
-            ->leftJoin('category_translations as category_translations_ar', function ($join) {
-                $join->on('categories.id', '=', 'category_translations_ar.category_id')
-                    ->where('category_translations_ar.locale', '=', 'ar');
-            })
             ->where(function ($query) use ($searchTerm) {
                 $query->whereHas('translations', function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%");
                 });
             })
-            ->select(
-                'categories.id',
-                'categories.image_path',
-                'categories.slug',
-                'category_translations.name',
-                'category_translations_en.name as name_en',
-                'category_translations_ar.name as name_ar'
-            )
+            ->select('categories.id', 'categories.image_path', 'categories.slug', 'category_translations.name')
             ->withCount('cars') // Count the number of cars for each brand
             ->limit(5) // Adjust the limit as needed
             ->get();
@@ -96,27 +81,12 @@ class HomePageController extends Controller
             $join->on('brands.id', '=', 'brand_translations.brand_id')
                 ->where('brand_translations.locale', '=', $language);
         })
-            ->leftJoin('brand_translations as brand_translations_en', function ($join) {
-                $join->on('brands.id', '=', 'brand_translations_en.brand_id')
-                    ->where('brand_translations_en.locale', '=', 'en');
-            })
-            ->leftJoin('brand_translations as brand_translations_ar', function ($join) {
-                $join->on('brands.id', '=', 'brand_translations_ar.brand_id')
-                    ->where('brand_translations_ar.locale', '=', 'ar');
-            })
             ->where(function ($query) use ($searchTerm) {
                 $query->whereHas('translations', function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%");
                 });
             })
-            ->select(
-                'brands.id',
-                'brands.logo_path',
-                'brands.slug',
-                'brand_translations.name',
-                'brand_translations_en.name as name_en',
-                'brand_translations_ar.name as name_ar'
-            )
+            ->select('brands.id', 'brands.logo_path', 'brands.slug', 'brand_translations.name')
             ->withCount('cars') // Count the number of cars for each brand
             ->limit(5) // Adjust the limit as needed
             ->get();
@@ -126,27 +96,12 @@ class HomePageController extends Controller
             $join->on('cars.id', '=', 'car_translations.car_id')
                 ->where('car_translations.locale', '=', $language);
         })
-            ->leftJoin('car_translations as car_translations_en', function ($join) {
-                $join->on('cars.id', '=', 'car_translations_en.car_id')
-                    ->where('car_translations_en.locale', '=', 'en');
-            })
-            ->leftJoin('car_translations as car_translations_ar', function ($join) {
-                $join->on('cars.id', '=', 'car_translations_ar.car_id')
-                    ->where('car_translations_ar.locale', '=', 'ar');
-            })
             ->where(function ($query) use ($searchTerm) {
                 $query->whereHas('translations', function ($q) use ($searchTerm) {
                     $q->where('name', 'LIKE', "%{$searchTerm}%");
                 });
             })
-            ->select(
-                'cars.id',
-                'cars.default_image_path',
-                'cars.slug',
-                'car_translations.name',
-                DB::raw('COALESCE(car_translations_en.name, car_translations.name) as name_en'),
-                DB::raw('COALESCE(car_translations_ar.name, car_translations.name) as name_ar')
-            )
+            ->select('cars.id', 'cars.default_image_path', 'cars.slug', 'car_translations.name')
             ->limit(5) // Adjust the limit as needed
             ->get();
 

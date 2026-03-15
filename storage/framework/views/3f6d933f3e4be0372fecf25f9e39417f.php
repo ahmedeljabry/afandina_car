@@ -1,11 +1,12 @@
 <?php
     use Illuminate\Support\Str;
-    use Illuminate\Support\Facades\Route;
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
     $currentLocale = app()->getLocale();
     $supportedLocales = collect(LaravelLocalization::getSupportedLocales())->only(['ar', 'en']);
-    $contactPageUrl = Route::has('website.contact.index') ? route('website.contact.index') : 'javascript:void(0);';
+    $contactPageUrl = route('website.contact.index');
+    $brandsSectionUrl = route('home') . '#home-brands';
+    $categoriesSectionUrl = route('home') . '#home-categories';
 ?>
 
 <style>
@@ -144,7 +145,7 @@
                     </li>
 
                     <li class="has-submenu has-mega-dropdown <?php echo e(request()->routeIs('website.cars.brand') ? 'active' : ''); ?>">
-                        <a href="javascript:void(0);">
+                        <a href="<?php echo e($brandsSectionUrl); ?>">
                             <?php echo e(__('website.nav.brands')); ?>
 
                             <i class="fas fa-chevron-down"></i>
@@ -154,21 +155,29 @@
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
                                     <?php $__empty_1 = true; $__currentLoopData = $headerBrands ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brandItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                        <?php
+                                            $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
+                                            $brandLogoPath = data_get($brandItem, 'logo_path');
+                                            $brandCarsCount = (int) data_get($brandItem, 'cars_count', 0);
+                                            $brandSlug = data_get($brandItem, 'slug');
+                                            $brandId = data_get($brandItem, 'id');
+                                            $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                        ?>
                                         <li class="header-mega-grid-item">
-                                            <a href="<?php echo e($brandItem['url']); ?>" class="header-mega-item">
+                                            <a href="<?php echo e($brandHref); ?>" class="header-mega-item">
                                                 <span class="header-mega-item-media">
-                                                    <?php if(filled($brandItem['logo_path'] ?? null)): ?>
-                                                        <img src="<?php echo e($brandItem['logo_path']); ?>" alt="<?php echo e($brandItem['name']); ?>">
+                                                    <?php if(filled($brandLogoPath)): ?>
+                                                        <img src="<?php echo e($brandLogoPath); ?>" alt="<?php echo e($brandName); ?>">
                                                     <?php else: ?>
-                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($brandItem['name'], 0, 1)); ?></span>
+                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($brandName, 0, 1)); ?></span>
                                                     <?php endif; ?>
                                                 </span>
                                                 <span class="header-mega-item-content">
-                                                    <strong><?php echo e($brandItem['name']); ?></strong>
-                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $brandItem['cars_count']])); ?></small>
+                                                    <strong><?php echo e($brandName); ?></strong>
+                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $brandCarsCount])); ?></small>
                                                 </span>
                                                 <span class="header-mega-item-cta">
-                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $brandItem['name']])); ?>
+                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $brandName])); ?>
 
                                                 </span>
                                             </a>
@@ -184,7 +193,7 @@
                     </li>
 
                     <li class="has-submenu has-mega-dropdown <?php echo e(request()->routeIs('website.cars.category') ? 'active' : ''); ?>">
-                        <a href="javascript:void(0);">
+                        <a href="<?php echo e($categoriesSectionUrl); ?>">
                             <?php echo e(__('website.nav.categories')); ?>
 
                             <i class="fas fa-chevron-down"></i>
@@ -194,21 +203,29 @@
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
                                     <?php $__empty_1 = true; $__currentLoopData = $headerCategories ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoryItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                        <?php
+                                            $categoryName = (string) data_get($categoryItem, 'name', __('website.common.category'));
+                                            $categoryImagePath = data_get($categoryItem, 'image_path');
+                                            $categoryCarsCount = (int) data_get($categoryItem, 'cars_count', 0);
+                                            $categorySlug = data_get($categoryItem, 'slug');
+                                            $categoryId = data_get($categoryItem, 'id');
+                                            $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
+                                        ?>
                                         <li class="header-mega-grid-item">
-                                            <a href="<?php echo e($categoryItem['url']); ?>" class="header-mega-item">
+                                            <a href="<?php echo e($categoryHref); ?>" class="header-mega-item">
                                                 <span class="header-mega-item-media">
-                                                    <?php if(filled($categoryItem['image_path'] ?? null)): ?>
-                                                        <img src="<?php echo e($categoryItem['image_path']); ?>" alt="<?php echo e($categoryItem['name']); ?>">
+                                                    <?php if(filled($categoryImagePath)): ?>
+                                                        <img src="<?php echo e($categoryImagePath); ?>" alt="<?php echo e($categoryName); ?>">
                                                     <?php else: ?>
-                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($categoryItem['name'], 0, 1)); ?></span>
+                                                        <span class="header-mega-item-fallback"><?php echo e(Str::substr($categoryName, 0, 1)); ?></span>
                                                     <?php endif; ?>
                                                 </span>
                                                 <span class="header-mega-item-content">
-                                                    <strong><?php echo e($categoryItem['name']); ?></strong>
-                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $categoryItem['cars_count']])); ?></small>
+                                                    <strong><?php echo e($categoryName); ?></strong>
+                                                    <small><?php echo e(__('website.nav.cars_count', ['count' => $categoryCarsCount])); ?></small>
                                                 </span>
                                                 <span class="header-mega-item-cta">
-                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $categoryItem['name']])); ?>
+                                                    <?php echo e(__('website.nav.browse_cars', ['name' => $categoryName])); ?>
 
                                                 </span>
                                             </a>
