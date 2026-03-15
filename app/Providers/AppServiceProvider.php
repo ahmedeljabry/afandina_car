@@ -54,12 +54,14 @@ class AppServiceProvider extends ServiceProvider
                 ->orderBy('id')
                 ->take(24)
                 ->get()
-                ->map(function (Brand $brand) use ($translationFor): ?array {
-                    $name = trim((string) ($translationFor($brand)?->name ?? ''));
-                    $slug = $translationFor($brand)?->slug
-                        ?: $brand->translations->firstWhere('locale', 'en')?->slug;
+                ->map(function (Brand $brand) use ($locale): ?array {
+                    $brandTranslation = $brand->translations->firstWhere('locale', $locale)
+                        ?? $brand->translations->firstWhere('locale', 'en')
+                        ?? $brand->translations->first();
+                    $name = trim((string) ($brandTranslation?->name ?? ''));
+                    $slug = $brand->translations->first(fn ($translation) => filled($translation->slug))?->slug;
 
-                    if ($name === '') {
+                    if ($name === '' || blank($slug)) {
                         return null;
                     }
 
@@ -69,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
                         'logo_path' => filled($brand->logo_path) ? $this->normalizeAssetPath($brand->logo_path, '') : null,
                         'cars_count' => (int) ($brand->cars_count ?? 0),
                         'slug' => $slug,
-                        'url' => route('website.cars.brand', ['brand' => filled($slug) ? $slug : $brand->id]),
+                        'url' => route('website.cars.brand', ['brand' => $slug]),
                     ];
                 })
                 ->filter()
@@ -144,12 +146,14 @@ class AppServiceProvider extends ServiceProvider
                 ->latest('id')
                 ->take(36)
                 ->get()
-                ->map(function (Brand $brand) use ($translationFor): ?array {
-                    $name = $translationFor($brand)?->name;
-                    $slug = $translationFor($brand)?->slug
-                        ?: $brand->translations->firstWhere('locale', 'en')?->slug;
+                ->map(function (Brand $brand) use ($locale): ?array {
+                    $brandTranslation = $brand->translations->firstWhere('locale', $locale)
+                        ?? $brand->translations->firstWhere('locale', 'en')
+                        ?? $brand->translations->first();
+                    $name = $brandTranslation?->name;
+                    $slug = $brand->translations->first(fn ($translation) => filled($translation->slug))?->slug;
 
-                    if (blank($name)) {
+                    if (blank($name) || blank($slug)) {
                         return null;
                     }
 
@@ -157,7 +161,7 @@ class AppServiceProvider extends ServiceProvider
                         'id' => $brand->id,
                         'name' => $name,
                         'slug' => $slug,
-                        'url' => route('website.cars.brand', ['brand' => filled($slug) ? $slug : $brand->id]),
+                        'url' => route('website.cars.brand', ['brand' => $slug]),
                     ];
                 })
                 ->filter()
@@ -388,4 +392,5 @@ class AppServiceProvider extends ServiceProvider
 
         return filled($digits) ? 'https://wa.me/' . $digits : null;
     }
+
 }

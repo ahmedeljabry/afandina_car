@@ -158,9 +158,7 @@
                                             $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
                                             $brandLogoPath = data_get($brandItem, 'logo_path');
                                             $brandCarsCount = (int) data_get($brandItem, 'cars_count', 0);
-                                            $brandSlug = data_get($brandItem, 'slug');
-                                            $brandId = data_get($brandItem, 'id');
-                                            $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                            $brandHref = data_get($brandItem, 'url', route('website.cars.index'));
                                         @endphp
                                         <li class="header-mega-grid-item">
                                             <a href="{{ $brandHref }}" class="header-mega-item">

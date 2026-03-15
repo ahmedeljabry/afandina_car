@@ -78,17 +78,22 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function (Brand $brand) use ($locale) {
-                $brandRouteKey = $this->brandRouteKey($brand, $locale);
-                $brandSlug = ctype_digit($brandRouteKey) ? null : $brandRouteKey;
+                $brandSlug = $this->brandRouteKey($brand, $locale);
+
+                if (blank($brandSlug)) {
+                    return null;
+                }
 
                 return [
                     'id' => $brand->id,
                     'name'      => $this->translationFor($brand, $locale)?->name ?? '',
                     'logo_path' => $brand->logo_path,
                     'slug'      => $brandSlug,
-                    'url'       => route('website.cars.brand', ['brand' => $brandRouteKey]),
+                    'url'       => route('website.cars.brand', ['brand' => $brandSlug]),
                 ];
-            });
+            })
+            ->filter()
+            ->values();
 
         // ── Blogs ─────────────────────────────────────────────────────────────
         $blogs = Blog::query()
@@ -151,16 +156,21 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->get()
             ->map(function (Brand $brand) use ($locale) {
-                $brandRouteKey = $this->brandRouteKey($brand, $locale);
-                $brandSlug = ctype_digit($brandRouteKey) ? null : $brandRouteKey;
+                $brandSlug = $this->brandRouteKey($brand, $locale);
+
+                if (blank($brandSlug)) {
+                    return null;
+                }
 
                 return [
                     'id' => $brand->id,
                     'name' => $this->translationFor($brand, $locale)?->name ?? '',
                     'slug' => $brandSlug,
-                    'url'  => route('website.cars.brand', ['brand' => $brandRouteKey]),
+                    'url'  => route('website.cars.brand', ['brand' => $brandSlug]),
                 ];
-            });
+            })
+            ->filter()
+            ->values();
 
         $contact = Contact::query()
             ->where('is_active', true)
@@ -193,7 +203,7 @@ class HomeController extends Controller
         $brandTranslation = $this->translationFor($car->brand, $locale);
         $gearTranslation  = $this->translationFor($car->gearType, $locale);
         $carRouteKey = $this->carRouteKey($car, $locale);
-        $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : '';
+        $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : null;
         $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
@@ -208,7 +218,9 @@ class HomeController extends Controller
             'id'               => $car->id,
             'name'             => $carTranslation?->name ?? '',
             'brand_name'       => $brandTranslation?->name,
-            'brand_url'        => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
+            'brand_url'        => ($car->brand && filled($brandRouteKey))
+                ? route('website.cars.brand', ['brand' => $brandRouteKey])
+                : route('website.cars.index'),
             'gear_type'        => $gearTranslation?->name,
             'year'             => $car->year?->year,
             'status'           => $car->status,
@@ -233,7 +245,7 @@ class HomeController extends Controller
         return filled($slug) ? (string) $slug : (string) $car->id;
     }
 
-    private function brandRouteKey(Brand $brand, string $locale): string
+    private function brandRouteKey(Brand $brand, string $locale): ?string
     {
         $translations = $brand->relationLoaded('translations')
             ? $brand->translations
@@ -245,7 +257,7 @@ class HomeController extends Controller
             ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
         );
 
-        return filled($slug) ? (string) $slug : (string) $brand->id;
+        return filled($slug) ? (string) $slug : null;
     }
 
     private function categoryRouteKey(Category $category, string $locale): string

@@ -116,9 +116,7 @@
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
                                 @php
-                                    $brandSlug = data_get($brand, 'slug');
-                                    $brandId = data_get($brand, 'id');
-                                    $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                    $brandHref = data_get($brand, 'url', route('website.cars.index'));
                                 @endphp
                                 <a href="{{ $brandHref }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $brand['name'] }}
