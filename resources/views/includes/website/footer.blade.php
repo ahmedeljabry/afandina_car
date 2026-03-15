@@ -9,7 +9,33 @@
     $footerSocialLinks = collect($footerSocialLinks ?? $socialLinks ?? [])
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
         ->values();
-    $footerBrands = collect($footerBrands ?? []);
+    $footerLocale = app()->getLocale() ?? 'en';
+    $footerBrands = \App\Models\Brand::query()
+        ->with('translations')
+        ->where('is_active', true)
+        ->latest('id')
+        ->take(36)
+        ->get()
+        ->map(function (\App\Models\Brand $brand) use ($footerLocale): ?array {
+            $brandTranslation = $brand->translations->firstWhere('locale', $footerLocale)
+                ?? $brand->translations->firstWhere('locale', 'en')
+                ?? $brand->translations->first();
+            $name = $brandTranslation?->name;
+            $slug = $brand->slug;
+
+            if (blank($name) || blank($slug)) {
+                return null;
+            }
+
+            return [
+                'id' => $brand->id,
+                'name' => $name,
+                'slug' => $slug,
+                'url' => route('website.cars.brand', ['brand' => $slug]),
+            ];
+        })
+        ->filter()
+        ->values();
     $footerCategories = collect($footerCategories ?? []);
     $footerLocations = collect($footerLocations ?? []);
     $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);

@@ -35,4 +35,8 @@ class Brand extends Model
         return $this->hasMany(Car_model::class);
     }
 
+    public function getSlugAttribute()
+    {
+        return $this->translations()->where('locale', 'en')->first()->slug ?? null;
+    }
 }
