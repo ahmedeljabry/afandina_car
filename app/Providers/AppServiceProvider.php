@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\Brand;
-use App\Models\Category;
 use App\Models\Contact;
 use App\Models\Home;
 use App\Models\Location;
@@ -34,15 +33,6 @@ class AppServiceProvider extends ServiceProvider
         View::composer('includes.website.header', function ($view): void {
             $locale = app()->getLocale() ?? 'en';
             $branding = $this->getBrandingSettings();
-
-            $translationFor = function ($model) use ($locale): mixed {
-                if (!$model || !isset($model->translations) || !($model->translations instanceof Collection)) {
-                    return null;
-                }
-
-                return $model->translations->firstWhere('locale', $locale)
-                    ?? $model->translations->first();
-            };
 
             $headerBrands = Brand::query()
                 ->with('translations')
@@ -77,40 +67,8 @@ class AppServiceProvider extends ServiceProvider
                 ->filter()
                 ->values();
 
-            $headerCategories = Category::query()
-                ->with('translations')
-                ->withCount([
-                    'cars as cars_count' => fn ($query) => $query->where('is_active', true),
-                ])
-                ->where('is_active', true)
-                ->orderByDesc('cars_count')
-                ->orderBy('id')
-                ->take(24)
-                ->get()
-                ->map(function (Category $category) use ($translationFor): ?array {
-                    $name = trim((string) ($translationFor($category)?->name ?? ''));
-                    $slug = $translationFor($category)?->slug
-                        ?: $category->translations->firstWhere('locale', 'en')?->slug;
-
-                    if ($name === '') {
-                        return null;
-                    }
-
-                    return [
-                        'id' => $category->id,
-                        'name' => $name,
-                        'image_path' => filled($category->image_path) ? $this->normalizeAssetPath($category->image_path, '') : null,
-                        'cars_count' => (int) ($category->cars_count ?? 0),
-                        'slug' => $slug,
-                        'url' => route('website.cars.category', ['category' => filled($slug) ? $slug : $category->id]),
-                    ];
-                })
-                ->filter()
-                ->values();
-
             $view->with([
                 'headerBrands' => $headerBrands,
-                'headerCategories' => $headerCategories,
                 'headerLogo' => $branding['logo'],
                 'headerSiteName' => $branding['site_name'],
             ]);
@@ -139,58 +97,6 @@ class AppServiceProvider extends ServiceProvider
                 ->where('is_active', true)
                 ->latest('id')
                 ->first();
-
-            $footerBrands = Brand::query()
-                ->with('translations')
-                ->where('is_active', true)
-                ->latest('id')
-                ->take(36)
-                ->get()
-                ->map(function (Brand $brand) use ($locale): ?array {
-                    $brandTranslation = $brand->translations->firstWhere('locale', $locale)
-                        ?? $brand->translations->firstWhere('locale', 'en')
-                        ?? $brand->translations->first();
-                    $name = $brandTranslation?->name;
-                    $slug = $brand->translations->first(fn ($translation) => filled($translation->slug))?->slug;
-
-                    if (blank($name) || blank($slug)) {
-                        return null;
-                    }
-
-                    return [
-                        'id' => $brand->id,
-                        'name' => $name,
-                        'slug' => $slug,
-                        'url' => route('website.cars.brand', ['brand' => $slug]),
-                    ];
-                })
-                ->filter()
-                ->values();
-
-            $footerCategories = Category::query()
-                ->with('translations')
-                ->where('is_active', true)
-                ->latest('id')
-                ->take(24)
-                ->get()
-                ->map(function (Category $category) use ($translationFor): ?array {
-                    $name = $translationFor($category)?->name;
-                    $slug = $translationFor($category)?->slug
-                        ?: $category->translations->firstWhere('locale', 'en')?->slug;
-
-                    if (blank($name)) {
-                        return null;
-                    }
-
-                    return [
-                        'id' => $category->id,
-                        'name' => $name,
-                        'slug' => $slug,
-                        'url' => route('website.cars.category', ['category' => filled($slug) ? $slug : $category->id]),
-                    ];
-                })
-                ->filter()
-                ->values();
 
             $footerLocations = Location::query()
                 ->with('translations')
@@ -268,8 +174,6 @@ class AppServiceProvider extends ServiceProvider
                 'footerCompanyName' => $branding['site_name'],
                 'footerSupportItems' => $supportItems,
                 'footerSocialLinks' => $socialLinks,
-                'footerBrands' => $footerBrands,
-                'footerCategories' => $footerCategories,
                 'footerLocations' => $footerLocations,
                 'footerPaymentMethods' => $paymentMethods,
             ]);

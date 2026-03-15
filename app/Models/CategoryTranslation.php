@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CategoryTranslation extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
 
 
     //relations
     public function category(): BelongsTo
     {
-        return $this->belongsTo(category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function language(): BelongsTo

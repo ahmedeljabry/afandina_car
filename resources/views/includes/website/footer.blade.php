@@ -10,33 +10,32 @@
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
         ->values();
     $footerLocale = app()->getLocale() ?? 'en';
-    $footerBrands = \App\Models\Brand::query()
-        ->with('translations')
-        ->where('is_active', true)
+    $footerBrands = \App\Models\BrandTranslation::query()
+        ->whereIn('locale', [$footerLocale, 'en'])
+        ->whereNotNull('name')
+        ->where('name', '!=', '')
+        ->whereNotNull('slug')
+        ->where('slug', '!=', '')
+        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
         ->latest('id')
-        ->take(36)
         ->get()
-        ->map(function (\App\Models\Brand $brand) use ($footerLocale): ?array {
-            $brandTranslation = $brand->translations->firstWhere('locale', $footerLocale)
-                ?? $brand->translations->firstWhere('locale', 'en')
-                ?? $brand->translations->first();
-            $name = $brandTranslation?->name;
-            $slug = $brand->slug;
-
-            if (blank($name) || blank($slug)) {
-                return null;
-            }
-
-            return [
-                'id' => $brand->id,
-                'name' => $name,
-                'slug' => $slug,
-                'url' => route('website.cars.brand', ['brand' => $slug]),
-            ];
-        })
+        ->unique('brand_id')
+        ->take(36)
         ->filter()
         ->values();
-    $footerCategories = collect($footerCategories ?? []);
+    $footerCategories = \App\Models\CategoryTranslation::query()
+        ->whereIn('locale', [$footerLocale, 'en'])
+        ->whereNotNull('name')
+        ->where('name', '!=', '')
+        ->whereNotNull('slug')
+        ->where('slug', '!=', '')
+        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
+        ->latest('id')
+        ->get()
+        ->unique('category_id')
+        ->take(24)
+        ->filter()
+        ->values();
     $footerLocations = collect($footerLocations ?? []);
     $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);
 @endphp
@@ -141,11 +140,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                @php
-                                    $brandHref = data_get($brand, 'url', route('website.cars.index'));
-                                @endphp
-                                <a href="{{ $brandHref }}" class="btn btn-outline-light btn-sm rounded-pill">
-                                    {{ $brand['name'] }}
+                                <a href="{{ route('website.cars.brand', ['brand' => $brand->slug]) }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                    {{ $brand->name }}
                                 </a>
                             @empty
                                 <span class="text-muted">{{ __('website.footer.empty_brands') }}</span>
@@ -163,13 +159,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerCategories as $category)
-                                @php
-                                    $categorySlug = data_get($category, 'slug');
-                                    $categoryId = data_get($category, 'id');
-                                    $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
-                                @endphp
-                                <a href="{{ $categoryHref }}" class="btn btn-outline-light btn-sm rounded-pill">
-                                    {{ $category['name'] }}
+                                <a href="{{ route('website.cars.category', ['category' => $category->slug]) }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                    {{ $category->name }}
                                 </a>
                             @empty
                                 <span class="text-muted">{{ __('website.footer.empty_categories') }}</span>
