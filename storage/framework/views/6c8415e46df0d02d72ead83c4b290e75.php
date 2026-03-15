@@ -3,13 +3,16 @@
     $footerDescription = $footerDescription ?? null;
     $footerCompanyName = $footerCompanyName ?? config('app.name', 'Afandina Car Rental');
     $footerHomeTranslation = $footerHomeTranslation ?? null;
-    $quickLinks = $quickLinks ?? collect();
-    $supportItems = $supportItems ?? collect();
-    $socialLinks = $socialLinks ?? collect();
-    $footerBrands = $footerBrands ?? collect();
-    $footerCategories = $footerCategories ?? collect();
-    $footerLocations = $footerLocations ?? collect();
-    $paymentMethods = $paymentMethods ?? collect();
+    $footerSupportItems = collect($footerSupportItems ?? $supportItems ?? [])
+        ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'label')))
+        ->values();
+    $footerSocialLinks = collect($footerSocialLinks ?? $socialLinks ?? [])
+        ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
+        ->values();
+    $footerBrands = collect($footerBrands ?? []);
+    $footerCategories = collect($footerCategories ?? []);
+    $footerLocations = collect($footerLocations ?? []);
+    $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);
 ?>
 
 <footer class="footer footer-four">
@@ -28,12 +31,16 @@
                             </div>
                         <?php endif; ?>
 
-                        <?php if($socialLinks->isNotEmpty()): ?>
+                        <?php if($footerSocialLinks->isNotEmpty()): ?>
                             <ul class="social-icon">
-                                <?php $__currentLoopData = $socialLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $socialLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php $__currentLoopData = $footerSocialLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $socialLink): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
+                                        $socialUrl = data_get($socialLink, 'url');
+                                        $socialIcon = data_get($socialLink, 'icon', 'fa-solid fa-link');
+                                    ?>
                                     <li>
-                                        <a href="<?php echo e($socialLink['url']); ?>" target="_blank" rel="noopener noreferrer">
-                                            <i class="<?php echo e($socialLink['icon']); ?>"></i>
+                                        <a href="<?php echo e($socialUrl); ?>" target="_blank" rel="noopener noreferrer">
+                                            <i class="<?php echo e($socialIcon); ?>"></i>
                                         </a>
                                     </li>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -49,14 +56,24 @@
 
                         </h5>
                         <ul>
-                            <?php $__currentLoopData = $quickLinks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $link): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <li>
-                                    <a href="<?php echo e($link['url']); ?>">
-                                        <i class="<?php echo e($link['icon']); ?> me-1"></i><?php echo e($link['label']); ?>
+                            <li>
+                                <a href="<?php echo e(route('website.about.index')); ?>">
+                                    <i class="bx bxs-info-circle me-1"></i><?php echo e(__('website.footer.links.about_us')); ?>
 
-                                    </a>
-                                </li>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('website.blogs.index')); ?>">
+                                    <i class="bx bxs-notepad me-1"></i><?php echo e(__('website.footer.links.blog')); ?>
+
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('website.contact.index')); ?>">
+                                    <i class="bx bxs-envelope me-1"></i><?php echo e(__('website.footer.links.contact_us')); ?>
+
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -68,12 +85,24 @@
 
                         </h5>
                         <ul>
-                            <?php $__empty_1 = true; $__currentLoopData = $supportItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supportItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php $__empty_1 = true; $__currentLoopData = $footerSupportItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supportItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                <?php
+                                    $supportUrl = data_get($supportItem, 'url');
+                                    $supportIcon = data_get($supportItem, 'icon', 'bx bx-link');
+                                    $supportLabel = data_get($supportItem, 'label');
+                                ?>
                                 <li>
-                                    <a href="<?php echo e($supportItem['url'] ?: 'javascript:void(0);'); ?>">
-                                        <i class="<?php echo e($supportItem['icon']); ?> me-1"></i><?php echo e($supportItem['label']); ?>
+                                    <?php if(filled($supportUrl)): ?>
+                                        <a href="<?php echo e($supportUrl); ?>">
+                                            <i class="<?php echo e($supportIcon); ?> me-1"></i><?php echo e($supportLabel); ?>
 
-                                    </a>
+                                        </a>
+                                    <?php else: ?>
+                                        <span>
+                                            <i class="<?php echo e($supportIcon); ?> me-1"></i><?php echo e($supportLabel); ?>
+
+                                        </span>
+                                    <?php endif; ?>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <li><?php echo e(__('website.footer.no_support_details')); ?></li>
@@ -94,7 +123,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="<?php echo e($brand['url']); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="<?php echo e(route('website.cars.brand', $brand['slug'])); ?>" class="btn btn-outline-light btn-sm rounded-pill">
                                     <?php echo e($brand['name']); ?>
 
                                 </a>
@@ -115,7 +144,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="<?php echo e($category['url']); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="<?php echo e(website_entity_link($category, 'website.cars.category', 'category')); ?>" class="btn btn-outline-light btn-sm rounded-pill">
                                     <?php echo e($category['name']); ?>
 
                                 </a>
@@ -136,10 +165,10 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerLocations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $location): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <a href="<?php echo e($location['url']); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                <span class="btn btn-outline-light btn-sm rounded-pill">
                                     <?php echo e($location['name']); ?>
 
-                                </a>
+                                </span>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                 <span class="text-muted"><?php echo e(__('website.footer.empty_locations')); ?></span>
                             <?php endif; ?>
@@ -163,10 +192,10 @@
                     <div class="col-lg-4">
                         <div class="text-center mb-2 text-white-50"><?php echo e(__('website.footer.available_payment_methods')); ?></div>
                         <div class="payment-list">
-                            <?php $__currentLoopData = $paymentMethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paymentMethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <a href="javascript:void(0);">
+                            <?php $__currentLoopData = $footerPaymentMethods; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paymentMethod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <span>
                                     <img src="<?php echo e($paymentMethod); ?>" alt="payment">
-                                </a>
+                                </span>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>

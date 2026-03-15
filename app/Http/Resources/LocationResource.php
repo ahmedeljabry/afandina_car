@@ -3,11 +3,14 @@
 namespace App\Http\Resources;
 
 use App\Models\StaticTranslation;
+use App\Traits\HasLocalizedCardNames;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LocationResource extends JsonResource
 {
+    use HasLocalizedCardNames;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,19 +19,20 @@ class LocationResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale()?? "en";
-        $translations = $this->translations->where('locale',$locale)->first();
+        $translations = $this->translations->where('locale', $locale)->first() ?? $this->translations->first();
 
         return [
             'id' => $this->id,
-            'name' => $translations->name??null,
+            'name' => $translations?->name,
+            ...$this->localizedCardNames($this->resource),
             'slug' => $this->slug,
-            'section_title' => $translations->title,
-            'description' => $translations->description??null,
-            'content' => $translations->content??null,
+            'section_title' => $translations?->title,
+            'description' => $translations?->description,
+            'content' => $translations?->content,
             'image_path' => $this->image_path ? asset('storage/'.$this->image_path) : null,
-            'meta_title' => $translations->meta_title??null,
-            'meta_description' => $translations->meta_description??null,
-            'meta_keywords' => $translations->meta_keywords??null,
+            'meta_title' => $translations?->meta_title,
+            'meta_description' => $translations?->meta_description,
+            'meta_keywords' => $translations?->meta_keywords,
         ];
     }
 

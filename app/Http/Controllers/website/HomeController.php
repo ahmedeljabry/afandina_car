@@ -12,10 +12,13 @@ use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\Home;
 use App\Models\Service;
+use App\Traits\HasLocalizedCardNames;
 use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
+    use HasLocalizedCardNames;
+
     public function index()
     {
         $locale = app()->getLocale() ?? 'en';
@@ -43,6 +46,7 @@ class HomeController extends Controller
                 return [
                     'id'         => $category->id,
                     'name'       => $translation?->name ?? '',
+                    ...$this->localizedCardNames($category),
                     'slug'       => $categorySlug,
                     'image_path' => $category->image_path,
                     'cars_count' => (int) $category->cars_count,
@@ -84,6 +88,7 @@ class HomeController extends Controller
                 return [
                     'id' => $brand->id,
                     'name'      => $this->translationFor($brand, $locale)?->name ?? '',
+                    ...$this->localizedCardNames($brand),
                     'logo_path' => $brand->logo_path,
                     'slug'      => $brandSlug,
                     'url'       => route('website.cars.brand', ['brand' => $brandRouteKey]),
@@ -98,15 +103,20 @@ class HomeController extends Controller
             ->latest()
             ->take(3)
             ->get()
-            ->map(fn(Blog $blog) => [
-                'id'           => $blog->id,
-                'slug'         => $blog->slug,
-                'title'        => $this->translationFor($blog, $locale)?->title ?? '',
-                'description'  => $this->translationFor($blog, $locale)?->description,
-                'image_path'   => $blog->image_path,
-                'published_on' => $blog->created_at?->translatedFormat('d M, Y'),
-                'url'          => route('website.blogs.show', ['blog' => $blog->slug ?: $blog->id]),
-            ]);
+            ->map(function (Blog $blog) use ($locale) {
+                $translation = $this->translationFor($blog, $locale);
+
+                return [
+                    'id'           => $blog->id,
+                    'slug'         => $blog->slug,
+                    'title'        => $translation?->title ?? '',
+                    ...$this->localizedCardNames($blog, 'title'),
+                    'description'  => $translation?->description,
+                    'image_path'   => $blog->image_path,
+                    'published_on' => $blog->created_at?->translatedFormat('d M, Y'),
+                    'url'          => route('website.blogs.show', ['blog' => $blog->slug ?: $blog->id]),
+                ];
+            });
 
         // ── FAQs ──────────────────────────────────────────────────────────────
         $faqs = Faq::query()
@@ -141,6 +151,7 @@ class HomeController extends Controller
                 return [
                     'id' => $category->id,
                     'name' => $this->translationFor($category, $locale)?->name ?? '',
+                    ...$this->localizedCardNames($category),
                     'slug' => $categorySlug,
                     'url'  => route('website.cars.category', ['category' => $categoryRouteKey]),
                 ];
@@ -157,6 +168,7 @@ class HomeController extends Controller
                 return [
                     'id' => $brand->id,
                     'name' => $this->translationFor($brand, $locale)?->name ?? '',
+                    ...$this->localizedCardNames($brand),
                     'slug' => $brandSlug,
                     'url'  => route('website.cars.brand', ['brand' => $brandRouteKey]),
                 ];
@@ -207,6 +219,7 @@ class HomeController extends Controller
         return [
             'id'               => $car->id,
             'name'             => $carTranslation?->name ?? '',
+            ...$this->localizedCardNames($car, 'name', $carTranslation?->name ?? null),
             'brand_name'       => $brandTranslation?->name,
             'brand_url'        => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
             'gear_type'        => $gearTranslation?->name,

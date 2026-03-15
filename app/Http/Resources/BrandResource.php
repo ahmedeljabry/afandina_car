@@ -3,11 +3,14 @@
 namespace App\Http\Resources;
 
 use App\Models\StaticTranslation;
+use App\Traits\HasLocalizedCardNames;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BrandResource extends JsonResource
 {
+    use HasLocalizedCardNames;
+
     /**
      * Transform the resource into an array.
      *
@@ -16,14 +19,16 @@ class BrandResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = app()->getLocale()??"en";
-        $translations = $this->translations->where('locale',$locale)->first();
+        $translations = $this->translations->where('locale', $locale)->first() ?? $this->translations->first();
         $car_counts = $this->getCounts($locale);
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
-            'name' => $translations->name,
-            'section_title' => $translations->title,
-            'description' => $translations->description,
+            'name' => $translations?->name,
+            ...$this->localizedCardNames($this->resource),
+            'section_title' => $translations?->title,
+            'description' => $translations?->description,
             'image' => $this->logo_path,
             'car_count'=>$car_counts,
         ];

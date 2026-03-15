@@ -279,6 +279,15 @@
     </style>
 <?php $__env->stopPush(); ?>
 
+<?php $__env->startPush('head'); ?>
+    <?php
+        $heroPreloadPath = $home?->hero_header_image_path
+            ? asset('storage/' . $home->hero_header_image_path)
+            : asset('website/assets/img/banner/banner.png');
+    ?>
+    <link rel="preload" as="image" href="<?php echo e($heroPreloadPath); ?>" fetchpriority="high">
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startSection('content'); ?>
 <?php
     use Illuminate\Support\Str;
@@ -421,7 +430,7 @@
         ],
     ];
 
-    $supportItems = [
+    $supportTickerItems = [
         $homeTranslation?->support_item_1_text ?: __('website.home.support.best_rate'),
         $homeTranslation?->support_item_2_text ?: __('website.home.support.free_cancellation'),
         $homeTranslation?->support_item_3_text ?: __('website.home.support.best_security'),
@@ -431,7 +440,9 @@
 
     $heroMediaType = $home?->hero_type === 'video' ? 'video' : 'image';
     $heroVideoPath = $home?->hero_header_video_path ? asset('storage/' . $home->hero_header_video_path) : null;
-    $heroImagePath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
+    $heroPosterPath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
+    $heroImagePath = $heroPosterPath;
+    $heroAlt = trim($heroCopy['title_prefix'] . ' ' . $heroCopy['title_highlight'] . ' ' . $heroCopy['title_suffix']);
 ?>
 
     
@@ -449,13 +460,13 @@
                                 <div class="users-wrap">
                                     <ul class="users-list">
                                         <li>
-                                            <img src="<?php echo e(asset('admin/dist/img/user1-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user1-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                         <li>
-                                            <img src="<?php echo e(asset('admin/dist/img/user2-160x160.jpg')); ?>" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user2-160x160.jpg')); ?>" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                         <li>
-                                            <img src="<?php echo e(asset('admin/dist/img/user8-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image">
+                                            <img src="<?php echo e(asset('admin/dist/img/user8-128x128.jpg')); ?>" class="img-fluid aos" alt="customer image" decoding="async">
                                         </li>
                                     </ul>
                                     <div class="customer-info">
@@ -481,11 +492,11 @@
                                 </div>
                                 <span class="rent-tag"><i class="bx bxs-circle"></i> <?php echo e($heroCopy['available_for_rent_label']); ?></span>
                                 <?php if($heroMediaType === 'video' && $heroVideoPath): ?>
-                                    <video class="img-fluid" autoplay muted loop playsinline>
+                                    <video class="img-fluid" autoplay muted loop playsinline preload="metadata" poster="<?php echo e($heroPosterPath); ?>" aria-hidden="true">
                                         <source src="<?php echo e($heroVideoPath); ?>">
                                     </video>
                                 <?php else: ?>
-                                    <img src="<?php echo e($heroImagePath); ?>" class="img-fluid" alt="img">
+                                    <img src="<?php echo e($heroImagePath); ?>" class="img-fluid" alt="<?php echo e($heroAlt); ?>" loading="eager" fetchpriority="high" decoding="async">
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -494,13 +505,13 @@
             </div>
         </div>
         <div class="banner-bgs">
-            <img src="<?php echo e(asset('website/assets/img/bg/banner-bg-01.png')); ?>" class="bg-01 img-fluid" alt="img">
+            <img src="<?php echo e(asset('website/assets/img/bg/banner-bg-01.png')); ?>" class="bg-01 img-fluid" alt="img" loading="lazy" fetchpriority="low" decoding="async">
         </div>
     </section>
     
 
     
-    <section class="category-section-four home-category-section">
+    <section id="home-categories" class="category-section-four home-category-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -511,15 +522,18 @@
 
                     <div class="row home-category-grid">
                         <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <?php
+                                $categoryUrl = data_get($category, 'url', route('website.cars.index'));
+                            ?>
                             <div class="home-category-col d-flex">
                                 <div class="category-item home-category-card flex-fill">
                                     <div class="category-info">
                                         <h6 class="title">
-                                            <a href="<?php echo e($category['url']); ?>" title="<?php echo e($category['name']); ?>"><?php echo e($category['name']); ?></a>
+                                            <a href="<?php echo e($categoryUrl); ?>" title="<?php echo e($category['name']); ?>"><?php echo e($category['name']); ?></a>
                                         </h6>
                                         <div class="home-category-meta">
                                             <p class="home-category-count"><?php echo e(__('website.home.labels.cars_count', ['count' => $category['cars_count']])); ?></p>
-                                            <a href="<?php echo e($category['url']); ?>" class="link-icon" aria-label="<?php echo e(__('website.home.actions.view_all_cars')); ?>">
+                                            <a href="<?php echo e($categoryUrl); ?>" class="link-icon" aria-label="<?php echo e(__('website.home.actions.view_all_cars')); ?>">
                                                 <i class="bx bx-right-arrow-alt"></i>
                                             </a>
                                         </div>
@@ -527,7 +541,7 @@
                                     <div class="category-img">
                                         <?php if($category['image_path']): ?>
                                             <img src="<?php echo e(asset('storage/' . $category['image_path'])); ?>"
-                                                alt="<?php echo e($category['name']); ?>" class="img-fluid">
+                                                alt="<?php echo e($category['name']); ?>" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                                         <?php else: ?>
                                             <span class="home-category-fallback" aria-hidden="true">
                                                 <i class="bx bxs-car"></i>
@@ -568,7 +582,7 @@
                             <h2><?php echo e($homeTranslation?->feature_section_title ?: __('website.home.features.section_title')); ?></h2>
                             <p><?php echo e($homeTranslation?->feature_section_paragraph ?: __('website.home.features.section_paragraph')); ?></p>
                         </div>
-                        <img src="<?php echo e(asset('website/assets/img/cars/car.png')); ?>" alt="img" class="img-fluid">
+                        <img src="<?php echo e(asset('website/assets/img/cars/car.png')); ?>" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                     </div>
 
                 </div>
@@ -622,7 +636,7 @@
                                             <div class="slide-images">
                                                 <a href="<?php echo e($car['details_url']); ?>">
                                                     <img src="<?php echo e(asset('storage/' . $img)); ?>"
-                                                        class="img-fluid" alt="<?php echo e($car['name']); ?>">
+                                                        class="img-fluid" alt="<?php echo e($car['name']); ?>" loading="lazy" fetchpriority="low" decoding="async">
                                                 </a>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -630,7 +644,7 @@
                                 <?php else: ?>
                                     <a href="<?php echo e($car['details_url']); ?>">
                                         <img src="<?php echo e($car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg')); ?>"
-                                            class="img-fluid" alt="<?php echo e($car['name']); ?>">
+                                            class="img-fluid" alt="<?php echo e($car['name']); ?>" loading="lazy" fetchpriority="low" decoding="async">
                                     </a>
                                 <?php endif; ?>
 
@@ -702,7 +716,7 @@
 
     
     <?php if($brands->isNotEmpty()): ?>
-    <section class="brand-section">
+    <section id="home-brands" class="brand-section">
         <div class="container">
             <div class="section-heading heading-four" data-aos="fade-down">
                 <h2 class="text-white"><?php echo e($homeTranslation?->brand_section_title ?? __('website.home.sections.brands_title')); ?></h2>
@@ -710,16 +724,21 @@
             </div>
             <div class="brands-slider owl-carousel">
                 <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
+                        $brandUrl = data_get($brand, 'url', route('website.cars.index'));
+                    ?>
                     <div class="brand-wrap">
-                        <?php if($brand['logo_path']): ?>
-                            <img src="<?php echo e(asset('storage/' . $brand['logo_path'])); ?>" alt="<?php echo e($brand['name']); ?>">
-                        <?php endif; ?>
-                        <p><?php echo e($brand['name']); ?></p>
+                        <a href="<?php echo e($brandUrl); ?>" class="d-block text-center text-reset text-decoration-none">
+                            <?php if($brand['logo_path']): ?>
+                                <img src="<?php echo e(asset('storage/' . $brand['logo_path'])); ?>" alt="<?php echo e($brand['name']); ?>" loading="lazy" fetchpriority="low" decoding="async">
+                            <?php endif; ?>
+                            <p><?php echo e($brand['name']); ?></p>
+                        </a>
                     </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
             <div class="brand-img text-center">
-                <img src="<?php echo e(asset('website/assets/img/bg/brand.png')); ?>" alt="img" class="img-fluid">
+                <img src="<?php echo e(asset('website/assets/img/bg/brand.png')); ?>" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
             </div>
         </div>
     </section>
@@ -732,9 +751,9 @@
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="rental-img">
-                        <img src="<?php echo e(asset('website/assets/img/about/rent-car.png')); ?>" alt="img" class="img-fluid">
+                        <img src="<?php echo e(asset('website/assets/img/about/rent-car.png')); ?>" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         <div class="grid-img">
-                            <img src="<?php echo e(asset('website/assets/img/about/car-grid.png')); ?>" alt="img" class="img-fluid">
+                            <img src="<?php echo e(asset('website/assets/img/about/car-grid.png')); ?>" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         </div>
                     </div>
                 </div>
@@ -786,12 +805,12 @@
                 <?php $__currentLoopData = $popularCars; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $car): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="car-item">
                         <?php if($car['brand_name']): ?>
-                            <h6><?php echo e(Str::upper($car['brand_name'])); ?></h6>
+                            <h6><a href="<?php echo e($car['brand_url'] ?? route('website.cars.index')); ?>" class="text-reset text-decoration-none"><?php echo e(Str::upper($car['brand_name'])); ?></a></h6>
                         <?php endif; ?>
                         <h2 class="display-1"><?php echo e(Str::upper($car['name'])); ?></h2>
                         <div class="car-img">
                             <img src="<?php echo e($car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-15.png')); ?>"
-                                alt="<?php echo e($car['name']); ?>" class="img-fluid">
+                                alt="<?php echo e($car['name']); ?>" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                             <?php if($car['daily_price']): ?>
                                 <div class="amount-icon">
                                     <span class="day-amt">
@@ -849,11 +868,11 @@
             </div>
 
             <div class="row row-gap-4 justify-content-center">
-                <?php $__currentLoopData = $testimonialItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $testimonialItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $testimonial): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="col-lg-4 col-md-6 d-flex">
                         <div class="testimonial-item testimonial-item-two flex-fill">
                             <div class="user-img">
-                                <img src="<?php echo e($testimonial['image']); ?>" class="img-fluid" alt="<?php echo e($testimonial['name']); ?>">
+                                <img src="<?php echo e($testimonial['image']); ?>" class="img-fluid" alt="<?php echo e($testimonial['name']); ?>" loading="lazy" fetchpriority="low" decoding="async">
                             </div>
                             <p><?php echo e($testimonial['review']); ?></p>
                             <div class="rating">
@@ -878,22 +897,22 @@
 
             <div class="client-slider owl-carousel">
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-01.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-01.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-02.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-02.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-03.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-03.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-04.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-04.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-05.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-05.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
                 <div>
-                    <img src="<?php echo e(asset('website/assets/img/clients/client-06.svg')); ?>" alt="img">
+                    <img src="<?php echo e(asset('website/assets/img/clients/client-06.svg')); ?>" alt="img" loading="lazy" fetchpriority="low" decoding="async">
                 </div>
             </div>
         </div>
@@ -904,7 +923,7 @@
     <section class="support-section">
         <div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
             <div class="slide-list d-flex">
-                <?php $__currentLoopData = $supportItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supportItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php $__currentLoopData = $supportTickerItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supportItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="support-item">
                         <h2><?php echo e($supportItem); ?></h2>
                     </div>
@@ -925,21 +944,24 @@
 
                 <div class="row row-gap-3 justify-content-center">
                     <?php $__currentLoopData = $blogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $blog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
+                            $blogUrl = data_get($blog, 'details_url', data_get($blog, 'url', route('website.blogs.index')));
+                        ?>
                         <!-- Blog Item -->
                         <div class="col-lg-4 col-md-6 d-flex">
                             <div class="blog-item flex-fill">
                                 <?php if($blog['image_path']): ?>
                                     <div class="blog-img">
-                                        <a href="<?php echo e($blog['url']); ?>">
+                                        <a href="<?php echo e($blogUrl); ?>">
                                             <img src="<?php echo e(asset('storage/' . $blog['image_path'])); ?>"
-                                                class="img-fluid" alt="<?php echo e($blog['title']); ?>">
+                                                class="img-fluid" alt="<?php echo e($blog['title']); ?>" loading="lazy" fetchpriority="low" decoding="async">
                                         </a>
                                     </div>
                                 <?php endif; ?>
                                 <div class="blog-content">
                                     <div class="d-flex align-center justify-content-between blog-category">
-                                        <?php if($blog['category_name'] ?? null): ?>
-                                            <a href="javascript:void(0);" class="category"><?php echo e($blog['category_name']); ?></a>
+                                        <?php if(filled($blog['slug'] ?? null)): ?>
+                                            <a href="<?php echo e($blogUrl); ?>" class="category"><?php echo e(Str::headline($blog['slug'])); ?></a>
                                         <?php endif; ?>
                                         <?php if($blog['published_on']): ?>
                                             <p class="date d-inline-flex align-center">
@@ -949,7 +971,7 @@
                                         <?php endif; ?>
                                     </div>
                                     <h5 class="title">
-                                        <a href="<?php echo e($blog['url']); ?>"><?php echo e($blog['title']); ?></a>
+                                        <a href="<?php echo e($blogUrl); ?>"><?php echo e($blog['title']); ?></a>
                                     </h5>
                                 </div>
                             </div>
@@ -1040,8 +1062,11 @@
                                     <div class="col-lg-2 col-md-4 col-sm-6">
                                         <ul class="category-list">
                                             <?php $__currentLoopData = $chunk; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php
+                                                    $catalogItemUrl = data_get($item, 'url', route('website.cars.index'));
+                                                ?>
                                                 <li>
-                                                    <a href="<?php echo e($item['url']); ?>"><?php echo e($item['name']); ?></a>
+                                                    <a href="<?php echo e($catalogItemUrl); ?>"><?php echo e($item['name']); ?></a>
                                                 </li>
                                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>

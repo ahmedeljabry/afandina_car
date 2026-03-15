@@ -115,7 +115,7 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                <a href="{{ website_entity_link($brand, 'website.cars.brand', 'brand') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                <a href="{{ route('website.cars.brand', $brand['slug']) }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $brand['name'] }}
                                 </a>
                             @empty

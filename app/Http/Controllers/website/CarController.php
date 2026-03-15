@@ -10,11 +10,14 @@ use App\Models\Contact;
 use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\Year;
+use App\Traits\HasLocalizedCardNames;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class CarController extends Controller
 {
+    use HasLocalizedCardNames;
+
     public function index(Request $request)
     {
         $locale = app()->getLocale() ?? 'en';
@@ -428,6 +431,7 @@ class CarController extends Controller
             'id' => $car->id,
             'details_url' => $detailsUrl,
             'name' => $carTranslation?->name ?? __('website.common.car'),
+            ...$this->localizedCardNames($car, 'name', $carTranslation?->name ?? __('website.common.car')),
             'brand_name' => $brandTranslation?->name,
             'brand_url' => $car->brand ? route('website.cars.brand', ['brand' => $brandRouteKey]) : route('website.cars.index'),
             'category_name' => $categoryTranslation?->name,

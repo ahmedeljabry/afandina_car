@@ -16,9 +16,7 @@ class BrandController extends Controller
         $language = $request->header('Accept-Language') ?? 'en';
         $homeData = $this->getHome($language);
         // Start with a base query
-        $query = Brand::where('is_active',true)->with(['translations' => function ($query) use ($language) {
-            $query->where('locale', $language);
-        }]);
+        $query = Brand::where('is_active',true)->with('translations');
 
         // Apply filters dynamically based on request query parameters
 

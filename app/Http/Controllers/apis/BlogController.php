@@ -18,9 +18,7 @@ class BlogController extends Controller
         $language = $request->header('Accept-Language') ?? 'en';
         $homeData = $this->getHome($language);
         // Start with a base query
-        $query = Blog::where('is_active',true)->with(['translations' => function ($query) use ($language) {
-            $query->where('locale', $language);
-        }]);
+        $query = Blog::where('is_active',true)->with('translations');
 
         // 4. Pagination check
         if ($request->has('paginate') && $request->input('paginate') == 'true') {
