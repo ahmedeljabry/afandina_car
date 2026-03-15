@@ -158,7 +158,9 @@
                                             $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
                                             $brandLogoPath = data_get($brandItem, 'logo_path');
                                             $brandCarsCount = (int) data_get($brandItem, 'cars_count', 0);
-                                            $brandHref = website_entity_link($brandItem, 'website.cars.brand', 'brand');
+                                            $brandSlug = data_get($brandItem, 'slug');
+                                            $brandId = data_get($brandItem, 'id');
+                                            $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
                                         @endphp
                                         <li class="header-mega-grid-item">
                                             <a href="{{ $brandHref }}" class="header-mega-item">
@@ -202,7 +204,9 @@
                                             $categoryName = (string) data_get($categoryItem, 'name', __('website.common.category'));
                                             $categoryImagePath = data_get($categoryItem, 'image_path');
                                             $categoryCarsCount = (int) data_get($categoryItem, 'cars_count', 0);
-                                            $categoryHref = website_entity_link($categoryItem, 'website.cars.category', 'category');
+                                            $categorySlug = data_get($categoryItem, 'slug');
+                                            $categoryId = data_get($categoryItem, 'id');
+                                            $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
                                         @endphp
                                         <li class="header-mega-grid-item">
                                             <a href="{{ $categoryHref }}" class="header-mega-item">

@@ -115,7 +115,12 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                <a href="{{ route('website.cars.brand', $brand['slug']) }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                @php
+                                    $brandSlug = data_get($brand, 'slug');
+                                    $brandId = data_get($brand, 'id');
+                                    $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                @endphp
+                                <a href="{{ $brandHref }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $brand['name'] }}
                                 </a>
                             @empty
@@ -134,7 +139,12 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerCategories as $category)
-                                <a href="{{ website_entity_link($category, 'website.cars.category', 'category') }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                @php
+                                    $categorySlug = data_get($category, 'slug');
+                                    $categoryId = data_get($category, 'id');
+                                    $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
+                                @endphp
+                                <a href="{{ $categoryHref }}" class="btn btn-outline-light btn-sm rounded-pill">
                                     {{ $category['name'] }}
                                 </a>
                             @empty
