@@ -30,7 +30,7 @@ class CarController extends GenericController
         
         $this->slugField = 'name';
         $this->uploadedfiles = ['media', 'default_image_path'];
-        $this->translatableFields = ['name', 'description', 'long_description'];
+        $this->translatableFields = ['name', 'card_name', 'description', 'long_description'];
         $this->nonTranslatableFields = [
             'brand_id', 'category_id', 'color_id', 'car_model_id', 'year_id', 'maker_id',
             'daily_main_price', 'daily_discount_price', 'weekly_main_price', 'weekly_discount_price',
@@ -204,6 +204,7 @@ class CarController extends GenericController
         // Set validation rules
         $this->validationRules = [
             'name.*' => 'required', 'string', 'max:255',
+            'card_name.*' => 'nullable|string|max:255',
             'description.*' => 'nullable|string',
             'long_description.*' => 'nullable|string',
             'meta_title.*' => 'nullable|string|max:255',
@@ -404,6 +405,7 @@ class CarController extends GenericController
     // Set validation rules
     $this->validationRules = [
         'name.*' =>'required', 'string', 'max:255',
+        'card_name.*' => 'nullable|string|max:255',
         'description.*' => 'nullable|string',
         'long_description.*' => 'nullable|string',
         'meta_title.*' => 'nullable|string|max:255',

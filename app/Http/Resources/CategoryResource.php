@@ -15,18 +15,21 @@ class CategoryResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale()?? "en";
-        $translations = $this->translations->where('locale',$locale)->first();
+        $locale = app()->getLocale() ?? 'en';
+        $translations = $this->translations;
+        $translation = $translations->firstWhere('locale', $locale)
+            ?? $translations->firstWhere('locale', 'en')
+            ?? $translations->first();
         $car_counts = $this->getCounts($locale);
 
         return [
             'id' => $this->id,
-            'name' => $translations->name,
+            'name' => $translation?->name,
             'slug' => $this->slug,
-            'section_title' => $translations->title,
-            'description' => $translations->description,
+            'section_title' => $translation?->title,
+            'description' => $translation?->description,
             'image' => $this->image_path,
-            'car_count'=>$car_counts,
+            'car_count' => $car_counts,
 
         ];
     }

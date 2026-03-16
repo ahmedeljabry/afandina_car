@@ -10,30 +10,54 @@
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
         ->values();
     $footerLocale = app()->getLocale() ?? 'en';
-    $footerBrands = \App\Models\BrandTranslation::query()
-        ->whereIn('locale', [$footerLocale, 'en'])
-        ->whereNotNull('name')
-        ->where('name', '!=', '')
+    $footerBrands = \App\Models\Brand::query()
+        ->with('translations')
+        ->where('is_active', true)
         ->whereNotNull('slug')
         ->where('slug', '!=', '')
-        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
         ->latest('id')
-        ->get()
-        ->unique('brand_id')
         ->take(36)
+        ->get()
+        ->map(function (\App\Models\Brand $brand) use ($footerLocale): ?array {
+            $translation = $brand->translations->firstWhere('locale', $footerLocale)
+                ?? $brand->translations->firstWhere('locale', 'en')
+                ?? $brand->translations->first();
+            $name = trim((string) ($translation?->name ?? ''));
+
+            if ($name === '') {
+                return null;
+            }
+
+            return [
+                'name' => $name,
+                'slug' => $brand->slug,
+            ];
+        })
         ->filter()
         ->values();
-    $footerCategories = \App\Models\CategoryTranslation::query()
-        ->whereIn('locale', [$footerLocale, 'en'])
-        ->whereNotNull('name')
-        ->where('name', '!=', '')
+    $footerCategories = \App\Models\Category::query()
+        ->with('translations')
+        ->where('is_active', true)
         ->whereNotNull('slug')
         ->where('slug', '!=', '')
-        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
         ->latest('id')
-        ->get()
-        ->unique('category_id')
         ->take(24)
+        ->get()
+        ->map(function (\App\Models\Category $category) use ($footerLocale): ?array {
+            $translation = $category->translations->firstWhere('locale', $footerLocale)
+                ?? $category->translations->firstWhere('locale', 'en')
+                ?? $category->translations->first();
+            $name = trim((string) ($translation?->name ?? ''));
+
+            if ($name === '') {
+                return null;
+            }
+
+            return [
+                'name' => $name,
+                'slug' => $category->slug,
+            ];
+        })
         ->filter()
         ->values();
     $footerLocations = collect($footerLocations ?? []);
@@ -140,8 +164,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerBrands as $brand)
-                                <a href="{{ route('website.cars.brand', ['brand' => $brand->slug]) }}" class="btn btn-outline-light btn-sm rounded-pill">
-                                    {{ $brand->name }}
+                                <a href="{{ route('website.cars.brand', ['brand' => data_get($brand, 'slug')]) }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                    {{ data_get($brand, 'name') }}
                                 </a>
                             @empty
                                 <span class="text-muted">{{ __('website.footer.empty_brands') }}</span>
@@ -159,8 +183,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             @forelse ($footerCategories as $category)
-                                <a href="{{ route('website.cars.category', ['category' => $category->slug]) }}" class="btn btn-outline-light btn-sm rounded-pill">
-                                    {{ $category->name }}
+                                <a href="{{ route('website.cars.category', ['category' => data_get($category, 'slug')]) }}" class="btn btn-outline-light btn-sm rounded-pill">
+                                    {{ data_get($category, 'name') }}
                                 </a>
                             @empty
                                 <span class="text-muted">{{ __('website.footer.empty_categories') }}</span>

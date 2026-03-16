@@ -118,6 +118,7 @@ class CarController extends Controller
 
     public function getBrandCars(Request $request,$slug){
         $brand = Brand::where('slug', $slug)->firstOrFail();
+
         $query = Car::with(['translations', 'images', 'color.translations', 'brand.translations', 'category.translations'])
             ->where('is_active', true);
         $query->whereHas('brand', function ($q) use ($brand) {

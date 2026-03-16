@@ -15,17 +15,21 @@ class BrandResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $locale = app()->getLocale()??"en";
-        $translations = $this->translations->where('locale',$locale)->first();
+        $locale = app()->getLocale() ?? 'en';
+        $translations = $this->translations;
+        $translation = $translations->firstWhere('locale', $locale)
+            ?? $translations->firstWhere('locale', 'en')
+            ?? $translations->first();
         $car_counts = $this->getCounts($locale);
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
-            'name' => $translations->name,
-            'section_title' => $translations->title,
-            'description' => $translations->description,
+            'name' => $translation?->name,
+            'section_title' => $translation?->title,
+            'description' => $translation?->description,
             'image' => $this->logo_path,
-            'car_count'=>$car_counts,
+            'car_count' => $car_counts,
         ];
     }
 

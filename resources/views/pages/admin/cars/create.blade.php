@@ -861,6 +861,15 @@
                                                     @enderror
                                                 </div>
                                                 <div class="form-group">
+                                                    <label for="card_name_{{ $lang->code }}" class="font-weight-bold">Card Name ({{ $lang->name }})</label>
+                                                    <input type="text" name="card_name[{{ $lang->code }}]" class="form-control form-control-lg shadow-sm @error('card_name.'.$lang->code) is-invalid @enderror" id="card_name_{{ $lang->code }}" value="{{ old('card_name.'.$lang->code) }}" placeholder="Optional short name for car cards">
+                                                    @error('card_name.'.$lang->code)
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                    @enderror
+                                                </div>
+                                                <div class="form-group">
                                                     <label for="description_{{ $lang->code }}" class="font-weight-bold">Description ({{ $lang->name }})</label>
                                                     <textarea name="description[{{ $lang->code }}]" class="form-control form-control-lg shadow-sm @error('description.'.$lang->code) is-invalid @enderror" id="description_{{ $lang->code }}" rows="4">{{ old('description.'.$lang->code) }}</textarea>
                                                     @error('description.'.$lang->code)

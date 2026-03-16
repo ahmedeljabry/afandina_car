@@ -23,27 +23,36 @@
 
         return asset('storage/' . $normalizedPath);
     };
-    $headerCategories = \App\Models\CategoryTranslation::query()
-        ->with([
-            'category' => function ($query) {
-                $query->where('is_active', true)
-                    ->withCount([
-                        'cars as cars_count' => fn ($carsQuery) => $carsQuery->where('is_active', true),
-                    ]);
-            },
+    $headerCategories = \App\Models\Category::query()
+        ->with('translations')
+        ->withCount([
+            'cars as cars_count' => fn ($carsQuery) => $carsQuery->where('is_active', true),
         ])
-        ->whereIn('locale', [$currentLocale, 'en'])
-        ->whereNotNull('name')
-        ->where('name', '!=', '')
+        ->where('is_active', true)
         ->whereNotNull('slug')
         ->where('slug', '!=', '')
-        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$currentLocale])
+        ->orderByDesc('cars_count')
         ->latest('id')
-        ->get()
-        ->filter(fn ($translation) => $translation->category !== null)
-        ->unique('category_id')
-        ->sortByDesc(fn ($translation) => (int) data_get($translation, 'category.cars_count', 0))
         ->take(24)
+        ->get()
+        ->map(function (\App\Models\Category $category) use ($currentLocale): ?array {
+            $translation = $category->translations->firstWhere('locale', $currentLocale)
+                ?? $category->translations->firstWhere('locale', 'en')
+                ?? $category->translations->first();
+            $name = trim((string) ($translation?->name ?? ''));
+
+            if ($name === '') {
+                return null;
+            }
+
+            return [
+                'name' => $name,
+                'slug' => $category->slug,
+                'image_path' => $category->image_path,
+                'cars_count' => (int) ($category->cars_count ?? 0),
+            ];
+        })
+        ->filter()
         ->values();
 @endphp
 
@@ -237,10 +246,10 @@
                                 <ul class="header-mega-grid" role="list">
                                     @forelse ($headerCategories as $categoryItem)
                                         @php
-                                            $categoryName = (string) ($categoryItem->name ?? __('website.common.category'));
-                                            $categoryImagePath = $normalizeHeaderCategoryImage(data_get($categoryItem, 'category.image_path'));
-                                            $categoryCarsCount = (int) data_get($categoryItem, 'category.cars_count', 0);
-                                            $categoryHref = route('website.cars.category', ['category' => $categoryItem->slug]);
+                                            $categoryName = (string) data_get($categoryItem, 'name', __('website.common.category'));
+                                            $categoryImagePath = $normalizeHeaderCategoryImage(data_get($categoryItem, 'image_path'));
+                                            $categoryCarsCount = (int) data_get($categoryItem, 'cars_count', 0);
+                                            $categoryHref = route('website.cars.category', ['category' => data_get($categoryItem, 'slug')]);
                                         @endphp
                                         <li class="header-mega-grid-item">
                                             <a href="{{ $categoryHref }}" class="header-mega-item">

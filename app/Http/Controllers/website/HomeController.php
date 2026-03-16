@@ -216,7 +216,7 @@ class HomeController extends Controller
 
         return [
             'id'               => $car->id,
-            'name'             => $carTranslation?->name ?? '',
+            'name'             => filled($carTranslation?->card_name) ? $carTranslation->card_name : ($carTranslation?->name ?? ''),
             'brand_name'       => $brandTranslation?->name,
             'brand_url'        => ($car->brand && filled($brandRouteKey))
                 ? route('website.cars.brand', ['brand' => $brandRouteKey])
@@ -247,30 +247,14 @@ class HomeController extends Controller
 
     private function brandRouteKey(Brand $brand, string $locale): ?string
     {
-        $translations = $brand->relationLoaded('translations')
-            ? $brand->translations
-            : $brand->translations()->get();
-
-        $slug = (
-            $translations->firstWhere('locale', $locale)?->slug
-            ?? $translations->firstWhere('locale', 'en')?->slug
-            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
-        );
+        $slug = $brand->slug;
 
         return filled($slug) ? (string) $slug : null;
     }
 
     private function categoryRouteKey(Category $category, string $locale): string
     {
-        $translations = $category->relationLoaded('translations')
-            ? $category->translations
-            : $category->translations()->get();
-
-        $slug = (
-            $translations->firstWhere('locale', $locale)?->slug
-            ?? $translations->firstWhere('locale', 'en')?->slug
-            ?? $translations->first(fn ($translation) => filled($translation->slug))?->slug
-        );
+        $slug = $category->slug;
 
         return filled($slug) ? (string) $slug : (string) $category->id;
     }

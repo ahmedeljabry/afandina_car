@@ -60,6 +60,7 @@ class CategoryController extends Controller
     {
         $language = $request->header('Accept-Language') ?? 'en';
         $category = Category::where('slug', $slug)->firstOrFail();
+
         return new DetailedCategoryResource($category);
     }
 }

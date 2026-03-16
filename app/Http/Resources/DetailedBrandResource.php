@@ -26,7 +26,11 @@ class DetailedBrandResource extends JsonResource
         $base_url = asset('storage/');
         // Retrieve translation for the requested locale or fallback
         $locale = app()->getLocale() ?? 'en';
-        $translation = $this->translations->where('locale', $locale)->first();
+        $translations = $this->translations;
+        $translation = $translations->firstWhere('locale', $locale)
+            ?? $translations->firstWhere('locale', 'en')
+            ?? $translations->first();
+        $slug = $this->slug;
 
         // Format the created_at date
         $formattedCreatedAt = $this->created_at ? $this->created_at->format('j M, Y') : null;
@@ -49,7 +53,7 @@ class DetailedBrandResource extends JsonResource
         $car_counts = $this->getCounts($locale);
         return [
             'id' => $this->id,
-            'slug' => $this->slug??null,
+            'slug' => $slug,
             'name' => $translation->name??null,
             'description' => $translation->description,
             'article' => $translation->article,
@@ -82,12 +86,12 @@ class DetailedBrandResource extends JsonResource
                             'name' => __('messages.cars')
                         ],
                         [
-                            'url' => config('app.url') . "/{$locale}/product/brand/{$this->slug}",
+                            'url' => config('app.url') . "/{$locale}/product/brand/{$slug}",
                             'name' => $translation->name
                         ]
                     ]),
                     'webpage_schema' => $this->getWebPageSchema([
-                        'url' => config('app.url') . "/{$locale}/product/brand/{$this->slug}",
+                        'url' => config('app.url') . "/{$locale}/product/brand/{$slug}",
                         'name' => $translation->name,
                         'description' => $translation->meta_description,
                         'image' => asset('storage/' . $this->logo_path),
@@ -95,7 +99,7 @@ class DetailedBrandResource extends JsonResource
                         'date_published' => $this->created_at->toIso8601String(),
                     ]),
                     'blog_posting_schema' => $this->getBlogPostingSchema([
-                        'url' => config('app.url') . "/{$locale}/product/brand/{$this->slug}",
+                        'url' => config('app.url') . "/{$locale}/product/brand/{$slug}",
                         'title' => $translation->title ?? '',
                         'description' => $translation->description ?? '',
                         'content' => $translation->article ?? '',

@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
                         ?? $brand->translations->firstWhere('locale', 'en')
                         ?? $brand->translations->first();
                     $name = trim((string) ($brandTranslation?->name ?? ''));
-                    $slug = $brand->translations->first(fn ($translation) => filled($translation->slug))?->slug;
+                    $slug = $brand->slug;
 
                     if ($name === '' || blank($slug)) {
                         return null;

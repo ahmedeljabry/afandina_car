@@ -54,6 +54,7 @@ class BrandController extends Controller
     public function show(Request $request, $slug)
     {
         $brand = Brand::where('slug', $slug)->firstOrFail();
+
         return new DetailedBrandResource($brand);
     }
 }

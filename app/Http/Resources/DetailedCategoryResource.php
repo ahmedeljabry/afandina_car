@@ -26,7 +26,11 @@ class DetailedCategoryResource extends JsonResource
         $base_url = asset('storage/');
         // Retrieve translation for the requested locale or fallback
         $locale = app()->getLocale() ?? 'en';
-        $translation = $this->translations->where('locale', $locale)->first();
+        $translations = $this->translations;
+        $translation = $translations->firstWhere('locale', $locale)
+            ?? $translations->firstWhere('locale', 'en')
+            ?? $translations->first();
+        $slug = $this->slug;
 
         // Format the created_at date
         $formattedCreatedAt = $this->created_at ? $this->created_at->format('j M, Y') : null;
@@ -35,11 +39,11 @@ class DetailedCategoryResource extends JsonResource
         $metaKeywordsArray = $translation && $translation->meta_keywords ? json_decode($translation->meta_keywords, true) : null;
         $metaKeywords = $metaKeywordsArray ? implode(', ', array_column($metaKeywordsArray, 'value')) : null;
 
-        $seoQuestions = $this->seoQuestions->where('locale',$locale);
-        $seoQuestionSchema = $this->jsonLD($seoQuestions);        $car_counts = $this->getCounts($locale);
+        $seoQuestions = $this->seoQuestions->where('locale', $locale);
+        $car_counts = $this->getCounts($locale);
         return [
             'id' => $this->id,
-            'slug' => $this->slug,
+            'slug' => $slug,
             'name' => $translation->name,
             'description' => $translation->description,
             'article' => $translation->article,
@@ -72,12 +76,12 @@ class DetailedCategoryResource extends JsonResource
                             'name' => __('messages.cars')
                         ],
                         [
-                            'url' => config('app.url') . "/{$locale}/product/category/{$this->slug}",
+                            'url' => config('app.url') . "/{$locale}/product/category/{$slug}",
                             'name' => $translation->name
                         ]
                     ]),
                     'webpage_schema' => $this->getWebPageSchema([
-                        'url' => config('app.url') . "/{$locale}/product/category/{$this->slug}",
+                        'url' => config('app.url') . "/{$locale}/product/category/{$slug}",
                         'name' => $translation->name,
                         'description' => $translation->meta_description,
                         'image' => asset('storage/' . $this->image_path),
@@ -85,9 +89,9 @@ class DetailedCategoryResource extends JsonResource
                         'date_published' => $this->created_at->toIso8601String(),
                     ]),
                     'blog_posting_schema' => $this->getBlogPostingSchema([
-                        'url' => config('app.url') . "/{$locale}/product/category/{$this->slug}",
+                        'url' => config('app.url') . "/{$locale}/product/category/{$slug}",
                         'title' => $translation->title ?? '',
-                        'description' => $traslation->description ?? '',
+                        'description' => $translation->description ?? '',
                         'content' => $translation->article ?? '',
                         'image' => asset('storage/' . $this->image_path),
                         'date_modified' => $this->updated_at->toIso8601String(),

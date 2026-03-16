@@ -966,6 +966,15 @@
                                                         value="{{ old('name.' . $lang->code, $translation->name ?? '') }}">
                                                 </div>
                                                 <div class="form-group">
+                                                    <label for="card_name_{{ $lang->code }}"
+                                                        class="font-weight-bold">Card Name ({{ $lang->name }})</label>
+                                                    <input type="text" name="card_name[{{ $lang->code }}]"
+                                                        class="form-control form-control-lg shadow-sm"
+                                                        id="card_name_{{ $lang->code }}"
+                                                        value="{{ old('card_name.' . $lang->code, $translation->card_name ?? '') }}"
+                                                        placeholder="Optional short name for car cards">
+                                                </div>
+                                                <div class="form-group">
                                                     <label for="description_{{ $lang->code }}"
                                                         class="font-weight-bold">Description
                                                         ({{ $lang->name }})</label>

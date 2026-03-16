@@ -174,7 +174,7 @@ class BlogController extends Controller
 
         return [
             'id' => $car->id,
-            'name' => $carTranslation?->name ?? __('website.common.car'),
+            'name' => filled($carTranslation?->card_name) ? $carTranslation->card_name : ($carTranslation?->name ?? __('website.common.car')),
             'brand_name' => $brandTranslation?->name,
             'category_name' => $categoryTranslation?->name,
             'year' => $car->year?->year,

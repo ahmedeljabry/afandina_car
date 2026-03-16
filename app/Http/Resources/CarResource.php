@@ -12,6 +12,9 @@ class CarResource extends JsonResource
         $locale = app()->getLocale()??"en";
         $currency = \App\Models\Currency::find(app('currency_id'));
         $currencyLanguage = $currency->translations->where('locale', $locale)->first();
+        $carTranslation = $this->translations->where('locale', $locale)->first()
+            ?? $this->translations->where('locale', 'en')->first()
+            ?? $this->translations->first();
         $carModel = $this->carModel ? $this->carModel->translations->where('locale', $locale)->first(): null;
 
 //        'daily_main_price' => ceil($this->daily_main_price * $currency->exchange_rate),
@@ -64,7 +67,7 @@ class CarResource extends JsonResource
             'category' => $this->category->translations->where('locale', $locale)->first()->name ?? null,
             'default_image_path' => $this->default_image_path,
             'slug' => $this->slug,
-            'name' => $this->translations->where('locale', $locale)->first()->name ?? null,
+            'name' => filled($carTranslation?->card_name) ? $carTranslation->card_name : ($carTranslation?->name ?? null),
             'images' => collect([
                 [
                     'file_path' => $this->default_image_path,
