@@ -65,7 +65,7 @@
 @endphp
 
 <footer class="footer footer-four">
-    <div class="footer-top aos" data-aos="fade-up">
+    <div class="footer-top">
         <div class="container">
             <div class="row row-gap-4">
                 <div class="col-lg-4">
