@@ -349,8 +349,8 @@
         .listing-seo-content .listing-seo-article p,
         .listing-seo-content .listing-seo-article li {
             color: #4f5761;
-            font-size: 17px;
-            line-height: 1.7;
+            font-size: 16px;
+            line-height: 1.75;
         }
 
         .listing-seo-content .listing-seo-article h1,
@@ -359,12 +359,23 @@
         .listing-seo-content .listing-seo-article h4,
         .listing-seo-content .listing-seo-article h5,
         .listing-seo-content .listing-seo-article h6 {
-            margin-top: 18px;
-            margin-bottom: 12px;
+            margin-top: 16px;
+            margin-bottom: 10px;
             color: #1f1f1f;
+            font-weight: 600;
+            line-height: 1.4;
+            font-size: 24px;
+        }
+
+        .listing-seo-content .listing-seo-article > h1:first-child,
+        .listing-seo-content .listing-seo-article > h2:first-child,
+        .listing-seo-content .listing-seo-article > h3:first-child,
+        .listing-seo-content .listing-seo-article > h4:first-child,
+        .listing-seo-content .listing-seo-article > h5:first-child,
+        .listing-seo-content .listing-seo-article > h6:first-child {
+            font-size: 30px;
             font-weight: 700;
-            line-height: 1.35;
-            font-size: 38px;
+            margin-bottom: 14px;
         }
 
         @media (max-width: 991.98px) {
@@ -380,7 +391,7 @@
             .listing-seo-content .listing-seo-article,
             .listing-seo-content .listing-seo-article p,
             .listing-seo-content .listing-seo-article li {
-                font-size: 16px;
+                font-size: 15px;
             }
 
             .listing-seo-content .listing-seo-article h1,
@@ -389,7 +400,16 @@
             .listing-seo-content .listing-seo-article h4,
             .listing-seo-content .listing-seo-article h5,
             .listing-seo-content .listing-seo-article h6 {
-                font-size: 32px;
+                font-size: 22px;
+            }
+
+            .listing-seo-content .listing-seo-article > h1:first-child,
+            .listing-seo-content .listing-seo-article > h2:first-child,
+            .listing-seo-content .listing-seo-article > h3:first-child,
+            .listing-seo-content .listing-seo-article > h4:first-child,
+            .listing-seo-content .listing-seo-article > h5:first-child,
+            .listing-seo-content .listing-seo-article > h6:first-child {
+                font-size: 26px;
             }
         }
 
@@ -402,7 +422,7 @@
             .listing-seo-content .listing-seo-article,
             .listing-seo-content .listing-seo-article p,
             .listing-seo-content .listing-seo-article li {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .listing-seo-content .listing-seo-article h1,
@@ -411,7 +431,16 @@
             .listing-seo-content .listing-seo-article h4,
             .listing-seo-content .listing-seo-article h5,
             .listing-seo-content .listing-seo-article h6 {
-                font-size: 26px;
+                font-size: 20px;
+            }
+
+            .listing-seo-content .listing-seo-article > h1:first-child,
+            .listing-seo-content .listing-seo-article > h2:first-child,
+            .listing-seo-content .listing-seo-article > h3:first-child,
+            .listing-seo-content .listing-seo-article > h4:first-child,
+            .listing-seo-content .listing-seo-article > h5:first-child,
+            .listing-seo-content .listing-seo-article > h6:first-child {
+                font-size: 24px;
             }
         }
 
@@ -439,7 +468,16 @@
             .listing-seo-content .listing-seo-article h4,
             .listing-seo-content .listing-seo-article h5,
             .listing-seo-content .listing-seo-article h6 {
-                font-size: 22px;
+                font-size: 18px;
+            }
+
+            .listing-seo-content .listing-seo-article > h1:first-child,
+            .listing-seo-content .listing-seo-article > h2:first-child,
+            .listing-seo-content .listing-seo-article > h3:first-child,
+            .listing-seo-content .listing-seo-article > h4:first-child,
+            .listing-seo-content .listing-seo-article > h5:first-child,
+            .listing-seo-content .listing-seo-article > h6:first-child {
+                font-size: 21px;
             }
         }
     </style>
