@@ -329,7 +329,11 @@ class CarController extends Controller
         }
 
         $canonicalSlug = $this->carSlugForLocale($carModel, $locale);
-        if (filled($canonicalSlug) && $requestedIdentifier !== $canonicalSlug) {
+        if (blank($canonicalSlug)) {
+            abort(404);
+        }
+
+        if ($requestedIdentifier !== $canonicalSlug) {
             return redirect()->route('website.cars.show', ['car' => $canonicalSlug]);
         }
 
@@ -407,7 +411,9 @@ class CarController extends Controller
         $carRouteKey = $this->carRouteKey($car, $locale);
         $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : null;
         $categoryRouteKey = $car->category ? $this->categoryRouteKey($car->category, $locale) : '';
-        $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
+        $detailsUrl = filled($carRouteKey)
+            ? route('website.cars.show', ['car' => $carRouteKey])
+            : route('website.cars.index');
 
         $dailyMainPrice = $car->daily_main_price ? (float) $car->daily_main_price : null;
         $dailyDiscountPrice = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -472,18 +478,14 @@ class CarController extends Controller
             return $car;
         }
 
-        if (ctype_digit($identifier)) {
-            return Car::query()->find((int) $identifier);
-        }
-
         return null;
     }
 
-    private function carRouteKey(Car $car, string $locale): string
+    private function carRouteKey(Car $car, string $locale): ?string
     {
         $slug = $this->carSlugForLocale($car, $locale);
 
-        return filled($slug) ? (string) $slug : (string) $car->id;
+        return filled($slug) ? (string) $slug : null;
     }
 
     private function carSlugForLocale(Car $car, string $locale): ?string
@@ -494,7 +496,8 @@ class CarController extends Controller
 
         return $translations->firstWhere('locale', $locale)?->slug
             ?? $translations->firstWhere('locale', 'en')?->slug
-            ?? $translations->first(fn($translation) => filled($translation->slug))?->slug;
+            ?? $translations->first(fn($translation) => filled($translation->slug))?->slug
+            ?? (filled($car->slug ?? null) ? (string) $car->slug : null);
     }
 
     private function mapCarDetailsData(Car $car, string $locale, float $currencyRate, string $currencySymbol): array
@@ -572,7 +575,9 @@ class CarController extends Controller
         return [
             'id' => $car->id,
             'slug' => $carRouteKey,
-            'details_url' => route('website.cars.show', ['car' => $carRouteKey]),
+            'details_url' => filled($carRouteKey)
+                ? route('website.cars.show', ['car' => $carRouteKey])
+                : route('website.cars.index'),
             'name' => $carTranslation?->name ?? __('website.common.car'),
             'description' => $carTranslation?->description,
             'long_description' => $carTranslation?->long_description,

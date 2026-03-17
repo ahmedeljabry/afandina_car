@@ -204,7 +204,9 @@ class HomeController extends Controller
         $gearTranslation  = $this->translationFor($car->gearType, $locale);
         $carRouteKey = $this->carRouteKey($car, $locale);
         $brandRouteKey = $car->brand ? $this->brandRouteKey($car->brand, $locale) : null;
-        $detailsUrl = route('website.cars.show', ['car' => $carRouteKey]);
+        $detailsUrl = filled($carRouteKey)
+            ? route('website.cars.show', ['car' => $carRouteKey])
+            : route('website.cars.index');
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
         $dailyDiscount = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
@@ -236,13 +238,14 @@ class HomeController extends Controller
         ];
     }
 
-    private function carRouteKey(Car $car, string $locale): string
+    private function carRouteKey(Car $car, string $locale): ?string
     {
         $slug = $this->translationFor($car, $locale)?->slug
             ?? $this->translationFor($car, 'en')?->slug
-            ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug;
+            ?? $car->translations?->first(fn ($translation) => filled($translation->slug))?->slug
+            ?? (filled($car->slug ?? null) ? (string) $car->slug : null);
 
-        return filled($slug) ? (string) $slug : (string) $car->id;
+        return filled($slug) ? (string) $slug : null;
     }
 
     private function brandRouteKey(Brand $brand, string $locale): ?string
