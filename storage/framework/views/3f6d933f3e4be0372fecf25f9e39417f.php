@@ -7,6 +7,47 @@
     $contactPageUrl = route('website.contact.index');
     $brandsSectionUrl = route('home') . '#home-brands';
     $categoriesSectionUrl = route('home') . '#home-categories';
+    $normalizeHeaderCategoryImage = static function (?string $path): ?string {
+        if (blank($path)) {
+            return null;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        $normalizedPath = ltrim($path, '/');
+        if (Str::startsWith($normalizedPath, ['storage/', 'admin/', 'website/'])) {
+            return asset($normalizedPath);
+        }
+
+        return asset('storage/' . $normalizedPath);
+    };
+    $headerCategories = \App\Models\CategoryTranslation::query()
+        ->with([
+            'category' => function ($query) {
+                $query->where('is_active', true)
+                    ->withCount([
+                        'cars as cars_count' => fn ($carsQuery) => $carsQuery->where('is_active', true),
+                    ]);
+            },
+        ])
+        ->whereHas('category', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->whereIn('locale', [$currentLocale, 'en'])
+        ->whereNotNull('name')
+        ->where('name', '!=', '')
+        ->whereNotNull('slug')
+        ->where('slug', '!=', '')
+        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$currentLocale])
+        ->latest('id')
+        ->get()
+        ->filter(fn ($translation) => $translation->category !== null)
+        ->unique('category_id')
+        ->sortByDesc(fn ($translation) => (int) data_get($translation, 'category.cars_count', 0))
+        ->take(24)
+        ->values();
 ?>
 
 <style>
@@ -159,9 +200,7 @@
                                             $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
                                             $brandLogoPath = data_get($brandItem, 'logo_path');
                                             $brandCarsCount = (int) data_get($brandItem, 'cars_count', 0);
-                                            $brandSlug = data_get($brandItem, 'slug');
-                                            $brandId = data_get($brandItem, 'id');
-                                            $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
+                                            $brandHref = data_get($brandItem, 'url', route('website.cars.index'));
                                         ?>
                                         <li class="header-mega-grid-item">
                                             <a href="<?php echo e($brandHref); ?>" class="header-mega-item">
@@ -202,14 +241,12 @@
                             <li class="mega-menu-title d-lg-none"><?php echo e(__('website.nav.categories')); ?></li>
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
-                                    <?php $__empty_1 = true; $__currentLoopData = $headerCategories ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoryItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <?php $__empty_1 = true; $__currentLoopData = $headerCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoryItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <?php
-                                            $categoryName = (string) data_get($categoryItem, 'name', __('website.common.category'));
-                                            $categoryImagePath = data_get($categoryItem, 'image_path');
-                                            $categoryCarsCount = (int) data_get($categoryItem, 'cars_count', 0);
-                                            $categorySlug = data_get($categoryItem, 'slug');
-                                            $categoryId = data_get($categoryItem, 'id');
-                                            $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
+                                            $categoryName = (string) ($categoryItem->name ?? __('website.common.category'));
+                                            $categoryImagePath = $normalizeHeaderCategoryImage(data_get($categoryItem, 'category.image_path'));
+                                            $categoryCarsCount = (int) data_get($categoryItem, 'category.cars_count', 0);
+                                            $categoryHref = route('website.cars.category', ['category' => $categoryItem->slug]);
                                         ?>
                                         <li class="header-mega-grid-item">
                                             <a href="<?php echo e($categoryHref); ?>" class="header-mega-item">

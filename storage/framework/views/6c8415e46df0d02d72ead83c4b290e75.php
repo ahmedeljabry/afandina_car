@@ -9,8 +9,39 @@
     $footerSocialLinks = collect($footerSocialLinks ?? $socialLinks ?? [])
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
         ->values();
-    $footerBrands = collect($footerBrands ?? []);
-    $footerCategories = collect($footerCategories ?? []);
+    $footerLocale = app()->getLocale() ?? 'en';
+    $footerBrands = \App\Models\BrandTranslation::query()
+        ->whereHas('brand', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->whereIn('locale', [$footerLocale, 'en'])
+        ->whereNotNull('name')
+        ->where('name', '!=', '')
+        ->whereNotNull('slug')
+        ->where('slug', '!=', '')
+        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
+        ->latest('id')
+        ->get()
+        ->unique('brand_id')
+        ->take(36)
+        ->filter()
+        ->values();
+    $footerCategories = \App\Models\CategoryTranslation::query()
+        ->whereHas('category', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->whereIn('locale', [$footerLocale, 'en'])
+        ->whereNotNull('name')
+        ->where('name', '!=', '')
+        ->whereNotNull('slug')
+        ->where('slug', '!=', '')
+        ->orderByRaw('CASE WHEN locale = ? THEN 0 ELSE 1 END', [$footerLocale])
+        ->latest('id')
+        ->get()
+        ->unique('category_id')
+        ->take(24)
+        ->filter()
+        ->values();
     $footerLocations = collect($footerLocations ?? []);
     $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);
 ?>
@@ -123,13 +154,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerBrands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <?php
-                                    $brandSlug = data_get($brand, 'slug');
-                                    $brandId = data_get($brand, 'id');
-                                    $brandHref = route('website.cars.brand', ['brand' => filled($brandSlug) ? $brandSlug : $brandId]);
-                                ?>
-                                <a href="<?php echo e($brandHref); ?>" class="btn btn-outline-light btn-sm rounded-pill">
-                                    <?php echo e($brand['name']); ?>
+                                <a href="<?php echo e(route('website.cars.brand', ['brand' => $brand->slug])); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                    <?php echo e($brand->name); ?>
 
                                 </a>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -149,13 +175,8 @@
 
                         <div class="d-flex flex-wrap gap-2">
                             <?php $__empty_1 = true; $__currentLoopData = $footerCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <?php
-                                    $categorySlug = data_get($category, 'slug');
-                                    $categoryId = data_get($category, 'id');
-                                    $categoryHref = route('website.cars.category', ['category' => filled($categorySlug) ? $categorySlug : $categoryId]);
-                                ?>
-                                <a href="<?php echo e($categoryHref); ?>" class="btn btn-outline-light btn-sm rounded-pill">
-                                    <?php echo e($category['name']); ?>
+                                <a href="<?php echo e(route('website.cars.category', ['category' => $category->slug])); ?>" class="btn btn-outline-light btn-sm rounded-pill">
+                                    <?php echo e($category->name); ?>
 
                                 </a>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
