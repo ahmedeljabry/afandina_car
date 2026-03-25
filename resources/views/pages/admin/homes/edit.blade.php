@@ -3,278 +3,153 @@
 @section('title', 'Home CMS')
 
 @section('page-title')
-    Home CMS
+    {{ __('Home CMS') }}
 @endsection
 
-@section('content')
-    @php
-        $activeLanguageMap = collect($activeLanguages ?? [])->keyBy('code');
-        $homeLocales = [
-            ['code' => 'en', 'name' => data_get($activeLanguageMap, 'en.name', 'English')],
-            ['code' => 'ar', 'name' => data_get($activeLanguageMap, 'ar.name', 'Arabic')],
-        ];
+@include('includes.admin.form_theme')
 
-        $translationsByLocale = [];
-        foreach ($homeLocales as $locale) {
-            $translationsByLocale[$locale['code']] = $item->translations->firstWhere('locale', $locale['code']);
-        }
-
-        $translationFallbackKeys = [
-            'hero_title_prefix' => 'website.home.hero.title_prefix',
-            'hero_title_highlight' => 'website.home.hero.title_highlight',
-            'hero_title_suffix' => 'website.home.hero.title_suffix',
-            'hero_banner_paragraph' => 'website.home.hero.banner_paragraph',
-            'hero_customers_label' => 'website.home.hero.customers_label',
-            'hero_customers_subtitle' => 'website.home.hero.customers_subtitle',
-            'hero_browse_cars_label' => 'website.home.hero.browse_cars',
-            'hero_browse_blogs_label' => 'website.home.hero.browse_blogs',
-            'hero_starting_from_label' => 'website.home.hero.starting_from',
-            'hero_per_day_label' => 'website.home.hero.per_day',
-            'hero_available_for_rent_label' => 'website.home.hero.available_for_rent',
-            'feature_section_title' => 'website.home.features.section_title',
-            'feature_section_paragraph' => 'website.home.features.section_paragraph',
-            'feature_item_1_title' => 'website.home.features.best_deal.title',
-            'feature_item_1_description' => 'website.home.features.best_deal.description',
-            'feature_item_2_title' => 'website.home.features.doorstep_delivery.title',
-            'feature_item_2_description' => 'website.home.features.doorstep_delivery.description',
-            'feature_item_3_title' => 'website.home.features.low_security_deposit.title',
-            'feature_item_3_description' => 'website.home.features.low_security_deposit.description',
-            'feature_item_4_title' => 'website.home.features.latest_cars.title',
-            'feature_item_4_description' => 'website.home.features.latest_cars.description',
-            'feature_item_5_title' => 'website.home.features.customer_support.title',
-            'feature_item_5_description' => 'website.home.features.customer_support.description',
-            'feature_item_6_title' => 'website.home.features.no_hidden_charges.title',
-            'feature_item_6_description' => 'website.home.features.no_hidden_charges.description',
-            'rental_section_title' => 'website.home.rental.title',
-            'rental_section_paragraph' => 'website.home.rental.paragraph',
-            'rental_step_1_title' => 'website.home.rental.step1_title',
-            'rental_step_1_description' => 'website.home.rental.step1_description',
-            'rental_step_2_title' => 'website.home.rental.step2_title',
-            'rental_step_2_description' => 'website.home.rental.step2_description',
-            'rental_step_3_title' => 'website.home.rental.step3_title',
-            'rental_step_3_description' => 'website.home.rental.step3_description',
-            'rental_stat_1_label' => 'website.home.stats.happy_customers',
-            'rental_stat_2_label' => 'website.home.stats.count_of_cars',
-            'rental_stat_3_label' => 'website.home.stats.locations_to_pickup',
-            'rental_stat_4_label' => 'website.home.stats.total_kilometers',
-            'support_item_1_text' => 'website.home.support.best_rate',
-            'support_item_2_text' => 'website.home.support.free_cancellation',
-            'support_item_3_text' => 'website.home.support.best_security',
-            'support_item_4_text' => 'website.home.support.latest_update',
-            'support_item_5_text' => 'website.home.support.trusted_proof',
-        ];
-
-        $prefillValues = [];
-        foreach ($translationFallbackKeys as $fieldName => $key) {
-            $prefillValues[$fieldName] = [
-                'en' => trans($key, [], 'en'),
-                'ar' => trans($key, [], 'ar'),
-            ];
-        }
-
-        $prefillValues['rental_stat_1_value'] = ['en' => '16', 'ar' => '16'];
-        $prefillValues['rental_stat_1_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_2_value'] = ['en' => '2547', 'ar' => '2547'];
-        $prefillValues['rental_stat_2_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_3_value'] = ['en' => '625', 'ar' => '625'];
-        $prefillValues['rental_stat_3_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_4_value'] = ['en' => '15000', 'ar' => '15000'];
-        $prefillValues['rental_stat_4_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-
-        $sectionLinks = [
-            ['anchor' => 'home-section-general', 'label' => 'Home Overview'],
-            ['anchor' => 'home-section-hero', 'label' => 'Hero Banner'],
-            ['anchor' => 'home-section-features', 'label' => 'Features'],
-            ['anchor' => 'home-section-rental', 'label' => 'Rental & Stats'],
-            ['anchor' => 'home-section-headings', 'label' => 'Section Headings'],
-            ['anchor' => 'home-section-testimonials', 'label' => 'Testimonials'],
-            ['anchor' => 'home-section-support', 'label' => 'Support Ticker'],
-            ['anchor' => 'home-section-shared', 'label' => 'Shared Content'],
-            ['anchor' => 'home-section-seo', 'label' => 'SEO'],
-        ];
-    @endphp
-
+@push('styles')
     <style>
-        .home-sections-nav {
-            position: sticky;
-            top: 70px;
-            z-index: 10;
+        .home-editor-shell { display: grid; gap: 1.5rem; }
+        .home-editor-topbar, .home-editor-pane, .home-upload-card, .home-status-card, .home-editor-section, .home-seo-card {
             background: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.07);
         }
 
-        .home-sections-nav a {
-            margin: 0.25rem;
+        .home-editor-topbar {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8 60%, #38bdf8);
+            color: #fff;
+            border: 0;
         }
+
+        .home-editor-topbar p { color: rgba(255, 255, 255, 0.78); margin: 0; }
+        .home-editor-topbar .btn { border-radius: 999px; }
+        .home-editor-pane, .home-editor-section, .home-seo-card { padding: 1.5rem; }
+        .home-editor-tabs, .home-locale-nav, .home-seo-locale-nav {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: .25rem;
+        }
+
+        .home-editor-tabs .nav-link, .home-locale-nav .nav-link, .home-seo-locale-nav .nav-link {
+            border-radius: 999px;
+            border: 1px solid #dbe2f0;
+            background: #fff;
+            color: #334155;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .home-editor-tabs .nav-link.active, .home-locale-nav .nav-link.active, .home-seo-locale-nav .nav-link.active {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        .home-editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+        .home-upload-card, .home-status-card { padding: 1.25rem; }
+        .home-upload-card h5, .home-status-card h5 { margin-bottom: .35rem; }
+        .home-upload-card p, .home-status-card p { color: #64748b; margin-bottom: 1rem; }
 
         .home-media-preview {
             width: 100%;
-            min-height: 220px;
+            min-height: 260px;
+            border-radius: 20px;
             object-fit: cover;
-            border-radius: 0.5rem;
-            border: 1px solid #dee2e6;
-            background: #f8f9fa;
+            background: #0f172a;
+            border: 1px solid #dbe2f0;
         }
 
         .home-media-empty {
-            min-height: 220px;
-            border: 1px dashed #ced4da;
-            border-radius: 0.5rem;
+            min-height: 260px;
+            border-radius: 20px;
+            border: 1px dashed #cbd5e1;
+            background: linear-gradient(160deg, #f8fafc, #e2e8f0);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6c757d;
-            background: #f8f9fa;
+            padding: 1.5rem;
+            color: #64748b;
             text-align: center;
+        }
+
+        .home-upload-dropzone {
+            margin-top: 1rem;
+            display: block;
+            padding: 1rem 1.1rem;
+            border-radius: 18px;
+            border: 1px dashed #93c5fd;
+            background: #eff6ff;
+            cursor: pointer;
+        }
+
+        .home-upload-dropzone strong { display: block; color: #1d4ed8; }
+        .home-upload-dropzone small { color: #64748b; }
+        .home-upload-filename { margin-top: .75rem; color: #475569; font-size: .9rem; }
+        .home-status-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; margin-top: 1rem; }
+
+        .home-metric-box {
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            padding: .95rem;
+        }
+
+        .home-metric-box span { display: block; color: #64748b; font-size: .82rem; font-weight: 600; }
+        .home-metric-box strong { display: block; color: #0f172a; margin-top: .2rem; font-size: 1.02rem; }
+        .home-section-kicker { color: #2563eb; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; font-weight: 800; }
+        .home-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: .45rem .85rem;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+
+        .home-field-card {
             padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            height: 100%;
+        }
+
+        .home-field-input { border-radius: 14px; background: #fff; }
+        .home-switch-card .form-check { display: flex; align-items: center; gap: .75rem; min-height: 44px; margin-bottom: 0; }
+        .home-switch-card .form-check-input { margin: 0; float: none; width: 2.6rem; height: 1.35rem; cursor: pointer; }
+        .home-switch-card .form-check-label { margin: 0; color: #0f172a; font-weight: 700; }
+        .seo-question-group {
+            border: 1px solid #dbe2f0;
+            border-radius: 18px;
+            padding: 1rem;
+            background: #f8fafc;
+        }
+
+        .seo-question-group + .seo-question-group { margin-top: .85rem; }
+
+        @media (max-width: 991.98px) {
+            .home-editor-grid, .home-status-metrics { grid-template-columns: 1fr; }
+            .home-editor-topbar { flex-direction: column; align-items: stretch; }
         }
     </style>
+@endpush
 
+@section('content')
     @php
-        $sections = [
-            [
-                'anchor' => 'home-section-hero',
-                'title' => 'Hero Banner',
-                'description' => 'Main banner copy and hero labels shown on the homepage.',
-                'fields' => [
-                    ['name' => 'hero_title_prefix', 'label' => 'Title Prefix'],
-                    ['name' => 'hero_title_highlight', 'label' => 'Title Highlight'],
-                    ['name' => 'hero_title_suffix', 'label' => 'Title Suffix'],
-                    ['name' => 'hero_banner_paragraph', 'label' => 'Banner Paragraph', 'type' => 'textarea', 'rows' => 4],
-                    ['name' => 'hero_customers_label', 'label' => 'Customers Label'],
-                    ['name' => 'hero_customers_subtitle', 'label' => 'Customers Subtitle'],
-                    ['name' => 'hero_browse_cars_label', 'label' => 'Browse Cars Button'],
-                    ['name' => 'hero_browse_blogs_label', 'label' => 'Browse Blogs Button'],
-                    ['name' => 'hero_starting_from_label', 'label' => 'Starting From Label'],
-                    ['name' => 'hero_per_day_label', 'label' => 'Per Day Label'],
-                    ['name' => 'hero_available_for_rent_label', 'label' => 'Available For Rent Label'],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-features',
-                'title' => 'Features',
-                'description' => 'Feature section heading and the six feature cards.',
-                'fields' => [
-                    ['name' => 'feature_section_title', 'label' => 'Section Title'],
-                    ['name' => 'feature_section_paragraph', 'label' => 'Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_1_title', 'label' => 'Feature 1 Title'],
-                    ['name' => 'feature_item_1_description', 'label' => 'Feature 1 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_2_title', 'label' => 'Feature 2 Title'],
-                    ['name' => 'feature_item_2_description', 'label' => 'Feature 2 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_3_title', 'label' => 'Feature 3 Title'],
-                    ['name' => 'feature_item_3_description', 'label' => 'Feature 3 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_4_title', 'label' => 'Feature 4 Title'],
-                    ['name' => 'feature_item_4_description', 'label' => 'Feature 4 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_5_title', 'label' => 'Feature 5 Title'],
-                    ['name' => 'feature_item_5_description', 'label' => 'Feature 5 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'feature_item_6_title', 'label' => 'Feature 6 Title'],
-                    ['name' => 'feature_item_6_description', 'label' => 'Feature 6 Description', 'type' => 'textarea', 'rows' => 3],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-rental',
-                'title' => 'Rental & Stats',
-                'description' => 'Rental steps and counter values used in the homepage stats block.',
-                'fields' => [
-                    ['name' => 'rental_section_title', 'label' => 'Section Title'],
-                    ['name' => 'rental_section_paragraph', 'label' => 'Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'rental_step_1_title', 'label' => 'Step 1 Title'],
-                    ['name' => 'rental_step_1_description', 'label' => 'Step 1 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'rental_step_2_title', 'label' => 'Step 2 Title'],
-                    ['name' => 'rental_step_2_description', 'label' => 'Step 2 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'rental_step_3_title', 'label' => 'Step 3 Title'],
-                    ['name' => 'rental_step_3_description', 'label' => 'Step 3 Description', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'rental_stat_1_value', 'label' => 'Stat 1 Value'],
-                    ['name' => 'rental_stat_1_suffix', 'label' => 'Stat 1 Suffix'],
-                    ['name' => 'rental_stat_1_label', 'label' => 'Stat 1 Label'],
-                    ['name' => 'rental_stat_2_value', 'label' => 'Stat 2 Value'],
-                    ['name' => 'rental_stat_2_suffix', 'label' => 'Stat 2 Suffix'],
-                    ['name' => 'rental_stat_2_label', 'label' => 'Stat 2 Label'],
-                    ['name' => 'rental_stat_3_value', 'label' => 'Stat 3 Value'],
-                    ['name' => 'rental_stat_3_suffix', 'label' => 'Stat 3 Suffix'],
-                    ['name' => 'rental_stat_3_label', 'label' => 'Stat 3 Label'],
-                    ['name' => 'rental_stat_4_value', 'label' => 'Stat 4 Value'],
-                    ['name' => 'rental_stat_4_suffix', 'label' => 'Stat 4 Suffix'],
-                    ['name' => 'rental_stat_4_label', 'label' => 'Stat 4 Label'],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-headings',
-                'title' => 'Section Headings',
-                'description' => 'Titles and descriptions for the main homepage content blocks.',
-                'fields' => [
-                    ['name' => 'category_section_title', 'label' => 'Category Section Title'],
-                    ['name' => 'category_section_paragraph', 'label' => 'Category Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'featured_cars_section_title', 'label' => 'Featured Cars Section Title'],
-                    ['name' => 'featured_cars_section_paragraph', 'label' => 'Featured Cars Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'brand_section_title', 'label' => 'Brand Section Title'],
-                    ['name' => 'brand_section_paragraph', 'label' => 'Brand Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'car_only_section_title', 'label' => 'Only On Section Title'],
-                    ['name' => 'car_only_section_paragraph', 'label' => 'Only On Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'blog_section_title', 'label' => 'Blog Section Title'],
-                    ['name' => 'blog_section_paragraph', 'label' => 'Blog Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'faq_section_title', 'label' => 'FAQ Section Title'],
-                    ['name' => 'faq_section_paragraph', 'label' => 'FAQ Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-testimonials',
-                'title' => 'Testimonials',
-                'description' => 'Three testimonial cards and the CTA button.',
-                'fields' => [
-                    ['name' => 'testimonial_section_title', 'label' => 'Section Title'],
-                    ['name' => 'testimonial_section_paragraph', 'label' => 'Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'testimonial_review_1', 'label' => 'Review 1', 'type' => 'textarea', 'rows' => 4],
-                    ['name' => 'testimonial_client_1_name', 'label' => 'Client 1 Name'],
-                    ['name' => 'testimonial_client_1_location', 'label' => 'Client 1 Location'],
-                    ['name' => 'testimonial_review_2', 'label' => 'Review 2', 'type' => 'textarea', 'rows' => 4],
-                    ['name' => 'testimonial_client_2_name', 'label' => 'Client 2 Name'],
-                    ['name' => 'testimonial_client_2_location', 'label' => 'Client 2 Location'],
-                    ['name' => 'testimonial_review_3', 'label' => 'Review 3', 'type' => 'textarea', 'rows' => 4],
-                    ['name' => 'testimonial_client_3_name', 'label' => 'Client 3 Name'],
-                    ['name' => 'testimonial_client_3_location', 'label' => 'Client 3 Location'],
-                    ['name' => 'testimonial_cta_label', 'label' => 'CTA Button Label'],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-support',
-                'title' => 'Support Ticker',
-                'description' => 'Scrolling support labels shown in the support marquee.',
-                'fields' => [
-                    ['name' => 'support_item_1_text', 'label' => 'Support Item 1'],
-                    ['name' => 'support_item_2_text', 'label' => 'Support Item 2'],
-                    ['name' => 'support_item_3_text', 'label' => 'Support Item 3'],
-                    ['name' => 'support_item_4_text', 'label' => 'Support Item 4'],
-                    ['name' => 'support_item_5_text', 'label' => 'Support Item 5'],
-                ],
-            ],
-            [
-                'anchor' => 'home-section-shared',
-                'title' => 'Shared Content',
-                'description' => 'Legacy and shared home fields reused by other frontend sections and APIs.',
-                'fields' => [
-                    ['name' => 'hero_header_title', 'label' => 'Legacy Hero Header Title'],
-                    ['name' => 'contact_us_title', 'label' => 'Contact Us Title'],
-                    ['name' => 'contact_us_paragraph', 'label' => 'Contact Us Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'contact_us_detail_title', 'label' => 'Contact Detail Title'],
-                    ['name' => 'contact_us_detail_paragraph', 'label' => 'Contact Detail Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'special_offers_section_title', 'label' => 'Special Offers Section Title'],
-                    ['name' => 'special_offers_section_paragraph', 'label' => 'Special Offers Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'why_choose_us_section_title', 'label' => 'Why Choose Us Section Title'],
-                    ['name' => 'why_choose_us_section_paragraph', 'label' => 'Why Choose Us Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'where_find_us_section_title', 'label' => 'Where Find Us Section Title'],
-                    ['name' => 'where_find_us_section_paragraph', 'label' => 'Where Find Us Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'required_documents_section_title', 'label' => 'Required Documents Section Title'],
-                    ['name' => 'required_documents_section_paragraph', 'label' => 'Required Documents Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'instagram_section_title', 'label' => 'Instagram Section Title'],
-                    ['name' => 'instagram_section_paragraph', 'label' => 'Instagram Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'footer_section_paragraph', 'label' => 'Footer Section Paragraph', 'type' => 'textarea', 'rows' => 4],
-                ],
-            ],
-        ];
-
+        $heroVideoUrl = $item->hero_header_video_path ? asset('storage/' . $item->hero_header_video_path) : null;
+        $heroImageUrl = $item->hero_header_image_path ? asset('storage/' . $item->hero_header_image_path) : null;
+        $heroImagePlaceholder = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='960' height='620' viewBox='0 0 960 620'%3E%3Crect width='100%25' height='100%25' fill='%23eff6ff'/%3E%3Ctext x='50%25' y='50%25' fill='%23475569' font-size='34' text-anchor='middle' dy='.3em'%3EHero Image Preview%3C/text%3E%3C/svg%3E";
         $seoQuestionsByLocale = $item->seoQuestions->groupBy('locale');
     @endphp
 
@@ -283,292 +158,347 @@
         @method('PUT')
         <input type="hidden" name="page_name" value="{{ old('page_name', $item->page_name) }}">
 
-        <div class="card card-primary card-outline shadow-sm mb-4">
-            <div class="card-body">
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between">
+        <div class="home-editor-shell">
+            <div class="form-hero">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
                     <div>
-                        <h4 class="mb-1">Homepage Content Manager</h4>
-                        <p class="text-muted mb-0">Control homepage text, media, and SEO for English and Arabic from one screen.</p>
+                        <h2>{{ __('Homepage Content Manager') }}</h2>
+                        <p>{{ __('Manage homepage media, section copy, and SEO from one tabbed workspace for English and Arabic.') }}</p>
                     </div>
-                    <button type="submit" class="btn btn-success mt-3 mt-lg-0">
-                        <i class="fas fa-save"></i> Save Home Page
-                    </button>
+                    <div class="d-flex flex-wrap">
+                        <span class="hero-pill"><i class="fas fa-language"></i>{{ count($homeLocales) }} {{ __('Locales') }}</span>
+                        <span class="hero-pill"><i class="fas fa-photo-film"></i>{{ __('Direct media upload') }}</span>
+                        <span class="hero-pill"><i class="fas fa-house"></i>{{ __('Homepage ID #:id', ['id' => $item->id]) }}</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="home-sections-nav mb-4">
-            @foreach ($sectionLinks as $sectionLink)
-                <a href="#{{ $sectionLink['anchor'] }}" class="btn btn-sm btn-outline-primary">{{ $sectionLink['label'] }}</a>
-            @endforeach
-        </div>
+            @if ($errors->any())
+                <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-0">
+                    <strong>{{ __('Please correct the following errors:') }}</strong>
+                    <ul class="mb-0 mt-2 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <div class="card card-primary card-outline shadow-sm mb-4" id="home-section-general">
-            <div class="card-header bg-white">
-                <h5 class="mb-1">Home Overview</h5>
-                <p class="text-muted mb-0">Select the hero media and keep the homepage record active.</p>
+            <div class="home-editor-topbar">
+                <div>
+                    <div class="fw-semibold">{{ __('Homepage record is ready for editing') }}</div>
+                    <p>{{ __('Hero image and video now save directly, so updates are no longer blocked by queued file jobs.') }}</p>
+                </div>
+                <button type="submit" class="btn btn-warning text-dark fw-semibold px-4">{{ __('Save Home Page') }}</button>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Current Hero Video</label>
-                            @if ($item->hero_header_video_path)
+
+            <ul class="nav nav-pills home-editor-tabs" role="tablist">
+                @foreach ($editorTabs as $tab)
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {{ $loop->first ? 'active' : '' }}" type="button"
+                            data-bs-toggle="pill" data-bs-target="#tab-{{ $tab['id'] }}" role="tab"
+                            aria-controls="tab-{{ $tab['id'] }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+                            <i class="{{ $tab['icon'] }} me-1"></i>{{ $tab['label'] }}
+                        </button>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active home-editor-pane" id="tab-overview" role="tabpanel">
+                    <div class="home-editor-grid mb-4">
+                        <div class="home-upload-card">
+                            <h5>{{ __('Hero Video') }}</h5>
+                            <p>{{ __('Upload the looping homepage background video used when hero type is set to video.') }}</p>
+
+                            @if ($heroVideoUrl)
                                 <video id="hero_video_preview" class="home-media-preview" controls>
-                                    <source src="{{ asset('storage/' . $item->hero_header_video_path) }}">
+                                    <source src="{{ $heroVideoUrl }}">
                                 </video>
                             @else
-                                <div class="home-media-empty" id="hero_video_empty">No hero video uploaded yet.</div>
+                                <div class="home-media-empty" id="hero_video_empty">{{ __('No hero video uploaded yet.') }}</div>
                                 <video id="hero_video_preview" class="home-media-preview d-none" controls></video>
                             @endif
-                            <div class="custom-file mt-3">
-                                <input type="file" name="hero_header_video_path" id="hero_header_video_path"
-                                    class="custom-file-input @error('hero_header_video_path') is-invalid @enderror"
-                                    accept="video/*" data-preview-target="hero_video_preview" data-empty-target="hero_video_empty">
-                                <label class="custom-file-label" for="hero_header_video_path">Upload Hero Video</label>
-                                @error('hero_header_video_path')
-                                    <span class="invalid-feedback d-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold">Current Hero Image</label>
-                            @if ($item->hero_header_image_path)
-                                <img id="hero_image_preview" src="{{ asset('storage/' . $item->hero_header_image_path) }}"
-                                    alt="Hero image preview" class="home-media-preview">
+                            <label class="home-upload-dropzone" for="hero_header_video_path">
+                                <strong>{{ __('Choose Hero Video') }}</strong>
+                                <small>{{ __('MP4, WEBM, OGG, MOV up to 100 MB') }}</small>
+                            </label>
+                            <input type="file" name="hero_header_video_path" id="hero_header_video_path"
+                                class="d-none home-upload-input @error('hero_header_video_path') is-invalid @enderror"
+                                accept="video/*" data-preview-target="hero_video_preview" data-empty-target="hero_video_empty" data-file-label="hero_video_filename">
+                            <div class="home-upload-filename" id="hero_video_filename">{{ __('No new video selected') }}</div>
+                            @error('hero_header_video_path')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="home-upload-card">
+                            <h5>{{ __('Hero Image') }}</h5>
+                            <p>{{ __('Upload the poster image or static homepage hero image.') }}</p>
+
+                            @if ($heroImageUrl)
+                                <img id="hero_image_preview" src="{{ $heroImageUrl }}" alt="{{ __('Hero image preview') }}" class="home-media-preview">
                             @else
-                                <div class="home-media-empty" id="hero_image_empty">No hero image uploaded yet.</div>
-                                <img id="hero_image_preview" src="" alt="Hero image preview" class="home-media-preview d-none">
+                                <div class="home-media-empty" id="hero_image_empty">{{ __('No hero image uploaded yet.') }}</div>
+                                <img id="hero_image_preview" src="{{ $heroImagePlaceholder }}" alt="{{ __('Hero image preview') }}" class="home-media-preview d-none">
                             @endif
-                            <div class="custom-file mt-3">
-                                <input type="file" name="hero_header_image_path" id="hero_header_image_path"
-                                    class="custom-file-input @error('hero_header_image_path') is-invalid @enderror"
-                                    accept="image/*" data-preview-target="hero_image_preview" data-empty-target="hero_image_empty">
-                                <label class="custom-file-label" for="hero_header_image_path">Upload Hero Image</label>
-                                @error('hero_header_image_path')
-                                    <span class="invalid-feedback d-block">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="hero_type" class="font-weight-bold">Hero Media Type</label>
-                            <select name="hero_type" id="hero_type" class="form-control @error('hero_type') is-invalid @enderror">
-                                <option value="video" @selected(old('hero_type', $item->hero_type) === 'video')>Video</option>
-                                <option value="image" @selected(old('hero_type', $item->hero_type) === 'image')>Image</option>
-                            </select>
-                            @error('hero_type')
-                                <span class="invalid-feedback d-block">{{ $message }}</span>
+                            <label class="home-upload-dropzone" for="hero_header_image_path">
+                                <strong>{{ __('Choose Hero Image') }}</strong>
+                                <small>{{ __('JPG, PNG, SVG, WEBP up to 10 MB') }}</small>
+                            </label>
+                            <input type="file" name="hero_header_image_path" id="hero_header_image_path"
+                                class="d-none home-upload-input @error('hero_header_image_path') is-invalid @enderror"
+                                accept="image/*" data-preview-target="hero_image_preview" data-empty-target="hero_image_empty" data-file-label="hero_image_filename">
+                            <div class="home-upload-filename" id="hero_image_filename">{{ __('No new image selected') }}</div>
+                            @error('hero_header_image_path')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="is_active" class="font-weight-bold d-block">Status</label>
-                            <div class="custom-control custom-switch mt-2">
-                                <input type="checkbox" name="is_active" id="is_active" value="1"
-                                    class="custom-control-input" @checked((bool) old('is_active', $item->is_active))>
-                                <label class="custom-control-label" for="is_active">Homepage is active</label>
+                    <div class="home-status-card">
+                        <h5>{{ __('Status & Delivery') }}</h5>
+                        <p>{{ __('Switch between image and video hero mode, and keep the homepage enabled for the storefront.') }}</p>
+                        <div class="row g-3 align-items-end">
+                            <div class="col-lg-4">
+                                <label for="hero_type" class="font-weight-bold">{{ __('Hero Media Type') }}</label>
+                                <select name="hero_type" id="hero_type" class="form-control home-field-input @error('hero_type') is-invalid @enderror">
+                                    <option value="video" @selected(old('hero_type', $item->hero_type) === 'video')>{{ __('Video') }}</option>
+                                    <option value="image" @selected(old('hero_type', $item->hero_type) === 'image')>{{ __('Image') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="font-weight-bold d-block">{{ __('Homepage Status') }}</label>
+                                <div class="home-field-card home-switch-card mt-2">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" name="is_active" id="is_active" value="1" class="form-check-input" @checked((bool) old('is_active', $item->is_active))>
+                                        <label class="form-check-label" for="is_active">{{ __('Homepage is active') }}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="font-weight-bold">{{ __('Page Name') }}</label>
+                                <input type="text" class="form-control home-field-input" value="{{ old('page_name', $item->page_name) }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="home-status-metrics">
+                            <div class="home-metric-box">
+                                <span>{{ __('Current Hero Type') }}</span>
+                                <strong>{{ strtoupper(old('hero_type', $item->hero_type)) }}</strong>
+                            </div>
+                            <div class="home-metric-box">
+                                <span>{{ __('Current Image') }}</span>
+                                <strong>{{ $item->hero_header_image_path ? __('Uploaded') : __('Missing') }}</strong>
+                            </div>
+                            <div class="home-metric-box">
+                                <span>{{ __('Current Video') }}</span>
+                                <strong>{{ $item->hero_header_video_path ? __('Uploaded') : __('Missing') }}</strong>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        @foreach ($sections as $section)
-            @include('pages.admin.homes.partials.section-panel', [
-                'section' => $section,
-                'homeLocales' => $homeLocales,
-                'translationsByLocale' => $translationsByLocale,
-                'prefillValues' => $prefillValues,
-            ])
-        @endforeach
+                @foreach (['hero', 'features', 'rental', 'headings', 'testimonials', 'support', 'shared'] as $sectionKey)
+                    <div class="tab-pane fade home-editor-pane" id="tab-{{ $sectionKey }}" role="tabpanel">
+                        @include('pages.admin.homes.partials.section-panel', [
+                            'section' => $editorSections[$sectionKey],
+                            'homeLocales' => $homeLocales,
+                            'translationsByLocale' => $translationsByLocale,
+                            'prefillValues' => $prefillValues,
+                        ])
+                    </div>
+                @endforeach
 
-        <div class="card card-primary card-outline shadow-sm mb-4" id="home-section-seo">
-            <div class="card-header bg-white">
-                <h5 class="mb-1">SEO</h5>
-                <p class="text-muted mb-0">Meta data, robots directives, and structured Q&amp;A for the homepage.</p>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    @foreach ($homeLocales as $locale)
-                        @php
-                            $localeCode = $locale['code'];
-                            $translation = $translationsByLocale[$localeCode] ?? null;
-                            $metaKeywordsJson = $translation?->meta_keywords ?? '';
-                            $metaKeywords = json_decode((string) $metaKeywordsJson, true);
-                            $metaKeywordsValue = '';
-
-                            if (is_array($metaKeywords) && !empty($metaKeywords)) {
-                                if (isset($metaKeywords[0]) && is_array($metaKeywords[0]) && isset($metaKeywords[0]['value'])) {
-                                    $metaKeywordsValue = implode(',', array_column($metaKeywords, 'value'));
-                                } else {
-                                    $metaKeywordsValue = implode(',', $metaKeywords);
-                                }
-                            } elseif (is_string($metaKeywordsJson) && $metaKeywordsJson !== '[]') {
-                                $metaKeywordsValue = $metaKeywordsJson;
-                            }
-
-                            $oldSeoRows = old('seo_questions.' . $localeCode);
-                            if (is_array($oldSeoRows)) {
-                                $seoRows = array_values($oldSeoRows);
-                            } else {
-                                $seoRows = $seoQuestionsByLocale->get($localeCode, collect())->map(function ($seoQuestion) {
-                                    return [
-                                        'question' => $seoQuestion->question_text,
-                                        'answer' => $seoQuestion->answer_text,
-                                    ];
-                                })->values()->all();
-                            }
-
-                            if (empty($seoRows)) {
-                                $seoRows = [['question' => '', 'answer' => '']];
-                            }
-                        @endphp
-
-                        <div class="col-lg-6 d-flex">
-                            <div class="border rounded p-3 mb-3 flex-fill">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h6 class="mb-0">{{ $locale['name'] }}</h6>
-                                    <span class="badge badge-secondary">{{ strtoupper($localeCode) }}</span>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="meta_title_{{ $localeCode }}" class="font-weight-bold">Meta Title</label>
-                                    <input type="text" name="meta_title[{{ $localeCode }}]" id="meta_title_{{ $localeCode }}"
-                                        class="form-control @error('meta_title.' . $localeCode) is-invalid @enderror"
-                                        value="{{ old('meta_title.' . $localeCode, $translation?->meta_title ?? '') }}">
-                                    @error('meta_title.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="meta_description_{{ $localeCode }}" class="font-weight-bold">Meta Description</label>
-                                    <textarea name="meta_description[{{ $localeCode }}]" id="meta_description_{{ $localeCode }}"
-                                        class="form-control @error('meta_description.' . $localeCode) is-invalid @enderror"
-                                        rows="3">{{ old('meta_description.' . $localeCode, $translation?->meta_description ?? '') }}</textarea>
-                                    @error('meta_description.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="meta_keywords_{{ $localeCode }}" class="font-weight-bold">Meta Keywords</label>
-                                    <input type="text" name="meta_keywords[{{ $localeCode }}]" id="meta_keywords_{{ $localeCode }}"
-                                        class="form-control @error('meta_keywords.' . $localeCode) is-invalid @enderror"
-                                        value="{{ old('meta_keywords.' . $localeCode, $metaKeywordsValue) }}"
-                                        placeholder="keyword one, keyword two">
-                                    @error('meta_keywords.' . $localeCode)
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group border rounded p-3 h-100">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" name="robots_index[{{ $localeCode }}]"
-                                                    id="robots_index_{{ $localeCode }}" class="custom-control-input"
-                                                    value="index"
-                                                    @checked(old('robots_index.' . $localeCode, $translation?->robots_index ?? 'index') === 'index')>
-                                                <label class="custom-control-label" for="robots_index_{{ $localeCode }}">Allow indexing</label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group border rounded p-3 h-100">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" name="robots_follow[{{ $localeCode }}]"
-                                                    id="robots_follow_{{ $localeCode }}" class="custom-control-input"
-                                                    value="follow"
-                                                    @checked(old('robots_follow.' . $localeCode, $translation?->robots_follow ?? 'follow') === 'follow')>
-                                                <label class="custom-control-label" for="robots_follow_{{ $localeCode }}">Allow link follow</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between mt-4 mb-3">
-                                    <div>
-                                        <h6 class="mb-1">SEO Questions</h6>
-                                        <p class="text-muted mb-0">Optional structured content for search engines.</p>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary add-seo-question"
-                                        data-lang="{{ $localeCode }}">Add Question</button>
-                                </div>
-
-                                <div class="seo-questions-container" id="seo-questions-{{ $localeCode }}">
-                                    @foreach ($seoRows as $index => $seoRow)
-                                        <div class="seo-question-group border rounded p-3 mb-3">
-                                            <div class="form-group">
-                                                <label class="font-weight-bold">Question</label>
-                                                <input type="text"
-                                                    name="seo_questions[{{ $localeCode }}][{{ $index }}][question]"
-                                                    class="form-control"
-                                                    value="{{ data_get($seoRow, 'question', '') }}">
-                                            </div>
-                                            <div class="form-group mb-2">
-                                                <label class="font-weight-bold">Answer</label>
-                                                <textarea name="seo_questions[{{ $localeCode }}][{{ $index }}][answer]"
-                                                    class="form-control" rows="3">{{ data_get($seoRow, 'answer', '') }}</textarea>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-danger remove-seo-question">Remove</button>
-                                        </div>
-                                    @endforeach
-                                </div>
+                <div class="tab-pane fade home-editor-pane" id="tab-seo" role="tabpanel">
+                    <div class="home-seo-card">
+                        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
+                            <div>
+                                <span class="home-section-kicker">{{ __('Search Setup') }}</span>
+                                <h4 class="mb-1">{{ __('Homepage SEO') }}</h4>
+                                <p class="text-muted mb-0">{{ __('Meta data, robots directives, and structured question blocks for each supported locale.') }}</p>
                             </div>
+                            <span class="home-badge">{{ count($homeLocales) }} {{ __('Locales') }}</span>
                         </div>
-                    @endforeach
+
+                        <ul class="nav nav-pills home-seo-locale-nav mb-4" role="tablist">
+                            @foreach ($homeLocales as $locale)
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $loop->first ? 'active' : '' }}" type="button"
+                                        data-bs-toggle="pill" data-bs-target="#seo-{{ $locale['code'] }}" role="tab">
+                                        {{ $locale['name'] }}
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+
+                        <div class="tab-content">
+                            @foreach ($homeLocales as $locale)
+                                @php
+                                    $localeCode = $locale['code'];
+                                    $translation = $translationsByLocale[$localeCode] ?? null;
+                                    $metaKeywordsJson = $translation?->meta_keywords ?? '';
+                                    $metaKeywords = json_decode((string) $metaKeywordsJson, true);
+                                    $metaKeywordsValue = '';
+
+                                    if (is_array($metaKeywords) && !empty($metaKeywords)) {
+                                        if (isset($metaKeywords[0]) && is_array($metaKeywords[0]) && isset($metaKeywords[0]['value'])) {
+                                            $metaKeywordsValue = implode(',', array_column($metaKeywords, 'value'));
+                                        } else {
+                                            $metaKeywordsValue = implode(',', $metaKeywords);
+                                        }
+                                    } elseif (is_string($metaKeywordsJson) && $metaKeywordsJson !== '[]') {
+                                        $metaKeywordsValue = $metaKeywordsJson;
+                                    }
+
+                                    $seoRows = old('seo_questions.' . $localeCode);
+                                    if (!is_array($seoRows)) {
+                                        $seoRows = $seoQuestionsByLocale->get($localeCode, collect())->map(function ($seoQuestion) {
+                                            return ['question' => $seoQuestion->question_text, 'answer' => $seoQuestion->answer_text];
+                                        })->values()->all();
+                                    }
+                                    if (empty($seoRows)) {
+                                        $seoRows = [['question' => '', 'answer' => '']];
+                                    }
+                                @endphp
+
+                                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="seo-{{ $localeCode }}" role="tabpanel">
+                                    <div class="row g-3">
+                                        <div class="col-lg-6">
+                                            <div class="home-field-card">
+                                                <label for="meta_title_{{ $localeCode }}" class="font-weight-bold mb-2">{{ __('Meta Title') }}</label>
+                                                <input type="text" name="meta_title[{{ $localeCode }}]" id="meta_title_{{ $localeCode }}" class="form-control home-field-input" value="{{ old('meta_title.' . $localeCode, $translation?->meta_title ?? '') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="home-field-card">
+                                                <label for="meta_keywords_{{ $localeCode }}" class="font-weight-bold mb-2">{{ __('Meta Keywords') }}</label>
+                                                <input type="text" name="meta_keywords[{{ $localeCode }}]" id="meta_keywords_{{ $localeCode }}" class="form-control home-field-input" value="{{ old('meta_keywords.' . $localeCode, $metaKeywordsValue) }}" placeholder="{{ __('keyword one, keyword two') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="home-field-card">
+                                                <label for="meta_description_{{ $localeCode }}" class="font-weight-bold mb-2">{{ __('Meta Description') }}</label>
+                                                <textarea name="meta_description[{{ $localeCode }}]" id="meta_description_{{ $localeCode }}" class="form-control home-field-input" rows="4">{{ old('meta_description.' . $localeCode, $translation?->meta_description ?? '') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="home-field-card home-switch-card">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="robots_index[{{ $localeCode }}]" id="robots_index_{{ $localeCode }}" class="form-check-input" value="index" @checked(old('robots_index.' . $localeCode, $translation?->robots_index ?? 'index') === 'index')>
+                                                    <label class="form-check-label" for="robots_index_{{ $localeCode }}">{{ __('Allow indexing') }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="home-field-card home-switch-card">
+                                                <div class="form-check form-switch">
+                                                    <input type="checkbox" name="robots_follow[{{ $localeCode }}]" id="robots_follow_{{ $localeCode }}" class="form-check-input" value="follow" @checked(old('robots_follow.' . $localeCode, $translation?->robots_follow ?? 'follow') === 'follow')>
+                                                    <label class="form-check-label" for="robots_follow_{{ $localeCode }}">{{ __('Allow link follow') }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mt-4 mb-3">
+                                        <div>
+                                            <h5 class="mb-1">{{ __('SEO Questions') }}</h5>
+                                            <p class="text-muted mb-0">{{ __('Optional structured content for search engines. Empty rows are ignored.') }}</p>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-primary rounded-pill add-seo-question" data-lang="{{ $localeCode }}">{{ __('Add Question') }}</button>
+                                    </div>
+
+                                    <div class="seo-questions-container" id="seo-questions-{{ $localeCode }}">
+                                        @foreach ($seoRows as $index => $seoRow)
+                                            <div class="seo-question-group">
+                                                <div class="form-group">
+                                                    <label class="font-weight-bold">{{ __('Question') }}</label>
+                                                    <input type="text" name="seo_questions[{{ $localeCode }}][{{ $index }}][question]" class="form-control home-field-input" value="{{ data_get($seoRow, 'question', '') }}">
+                                                </div>
+                                                <div class="form-group mb-2">
+                                                    <label class="font-weight-bold">{{ __('Answer') }}</label>
+                                                    <textarea name="seo_questions[{{ $localeCode }}][{{ $index }}][answer]" class="form-control home-field-input" rows="3">{{ data_get($seoRow, 'answer', '') }}</textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill remove-seo-question">{{ __('Remove') }}</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex justify-content-end mb-4">
-            <button type="submit" class="btn btn-success btn-lg">
-                <i class="fas fa-save"></i> Save Home Page
-            </button>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success btn-lg rounded-pill px-4">
+                    <i class="fas fa-save me-1"></i>{{ __('Save Home Page') }}
+                </button>
+            </div>
         </div>
     </form>
 @endsection
 
 @push('scripts')
     <script>
-        document.querySelectorAll('.custom-file-input').forEach(function (input) {
-            input.addEventListener('change', function () {
-                var label = this.nextElementSibling;
-                var file = this.files[0];
+        function activateTabByHash(hash) {
+            if (!hash) {
+                return;
+            }
 
-                if (label && file) {
-                    label.textContent = file.name;
-                }
+            const trigger = document.querySelector('[data-bs-target="' + hash + '"]');
+            if (!trigger || typeof bootstrap === 'undefined' || !bootstrap.Tab) {
+                return;
+            }
 
-                var previewTarget = this.getAttribute('data-preview-target');
-                var emptyTarget = this.getAttribute('data-empty-target');
-                if (!previewTarget || !file) {
+            bootstrap.Tab.getOrCreateInstance(trigger).show();
+            const targetPane = document.querySelector(hash);
+            if (targetPane) {
+                targetPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        activateTabByHash(window.location.hash);
+
+        window.addEventListener('hashchange', function () {
+            activateTabByHash(window.location.hash);
+        });
+
+        document.querySelectorAll('.home-editor-tabs .nav-link').forEach(function (trigger) {
+            trigger.addEventListener('shown.bs.tab', function () {
+                const target = this.getAttribute('data-bs-target');
+                if (!target) {
                     return;
                 }
 
-                var previewElement = document.getElementById(previewTarget);
-                var emptyElement = emptyTarget ? document.getElementById(emptyTarget) : null;
-                var objectUrl = URL.createObjectURL(file);
+                history.replaceState(null, '', target);
+            });
+        });
+
+        document.querySelectorAll('.home-upload-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+                const previewElement = document.getElementById(this.dataset.previewTarget);
+                const emptyElement = this.dataset.emptyTarget ? document.getElementById(this.dataset.emptyTarget) : null;
+                const fileLabel = this.dataset.fileLabel ? document.getElementById(this.dataset.fileLabel) : null;
+
+                if (fileLabel) {
+                    fileLabel.textContent = file ? file.name : "{{ __('No file selected') }}";
+                }
+
+                if (!file || !previewElement) {
+                    return;
+                }
+
+                const objectUrl = URL.createObjectURL(file);
+                previewElement.classList.remove('d-none');
 
                 if (previewElement.tagName === 'IMG') {
                     previewElement.src = objectUrl;
-                    previewElement.classList.remove('d-none');
                 } else if (previewElement.tagName === 'VIDEO') {
                     previewElement.src = objectUrl;
-                    previewElement.classList.remove('d-none');
                     previewElement.load();
                 }
 
@@ -580,23 +510,21 @@
 
         document.querySelectorAll('.add-seo-question').forEach(function (button) {
             button.addEventListener('click', function () {
-                var lang = this.getAttribute('data-lang');
-                var container = document.getElementById('seo-questions-' + lang);
-                var count = container.querySelectorAll('.seo-question-group').length;
-                var wrapper = document.createElement('div');
-
-                wrapper.className = 'seo-question-group border rounded p-3 mb-3';
+                const lang = this.getAttribute('data-lang');
+                const container = document.getElementById('seo-questions-' + lang);
+                const count = container.querySelectorAll('.seo-question-group').length;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'seo-question-group';
                 wrapper.innerHTML =
                     '<div class="form-group">' +
-                        '<label class="font-weight-bold">Question</label>' +
-                        '<input type="text" name="seo_questions[' + lang + '][' + count + '][question]" class="form-control">' +
+                        '<label class="font-weight-bold">{{ __('Question') }}</label>' +
+                        '<input type="text" name="seo_questions[' + lang + '][' + count + '][question]" class="form-control home-field-input">' +
                     '</div>' +
                     '<div class="form-group mb-2">' +
-                        '<label class="font-weight-bold">Answer</label>' +
-                        '<textarea name="seo_questions[' + lang + '][' + count + '][answer]" class="form-control" rows="3"></textarea>' +
+                        '<label class="font-weight-bold">{{ __('Answer') }}</label>' +
+                        '<textarea name="seo_questions[' + lang + '][' + count + '][answer]" class="form-control home-field-input" rows="3"></textarea>' +
                     '</div>' +
-                    '<button type="button" class="btn btn-sm btn-outline-danger remove-seo-question">Remove</button>';
-
+                    '<button type="button" class="btn btn-sm btn-outline-danger rounded-pill remove-seo-question">{{ __('Remove') }}</button>';
                 container.appendChild(wrapper);
             });
         });
@@ -606,14 +534,13 @@
                 return;
             }
 
-            var group = event.target.closest('.seo-question-group');
+            const group = event.target.closest('.seo-question-group');
             if (!group) {
                 return;
             }
 
-            var container = group.parentElement;
-            var groups = container.querySelectorAll('.seo-question-group');
-            if (groups.length === 1) {
+            const container = group.parentElement;
+            if (container.querySelectorAll('.seo-question-group').length === 1) {
                 group.querySelectorAll('input, textarea').forEach(function (field) {
                     field.value = '';
                 });

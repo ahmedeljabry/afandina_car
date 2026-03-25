@@ -91,31 +91,31 @@
                             </a>
                             <ul>
                                 <li class="{{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-general">Home Overview</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-overview">Home Overview</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-hero">Hero Banner</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-hero">Hero Banner</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-features">Features</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-features">Features</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-rental">Rental &amp; Stats</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-rental">Rental &amp; Stats</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-headings">Section Headings</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-headings">Section Headings</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-testimonials">Testimonials</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-testimonials">Testimonials</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-support">Support Ticker</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-support">Support Ticker</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-shared">Shared Content</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-shared">Shared Content</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('admin.homes.edit', 1) }}#home-section-seo">SEO</a>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-seo">SEO</a>
                                 </li>
                             </ul>
                         </li>
