@@ -1,8 +1,13 @@
 <?php
+
 namespace App\Http\Controllers\admin;
 
+use App\Models\Home;
 use App\Models\Language;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends GenericController
 {
@@ -103,25 +108,100 @@ class HomeController extends GenericController
             'support_item_4_text',
             'support_item_5_text',
         ];
-        $this->nonTranslatableFields = ['page_name','is_active','hero_type'];
-        $this->uploadedfiles = [
-            'hero_header_video_path',
-            'hero_header_image_path',
-        ];
+        $this->nonTranslatableFields = ['page_name', 'is_active', 'hero_type'];
+    }
+
+    public function edit($id): View
+    {
+        $this->data['item'] = Home::query()
+            ->with(['translations', 'seoQuestions'])
+            ->findOrFail($id);
+
+        $this->data['homeLocales'] = $this->buildEditorLocales();
+        $this->data['translationsByLocale'] = collect($this->data['homeLocales'])
+            ->mapWithKeys(function (array $locale): array {
+                return [
+                    $locale['code'] => $this->data['item']->translations->firstWhere('locale', $locale['code']),
+                ];
+            })
+            ->all();
+        $this->data['prefillValues'] = $this->buildPrefillValues();
+        $this->data['editorSections'] = $this->buildEditorSections();
+        $this->data['editorTabs'] = $this->buildEditorTabs();
+
+        return view('pages.admin.homes.edit', $this->data);
     }
 
     public function store(Request $request)
     {
-        $this->validationRules = $this->buildValidationRules();
-        return parent::store($request);
+        $this->syncActiveFlag($request);
+        $this->normalizeMetaKeywords($request);
+        $validatedData = $request->validate($this->buildValidationRules());
+
+        DB::beginTransaction();
+
+        try {
+            $row = $this->model::create($this->extractBaseData($validatedData));
+
+            $this->handleModelTranslations($validatedData, $row);
+            $this->replaceHomeMedia($request, $row);
+            $this->handleStoreSEOQuestions($validatedData, $row);
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.' . $this->modelName . '.edit', $row->id)
+                ->with('success', 'Home Page created successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Error occurred while creating Home Page: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function update(Request $request, $id)
     {
         $this->syncActiveFlag($request);
-        $this->validationRules = $this->buildValidationRules();
-        parent::update($request, $id);
-        return back()->with('success', 'Home Page updated successfully.');
+        $this->normalizeMetaKeywords($request);
+        $validatedData = $request->validate($this->buildValidationRules());
+
+        DB::beginTransaction();
+
+        try {
+            $row = Home::query()->findOrFail($id);
+
+            foreach ($this->extractBaseData($validatedData) as $field => $value) {
+                $row->{$field} = $value;
+            }
+            $row->save();
+
+            $this->handleModelTranslations($validatedData, $row, $id);
+            $this->replaceHomeMedia($request, $row);
+            $this->handleUpdateSEOQuestions($validatedData, $row);
+
+            DB::commit();
+
+            return back()->with('success', 'Home Page updated successfully.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Error occurred while updating Home Page: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    protected function extractBaseData(array $validatedData): array
+    {
+        return [
+            'page_name' => $validatedData['page_name'] ?? 'home',
+            'is_active' => $validatedData['is_active'] ?? false,
+            'hero_type' => $validatedData['hero_type'] ?? 'image',
+        ];
     }
 
     private function syncActiveFlag(Request $request): void
@@ -136,6 +216,8 @@ class HomeController extends GenericController
         $rules = [
             'page_name' => 'required|string|max:255',
             'hero_type' => 'required|in:video,image',
+            'hero_header_video_path' => 'nullable|mimes:mp4,webm,ogg,mov|max:102400',
+            'hero_header_image_path' => 'nullable|mimes:jpg,jpeg,png,svg,webp|max:10240',
             'meta_title.*' => 'nullable|string|max:255',
             'meta_description.*' => 'nullable|string',
             'meta_keywords.*' => 'nullable|string',
@@ -188,6 +270,98 @@ class HomeController extends GenericController
         }
     }
 
+    private function buildEditorLocales(): array
+    {
+        $activeLanguageMap = collect($this->data['activeLanguages'] ?? [])->keyBy('code');
+
+        return [
+            ['code' => 'en', 'name' => data_get($activeLanguageMap, 'en.name', 'English')],
+            ['code' => 'ar', 'name' => data_get($activeLanguageMap, 'ar.name', 'Arabic')],
+        ];
+    }
+
+    private function buildPrefillValues(): array
+    {
+        $translationFallbackKeys = [
+            'hero_title_prefix' => 'website.home.hero.title_prefix',
+            'hero_title_highlight' => 'website.home.hero.title_highlight',
+            'hero_title_suffix' => 'website.home.hero.title_suffix',
+            'hero_banner_paragraph' => 'website.home.hero.banner_paragraph',
+            'hero_customers_label' => 'website.home.hero.customers_label',
+            'hero_customers_subtitle' => 'website.home.hero.customers_subtitle',
+            'hero_browse_cars_label' => 'website.home.hero.browse_cars',
+            'hero_browse_blogs_label' => 'website.home.hero.browse_blogs',
+            'hero_starting_from_label' => 'website.home.hero.starting_from',
+            'hero_per_day_label' => 'website.home.hero.per_day',
+            'hero_available_for_rent_label' => 'website.home.hero.available_for_rent',
+            'feature_section_title' => 'website.home.features.section_title',
+            'feature_section_paragraph' => 'website.home.features.section_paragraph',
+            'feature_item_1_title' => 'website.home.features.best_deal.title',
+            'feature_item_1_description' => 'website.home.features.best_deal.description',
+            'feature_item_2_title' => 'website.home.features.doorstep_delivery.title',
+            'feature_item_2_description' => 'website.home.features.doorstep_delivery.description',
+            'feature_item_3_title' => 'website.home.features.low_security_deposit.title',
+            'feature_item_3_description' => 'website.home.features.low_security_deposit.description',
+            'feature_item_4_title' => 'website.home.features.latest_cars.title',
+            'feature_item_4_description' => 'website.home.features.latest_cars.description',
+            'feature_item_5_title' => 'website.home.features.customer_support.title',
+            'feature_item_5_description' => 'website.home.features.customer_support.description',
+            'feature_item_6_title' => 'website.home.features.no_hidden_charges.title',
+            'feature_item_6_description' => 'website.home.features.no_hidden_charges.description',
+            'rental_section_title' => 'website.home.rental.title',
+            'rental_section_paragraph' => 'website.home.rental.paragraph',
+            'rental_step_1_title' => 'website.home.rental.step1_title',
+            'rental_step_1_description' => 'website.home.rental.step1_description',
+            'rental_step_2_title' => 'website.home.rental.step2_title',
+            'rental_step_2_description' => 'website.home.rental.step2_description',
+            'rental_step_3_title' => 'website.home.rental.step3_title',
+            'rental_step_3_description' => 'website.home.rental.step3_description',
+            'rental_stat_1_label' => 'website.home.stats.happy_customers',
+            'rental_stat_2_label' => 'website.home.stats.count_of_cars',
+            'rental_stat_3_label' => 'website.home.stats.locations_to_pickup',
+            'rental_stat_4_label' => 'website.home.stats.total_kilometers',
+            'support_item_1_text' => 'website.home.support.best_rate',
+            'support_item_2_text' => 'website.home.support.free_cancellation',
+            'support_item_3_text' => 'website.home.support.best_security',
+            'support_item_4_text' => 'website.home.support.latest_update',
+            'support_item_5_text' => 'website.home.support.trusted_proof',
+        ];
+
+        $prefillValues = [];
+        foreach ($translationFallbackKeys as $fieldName => $key) {
+            $prefillValues[$fieldName] = [
+                'en' => trans($key, [], 'en'),
+                'ar' => trans($key, [], 'ar'),
+            ];
+        }
+
+        $prefillValues['rental_stat_1_value'] = ['en' => '16', 'ar' => '16'];
+        $prefillValues['rental_stat_1_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
+        $prefillValues['rental_stat_2_value'] = ['en' => '2547', 'ar' => '2547'];
+        $prefillValues['rental_stat_2_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
+        $prefillValues['rental_stat_3_value'] = ['en' => '625', 'ar' => '625'];
+        $prefillValues['rental_stat_3_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
+        $prefillValues['rental_stat_4_value'] = ['en' => '15000', 'ar' => '15000'];
+        $prefillValues['rental_stat_4_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
+
+        return $prefillValues;
+    }
+
+    private function buildEditorTabs(): array
+    {
+        return [
+            ['id' => 'overview', 'label' => 'Overview', 'icon' => 'fas fa-house'],
+            ['id' => 'hero', 'label' => 'Hero', 'icon' => 'fas fa-wand-magic-sparkles'],
+            ['id' => 'features', 'label' => 'Features', 'icon' => 'fas fa-bolt'],
+            ['id' => 'rental', 'label' => 'Rental & Stats', 'icon' => 'fas fa-chart-line'],
+            ['id' => 'headings', 'label' => 'Headings', 'icon' => 'fas fa-heading'],
+            ['id' => 'testimonials', 'label' => 'Testimonials', 'icon' => 'fas fa-quote-right'],
+            ['id' => 'support', 'label' => 'Support', 'icon' => 'fas fa-life-ring'],
+            ['id' => 'shared', 'label' => 'Shared', 'icon' => 'fas fa-layer-group'],
+            ['id' => 'seo', 'label' => 'SEO', 'icon' => 'fas fa-magnifying-glass'],
+        ];
+    }
+
     private function homeLanguages()
     {
         $homeLocales = ['en', 'ar'];
@@ -201,4 +375,99 @@ class HomeController extends GenericController
             ->values();
     }
 
+    private function normalizeMetaKeywords(Request $request): void
+    {
+        $request->merge([
+            'meta_keywords' => $this->normalizeMetaKeywordsPayload((array) $request->input('meta_keywords', [])),
+        ]);
+    }
+
+    private function normalizeMetaKeywordsPayload(array $metaKeywords): array
+    {
+        $normalized = [];
+
+        foreach ($metaKeywords as $locale => $value) {
+            $normalized[$locale] = $this->serializeKeywordList($value);
+        }
+
+        return $normalized;
+    }
+
+    private function serializeKeywordList($value): ?string
+    {
+        if (is_array($value)) {
+            $keywords = collect($value)
+                ->map(function ($item) {
+                    if (is_array($item)) {
+                        return trim((string) ($item['value'] ?? ''));
+                    }
+
+                    return trim((string) $item);
+                })
+                ->filter()
+                ->unique()
+                ->values();
+
+            return $keywords->isEmpty()
+                ? null
+                : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
+        }
+
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $keywords = collect($decoded)
+                ->map(function ($item) {
+                    if (is_array($item)) {
+                        return trim((string) ($item['value'] ?? ''));
+                    }
+
+                    return trim((string) $item);
+                })
+                ->filter()
+                ->unique()
+                ->values();
+
+            return $keywords->isEmpty()
+                ? null
+                : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
+        }
+
+        $keywords = collect(preg_split('/[\r\n,]+/', $value) ?: [])
+            ->map(fn($keyword) => trim((string) $keyword))
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $keywords->isEmpty()
+            ? null
+            : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
+    }
+
+    private function replaceHomeMedia(Request $request, Home $home): void
+    {
+        $fileMap = [
+            'hero_header_video_path' => 'homes/hero',
+            'hero_header_image_path' => 'homes/hero',
+        ];
+
+        foreach ($fileMap as $field => $directory) {
+            if (!$request->hasFile($field)) {
+                continue;
+            }
+
+            if (filled($home->{$field})) {
+                Storage::disk('public')->delete($home->{$field});
+            }
+
+            $home->{$field} = $request->file($field)->store($directory, 'public');
+        }
+
+        $home->save();
+    }
 }
