@@ -166,7 +166,13 @@
             <ul class="nav nav-pills category-nav" role="tablist">
                 @foreach ($activeLanguages as $lang)
                     <li class="nav-item">
-                        <a class="nav-link {{ $loop->first ? 'active' : '' }}" id="category-lang-{{ $lang->code }}-tab" data-toggle="pill" href="#category-lang-{{ $lang->code }}" role="tab">
+                        <a class="nav-link {{ $loop->first ? 'active' : '' }}"
+                            id="category-lang-{{ $lang->code }}-tab"
+                            data-bs-toggle="pill"
+                            href="#category-lang-{{ $lang->code }}"
+                            role="tab"
+                            aria-controls="category-lang-{{ $lang->code }}"
+                            aria-selected="{{ $loop->first ? 'true' : 'false' }}">
                             {{ $lang->name }}
                         </a>
                     </li>
@@ -179,7 +185,10 @@
                         $translation = $translations->get($lang->code);
                         $questions = $questionsFor($lang->code);
                     @endphp
-                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="category-lang-{{ $lang->code }}" role="tabpanel">
+                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                        id="category-lang-{{ $lang->code }}"
+                        role="tabpanel"
+                        aria-labelledby="category-lang-{{ $lang->code }}-tab">
                         <div class="d-grid gap-3">
                             <div class="category-section">
                                 <div class="category-kicker">{{ __('Core Copy') }}</div>

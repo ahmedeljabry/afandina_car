@@ -172,10 +172,16 @@
         </div>
 
         <div class="category-show-card">
-            <ul class="nav nav-pills category-show-tabs mb-3">
+            <ul class="nav nav-pills category-show-tabs mb-3" role="tablist">
                 @foreach ($activeLanguages as $lang)
                     <li class="nav-item">
-                        <a class="nav-link {{ $loop->first ? 'active' : '' }}" data-toggle="pill" href="#category-show-{{ $lang->code }}">
+                        <a class="nav-link {{ $loop->first ? 'active' : '' }}"
+                            id="category-show-{{ $lang->code }}-tab"
+                            data-bs-toggle="pill"
+                            href="#category-show-{{ $lang->code }}"
+                            role="tab"
+                            aria-controls="category-show-{{ $lang->code }}"
+                            aria-selected="{{ $loop->first ? 'true' : 'false' }}">
                             {{ $lang->name }}
                         </a>
                     </li>
@@ -189,7 +195,10 @@
                         $metaKeywords = json_decode($translation?->meta_keywords ?? '[]', true);
                         $questions = $item->seoQuestions->where('locale', $lang->code);
                     @endphp
-                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="category-show-{{ $lang->code }}">
+                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                        id="category-show-{{ $lang->code }}"
+                        role="tabpanel"
+                        aria-labelledby="category-show-{{ $lang->code }}-tab">
                         <div class="category-show-section">
                             <div class="category-show-kicker">{{ __('Core Copy') }}</div>
                             <h4 class="mb-2">{{ $translation?->name ?? __('No name') }}</h4>
