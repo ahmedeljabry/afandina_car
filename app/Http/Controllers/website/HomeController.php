@@ -12,10 +12,13 @@ use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\Home;
 use App\Models\Service;
+use App\Traits\DeduplicatesCars;
 use Illuminate\Support\Collection;
 
 class HomeController extends Controller
 {
+    use DeduplicatesCars;
+
     public function index()
     {
         $locale = app()->getLocale() ?? 'en';
@@ -51,21 +54,31 @@ class HomeController extends Controller
             });
 
         // ── Featured Cars ─────────────────────────────────────────────────────
+        $featuredCarIds = $this->uniqueRepresentativeCarIds(
+            Car::query()
+                ->where('is_active', true)
+                ->where('is_featured', true)
+        );
+
         $featuredCars = Car::query()
             ->with(['translations', 'brand.translations', 'gearType.translations', 'year', 'images'])
-            ->where('is_active', true)
-            ->where('is_featured', true)
-            ->latest()
+            ->whereIn('cars.id', $featuredCarIds->all())
+            ->latest('cars.id')
             ->take(6)
             ->get()
             ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 
         // ── Car Only / Slider Cars ────────────────────────────────────────────
+        $popularCarIds = $this->uniqueRepresentativeCarIds(
+            Car::query()
+                ->where('is_active', true)
+                ->where('only_on_afandina', true)
+        );
+
         $popularCars = Car::query()
             ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
-            ->where('is_active', true)
-            ->where('only_on_afandina', true)
-            ->latest()
+            ->whereIn('cars.id', $popularCarIds->all())
+            ->latest('cars.id')
             ->take(6)
             ->get()
             ->map(
