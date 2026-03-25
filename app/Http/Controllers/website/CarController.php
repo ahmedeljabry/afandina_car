@@ -364,7 +364,7 @@ class CarController extends Controller
 
         $relatedCarsBaseQuery = Car::query()
             ->where('is_active', true)
-            ->where('id', '!=', $carModel->id)
+            ->where('cars.id', '!=', $carModel->id)
             ->when($carModel->category_id, function ($query) use ($carModel) {
                 $query->where('category_id', $carModel->category_id);
             });
@@ -379,8 +379,8 @@ class CarController extends Controller
                 'gearType.translations',
                 'year',
             ])
-            ->whereIn('id', $relatedCarIds->all())
-            ->latest('id')
+            ->whereIn('cars.id', $relatedCarIds->all())
+            ->latest('cars.id')
             ->get()
             ->reject(fn (Car $relatedCar) => $this->carDeduplicationKey($relatedCar) === $currentCarGroupKey)
             ->take(6)
