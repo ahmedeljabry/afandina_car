@@ -212,6 +212,334 @@
             text-overflow: ellipsis;
         }
 
+        .home-hero-shell {
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+            border-radius: 34px;
+            background:
+                radial-gradient(circle at top right, rgba(255, 166, 51, 0.22), transparent 28%),
+                radial-gradient(circle at bottom left, rgba(18, 115, 132, 0.24), transparent 34%),
+                linear-gradient(135deg, #0f172a 0%, #127384 48%, #09131f 100%);
+            box-shadow: 0 30px 70px rgba(15, 23, 42, 0.18);
+        }
+
+        .home-hero-shell::before,
+        .home-hero-shell::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .home-hero-shell::before {
+            width: 220px;
+            height: 220px;
+            top: -90px;
+            right: -60px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .home-hero-shell::after {
+            width: 180px;
+            height: 180px;
+            bottom: -70px;
+            left: -40px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .home-hero-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+            gap: 1.75rem;
+            align-items: center;
+        }
+
+        .home-hero-content {
+            color: #fff;
+        }
+
+        .home-hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .home-hero-eyebrow__dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffa633;
+            box-shadow: 0 0 0 6px rgba(255, 166, 51, 0.18);
+        }
+
+        .home-hero-title {
+            margin: 1.2rem 0 0;
+            font-size: clamp(2.3rem, 4vw, 4.6rem);
+            line-height: 1.04;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: #fff;
+        }
+
+        .home-hero-title span {
+            color: #ffa633;
+        }
+
+        .home-hero-summary {
+            max-width: 680px;
+            margin: 1rem 0 0;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .home-hero-highlights {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1.2rem;
+        }
+
+        .home-hero-highlight {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .home-hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            margin-top: 1.5rem;
+        }
+
+        .home-hero-actions .btn {
+            min-height: 52px;
+            padding-inline: 1.25rem;
+            border-radius: 14px;
+            font-weight: 700;
+            border: none;
+        }
+
+        .home-hero-actions .btn-primary {
+            background: #ffa633;
+            color: #111111;
+            box-shadow: 0 14px 30px rgba(255, 166, 51, 0.24);
+        }
+
+        .home-hero-actions .btn-primary:hover,
+        .home-hero-actions .btn-primary:focus {
+            background: #f5960b;
+            color: #111111;
+        }
+
+        .home-hero-actions .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .home-hero-actions .btn-secondary:hover,
+        .home-hero-actions .btn-secondary:focus {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+        }
+
+        .home-hero-trust {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding: 1rem 1.1rem;
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .home-hero-trust-users {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .home-hero-avatar-list {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .home-hero-avatar-list li + li {
+            margin-inline-start: -10px;
+        }
+
+        .home-hero-avatar-list img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid rgba(15, 23, 42, 0.55);
+            object-fit: cover;
+        }
+
+        .home-hero-trust-copy h4 {
+            margin: 0 0 0.2rem;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .home-hero-trust-copy p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        .home-hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.9rem;
+            margin-top: 1.35rem;
+        }
+
+        .home-hero-stat {
+            padding: 1rem;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .home-hero-stat strong {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.2rem;
+            font-size: 1.6rem;
+            line-height: 1;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .home-hero-stat strong span {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+            color: #ffa633;
+        }
+
+        .home-hero-stat small {
+            display: block;
+            margin-top: 0.55rem;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.5;
+        }
+
+        .home-hero-media {
+            position: relative;
+        }
+
+        .home-hero-media-frame {
+            position: relative;
+            padding: 1rem;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(14px);
+        }
+
+        .home-hero-media-asset {
+            overflow: hidden;
+            border-radius: 24px;
+            background: #dbe4ea;
+        }
+
+        .home-hero-media-asset img,
+        .home-hero-media-asset video {
+            width: 100%;
+            min-height: 480px;
+            max-height: 640px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .home-hero-price-badge,
+        .home-hero-status-badge {
+            position: absolute;
+            z-index: 2;
+            display: inline-flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.9rem 1rem;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        }
+
+        .home-hero-price-badge {
+            top: 1.25rem;
+            inset-inline-start: 1.25rem;
+            color: #111111;
+        }
+
+        .home-hero-price-badge p,
+        .home-hero-status-badge p {
+            margin: 0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #64748b;
+        }
+
+        .home-hero-price-badge h6,
+        .home-hero-status-badge h6 {
+            margin: 0;
+            font-size: 1.2rem;
+            line-height: 1.3;
+            font-weight: 800;
+            color: #111111;
+        }
+
+        .home-hero-price-badge h6 span {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .home-hero-status-badge {
+            right: 1.25rem;
+            bottom: 1.25rem;
+            align-items: flex-start;
+        }
+
+        .home-hero-status-badge h6 {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #127384;
+        }
+
+        .home-hero-status-badge i {
+            color: #16a34a;
+            font-size: 0.85rem;
+        }
+
         .car-section .home-featured-action-group .listing-action-btn {
             display: inline-flex;
             align-items: center;
@@ -298,9 +626,58 @@
             }
         }
 
+        @media (max-width: 1199.98px) {
+            .home-hero-shell {
+                padding: 1.5rem;
+            }
+
+            .home-hero-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 767.98px) {
-            .banner-section-four .hero-media-column {
-                display: none;
+            .home-hero-shell {
+                border-radius: 26px;
+            }
+
+            .home-hero-title {
+                font-size: 2.35rem;
+            }
+
+            .home-hero-summary {
+                font-size: 0.95rem;
+            }
+
+            .home-hero-trust,
+            .home-hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .home-hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .home-hero-media-asset img,
+            .home-hero-media-asset video {
+                min-height: 340px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .home-hero-price-badge,
+            .home-hero-status-badge {
+                position: static;
+                margin-bottom: 0.9rem;
+            }
+
+            .home-hero-price-badge {
+                margin-bottom: 0.9rem;
+            }
+
+            .home-hero-status-badge {
+                margin-bottom: 0;
             }
         }
     </style>
@@ -457,6 +834,13 @@
         ],
     ];
 
+    $heroStats = array_slice($rentalStats, 0, 3);
+    $heroHighlights = array_values(array_filter([
+        $heroCopy['available_for_rent_label'],
+        $featureItems[0]['title'] ?? null,
+        $featureItems[4]['title'] ?? null,
+    ]));
+
     $supportTickerItems = [
         $homeTranslation?->support_item_1_text ?: __('website.home.support.best_rate'),
         $homeTranslation?->support_item_2_text ?: __('website.home.support.free_cancellation'),
@@ -475,48 +859,79 @@
     {{-- BANNER / HERO --}}
     <section class="banner-section-four">
         <div class="container">
-            <div class="home-banner">
-                <div class="row align-items-center">
-                    <div class="col-lg-5" data-aos="fade-down">
-                        <div class="banner-content">
-                            <h1>{{ $heroCopy['title_prefix'] }} <span>{{ $heroCopy['title_highlight'] }}</span> {{ $heroCopy['title_suffix'] }}</h1>
-                            <p>{{ $heroCopy['banner_paragraph'] }}
-                            </p>
-                            <div class="customer-list">
-                                <div class="users-wrap">
-                                    <ul class="users-list">
-                                        <li>
-                                            <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
-                                        </li>
-                                        <li>
-                                            <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" class="img-fluid aos" alt="customer image" decoding="async">
-                                        </li>
-                                    </ul>
-                                    <div class="customer-info">
-                                        <h4>{{ $heroCopy['customers_label'] }}</h4>
-                                        <p>{{ $heroCopy['customers_subtitle'] }}</p>
-                                    </div>
-                                </div>
-                                <div class="view-all d-flex align-items-center gap-3">
-                                    <a href="{{ route('website.cars.index') }}" class="btn btn-primary d-inline-flex align-items-center">{{ $heroCopy['browse_cars_label'] }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
-                                    <a href="{{ route('website.blogs.index') }}" class="btn btn-secondary d-inline-flex align-items-center"><i class="bx bxs-plus-circle me-1"></i>{{ $heroCopy['browse_blogs_label'] }}</a>
+            <div class="home-banner home-hero-shell">
+                <div class="home-hero-grid">
+                    <div class="home-hero-content" data-aos="fade-down">
+                        <div class="home-hero-eyebrow">
+                            <span class="home-hero-eyebrow__dot"></span>
+                            <span>{{ __('website.nav.home') }}</span>
+                        </div>
+
+                        <h1 class="home-hero-title">{{ $heroCopy['title_prefix'] }} <span>{{ $heroCopy['title_highlight'] }}</span> {{ $heroCopy['title_suffix'] }}</h1>
+                        <p class="home-hero-summary">{{ $heroCopy['banner_paragraph'] }}</p>
+
+                        @if (!empty($heroHighlights))
+                            <div class="home-hero-highlights">
+                                @foreach ($heroHighlights as $heroHighlight)
+                                    <span class="home-hero-highlight">{{ $heroHighlight }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="home-hero-actions">
+                            <a href="{{ route('website.cars.index') }}" class="btn btn-primary d-inline-flex align-items-center justify-content-center">
+                                {{ $heroCopy['browse_cars_label'] }}<i class="bx bx-right-arrow-alt ms-1"></i>
+                            </a>
+                            <a href="{{ route('website.blogs.index') }}" class="btn btn-secondary d-inline-flex align-items-center justify-content-center">
+                                <i class="bx bxs-plus-circle me-1"></i>{{ $heroCopy['browse_blogs_label'] }}
+                            </a>
+                        </div>
+
+                        <div class="home-hero-trust">
+                            <div class="home-hero-trust-users">
+                                <ul class="home-hero-avatar-list">
+                                    <li>
+                                        <img src="{{ asset('admin/dist/img/user1-128x128.jpg') }}" class="img-fluid" alt="customer image" decoding="async">
+                                    </li>
+                                    <li>
+                                        <img src="{{ asset('admin/dist/img/user2-160x160.jpg') }}" class="img-fluid" alt="customer image" decoding="async">
+                                    </li>
+                                    <li>
+                                        <img src="{{ asset('admin/dist/img/user8-128x128.jpg') }}" class="img-fluid" alt="customer image" decoding="async">
+                                    </li>
+                                </ul>
+                                <div class="home-hero-trust-copy">
+                                    <h4>{{ $heroCopy['customers_label'] }}</h4>
+                                    <p>{{ $heroCopy['customers_subtitle'] }}</p>
                                 </div>
                             </div>
                         </div>
+
+                        @if (!empty($heroStats))
+                            <div class="home-hero-stats">
+                                @foreach ($heroStats as $heroStat)
+                                    <div class="home-hero-stat">
+                                        <strong>{{ $heroStat['value'] }} <span>{{ $heroStat['suffix'] }}</span></strong>
+                                        <small>{{ $heroStat['label'] }}</small>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                    <div class="col-lg-7 hero-media-column">
-                        <div class="banner-image">
-                            <div class="banner-img" data-aos="fade-down">
-                                <div class="amount-icon">
-                                    <span class="day-amt">
-                                        <p>{{ $heroCopy['starting_from_label'] }}</p>
-                                        <h6>{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ $heroCopy['per_day_label'] }}</span></h6>
-                                    </span>
-                                </div>
-                                <span class="rent-tag"><i class="bx bxs-circle"></i> {{ $heroCopy['available_for_rent_label'] }}</span>
+
+                    <div class="hero-media-column home-hero-media" data-aos="fade-left">
+                        <div class="home-hero-media-frame">
+                            <div class="home-hero-price-badge">
+                                <p>{{ $heroCopy['starting_from_label'] }}</p>
+                                <h6>{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ $heroCopy['per_day_label'] }}</span></h6>
+                            </div>
+
+                            <div class="home-hero-status-badge">
+                                <p>{{ __('website.home.hero.available_for_rent') }}</p>
+                                <h6><i class="bx bxs-circle"></i>{{ $heroCopy['available_for_rent_label'] }}</h6>
+                            </div>
+
+                            <div class="home-hero-media-asset">
                                 @if ($heroMediaType === 'video' && $heroVideoPath)
                                     <video class="img-fluid" autoplay muted loop playsinline preload="metadata" poster="{{ $heroPosterPath }}" aria-hidden="true">
                                         <source src="{{ $heroVideoPath }}">
