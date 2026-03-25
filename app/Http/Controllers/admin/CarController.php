@@ -554,6 +554,49 @@ class CarController extends GenericController
         return $categoryIds;
     }
 
+    protected function handleFileUpload($request, $model)
+    {
+        if (!$model instanceof Car) {
+            return;
+        }
+
+        if ($request->hasFile('default_image_path')) {
+            $this->storeDefaultImageFile($model, $request->file('default_image_path'));
+        }
+
+        $createdMedia = collect();
+
+        if ($request->hasFile('media')) {
+            $files = $request->file('media');
+
+            if (!is_array($files)) {
+                $files = [$files];
+            }
+
+            foreach ($files as $file) {
+                if (!$file instanceof UploadedFile) {
+                    continue;
+                }
+
+                $createdMedia->push(
+                    $model->images()->create(
+                        $this->processUploadedMediaFile($file, $request->input('alt'))
+                    )
+                );
+            }
+        }
+
+        if (blank($model->default_image_path)) {
+            $fallbackImage = $createdMedia->first(function ($media) {
+                return $media instanceof CarImage && ($media->type ?? null) === 'image';
+            });
+
+            if ($fallbackImage) {
+                $this->syncDefaultFromMedia($fallbackImage);
+            }
+        }
+    }
+
     protected function duplicateCarForCategory(Car $car, int $categoryId): Car
     {
         $car->loadMissing(['translations', 'seoQuestions', 'features', 'periods']);

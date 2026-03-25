@@ -388,27 +388,28 @@
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn {
-            background: #121212;
-            border-color: #121212;
+            background: #1faf64;
+            border-color: #1faf64;
             color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:focus {
-            background: #252525;
-            border-color: #252525;
+            background: #14824a;
+            border-color: #14824a;
             color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn {
-            background: #fff;
-            border: 1px solid #121212;
-            color: #121212;
+            background: #dc2626;
+            border: 1px solid #dc2626;
+            color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .call-btn:focus {
-            background: #121212;
+            background: #b91c1c;
+            border-color: #b91c1c;
             color: #fff;
         }
 

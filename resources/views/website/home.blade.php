@@ -221,6 +221,32 @@
             white-space: nowrap;
         }
 
+        .car-section .home-featured-action-group .listing-action-btn.whatsapp-btn {
+            background: #1faf64;
+            border-color: #1faf64;
+            color: #fff;
+        }
+
+        .car-section .home-featured-action-group .listing-action-btn.whatsapp-btn:hover,
+        .car-section .home-featured-action-group .listing-action-btn.whatsapp-btn:focus {
+            background: #14824a;
+            border-color: #14824a;
+            color: #fff;
+        }
+
+        .car-section .home-featured-action-group .listing-action-btn.call-btn {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: #fff;
+        }
+
+        .car-section .home-featured-action-group .listing-action-btn.call-btn:hover,
+        .car-section .home-featured-action-group .listing-action-btn.call-btn:focus {
+            background: #b91c1c;
+            border-color: #b91c1c;
+            color: #fff;
+        }
+
         .car-section .home-featured-action-group .listing-action-btn.disabled {
             opacity: 0.55;
             pointer-events: none;
@@ -677,7 +703,7 @@
 
                                 <div class="listing-button d-flex gap-2 home-featured-action-group">
                                     <a href="{{ $whatsAppHref }}"
-                                       class="btn btn-order flex-fill listing-action-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
+                                       class="btn btn-order flex-fill listing-action-btn whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
                                        @if ($whatsAppHref !== 'javascript:void(0);')
                                            target="_blank" rel="noopener noreferrer"
                                        @endif
@@ -686,7 +712,7 @@
                                         <span>{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
                                     </a>
                                     <a href="{{ $phoneHref }}"
-                                       class="btn btn-outline-dark flex-fill listing-action-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
+                                       class="btn btn-outline-dark flex-fill listing-action-btn call-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
                                        aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
                                         <i class="fa-solid fa-phone"></i>
                                         <span>{{ __('website.car_details.sidebar.call_us') }}</span>

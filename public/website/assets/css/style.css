@@ -25144,18 +25144,18 @@ Version      : 1.0
 }
 
 .sidebar-whatsapp-btn:hover {
-  background: #0f9550;
+  background: #14824a;
   color: #fff;
 }
 
 .sidebar-call-btn {
-  background: #c7a161;
-  color: #111;
+  background: #dc2626;
+  color: #fff;
 }
 
 .sidebar-call-btn:hover {
-  background: #b68f52;
-  color: #111;
+  background: #b91c1c;
+  color: #fff;
 }
 
 .sidebar-action-btn.is-disabled {
