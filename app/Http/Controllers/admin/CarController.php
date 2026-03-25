@@ -15,12 +15,16 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use App\Services\Ai\CarContentGenerator;
+use App\Traits\DeduplicatesCars;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
 
 class CarController extends GenericController
 {
+    use DeduplicatesCars;
+
     public function __construct()
     {
         parent::__construct('Car');
@@ -40,34 +44,34 @@ class CarController extends GenericController
     public function index()
     {
         $request = request();
-        $query = $this->model::query()->with(['brand', 'category', 'year', 'carModel', 'periods']);
+        $baseQuery = $this->model::query();
 
         // تطبيق الفلاتر
         if ($request->filled('brand')) {
-            $query->where('brand_id', $request->brand);
+            $baseQuery->where('brand_id', $request->brand);
         }
 
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $baseQuery->where('category_id', $request->category);
         }
 
         if ($request->filled('period')) {
-            $query->whereHas('periods', function($q) use ($request) {
+            $baseQuery->whereHas('periods', function($q) use ($request) {
                 $q->where('period_id', $request->period);
             });
         }
 
         if ($request->filled('year')) {
-            $query->where('year_id', $request->year);
+            $baseQuery->where('year_id', $request->year);
         }
 
         if ($request->filled('model')) {
-            $query->where('car_model_id', $request->model);
+            $baseQuery->where('car_model_id', $request->model);
         }
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $baseQuery->where(function($q) use ($search) {
                 $q->whereHas('translations', function($query) use ($search) {
                     $query->where('name', 'LIKE', "%{$search}%")
                           ->orWhere('description', 'LIKE', "%{$search}%");
@@ -80,9 +84,21 @@ class CarController extends GenericController
         $this->data['categories'] = Category::all();
         // $this->data['periods'] = Period::all();
         $this->data['years'] = Year::all();
-        
-        // إضافة نتائج البحث
-        $this->data['items'] = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        $representativeCarIds = $this->uniqueRepresentativeCarIds($baseQuery);
+
+        $this->data['items'] = $this->model::query()
+            ->with([
+                'translations',
+                'brand.translations',
+                'category.translations',
+                'year',
+                'carModel.translations',
+                'periods',
+            ])
+            ->whereIn('cars.id', $representativeCarIds->all())
+            ->orderBy('cars.created_at', 'desc')
+            ->paginate(10);
         
         return view('pages.admin.cars.index', $this->data);
     }
@@ -838,6 +854,8 @@ class CarController extends GenericController
                     $car->default_image_path = $media->file_path;
                     $car->default_thumbnail_path = $media->thumbnail_path;
                     $car->save();
+
+                    $this->syncDefaultImageAcrossDuplicateGroup($car);
                 }
 
                 $this->cleanupMediaPath($oldFilePath);
@@ -959,6 +977,7 @@ class CarController extends GenericController
         $car->default_thumbnail_path = $processedMedia['thumbnail_path'];
         $car->save();
 
+        $this->syncDefaultImageAcrossDuplicateGroup($car);
         $this->cleanupMediaPath($oldDefaultImage);
         $this->cleanupMediaPath($oldDefaultThumbnail);
     }
@@ -969,6 +988,8 @@ class CarController extends GenericController
         $car->default_image_path = $media->file_path;
         $car->default_thumbnail_path = $media->thumbnail_path;
         $car->save();
+
+        $this->syncDefaultImageAcrossDuplicateGroup($car);
     }
 
     protected function deleteMediaRecord(CarImage $media): void
@@ -989,6 +1010,8 @@ class CarController extends GenericController
             $car->default_image_path = $fallbackImage?->file_path;
             $car->default_thumbnail_path = $fallbackImage?->thumbnail_path;
             $car->save();
+
+            $this->syncDefaultImageAcrossDuplicateGroup($car);
         }
 
         $this->cleanupMediaPath($filePath);
@@ -1017,6 +1040,44 @@ class CarController extends GenericController
     protected function isVideoFile(UploadedFile $file): bool
     {
         return in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'webm', 'ogg'], true);
+    }
+
+    protected function syncDefaultImageAcrossDuplicateGroup(Car $sourceCar): void
+    {
+        $duplicateCars = $this->duplicateGroupCars($sourceCar)
+            ->reject(fn (Car $duplicateCar) => $duplicateCar->id === $sourceCar->id);
+
+        foreach ($duplicateCars as $duplicateCar) {
+            $duplicateCar->default_image_path = $sourceCar->default_image_path;
+            $duplicateCar->default_thumbnail_path = $sourceCar->default_thumbnail_path;
+            $duplicateCar->save();
+        }
+    }
+
+    protected function duplicateGroupCars(Car $car): Collection
+    {
+        $car->loadMissing('translations');
+        $groupKey = $this->carDeduplicationKey($car);
+
+        return Car::query()
+            ->with('translations')
+            ->where('brand_id', $car->brand_id)
+            ->where('car_model_id', $car->car_model_id)
+            ->where('year_id', $car->year_id)
+            ->where('gear_type_id', $car->gear_type_id)
+            ->where('color_id', $car->color_id)
+            ->where('daily_main_price', $car->daily_main_price)
+            ->where('daily_discount_price', $car->daily_discount_price)
+            ->where('weekly_main_price', $car->weekly_main_price)
+            ->where('weekly_discount_price', $car->weekly_discount_price)
+            ->where('monthly_main_price', $car->monthly_main_price)
+            ->where('monthly_discount_price', $car->monthly_discount_price)
+            ->where('door_count', $car->door_count)
+            ->where('passenger_capacity', $car->passenger_capacity)
+            ->where('luggage_capacity', $car->luggage_capacity)
+            ->get()
+            ->filter(fn (Car $candidateCar) => $this->carDeduplicationKey($candidateCar) === $groupKey)
+            ->values();
     }
 
     /**
