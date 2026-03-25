@@ -158,16 +158,42 @@
             box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
         }
 
+        .studio-shell-card {
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .nav-tabs-modern {
+            gap: 0.85rem;
+            padding: 1rem 1rem 0;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .nav-tabs-modern .nav-item {
+            flex: 0 0 auto;
+        }
+
         .nav-tabs-modern .nav-link {
             border-radius: 16px;
             padding: 0.85rem 1.5rem;
+            border: 1px solid #dbe5f1;
+            background: #ffffff;
+            font-weight: 700;
+            white-space: nowrap;
             transition: all 0.3s ease;
         }
 
         .nav-tabs-modern .nav-link.active {
             background: linear-gradient(135deg, #4c6ef5, #6a82fb);
             color: #fff;
+            border-color: transparent;
             box-shadow: 0 8px 20px rgba(76, 110, 245, 0.3);
+        }
+
+        .tab-modern {
+            padding-top: 1rem;
         }
 
         .btn-success {
@@ -230,6 +256,224 @@
             font-size: 13px;
             color: #64748b;
         }
+
+        .car-create-page {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .car-create-overview {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1.25rem;
+            padding: 1.45rem 1.6rem;
+            border-radius: 24px;
+            border: 1px solid #dbe8f5;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+        }
+
+        .car-create-overview__eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .car-create-overview__title {
+            margin: 0.9rem 0 0;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .car-create-overview__subtitle {
+            margin: 0.75rem 0 0;
+            max-width: 780px;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .car-create-overview__chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            justify-content: flex-end;
+            align-content: flex-start;
+        }
+
+        .car-create-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            background: #f8fafc;
+            border: 1px solid #dbe5f1;
+            color: #334155;
+            font-weight: 700;
+            font-size: 0.84rem;
+        }
+
+        .car-create-main {
+            position: relative;
+        }
+
+        .car-media-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+            gap: 1.2rem;
+        }
+
+        .car-upload-card {
+            padding: 1.2rem;
+            border-radius: 22px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            height: 100%;
+        }
+
+        .car-upload-card h4 {
+            margin-bottom: 0.35rem;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .car-upload-card p {
+            margin-bottom: 1rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .car-upload-dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            min-height: 132px;
+            padding: 1rem;
+            border: 1px dashed #93c5fd;
+            border-radius: 18px;
+            background: #eff6ff;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .car-upload-dropzone i {
+            font-size: 2rem;
+            color: #2563eb;
+        }
+
+        .car-upload-dropzone strong {
+            color: #1d4ed8;
+            font-weight: 800;
+        }
+
+        .car-upload-dropzone:hover,
+        .car-upload-dropzone.is-dragover {
+            border-color: #2563eb;
+            background: #dbeafe;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+        }
+
+        .car-upload-dropzone.is-invalid {
+            border-color: #ef4444;
+            background: #fef2f2;
+            box-shadow: 0 12px 24px rgba(239, 68, 68, 0.12);
+        }
+
+        .select2-selection.is-invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        .car-upload-dropzone span,
+        .car-upload-meta {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .car-upload-meta {
+            margin-top: 0.8rem;
+        }
+
+        .car-upload-preview-shell {
+            margin-top: 1rem;
+            padding: 0.85rem;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+
+        .car-media-preview-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+        }
+
+        .preview-item {
+            border-radius: 18px;
+        }
+
+        .preview-item img,
+        .preview-item video {
+            height: 150px;
+            border-radius: 14px;
+        }
+
+        .preview-name {
+            margin-top: 0.7rem;
+            font-size: 0.82rem;
+            color: #475569;
+            word-break: break-word;
+        }
+
+        .preview-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px dashed #cbd5e1;
+            background: linear-gradient(160deg, #f8fafc, #eef2f7);
+            color: #64748b;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .media-counter {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+
+        @media (max-width: 991.98px) {
+            .car-create-overview,
+            .car-media-grid {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .car-create-overview__chips {
+                justify-content: flex-start;
+            }
+        }
     </style>
 @endpush
 
@@ -244,97 +488,27 @@
             : __('Add :entity', ['entity' => $modelName]);
     @endphp
 
-    <div class="car-workbench">
-        <section class="car-workbench__hero">
-            <div class="car-workbench__hero-copy">
-                <span class="car-workbench__eyebrow">{{ __('Car Studio') }}</span>
-                <h2 class="car-workbench__title">{{ $formTitle }}</h2>
-                <p class="car-workbench__subtitle">
-                    {{ __('The old layout is gone. This new workspace is built for faster entry: start with core specs, move through translations, then finish with SEO and publish when the listing is complete.') }}
+    <div class="car-workbench car-create-page">
+        <section class="car-create-overview">
+            <div>
+                <span class="car-create-overview__eyebrow">{{ __('Car Studio') }}</span>
+                <h2 class="car-create-overview__title">{{ $formTitle }}</h2>
+                <p class="car-create-overview__subtitle">
+                    {{ __('Create the car once, assign one or more categories, upload a default cover and gallery media, then finish translations and SEO in the tabs below.') }}
                 </p>
-                <div class="car-workbench__hero-tags">
-                    <span class="car-workbench__tag">{{ __('3-stage workflow') }}</span>
-                    @if($languageCount)
-                        <span class="car-workbench__tag">{{ __(':count locales', ['count' => $languageCount]) }}</span>
-                    @endif
-                    <span class="car-workbench__tag">{{ __('Media uploads ready') }}</span>
-                </div>
             </div>
-            <div class="car-workbench__hero-cards">
-                <div class="car-workbench__metric">
-                    <span class="car-workbench__metric-label">{{ __('Stage 1') }}</span>
-                    <strong class="car-workbench__metric-value">{{ __('Vehicle setup') }}</strong>
-                    <span class="car-workbench__metric-note">{{ __('Specs, pricing, media, and switches') }}</span>
-                </div>
-                <div class="car-workbench__metric">
-                    <span class="car-workbench__metric-label">{{ __('Stage 2') }}</span>
-                    <strong class="car-workbench__metric-value">{{ __('Localized copy') }}</strong>
-                    <span class="car-workbench__metric-note">{{ __('Manual or AI-generated content') }}</span>
-                </div>
-                <div class="car-workbench__metric">
-                    <span class="car-workbench__metric-label">{{ __('Stage 3') }}</span>
-                    <strong class="car-workbench__metric-value">{{ __('SEO finishing') }}</strong>
-                    <span class="car-workbench__metric-note">{{ __('Metadata, robots, and Q&A') }}</span>
-                </div>
-                <div class="car-workbench__metric">
-                    <span class="car-workbench__metric-label">{{ __('Goal') }}</span>
-                    <strong class="car-workbench__metric-value">{{ __('Publish cleanly') }}</strong>
-                    <span class="car-workbench__metric-note">{{ __('One focused screen for the full flow') }}</span>
-                </div>
+            <div class="car-create-overview__chips">
+                <span class="car-create-chip">{{ __('General Specs') }}</span>
+                <span class="car-create-chip">{{ __('Pricing & Flags') }}</span>
+                @if($languageCount)
+                    <span class="car-create-chip">{{ __(':count locales', ['count' => $languageCount]) }}</span>
+                @endif
+                <span class="car-create-chip">{{ __('Images & Videos') }}</span>
+                <span class="car-create-chip">{{ __('SEO Ready') }}</span>
             </div>
         </section>
 
-        <div class="car-workbench__layout">
-            <aside class="car-workbench__aside">
-                <div class="car-workbench__panel">
-                    <div class="car-workbench__panel-head">
-                        <span class="car-workbench__panel-icon"><i class="ti ti-sparkles"></i></span>
-                        <div>
-                            <h3 class="car-workbench__panel-title">{{ __('Build Flow') }}</h3>
-                            <p class="car-workbench__panel-copy">{{ __('Use the tabs as a guided path instead of jumping around the page.') }}</p>
-                        </div>
-                    </div>
-                    <ul class="car-workbench__steps">
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('General') }}</span>
-                            <span class="car-workbench__step-text">{{ __('Set brand, model, pricing, features, media, and status first.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('Translations') }}</span>
-                            <span class="car-workbench__step-text">{{ __('Fill language-specific name, summary, and long description.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('SEO') }}</span>
-                            <span class="car-workbench__step-text">{{ __('Add metadata, search directives, and question blocks last.') }}</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="car-workbench__panel">
-                    <div class="car-workbench__panel-head">
-                        <span class="car-workbench__panel-icon"><i class="ti ti-bolt"></i></span>
-                        <div>
-                            <h3 class="car-workbench__panel-title">{{ __('Quick Notes') }}</h3>
-                            <p class="car-workbench__panel-copy">{{ __('A few practical reminders before you save the listing.') }}</p>
-                        </div>
-                    </div>
-                    <ul class="car-workbench__facts">
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('Media') }}</span>
-                            <span class="car-workbench__fact-value">{{ __('Upload a default cover image before adding the gallery.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('AI') }}</span>
-                            <span class="car-workbench__fact-value">{{ __('Use generated text as a draft, then review before publishing.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('Publish') }}</span>
-                            <span class="car-workbench__fact-value">{{ __('Leave inactive until pricing and translations are reviewed.') }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-
-            <div class="car-workbench__main">
+        <div class="car-workbench__main car-create-main">
 
     <!-- Loader Overlay -->
     <div class="loader-overlay" id="loader-overlay">
@@ -732,47 +906,69 @@
 
                                         <div class="card mb-4">
                                             <div class="card-header bg-light">
-                                                <h3 class="card-title">Upload Media Files</h3>
+                                                <h3 class="card-title">Media Uploads</h3>
                                             </div>
                                             <div class="card-body">
+                                                <div class="car-media-grid">
+                                                    <div class="car-upload-card">
+                                                        <h4>{{ __('Default Cover') }}</h4>
+                                                        <p>{{ __('Upload the main image used in cards, listings, and the first slide on the website.') }}</p>
 
-                                                <div class="row">
-                                                    <div class="col-md-3">
-                                                        <div class="form-group">
-                                                            <label class="font-weight-bold">Default Image</label>
-                                                            <div class="custom-file">
-                                                                <input type="file" name="default_image_path" class="custom-file-input image-upload" id="default_image_path" data-preview="imagePreviewLogo">
-                                                                <label class="custom-file-label" for="default_image_path">Upload Default Image</label>
-                                                            </div>
-                                                            <div class="mt-3">
-                                                                <img id="imagePreviewLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250' viewBox='0 0 250 250'%3E%3Crect width='100%25' height='100%25' fill='%23ddd'/%3E%3Ctext x='50%25' y='50%25' fill='%23555' font-size='20' text-anchor='middle' dy='.3em'%3E600x200%3C/text%3E%3C/svg%3E" alt="Logo Preview" class="shadow image-rectangle-preview" style="max-height: 250px; width: 250px; object-fit: cover; border: 2px solid #ddd;">
-                                                            </div>
+                                                        <label class="car-upload-dropzone" for="default_image_path" data-upload-target="default_image_path">
+                                                            <i class="ti ti-photo-up"></i>
+                                                            <strong>{{ __('Choose Default Image') }}</strong>
+                                                            <span>{{ __('JPG, PNG, GIF, SVG, WebP up to 10 MB') }}</span>
+                                                        </label>
+                                                        <input type="file" name="default_image_path" class="d-none image-upload" id="default_image_path" accept="image/*" data-preview="imagePreviewLogo">
+                                                        <div class="car-upload-meta" id="default-image-name">{{ __('No image selected yet') }}</div>
+                                                        @error('default_image_path')
+                                                            <span class="invalid-feedback d-block" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+
+                                                        <div class="car-upload-preview-shell">
+                                                            <img id="imagePreviewLogo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='100%25' height='100%25' fill='%23e2e8f0'/%3E%3Ctext x='50%25' y='50%25' fill='%2364758b' font-size='34' text-anchor='middle' dy='.3em'%3EDefault Preview%3C/text%3E%3C/svg%3E" alt="Logo Preview" class="shadow image-rectangle-preview" style="max-height: 250px; width: 100%; object-fit: cover;">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-9">
-                                                        <div class="form-group">
-                                                            <label for="file_path">Upload Media Files (Images & Videos):</label>
-                                                            <div class="custom-file">
-                                                                <input type="file" class="custom-file-input" name="media[]" id="media-files" multiple accept="image/*,video/mp4,video/webm,video/ogg">
-                                                                <label class="custom-file-label" for="media-files">Choose files</label>
+
+                                                    <div class="car-upload-card">
+                                                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                                                            <div>
+                                                                <h4>{{ __('Gallery Media') }}</h4>
+                                                                <p class="mb-0">{{ __('Add all listing images and videos here. You can select files more than once and remove any file before saving.') }}</p>
                                                             </div>
-                                                            <small class="form-text text-muted">
-                                                                Supported formats: Images (JPG, PNG, GIF, WebP) and Videos (MP4, WebM, OGG). Maximum file size: 100MB
-                                                            </small>
+                                                            <span class="media-counter" id="media-count-badge">{{ __('0 files') }}</span>
                                                         </div>
 
-                                                        <div id="preview" class="preview-grid mt-3">
-                                                            <!-- Preview items will be added here -->
+                                                        <label class="car-upload-dropzone mt-3" for="media-files" data-upload-target="media-files">
+                                                            <i class="ti ti-cloud-upload"></i>
+                                                            <strong>{{ __('Choose Images & Videos') }}</strong>
+                                                            <span>{{ __('Images: JPG, PNG, GIF, SVG, WebP. Videos: MP4, WebM, OGG. Up to 100 MB each.') }}</span>
+                                                        </label>
+                                                        <input type="file" class="d-none" name="media[]" id="media-files" multiple accept="image/*,video/mp4,video/webm,video/ogg">
+                                                        <div class="car-upload-meta" id="media-files-name">{{ __('No media selected yet') }}</div>
+                                                        @error('media')
+                                                            <span class="invalid-feedback d-block" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+                                                        @error('media.*')
+                                                            <span class="invalid-feedback d-block" role="alert">
+                                                                <strong>{{ $message }}</strong>
+                                                            </span>
+                                                        @enderror
+
+                                                        <div class="car-upload-preview-shell">
+                                                            <div id="preview" class="preview-grid car-media-preview-grid"></div>
                                                         </div>
 
-                                                        <div class="form-group">
-                                                            <label for="alt">Alt Text (for all):</label>
-                                                            <input type="text" class="form-control" name="alt" placeholder="Add alt text for images or videos">
+                                                        <div class="form-group mb-0 mt-3">
+                                                            <label for="alt" class="font-weight-bold">{{ __('Shared Alt Text') }}</label>
+                                                            <input type="text" class="form-control" id="alt" name="alt" value="{{ old('alt') }}" placeholder="{{ __('Optional alt text applied to uploaded images and videos') }}">
                                                         </div>
-
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
 
@@ -999,7 +1195,6 @@
                         </form>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 @endsection
@@ -1024,6 +1219,78 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
+
+        function setInputFiles(input, files) {
+            if (!input || typeof DataTransfer === 'undefined') {
+                return false;
+            }
+
+            const transfer = new DataTransfer();
+            files.forEach(file => transfer.items.add(file));
+            input.files = transfer.files;
+
+            return true;
+        }
+
+        function refreshDefaultImagePreview(file) {
+            const previewImage = document.getElementById('imagePreviewLogo');
+            const fileNameLabel = document.getElementById('default-image-name');
+
+            if (fileNameLabel) {
+                fileNameLabel.textContent = file ? file.name : "{{ __('No image selected yet') }}";
+            }
+
+            if (!file || !previewImage) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(loadEvent) {
+                previewImage.src = loadEvent.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function appendInlineError(fieldKey, message) {
+            if (fieldKey === 'default_image_path') {
+                $('#default_image_path').addClass('is-invalid');
+                $('label[for="default_image_path"]').addClass('is-invalid');
+                $('#default-image-name').after('<div class="invalid-feedback d-block">' + escapeHtml(message) + '</div>');
+                return;
+            }
+
+            if (fieldKey === 'media' || fieldKey.startsWith('media.')) {
+                $('#media-files').addClass('is-invalid');
+                $('label[for="media-files"]').addClass('is-invalid');
+                $('#media-files-name').after('<div class="invalid-feedback d-block">' + escapeHtml(message) + '</div>');
+                return;
+            }
+
+            let selector = '[name="' + fieldKey + '"]';
+            if (fieldKey.includes('.')) {
+                selector += ', [name="' + fieldKey.split('.')[0] + '[]"]';
+            }
+
+            const input = $(selector).first();
+            if (!input.length) {
+                return;
+            }
+
+            input.addClass('is-invalid');
+
+            if (input.hasClass('select2-hidden-accessible')) {
+                input.next('.select2-container').find('.select2-selection').addClass('is-invalid');
+                input.next('.select2-container').after('<div class="invalid-feedback d-block">' + escapeHtml(message) + '</div>');
+                return;
+            }
+
+            if (input.attr('type') === 'checkbox' || input.attr('type') === 'radio') {
+                input.closest('.custom-control').after('<div class="invalid-feedback d-block">' + escapeHtml(message) + '</div>');
+                return;
+            }
+
+            input.after('<div class="invalid-feedback d-block">' + escapeHtml(message) + '</div>');
         }
 
         function buildSeoQuestionGroup(lang, index, qa = {question: '', answer: ''}) {
@@ -1196,65 +1463,163 @@
             });
         }
 
-        // Handle media file preview
-        document.getElementById('media-files').addEventListener('change', function(event) {
-            var files = Array.from(event.target.files);
-            selectedFiles = selectedFiles.concat(files);
-            displayMediaPreviews();
-        });
+        function fileSignature(file) {
+            return [file.name, file.size, file.lastModified, file.type].join('::');
+        }
 
-        // Function to display media previews
+        function updateMediaMeta() {
+            const countBadge = document.getElementById('media-count-badge');
+            const mediaLabel = document.getElementById('media-files-name');
+
+            if (countBadge) {
+                countBadge.textContent = `${selectedFiles.length} file${selectedFiles.length === 1 ? '' : 's'}`;
+            }
+
+            if (mediaLabel) {
+                mediaLabel.textContent = selectedFiles.length
+                    ? selectedFiles.map(file => file.name).join(', ')
+                    : "{{ __('No media selected yet') }}";
+            }
+        }
+
+        function syncMediaInputFiles() {
+            const mediaInput = document.getElementById('media-files');
+            if (!setInputFiles(mediaInput, selectedFiles)) {
+                updateMediaMeta();
+                return;
+            }
+            updateMediaMeta();
+        }
+
         function displayMediaPreviews() {
-            var previewDiv = document.getElementById('preview');
-            previewDiv.innerHTML = ''; // Clear previous previews
+            const previewDiv = document.getElementById('preview');
+            if (!previewDiv) {
+                return;
+            }
+
+            previewDiv.innerHTML = '';
+
+            if (!selectedFiles.length) {
+                previewDiv.innerHTML = `<div class="preview-empty">{{ __('Selected media previews will appear here before saving.') }}</div>`;
+                updateMediaMeta();
+                return;
+            }
 
             selectedFiles.forEach((file, index) => {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    let div = document.createElement('div');
-                    div.classList.add('preview-item');
-                    div.setAttribute('data-index', index);
+                const objectUrl = URL.createObjectURL(file);
+                const div = document.createElement('div');
+                div.classList.add('preview-item');
+                div.setAttribute('data-index', index);
 
-                    if (file.type.startsWith('image/')) {
-                        div.setAttribute('data-type', 'image');
-                        div.innerHTML = `
-                            <img src="${e.target.result}" class="img-fluid">
-                            <button type="button" class="remove-preview" data-type="image" data-index="${index}">×</button>
-                        `;
-                    } else if (file.type.startsWith('video/')) {
-                        div.setAttribute('data-type', 'video');
-                        div.innerHTML = `
-                            <video src="${e.target.result}" controls class="img-fluid"></video>
-                            <button type="button" class="remove-preview" data-type="video" data-index="${index}">×</button>
-                        `;
+                const mediaMarkup = file.type.startsWith('video/')
+                    ? `<video src="${objectUrl}" controls class="img-fluid"></video>`
+                    : `<img src="${objectUrl}" class="img-fluid" alt="${escapeHtml(file.name)}">`;
+
+                div.innerHTML = `
+                    ${mediaMarkup}
+                    <button type="button" class="remove-preview" data-index="${index}">×</button>
+                    <div class="preview-name">${escapeHtml(file.name)}</div>
+                `;
+
+                previewDiv.appendChild(div);
+            });
+
+            updateMediaMeta();
+        }
+
+        function mergeMediaFiles(files) {
+            const incomingFiles = Array.from(files || []);
+            const existingSignatures = new Set(selectedFiles.map(fileSignature));
+
+            incomingFiles.forEach(file => {
+                const signature = fileSignature(file);
+                if (!existingSignatures.has(signature)) {
+                    selectedFiles.push(file);
+                    existingSignatures.add(signature);
+                }
+            });
+
+            syncMediaInputFiles();
+            displayMediaPreviews();
+        }
+
+        function bindUploadDropzones() {
+            document.querySelectorAll('.car-upload-dropzone[data-upload-target]').forEach(dropzone => {
+                const targetId = dropzone.dataset.uploadTarget;
+                const input = document.getElementById(targetId);
+
+                if (!input) {
+                    return;
+                }
+
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, function(event) {
+                        event.preventDefault();
+                        dropzone.classList.add('is-dragover');
+                    });
+                });
+
+                ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, function(event) {
+                        event.preventDefault();
+                        dropzone.classList.remove('is-dragover');
+                    });
+                });
+
+                dropzone.addEventListener('drop', function(event) {
+                    const droppedFiles = Array.from((event.dataTransfer && event.dataTransfer.files) || []);
+                    if (!droppedFiles.length) {
+                        return;
                     }
-                    previewDiv.appendChild(div);
-                };
-                reader.readAsDataURL(file);
+
+                    if (targetId === 'media-files') {
+                        mergeMediaFiles(droppedFiles);
+                        return;
+                    }
+
+                    if (!setInputFiles(input, [droppedFiles[0]])) {
+                        return;
+                    }
+
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
             });
         }
 
-        // Event delegation for preview removal
-        document.getElementById('preview').addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-preview')) {
-                let previewType = event.target.getAttribute('data-type');
-                let inputIndex = event.target.getAttribute('data-index');
-                let previewItem = event.target.closest('.preview-item');
+        const mediaFilesInput = document.getElementById('media-files');
+        if (mediaFilesInput) {
+            mediaFilesInput.addEventListener('change', function(event) {
+                mergeMediaFiles(event.target.files || []);
+                mediaFilesInput.value = '';
+            });
+        }
 
-                if (previewType === 'youtube') {
-                    let input = document.querySelector(`.youtube-link[data-index="${inputIndex}"]`);
-                    if (input) {
-                        input.value = '';
-                        delete input.dataset.previewId;
-                    }
-                } else {
-                    selectedFiles.splice(inputIndex, 1);
-                    displayMediaPreviews();
+        const previewContainer = document.getElementById('preview');
+        if (previewContainer) {
+            previewContainer.addEventListener('click', function(event) {
+                if (!event.target.classList.contains('remove-preview')) {
                     return;
                 }
-                previewItem.remove();
-            }
-        });
+
+                const inputIndex = parseInt(event.target.getAttribute('data-index'), 10);
+                if (!Number.isNaN(inputIndex)) {
+                    selectedFiles.splice(inputIndex, 1);
+                    syncMediaInputFiles();
+                    displayMediaPreviews();
+                }
+            });
+        }
+
+        const defaultImageInput = document.getElementById('default_image_path');
+        if (defaultImageInput) {
+            defaultImageInput.addEventListener('change', function(event) {
+                const file = event.target.files && event.target.files[0];
+                refreshDefaultImagePreview(file);
+            });
+        }
+
+        bindUploadDropzones();
+        displayMediaPreviews();
 
         $(document).ready(function() {
             // Function to dynamically add SEO Questions/Answers
@@ -1402,22 +1767,12 @@
                             $.each(errors, function(key, messages) {
                                 messages.forEach(function(message) {
                                     errorHtml += '<li>' + message + '</li>';
-
-                                    // Add error class and message to form field
-                                    var input = $('[name="' + key + '"]');
-                                    if (input.length) {
-                                        input.addClass('is-invalid');
-                                        if (!input.next('.invalid-feedback').length) {
-                                            input.after('<div class="invalid-feedback">' + message + '</div>');
-                                        }
-                                    }
+                                    appendInlineError(key, message);
                                 });
                             });
 
                             errorHtml += '</ul></div>' +
-                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                                '<span aria-hidden="true">&times;</span>' +
-                                '</button>' +
+                                '<button type="button" class="btn-close ms-3" data-bs-dismiss="alert" aria-label="Close"></button>' +
                                 '</div></div>';
 
                             // Remove any existing error alerts
