@@ -443,18 +443,36 @@
 
 @push('scripts')
     <script>
+        const legacyTabMap = {
+            '#home-section-general': '#tab-overview',
+            '#home-section-hero': '#tab-hero',
+            '#home-section-features': '#tab-features',
+            '#home-section-rental': '#tab-rental',
+            '#home-section-headings': '#tab-headings',
+            '#home-section-testimonials': '#tab-testimonials',
+            '#home-section-support': '#tab-support',
+            '#home-section-shared': '#tab-shared',
+            '#home-section-seo': '#tab-seo'
+        };
+
         function activateTabByHash(hash) {
-            if (!hash) {
+            const normalizedHash = legacyTabMap[hash] || hash;
+
+            if (!normalizedHash) {
                 return;
             }
 
-            const trigger = document.querySelector('[data-bs-target="' + hash + '"]');
+            const trigger = document.querySelector('[data-bs-target="' + normalizedHash + '"]');
             if (!trigger || typeof bootstrap === 'undefined' || !bootstrap.Tab) {
                 return;
             }
 
             bootstrap.Tab.getOrCreateInstance(trigger).show();
-            const targetPane = document.querySelector(hash);
+            if (normalizedHash !== hash) {
+                history.replaceState(null, '', normalizedHash);
+            }
+
+            const targetPane = document.querySelector(normalizedHash);
             if (targetPane) {
                 targetPane.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
