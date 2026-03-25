@@ -382,6 +382,7 @@ class CarController extends Controller
             ->whereIn('cars.id', $relatedCarIds->all())
             ->latest('cars.id')
             ->get()
+            ->pipe(fn (Collection $cars) => $this->dedupeCarsCollection($cars))
             ->reject(fn (Car $relatedCar) => $this->carDeduplicationKey($relatedCar) === $currentCarGroupKey)
             ->take(6)
             ->values()

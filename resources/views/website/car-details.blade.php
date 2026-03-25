@@ -257,7 +257,9 @@
                 : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
             : 'javascript:void(0);';
 
-        $relatedItems = collect($relatedCars ?? [])->values();
+        $relatedItems = collect($relatedCars ?? [])
+            ->unique(fn ($item) => data_get($item, 'details_url') ?: data_get($item, 'id'))
+            ->values();
         if ($relatedItems->isEmpty()) {
             $relatedItems = collect([
                 [
