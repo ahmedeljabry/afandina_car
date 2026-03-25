@@ -66,16 +66,17 @@
                                 <i class="ti ti-car"></i><span>Cars</span>
                             </a>
                         </li>
-                        <li class="submenu">
+                        <li class="submenu {{ request()->routeIs('admin.brands.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.car_models.*') || request()->routeIs('admin.colors.*') || request()->routeIs('admin.features.*') ? 'active' : '' }}">
                             <a href="javascript:void(0);">
                                 <i class="ti ti-device-camera-phone"></i><span>Car Attributes</span>
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li><a href="{{ route('admin.brands.index') }}">Brands</a></li>
-                                <li><a href="{{ route('admin.car_models.index') }}">Models</a></li>
-                                <li><a href="{{ route('admin.colors.index') }}">Colors</a></li>
-                                <li><a href="{{ route('admin.features.index') }}">Features</a></li>
+                                <li><a class="{{ request()->routeIs('admin.brands.*') ? 'active' : '' }}" href="{{ route('admin.brands.index') }}">Brands</a></li>
+                                <li><a class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}" href="{{ route('admin.categories.index') }}">Categories</a></li>
+                                <li><a class="{{ request()->routeIs('admin.car_models.*') ? 'active' : '' }}" href="{{ route('admin.car_models.index') }}">Models</a></li>
+                                <li><a class="{{ request()->routeIs('admin.colors.*') ? 'active' : '' }}" href="{{ route('admin.colors.index') }}">Colors</a></li>
+                                <li><a class="{{ request()->routeIs('admin.features.*') ? 'active' : '' }}" href="{{ route('admin.features.index') }}">Features</a></li>
                             </ul>
                         </li>
                     </ul>

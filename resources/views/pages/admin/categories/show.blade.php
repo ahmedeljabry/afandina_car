@@ -1,128 +1,242 @@
 @extends('layouts.admin_layout')
 
-@section('title', 'View ' . $modelName)
+@section('title', 'Category Details')
 
 @section('page-title')
-    View {{ $modelName }}
+    {{ __('Category Details') }}
 @endsection
 
-@section('content')<!-- Back, Edit, and Delete Buttons -->
-                <div class="mb-3 d-flex justify-content-between">
-                    <a href="{{ route('admin.' . $modelName . '.index') }}" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Back to list">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </a>
-                    <div>
-                        <a href="{{ route('admin.' . $modelName . '.edit', $item->id) }}" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Edit item">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <form action="{{ route('admin.' . $modelName . '.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this item?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Delete item">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                </div>
+@push('styles')
+    <style>
+        .category-show-hero {
+            padding: 1.5rem;
+            border-radius: 26px;
+            background: linear-gradient(135deg, #0f172a, #1d4ed8 58%, #38bdf8);
+            color: #fff;
+            box-shadow: 0 24px 60px rgba(30, 64, 175, 0.24);
+            margin-bottom: 1.5rem;
+        }
 
-                <!-- Main Card -->
-                <div class="card card-primary card-outline shadow-lg">
-                    <div class="card-header">
-                        <h3 class="card-title">Details for {{ $modelName }}</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $item->logo_path) }}" alt="Logo" class="img-fluid rounded shadow-sm" />
-                            </div>
-                            <div class="col-md-8">
-                                <h4>{{ $item->translations->first()->name ?? 'N/A' }}</h4>
-                                <span class="badge badge-info">{{ $item->translations->first()->slug ?? 'N/A' }}</span>
-                            </div>
-                        </div>
+        .category-show-grid {
+            display: grid;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 1.5rem;
+        }
 
-                        <hr class="my-4">
+        .category-show-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+            padding: 1.5rem;
+        }
 
-                        <!-- Tabs for Different Languages -->
-                        <ul class="nav nav-tabs" id="language-tabs" role="tablist">
-                            @foreach($activeLanguages as $lang)
-                                <li class="nav-item">
-                                    <a class="nav-link @if($loop->first) active @endif" id="tab-{{ $lang->code }}" data-toggle="tab" href="#content-{{ $lang->code }}" role="tab" aria-controls="content-{{ $lang->code }}" aria-selected="true">{{ $lang->name }}</a>
-                                </li>
-                            @endforeach
-                        </ul>
+        .category-show-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 20px;
+            background: #eff6ff;
+        }
 
-                        <div class="tab-content mt-3" id="language-tabs-content">
-                            @foreach($activeLanguages as $lang)
-                                <div class="tab-pane fade @if($loop->first) show active @endif" id="content-{{ $lang->code }}" role="tabpanel" aria-labelledby="tab-{{ $lang->code }}">
-                                    <div class="mb-3">
-                                        <h5>Meta Data</h5>
-                                        <table class="table table-bordered table-striped">
-                                            <tbody>
-                                            <tr>
-                                                <th>Meta Title</th>
-                                                <td>{{ $item->translations->where('locale', $lang->code)->first()->meta_title ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Meta Description</th>
-                                                <td>{{ $item->translations->where('locale', $lang->code)->first()->meta_description ?? 'N/A' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Meta Keywords</th>
-                                                <td>
-                                                    @php
-                                                        $keywords = json_decode($item->translations->where('locale', $lang->code)->first()->meta_keywords, true);
-                                                    @endphp
-                                                    @foreach($keywords as $keyword)
-                                                        <span class="badge badge-pill badge-primary">{{ $keyword['value'] }}</span>
-                                                    @endforeach
-                                                </td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+        .category-show-stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: .9rem;
+            margin-top: 1rem;
+        }
 
-                                    <div>
-                                        <h5>SEO Questions/Answers</h5>
-                                        @forelse($item->seoQuestions->where('locale', $lang->code) as $seoQuestion)
-                                            @if($seoQuestion->where('locale', $lang->code)->first())
-                                                <div class="card mb-3 shadow-sm">
-                                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="m-0 font-weight-bold">Question {{ $seoQuestion->id }}</h6>
-                                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $seoQuestion->id }}" aria-expanded="false" aria-controls="collapse-{{ $seoQuestion->id }}">
-                                                            <i class="fas fa-chevron-down"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div id="collapse-{{ $seoQuestion->id }}" class="collapse">
-                                                        <div class="card-body">
-                                                            <p><strong>Question:</strong> {{ $seoQuestion->question_text ?? 'N/A' }}</p>
-                                                            <p><strong>Answer:</strong> {{ $seoQuestion->answer_text ?? 'N/A' }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        @empty
-                                            <div class="alert alert-default-light">
-                                                No SEO questions available for this language.
-                                            </div>
-                                        @endforelse
-                                    </div>
+        .category-show-stats div {
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 0.95rem;
+            background: #f8fafc;
+        }
 
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
+        .category-show-stats span {
+            display: block;
+            color: #64748b;
+            font-size: .82rem;
+            font-weight: 600;
+        }
+
+        .category-show-stats strong {
+            display: block;
+            margin-top: .2rem;
+            color: #0f172a;
+            font-size: 1.05rem;
+        }
+
+        .category-show-tabs .nav-link {
+            border-radius: 999px;
+            border: 1px solid #dbe2f0;
+            color: #334155;
+            font-weight: 700;
+            margin-right: .65rem;
+            margin-bottom: .65rem;
+        }
+
+        .category-show-tabs .nav-link.active {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .category-show-section {
+            border: 1px solid #e2e8f0;
+            border-radius: 22px;
+            padding: 1.2rem;
+            background: #fff;
+        }
+
+        .category-show-section + .category-show-section {
+            margin-top: 1rem;
+        }
+
+        .category-show-kicker {
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            font-size: .78rem;
+            font-weight: 800;
+            margin-bottom: .75rem;
+        }
+
+        .keyword-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: .35rem .75rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            margin: 0 .45rem .45rem 0;
+        }
+
+        @media (max-width: 991.98px) {
+            .category-show-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+@endpush
+
+@section('content')
+    @php
+        $placeholderImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='420' viewBox='0 0 720 420'%3E%3Crect width='100%25' height='100%25' fill='%23eff6ff'/%3E%3Ctext x='50%25' y='50%25' fill='%2364748b' font-size='26' text-anchor='middle' dy='.3em'%3ENo Category Cover%3C/text%3E%3C/svg%3E";
+        $image = filled($item->image_path) ? asset('storage/' . $item->image_path) : $placeholderImage;
+    @endphp
+
+    <div class="category-show-hero">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
+            <div>
+                <h2 class="mb-2">{{ __('Category Overview') }}</h2>
+                <p class="mb-0">{{ __('Review the publishing status, storefront content, and SEO setup for this category.') }}</p>
             </div>
-        </section>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light rounded-pill px-4">{{ __('Back') }}</a>
+                <a href="{{ route('admin.categories.edit', $item->id) }}" class="btn btn-warning text-dark rounded-pill px-4">{{ __('Edit Category') }}</a>
+            </div>
+        </div>
     </div>
 
-    @push('scripts')
-        <!-- Initialize Tooltips -->
-        <script>
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            })
-        </script>
-    @endpush
+    <div class="category-show-grid">
+        <div class="category-show-card">
+            <img src="{{ $image }}" alt="{{ __('Category cover') }}">
+            <div class="category-show-stats">
+                <div>
+                    <span>{{ __('Status') }}</span>
+                    <strong>{{ $item->is_active ? __('Active') : __('Inactive') }}</strong>
+                </div>
+                <div>
+                    <span>{{ __('Slug') }}</span>
+                    <strong>{{ $item->slug ?: __('Auto-generated') }}</strong>
+                </div>
+                <div>
+                    <span>{{ __('Assigned Cars') }}</span>
+                    <strong>{{ (int) ($item->cars_count ?? 0) }}</strong>
+                </div>
+                <div>
+                    <span>{{ __('Active Cars') }}</span>
+                    <strong>{{ (int) ($item->active_cars_count ?? 0) }}</strong>
+                </div>
+                <div>
+                    <span>{{ __('Created') }}</span>
+                    <strong>{{ $item->created_at?->format('d M Y') ?? __('N/A') }}</strong>
+                </div>
+                <div>
+                    <span>{{ __('Updated') }}</span>
+                    <strong>{{ $item->updated_at?->diffForHumans() ?? __('N/A') }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="category-show-card">
+            <ul class="nav nav-pills category-show-tabs mb-3">
+                @foreach ($activeLanguages as $lang)
+                    <li class="nav-item">
+                        <a class="nav-link {{ $loop->first ? 'active' : '' }}" data-toggle="pill" href="#category-show-{{ $lang->code }}">
+                            {{ $lang->name }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
+
+            <div class="tab-content">
+                @foreach ($activeLanguages as $lang)
+                    @php
+                        $translation = $item->translations->firstWhere('locale', $lang->code);
+                        $metaKeywords = json_decode($translation?->meta_keywords ?? '[]', true);
+                        $questions = $item->seoQuestions->where('locale', $lang->code);
+                    @endphp
+                    <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="category-show-{{ $lang->code }}">
+                        <div class="category-show-section">
+                            <div class="category-show-kicker">{{ __('Core Copy') }}</div>
+                            <h4 class="mb-2">{{ $translation?->name ?? __('No name') }}</h4>
+                            <p class="text-muted mb-3">{{ $translation?->title ?? __('No section title') }}</p>
+                            <div>{{ $translation?->description ?? __('No description available.') }}</div>
+                            @if (filled($translation?->article))
+                                <hr>
+                                <div>{!! $translation?->article !!}</div>
+                            @endif
+                        </div>
+
+                        <div class="category-show-section">
+                            <div class="category-show-kicker">{{ __('SEO Metadata') }}</div>
+                            <div class="mb-3">
+                                <strong>{{ __('Meta Title') }}:</strong>
+                                <div class="text-muted">{{ $translation?->meta_title ?? __('N/A') }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <strong>{{ __('Meta Description') }}:</strong>
+                                <div class="text-muted">{{ $translation?->meta_description ?? __('N/A') }}</div>
+                            </div>
+                            <div>
+                                <strong>{{ __('Meta Keywords') }}:</strong>
+                                <div class="mt-2">
+                                    @forelse ($metaKeywords as $keyword)
+                                        <span class="keyword-pill">{{ is_array($keyword) ? ($keyword['value'] ?? '') : '' }}</span>
+                                    @empty
+                                        <span class="text-muted">{{ __('No keywords added') }}</span>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-show-section">
+                            <div class="category-show-kicker">{{ __('SEO Questions & Answers') }}</div>
+                            @forelse ($questions as $question)
+                                <div class="mb-3">
+                                    <strong>{{ $question->question_text }}</strong>
+                                    <div class="text-muted mt-1">{{ $question->answer_text }}</div>
+                                </div>
+                            @empty
+                                <div class="text-muted">{{ __('No SEO questions added for this locale.') }}</div>
+                            @endforelse
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
 @endsection
