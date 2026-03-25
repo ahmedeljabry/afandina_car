@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Jobs\ProcessFileJob;
@@ -284,30 +285,51 @@ class GenericController extends Controller
             // Log the translation data before saving
             \Log::info('Saving Translation:', $model->translations()->where('locale', $langCode)->first()->toArray());
 
-            // Only generate slug for English locale
             if ($langCode === 'en' && $this->slugField) {
-                // Generate base slug from the English field value
-                $baseSlug = Str::slug($validatedData[$this->slugField][$langCode] ?? 'default-slug');
-
-                // Check uniqueness against the translation table
-                $translationRelation = $model->translations();
-                $fkName = $translationRelation->getForeignKeyName();
-                $translationModel = $translationRelation->getRelated();
-
-                $slug = $baseSlug;
-                $counter = 1;
-
-                while ($translationModel::where('slug', $slug)
-                    ->where('locale', 'en')
-                    ->where($fkName, '!=', $model->id)
-                    ->exists()) {
-                    $slug = $baseSlug . '-' . $counter++;
-                }
-
-                // Save slug into the English translation record
-                $model->translations()->where('locale', 'en')->update(['slug' => $slug]);
+                $this->syncEnglishSlug($validatedData, $model);
             }
         }
+    }
+
+    protected function syncEnglishSlug(array $validatedData, $model): void
+    {
+        $sourceValue = data_get($validatedData, "{$this->slugField}.en", 'default-slug');
+        $baseSlug = Str::slug($sourceValue ?: 'default-slug');
+        $slug = $baseSlug;
+        $counter = 1;
+
+        if (Schema::hasColumn($model->getTable(), 'slug')) {
+            while ($model->newQuery()
+                ->where('slug', $slug)
+                ->where($model->getKeyName(), '!=', $model->getKey())
+                ->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+
+            $model->slug = $slug;
+            $model->save();
+
+            return;
+        }
+
+        $translationRelation = $model->translations();
+        $translationModel = $translationRelation->getRelated();
+
+        if (!Schema::hasColumn($translationModel->getTable(), 'slug')) {
+            return;
+        }
+
+        $fkName = $translationRelation->getForeignKeyName();
+
+        while ($translationModel->newQuery()
+            ->where('slug', $slug)
+            ->where('locale', 'en')
+            ->where($fkName, '!=', $model->getKey())
+            ->exists()) {
+            $slug = $baseSlug . '-' . $counter++;
+        }
+
+        $model->translations()->where('locale', 'en')->update(['slug' => $slug]);
     }
 
     protected function handleFileUpload($request, $model)

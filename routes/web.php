@@ -49,13 +49,11 @@ Route::middleware('auth')->get('/dashboard', function () {
 
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+    Route::post('/cars/{id}/upload-image', [AdminCarController::class, 'uploadImage'])->name('cars.upload-image');
+    Route::post('/cars/{id}/upload-default-image', [AdminCarController::class, 'uploadDefaultImage'])->name('cars.upload-default-image');
+    Route::post('/cars/images/{id}/update', [AdminCarController::class, 'updateImage'])->name('cars.images.update');
+    Route::post('/cars/images/{id}/make-default', [AdminCarController::class, 'setImageAsDefault'])->name('cars.images.make-default');
     Route::delete('/cars/delete-image/{id}', [AdminCarController::class, 'deleteImage'])->name('cars.delete-image');
-    // Car image management routes
-    Route::post('/cars/delete-selected-images', [AdminCarController::class, 'deleteMultipleImages'])->name('cars.delete-selected-images');
-    Route::delete('/cars/delete-all-images/{carId}', [AdminCarController::class, 'deleteAllImages'])->name('cars.delete-all-images');
-    Route::post('/cars/delete-selected-images', [AdminCarController::class, 'deleteSelectedImages'])
-        ->name('admin.cars.delete-selected-images');
-
-    Route::post('/cars/delete-all-images/{car}', [AdminCarController::class, 'deleteAllImages'])
-        ->name('admin.cars.delete-all-images');
+    Route::post('/cars/delete-selected-images', [AdminCarController::class, 'deleteSelectedImages'])->name('cars.delete-selected-images');
+    Route::post('/cars/delete-all-images/{carId}', [AdminCarController::class, 'deleteAllImages'])->name('cars.delete-all-images');
 });

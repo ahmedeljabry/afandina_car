@@ -37,7 +37,7 @@
                             </div>
                             <div class="col-md-8">
                                 <h4>{{ $item->translations->first()->name ?? 'N/A' }}</h4>
-                                <span class="badge badge-info">{{ $item->translations->first()->slug ?? 'N/A' }}</span>
+                                <span class="badge badge-info">{{ $item->slug ?? 'N/A' }}</span>
                             </div>
                         </div>
 

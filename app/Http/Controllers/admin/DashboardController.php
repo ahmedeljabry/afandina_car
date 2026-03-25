@@ -8,21 +8,26 @@ use App\Models\Blog;
 use App\Models\Car;
 use App\Models\Category;
 use App\Models\ContactWithUsMessage;
+use App\Traits\DeduplicatesCars;
 use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
+    use DeduplicatesCars;
+
     public function index()
     {
         $now = now();
         $thisMonthStart = $now->copy()->startOfMonth();
         $lastMonthStart = $now->copy()->subMonthNoOverflow()->startOfMonth();
         $lastMonthEnd = $now->copy()->subMonthNoOverflow()->endOfMonth();
+        $representativeCarIds = $this->uniqueRepresentativeCarIds(Car::query());
+        $representativeCarIdList = $representativeCarIds->all();
 
-        $totalCars = Car::count();
-        $activeCars = Car::where('is_active', true)->count();
-        $availableCars = Car::where('status', 'available')->count();
-        $featuredCars = Car::where('is_featured', true)->count();
+        $totalCars = count($representativeCarIdList);
+        $activeCars = $this->uniqueCarCount(Car::query()->where('is_active', true));
+        $availableCars = $this->uniqueCarCount(Car::query()->where('status', 'available'));
+        $featuredCars = $this->uniqueCarCount(Car::query()->where('is_featured', true));
 
         $totalBrands = Brand::count();
         $activeBrands = Brand::where('is_active', true)->count();
@@ -33,13 +38,20 @@ class DashboardController extends Controller
         $totalBlogs = Blog::count();
         $activeBlogs = Blog::where('is_active', true)->count();
 
-        $carsThisMonth = Car::where('created_at', '>=', $thisMonthStart)->count();
-        $carsLastMonth = Car::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count();
+        $carsThisMonth = Car::query()
+            ->whereIn('id', $representativeCarIdList)
+            ->where('created_at', '>=', $thisMonthStart)
+            ->count();
+        $carsLastMonth = Car::query()
+            ->whereIn('id', $representativeCarIdList)
+            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+            ->count();
         $carsGrowth = $carsLastMonth > 0
             ? (($carsThisMonth - $carsLastMonth) / $carsLastMonth) * 100
             : ($carsThisMonth > 0 ? 100 : 0);
 
         $latestCars = Car::with(['translations', 'brand.translations', 'category.translations'])
+            ->whereIn('id', $representativeCarIdList)
             ->latest('id')
             ->take(8)
             ->get();
@@ -59,16 +71,32 @@ class DashboardController extends Controller
             ->count();
 
         $topCategories = Category::with('translations')
-            ->withCount('cars')
-            ->orderByDesc('cars_count')
+            ->get()
+            ->map(function (Category $category) use ($representativeCarIdList) {
+                $category->cars_count = Car::query()
+                    ->whereIn('id', $representativeCarIdList)
+                    ->where('category_id', $category->id)
+                    ->count();
+
+                return $category;
+            })
+            ->sortByDesc('cars_count')
             ->take(6)
-            ->get();
+            ->values();
 
         $topBrands = Brand::with('translations')
-            ->withCount('cars')
-            ->orderByDesc('cars_count')
+            ->get()
+            ->map(function (Brand $brand) use ($representativeCarIdList) {
+                $brand->cars_count = Car::query()
+                    ->whereIn('id', $representativeCarIdList)
+                    ->where('brand_id', $brand->id)
+                    ->count();
+
+                return $brand;
+            })
+            ->sortByDesc('cars_count')
             ->take(6)
-            ->get();
+            ->values();
 
         $fleetDistribution = collect([
             ['label' => 'Active Cars', 'count' => $activeCars, 'color' => '#0d9488'],
@@ -81,12 +109,14 @@ class DashboardController extends Controller
             return $item;
         });
 
-        $monthlyCarsData = collect(range(5, 0))->map(function (int $offset): array {
+        $monthlyCarsData = collect(range(5, 0))->map(function (int $offset) use ($representativeCarIdList): array {
             $date = now()->copy()->subMonths($offset);
 
             return [
                 'label' => $date->format('M'),
-                'count' => Car::whereYear('created_at', $date->year)
+                'count' => Car::query()
+                    ->whereIn('id', $representativeCarIdList)
+                    ->whereYear('created_at', $date->year)
                     ->whereMonth('created_at', $date->month)
                     ->count(),
             ];

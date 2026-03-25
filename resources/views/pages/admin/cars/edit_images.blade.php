@@ -1,634 +1,454 @@
 @extends('layouts.admin_layout')
 
-@section('title', 'Manage Car Media')
+@section('title', __('Manage Car Media'))
+@section('page-title', __('Media Studio'))
 
-@section('page-title')
-    Manage Media for Car ID: {{ $item->id }}
+@section('breadcrumbs')
+    <li class="breadcrumb-item"><a href="{{ route('admin.cars.index') }}">{{ __('Cars') }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ route('admin.cars.edit', $item->id) }}">{{ __('Edit Car') }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ __('Media Studio') }}</li>
 @endsection
+
+@section('page-actions')
+    <a href="{{ route('admin.cars.edit', $item->id) }}" class="btn btn-outline-secondary me-2 mb-2">
+        <i class="ti ti-arrow-left me-1"></i>{{ __('Back To Car') }}
+    </a>
+    <a href="{{ route('admin.cars.index') }}" class="btn btn-primary mb-2">
+        <i class="ti ti-layout-grid me-1"></i>{{ __('All Cars') }}
+    </a>
+@endsection
+
+@php
+    $carTranslation = $item->translations->firstWhere('locale', 'en') ?? $item->translations->first();
+    $carName = $carTranslation?->name ?: __('Car') . ' #' . $item->id;
+    $mediaCollection = $item->images->sortByDesc('id')->values();
+    $imageCount = $mediaCollection->where('type', 'image')->count();
+    $videoCount = $mediaCollection->where('type', 'video')->count();
+
+    $mediaUrl = function (?string $path): ?string {
+        if (blank($path)) return null;
+        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://', '//'])) return $path;
+        if (\Illuminate\Support\Str::startsWith($path, 'storage/')) return asset($path);
+        return asset('storage/' . ltrim($path, '/'));
+    };
+@endphp
 
 @push('styles')
     <style>
-        .preview-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .preview-item {
-            position: relative;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            height: 200px;
-            width: 293px;
-            margin: 10px 5px 10px 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .preview-media {
-            flex: 1;
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .preview-delete {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 5px solid #3498db;
-            animation: spin 1s linear infinite;
-        }
-
-        .upload-progress {
-            width: 100%;
-            background-color: #f3f3f3;
-            padding: 3px;
-            border-radius: 3px;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
-            margin-top: 10px;
-            display: none;
-        }
-
-        .progress-bar {
-            display: block;
-            height: 20px;
-            background-color: #3498db;
-            border-radius: 3px;
-            transition: width 500ms ease-in-out;
-            width: 0%;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .media-card {
-            position: relative;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .media-card .card-img-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 100%;
-            /* 1:1 Aspect Ratio */
-            overflow: hidden;
-        }
-
-        .media-card img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .media-card .delete-btn {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px;
-            width: 100%;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .media-card .delete-btn:hover {
-            background-color: #c82333;
-        }
-
-        .custom-checkbox {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 2;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 25px;
-            width: 25px;
-            background-color: #fff;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .custom-checkbox input:checked~.checkmark {
-            background-color: #2196F3;
-            border-color: #2196F3;
-        }
-
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-            left: 8px;
-            top: 4px;
-            width: 6px;
-            height: 12px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-
-        .custom-checkbox input:checked~.checkmark:after {
-            display: block;
-        }
-
-        .card-header {
-            background-color: #007bff;
-            padding: 15px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .card-header .btn {
-            margin-left: 5px;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background-color: #c82333;
-            border-color: #bd2130;
-        }
+        .studio { display:grid; gap:1.5rem; }
+        .hero { border-radius:28px; padding:2rem; color:#fff; background:linear-gradient(135deg,#0b1c39,#0b67d0 58%,#1fc1ff); box-shadow:0 18px 45px rgba(12,31,63,.18); }
+        .hero p { max-width:700px; color:rgba(255,255,255,.82); }
+        .chips, .actions, .card-actions { display:flex; flex-wrap:wrap; gap:.75rem; }
+        .chip { padding:.6rem .95rem; border-radius:999px; background:rgba(255,255,255,.12); }
+        .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+        .stat, .panel, .media-card { background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:24px; box-shadow:0 10px 28px rgba(15,23,42,.08); }
+        .stat { padding:1.25rem 1.4rem; }
+        .stat span { display:block; font-size:.82rem; color:#64748b; text-transform:uppercase; letter-spacing:.08em; margin-bottom:.45rem; }
+        .stat strong { font-size:2rem; color:#0f172a; }
+        .layout { display:grid; grid-template-columns:1.05fr .95fr; gap:1.5rem; }
+        .panel-head { display:flex; justify-content:space-between; gap:1rem; padding:1.25rem 1.4rem 1rem; border-bottom:1px solid rgba(15,23,42,.08); }
+        .panel-body { padding:1.4rem; }
+        .panel-head h3 { margin:0; font-size:1.08rem; color:#0f172a; }
+        .panel-head p { margin:.35rem 0 0; color:#64748b; }
+        .preview-box { min-height:280px; border-radius:22px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#e8f2ff,#d9ebff); }
+        .preview-box img { width:100%; height:100%; object-fit:cover; }
+        .empty { text-align:center; color:#64748b; padding:2rem; }
+        .drop { border:1.5px dashed rgba(20,120,255,.28); border-radius:22px; padding:1rem; background:#f8fbff; }
+        .hint { color:#64748b; font-size:.9rem; margin:.45rem 0 0; }
+        .upload-preview { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; margin-top:1rem; }
+        .upload-item { border:1px solid rgba(15,23,42,.08); border-radius:18px; background:#f8fafc; padding:.75rem; }
+        .upload-item img, .upload-item video { width:100%; height:140px; border-radius:14px; object-fit:cover; }
+        .library-head { display:flex; justify-content:space-between; gap:1rem; align-items:center; flex-wrap:wrap; }
+        .media-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.2rem; }
+        .media-cover { position:relative; aspect-ratio:4/3; overflow:hidden; border-radius:24px 24px 0 0; background:linear-gradient(180deg,#e8f0ff,#d4e5ff); }
+        .media-cover img, .media-cover video { width:100%; height:100%; object-fit:cover; }
+        .media-tags { position:absolute; top:.9rem; left:.9rem; display:flex; gap:.45rem; flex-wrap:wrap; z-index:1; }
+        .tag { padding:.35rem .65rem; border-radius:999px; color:#fff; background:rgba(15,23,42,.74); font-size:.78rem; font-weight:700; }
+        .tag.ok { background:rgba(20,184,106,.88); }
+        .selector { position:absolute; top:.9rem; right:.9rem; z-index:1; width:20px; height:20px; }
+        .media-body { padding:1rem; display:grid; gap:.85rem; }
+        .meta { display:flex; justify-content:space-between; gap:1rem; color:#64748b; font-size:.84rem; }
+        .replace-note { font-size:.82rem; color:#64748b; margin-top:.35rem; display:block; }
+        .blank-library { border:1px dashed rgba(15,23,42,.16); border-radius:24px; padding:2rem 1rem; text-align:center; color:#64748b; background:#fbfdff; }
+        .overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(255,255,255,.76); backdrop-filter:blur(3px); z-index:9999; }
+        .overlay-card { min-width:260px; text-align:center; padding:1.4rem; border-radius:22px; background:#fff; box-shadow:0 18px 45px rgba(15,23,42,.18); }
+        .spin { width:46px; height:46px; margin:0 auto .8rem; border-radius:50%; border:4px solid rgba(20,120,255,.16); border-top-color:#1478ff; animation:spin .9s linear infinite; }
+        .studio-alert { display:none; border:none; border-radius:16px; }
+        @keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        @media (max-width: 1100px) { .layout { grid-template-columns:1fr; } }
+        @media (max-width: 767px) { .hero { padding:1.35rem; } .media-grid { grid-template-columns:1fr; } }
     </style>
 @endpush
 
 @section('content')
-    <!-- Loader Overlay -->
-    <div class="loader-overlay" id="loader-overlay">
-        <div class="text-center">
-            <div class="loader"></div>
-            <div class="mt-2">Processing Media...</div>
-            <div class="upload-progress">
-                <div class="progress-bar" role="progressbar"></div>
-            </div>
+    <div class="overlay" id="studio-overlay">
+        <div class="overlay-card">
+            <div class="spin"></div>
+            <h5 class="mb-1" id="overlay-title">{{ __('Saving changes') }}</h5>
+            <p class="mb-0 text-muted" id="overlay-text">{{ __('Please wait while the media is updated.') }}</p>
         </div>
-    </div>
-    <div id="success-alert" class="alert alert-success alert-dismissible fade show" style="display: none;" role="alert">
-        <span id="success-message"></span>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
     </div>
 
-    <!-- Existing Media -->
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Current Media</h3>
-            <div class="ml-auto">
-                <button class="btn btn-danger btn-sm mr-2" id="delete-selected-btn" onclick="deleteSelected()" disabled>
-                    <i class="fas fa-trash"></i> Delete Selected
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="deleteAll()">
-                    <i class="fas fa-trash-alt"></i> Delete All
-                </button>
+    <div class="alert studio-alert" id="studio-alert"></div>
+
+    <div class="studio">
+        <section class="hero">
+            <h2 class="mb-2">{{ $carName }}</h2>
+            <p>{{ __('Manage the default image, upload new media, replace existing files, edit alt text, and save changes immediately from this page.') }}</p>
+            <div class="chips">
+                <span class="chip"><i class="ti ti-hash me-1"></i>{{ __('Car ID') }}: {{ $item->id }}</span>
+                <span class="chip"><i class="ti ti-link me-1"></i>{{ $item->slug ?: __('No slug yet') }}</span>
+                <span class="chip"><i class="ti ti-bolt me-1"></i>{{ ucfirst($item->status ?? 'available') }}</span>
             </div>
-        </div>
-        <div class="card-body p-2">
-            <div class="row" id="media-container">
-                @foreach($item->images as $media)
-                    <div class="col-md-3 col-sm-6">
-                        <div class="media-card">
-                            <label class="custom-checkbox">
-                                <input type="checkbox" class="media-checkbox" data-media-id="{{ $media->id }}">
-                                <span class="checkmark"></span>
-                            </label>
-                            <div class="card-img-wrapper">
-                                <img src="{{ asset('storage/' . $media->file_path) }}" alt="Car Image">
-                            </div>
-                        </div>
+        </section>
+
+        <section class="stats">
+            <div class="stat"><span>{{ __('Total Media') }}</span><strong>{{ $mediaCollection->count() }}</strong></div>
+            <div class="stat"><span>{{ __('Images') }}</span><strong>{{ $imageCount }}</strong></div>
+            <div class="stat"><span>{{ __('Videos') }}</span><strong>{{ $videoCount }}</strong></div>
+            <div class="stat"><span>{{ __('Default Image') }}</span><strong>{{ filled($item->default_image_path) ? __('Ready') : __('Missing') }}</strong></div>
+        </section>
+
+        <section class="layout">
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h3>{{ __('Default Image') }}</h3>
+                        <p>{{ __('Upload a new primary image or keep the current one.') }}</p>
                     </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <!-- Default Image Upload -->
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            <h3 class="card-title">Default Image</h3>
-        </div>
-        <div class="card-body">
-            <form id="defaultImageForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="defaultImage">Select Default Image</label>
-                    <input type="file" class="form-control-file" id="defaultImage" name="image" accept="image/*" required>
-                    <div id="defaultImagePreview" class="mt-3">
-                        @if($item->default_image_path)
-                            <img src="{{ asset('storage/' . $item->default_image_path) }}" alt="Default Image"
-                                class="media-preview" style="max-height: 200px; width: auto;">
+                </div>
+                <div class="panel-body">
+                    <div class="preview-box mb-3" id="default-preview">
+                        @if ($item->default_image_path)
+                            <img src="{{ $mediaUrl($item->default_image_path) }}" alt="{{ $carName }}">
+                        @else
+                            <div class="empty">
+                                <i class="ti ti-photo fs-1 d-block mb-2"></i>
+                                <strong>{{ __('No default image yet') }}</strong>
+                            </div>
                         @endif
                     </div>
+                    <form id="default-form">
+                        <div class="drop">
+                            <label class="form-label">{{ __('Choose default image') }}</label>
+                            <input type="file" class="form-control" id="default-input" name="image" accept="image/*" required>
+                            <p class="hint">{{ __('Supported: JPG, PNG, GIF, SVG, WEBP.') }}</p>
+                        </div>
+                        <div class="actions mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="ti ti-device-floppy me-1"></i>{{ __('Save Default Image') }}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <button type="submit" class="btn btn-success">Upload Default Image</button>
-            </form>
-        </div>
-    </div>
+            </article>
 
-    <!-- Additional Media Upload -->
-    <div class="card mb-4">
-        <div class="card-header bg-info text-white">
-            <h3 class="card-title">Upload Images & Videos</h3>
-        </div>
-        <div class="card-body">
-            <form id="mediaUploadForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="mediaUpload">Select Files</label>
-                    <input type="file" class="form-control-file" id="mediaUpload" name="files[]" multiple
-                        accept="image/*,video/*" required>
-                    <small class="form-text text-muted">
-                        Supported formats: Images (JPG, PNG, GIF) and Videos (MP4, WebM)
-                    </small>
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h3>{{ __('Upload New Media') }}</h3>
+                        <p>{{ __('Add images or videos and save them directly.') }}</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="alt">Alt Text (Optional)</label>
-                    <input type="text" class="form-control" id="alt" name="alt" placeholder="Enter alt text for the media">
+                <div class="panel-body">
+                    <form id="upload-form">
+                        <div class="drop">
+                            <label class="form-label">{{ __('Choose files') }}</label>
+                            <input type="file" class="form-control" id="upload-input" name="files[]" accept="image/*,video/*" multiple required>
+                            <p class="hint">{{ __('Supported: JPG, PNG, GIF, SVG, WEBP, MP4, WEBM, OGG.') }}</p>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label">{{ __('Alt text for this batch') }}</label>
+                            <input type="text" class="form-control" id="upload-alt" name="alt" placeholder="{{ __('Example: Front exterior view') }}">
+                        </div>
+                        <div id="upload-preview" class="upload-preview"></div>
+                        <div class="actions mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-upload me-1"></i>{{ __('Upload Media') }}
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="clear-upload">{{ __('Clear Selection') }}</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="row" id="mediaPreviewContainer">
-                    <!-- Preview will be shown here -->
+            </article>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head library-head">
+                <div>
+                    <h3>{{ __('Media Library') }}</h3>
+                    <p>{{ __('Save alt text changes, replace a file, set an image as default, or delete media.') }}</p>
                 </div>
-                <button type="submit" class="btn btn-info">Upload Media</button>
-            </form>
-        </div>
-</div>@endsection
+                <div class="actions">
+                    <button type="button" class="btn btn-outline-danger" id="delete-selected" disabled>{{ __('Delete Selected') }}</button>
+                    <button type="button" class="btn btn-danger" id="delete-all" @disabled($mediaCollection->isEmpty())>{{ __('Delete All') }}</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                @if ($mediaCollection->isEmpty())
+                    <div class="blank-library">
+                        <i class="ti ti-photo-search fs-1 d-block mb-2 text-primary"></i>
+                        <strong>{{ __('No media uploaded yet') }}</strong>
+                    </div>
+                @else
+                    <div class="media-grid">
+                        @foreach ($mediaCollection as $media)
+                            @php $isDefault = $item->default_image_path === $media->file_path && $media->type === 'image'; @endphp
+                            <article class="media-card">
+                                <div class="media-cover">
+                                    <div class="media-tags">
+                                        <span class="tag">{{ ucfirst($media->type) }}</span>
+                                        @if ($isDefault)
+                                            <span class="tag ok">{{ __('Default') }}</span>
+                                        @endif
+                                    </div>
+                                    <input type="checkbox" class="selector media-checkbox" value="{{ $media->id }}">
+                                    @if ($media->type === 'video')
+                                        <video controls preload="metadata"><source src="{{ $mediaUrl($media->file_path) }}"></video>
+                                    @else
+                                        <img src="{{ $mediaUrl($media->file_path) }}" alt="{{ $media->alt ?: $carName }}">
+                                    @endif
+                                </div>
+                                <div class="media-body">
+                                    <div class="meta">
+                                        <span>#{{ $media->id }}</span>
+                                        <span>{{ $media->created_at?->format('d M Y') }}</span>
+                                    </div>
+                                    <form class="media-form" data-id="{{ $media->id }}">
+                                        <div>
+                                            <label class="form-label">{{ __('Alt text') }}</label>
+                                            <input type="text" class="form-control" name="alt" value="{{ $media->alt }}" placeholder="{{ $carName }}">
+                                        </div>
+                                        <div>
+                                            <label class="form-label">{{ __('Replace file') }}</label>
+                                            <input type="file" class="form-control replace-input" name="file" accept="image/*,video/*">
+                                            <span class="replace-note">{{ __('Leave empty to keep the current file.') }}</span>
+                                        </div>
+                                        <div class="card-actions">
+                                            <button type="submit" class="btn btn-primary btn-sm">{{ __('Save Changes') }}</button>
+                                            @if ($media->type === 'image')
+                                                <button type="button" class="btn btn-outline-success btn-sm make-default" data-id="{{ $media->id }}">{{ __('Make Default') }}</button>
+                                            @endif
+                                            <button type="button" class="btn btn-outline-danger btn-sm delete-one" data-id="{{ $media->id }}">{{ __('Delete') }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </section>
+    </div>
+@endsection
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.addEventListener('DOMContentLoaded', () => {
+            axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        function showLoader() {
-            const loaderOverlay = document.getElementById('loader-overlay');
-            if (loaderOverlay) {
-                loaderOverlay.style.display = 'flex';
-            }
-        }
+            const routes = {
+                upload: @json(url('/admin/cars/' . $item->id . '/upload-image')),
+                uploadDefault: @json(url('/admin/cars/' . $item->id . '/upload-default-image')),
+                deleteSelected: @json(url('/admin/cars/delete-selected-images')),
+                deleteAll: @json(url('/admin/cars/delete-all-images/' . $item->id)),
+                deleteOne: @json(url('/admin/cars/delete-image/__ID__')),
+                updateOne: @json(url('/admin/cars/images/__ID__/update')),
+                makeDefault: @json(url('/admin/cars/images/__ID__/make-default')),
+            };
 
-        function hideLoader() {
-            const loaderOverlay = document.getElementById('loader-overlay');
-            if (loaderOverlay) {
-                loaderOverlay.style.display = 'none';
-            }
-        }
+            const overlay = document.getElementById('studio-overlay');
+            const alertBox = document.getElementById('studio-alert');
+            const uploadInput = document.getElementById('upload-input');
+            const uploadPreview = document.getElementById('upload-preview');
+            const deleteSelectedBtn = document.getElementById('delete-selected');
+            const mediaCheckboxes = [...document.querySelectorAll('.media-checkbox')];
 
-        function deleteSelected() {
-            const selectedIds = Array.from(document.querySelectorAll('.media-checkbox:checked'))
-                .map(checkbox => checkbox.dataset.mediaId);
+            const routeFor = (template, id) => template.replace('__ID__', id);
+            const setLoading = (state, title = 'Saving changes', text = 'Please wait while the media is updated.') => {
+                document.getElementById('overlay-title').textContent = title;
+                document.getElementById('overlay-text').textContent = text;
+                overlay.style.display = state ? 'flex' : 'none';
+            };
+            const notify = (message, type = 'success') => {
+                alertBox.textContent = message;
+                alertBox.className = `alert studio-alert alert-${type}`;
+                alertBox.style.display = 'block';
+                clearTimeout(notify.timer);
+                notify.timer = setTimeout(() => { alertBox.style.display = 'none'; }, 4500);
+            };
+            const refreshSoon = () => setTimeout(() => window.location.reload(), 700);
+            const refreshBulkButton = () => { deleteSelectedBtn.disabled = !mediaCheckboxes.some((box) => box.checked); };
 
-            if (selectedIds.length === 0) {
-                alert('Please select at least one media item');
-                return;
-            }
+            mediaCheckboxes.forEach((box) => box.addEventListener('change', refreshBulkButton));
 
-            if (!confirm('Are you sure you want to delete the selected media?')) {
-                return;
-            }
-
-            showLoader();
-
-            axios.post('/admin/cars/delete-selected-images', {
-                mediaIds: selectedIds
-            })
-                .then(response => {
-                    if (response.data.success) {
-                        window.location.reload();
+            uploadInput?.addEventListener('change', () => {
+                uploadPreview.innerHTML = '';
+                [...uploadInput.files].forEach((file) => {
+                    const item = document.createElement('div');
+                    item.className = 'upload-item';
+                    const label = document.createElement('div');
+                    label.className = 'mt-2 small text-muted';
+                    label.textContent = file.name;
+                    if (file.type.startsWith('video/')) {
+                        const media = document.createElement('video');
+                        media.controls = true;
+                        media.src = URL.createObjectURL(file);
+                        item.appendChild(media);
                     } else {
-                        alert(response.data.message || 'Error deleting selected media');
+                        const media = document.createElement('img');
+                        media.src = URL.createObjectURL(file);
+                        media.alt = file.name;
+                        item.appendChild(media);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.response?.data?.message || 'Error deleting selected media');
-                })
-                .finally(() => hideLoader());
-        }
-
-        function deleteAll() {
-            if (!confirm('Are you sure you want to delete ALL media?')) return;
-
-            showLoader();
-
-            axios.post('/admin/cars/delete-all-images/' + {{ $item->id }})
-                .then(response => {
-                    if (response.data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(response.data.message || 'Error deleting all media');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert(error.response?.data?.message || 'Error deleting all media');
-                })
-                .finally(() => hideLoader());
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const mediaUpload = document.getElementById('mediaUpload');
-            const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
-            const mediaUploadForm = document.getElementById('mediaUploadForm');
-            const loaderOverlay = document.getElementById('loader-overlay');
-            const progressBar = document.querySelector('.progress-bar');
-            const successAlert = document.getElementById('success-alert');
-            const successMessage = document.getElementById('success-message');
-            let selectedFiles = new Map();
-
-            function createPreviewElement(file, fileId) {
-                const previewItem = document.createElement('div');
-                previewItem.className = 'preview-item';
-                previewItem.dataset.fileId = fileId;
-
-                // Add delete button
-                const deleteBtn = document.createElement('div');
-                deleteBtn.className = 'preview-delete';
-                deleteBtn.innerHTML = '×';
-                deleteBtn.onclick = function () {
-                    selectedFiles.delete(fileId);
-                    previewItem.remove();
-                    updateFileInput();
-                };
-
-                // Create preview
-                if (file.type.startsWith('image/')) {
-                    const img = document.createElement('img');
-                    img.className = 'preview-media';
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        img.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                    previewItem.appendChild(img);
-                } else if (file.type.startsWith('video/')) {
-                    const video = document.createElement('video');
-                    video.className = 'preview-media';
-                    video.controls = true;
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        video.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                    previewItem.appendChild(video);
-                }
-
-                // Add file name
-                const fileName = document.createElement('div');
-                fileName.className = 'media-alt';
-                fileName.textContent = file.name;
-
-                previewItem.appendChild(deleteBtn);
-                previewItem.appendChild(fileName);
-                return previewItem;
-            }
-
-            function updateFileInput() {
-                const dataTransfer = new DataTransfer();
-                selectedFiles.forEach(file => {
-                    dataTransfer.items.add(file);
+                    item.appendChild(label);
+                    uploadPreview.appendChild(item);
                 });
-                mediaUpload.files = dataTransfer.files;
-            }
-
-            mediaUpload.addEventListener('change', function (e) {
-                const files = Array.from(e.target.files);
-                mediaPreviewContainer.innerHTML = '';
-                selectedFiles.clear();
-
-                files.forEach(file => {
-                    const fileId = Date.now() + Math.random().toString(36).substr(2, 9);
-                    selectedFiles.set(fileId, file);
-                    const previewElement = createPreviewElement(file, fileId);
-                    mediaPreviewContainer.appendChild(previewElement);
-                });
-
-                updateFileInput();
             });
 
-            mediaUploadForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
+            document.getElementById('clear-upload')?.addEventListener('click', () => {
+                uploadInput.value = '';
+                uploadPreview.innerHTML = '';
+            });
 
-                if (selectedFiles.size === 0) {
-                    showMessage('Please select files to upload', true);
-                    return;
-                }
+            document.getElementById('default-input')?.addEventListener('change', (event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                const preview = document.getElementById('default-preview');
+                preview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="${file.name}">`;
+            });
 
-                showLoader();
-                const formData = new FormData();
-
-                selectedFiles.forEach((file) => {
-                    formData.append('files[]', file);
-                });
-                formData.append('alt', document.getElementById('alt').value);
-
+            document.getElementById('upload-form')?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                if (!uploadInput.files.length) return notify('Please choose at least one file.', 'danger');
+                const data = new FormData();
+                [...uploadInput.files].forEach((file) => data.append('files[]', file));
+                data.append('alt', document.getElementById('upload-alt').value);
                 try {
-                    const response = await axios.post(`/cars/{{ $item->id }}/upload-image`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
-                        onUploadProgress: (progressEvent) => {
-                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                            if (progressBar) {
-                                progressBar.style.width = percentCompleted + '%';
-                            }
-                        }
-                    });
-
-                    if (response.data.success) {
-                        showMessage(response.data.message);
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showMessage(response.data.message, true);
-                    }
+                    setLoading(true, 'Uploading media', 'The selected files are being saved now.');
+                    const response = await axios.post(routes.upload, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+                    notify(response.data.message || 'Media uploaded successfully.');
+                    refreshSoon();
                 } catch (error) {
-                    showMessage(error.response?.data?.message || 'Error uploading media', true);
+                    notify(error.response?.data?.message || 'Unable to upload media.', 'danger');
                 } finally {
-                    hideLoader();
+                    setLoading(false);
                 }
             });
 
-            function showLoader() {
-                if (loaderOverlay) {
-                    loaderOverlay.style.display = 'flex';
-                }
-                if (progressBar) {
-                    progressBar.style.width = '0%';
-                    progressBar.parentElement.style.display = 'block';
-                }
-            }
-
-            function hideLoader() {
-                if (loaderOverlay) {
-                    loaderOverlay.style.display = 'none';
-                }
-                if (progressBar) {
-                    progressBar.parentElement.style.display = 'none';
-                }
-            }
-
-            function showMessage(message, isError = false) {
-                if (successAlert && successMessage) {
-                    successMessage.textContent = message;
-                    successAlert.classList.remove('alert-success', 'alert-danger');
-                    successAlert.classList.add(isError ? 'alert-danger' : 'alert-success');
-                    successAlert.style.display = 'block';
-                    setTimeout(() => {
-                        successAlert.style.display = 'none';
-                    }, 5000);
-                }
-            }
-
-            // Delete media functionality
-            document.querySelectorAll('.delete-media').forEach(button => {
-                button.addEventListener('click', function () {
-                    const mediaId = this.getAttribute('data-id');
-                    const mediaCard = this.closest('.col-md-3');
-
-                    if (confirm('Are you sure you want to delete this media?')) {
-                        // Show loader while deleting
-                        showLoader();
-
-                        axios.delete(`/admin/cars/delete-image/${mediaId}`, {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json'
-                            }
-                        })
-                            .then(response => {
-                                if (response.data.success) {
-                                    // Remove the media card from the DOM
-                                    mediaCard.remove();
-                                    showMessage(response.data.message);
-                                } else {
-                                    alert(response.data.message || 'Failed to delete media');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert(error.response?.data?.message || 'Failed to delete media. Please try again.');
-                            })
-                            .finally(() => {
-                                // Hide loader
-                                hideLoader();
-                            });
-                    }
-                });
-            });
-
-            // Preview for default image
-            const defaultImage = document.getElementById('defaultImage');
-            const defaultImagePreview = document.getElementById('defaultImagePreview');
-            defaultImage.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        defaultImagePreview.innerHTML = `
-                            <img src="${e.target.result}" alt="Preview" style="max-height: 200px;">
-                        `;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // Handle default image upload
-            const defaultImageForm = document.getElementById('defaultImageForm');
-            defaultImageForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                showLoader();
-
-                const formData = new FormData(this);
+            document.getElementById('default-form')?.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const input = document.getElementById('default-input');
+                if (!input.files.length) return notify('Please choose a default image first.', 'danger');
+                const data = new FormData(event.currentTarget);
                 try {
-                    const response = await axios.post(`/cars/{{ $item->id }}/upload-default-image`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' },
-                        onUploadProgress: (progressEvent) => {
-                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                            if (progressBar) {
-                                progressBar.style.width = percentCompleted + '%';
-                            }
-                        }
-                    });
-
-                    if (response.data.success) {
-                        showMessage(response.data.message);
-                        setTimeout(() => window.location.reload(), 1000);
-                    } else {
-                        showMessage(response.data.message, true);
-                    }
+                    setLoading(true, 'Saving default image', 'The default image is being updated.');
+                    const response = await axios.post(routes.uploadDefault, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+                    notify(response.data.message || 'Default image updated successfully.');
+                    refreshSoon();
                 } catch (error) {
-                    showMessage(error.response?.data?.message || 'Error uploading default image', true);
+                    notify(error.response?.data?.message || 'Unable to update the default image.', 'danger');
                 } finally {
-                    hideLoader();
+                    setLoading(false);
                 }
             });
 
-            const deleteSelectedBtn = document.getElementById('delete-selected-btn');
-            const checkboxes = document.querySelectorAll('.media-checkbox');
+            document.getElementById('delete-selected')?.addEventListener('click', async () => {
+                const ids = mediaCheckboxes.filter((box) => box.checked).map((box) => box.value);
+                if (!ids.length) return notify('Select at least one media item first.', 'danger');
+                if (!confirm('Delete the selected media items?')) return;
+                try {
+                    setLoading(true, 'Deleting selected media', 'The selected items are being removed.');
+                    const response = await axios.post(routes.deleteSelected, { mediaIds: ids });
+                    notify(response.data.message || 'Selected media deleted successfully.');
+                    refreshSoon();
+                } catch (error) {
+                    notify(error.response?.data?.message || 'Unable to delete the selected media.', 'danger');
+                } finally {
+                    setLoading(false);
+                }
+            });
 
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-                    deleteSelectedBtn.disabled = !anyChecked;
+            document.getElementById('delete-all')?.addEventListener('click', async () => {
+                if (!confirm('Delete all media for this car?')) return;
+                try {
+                    setLoading(true, 'Deleting all media', 'All media for this car is being removed.');
+                    const response = await axios.post(routes.deleteAll);
+                    notify(response.data.message || 'All media deleted successfully.');
+                    refreshSoon();
+                } catch (error) {
+                    notify(error.response?.data?.message || 'Unable to delete all media.', 'danger');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            document.querySelectorAll('.replace-input').forEach((input) => {
+                input.addEventListener('change', () => {
+                    const note = input.parentElement.querySelector('.replace-note');
+                    note.textContent = input.files.length ? `Selected: ${input.files[0].name}` : 'Leave empty to keep the current file.';
                 });
             });
+
+            document.querySelectorAll('.media-form').forEach((form) => {
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const id = form.dataset.id;
+                    const data = new FormData();
+                    const altInput = form.querySelector('[name="alt"]');
+                    const fileInput = form.querySelector('[name="file"]');
+                    data.append('alt', altInput.value);
+                    if (fileInput.files.length) {
+                        data.append('file', fileInput.files[0]);
+                    }
+                    try {
+                        setLoading(true, 'Saving media changes', 'The selected media item is being updated.');
+                        const response = await axios.post(routeFor(routes.updateOne, id), data, { headers: { 'Content-Type': 'multipart/form-data' } });
+                        notify(response.data.message || 'Media updated successfully.');
+                        refreshSoon();
+                    } catch (error) {
+                        notify(error.response?.data?.message || 'Unable to save media changes.', 'danger');
+                    } finally {
+                        setLoading(false);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.make-default').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const id = button.dataset.id;
+                    try {
+                        setLoading(true, 'Updating default image', 'The selected image is becoming the default.');
+                        const response = await axios.post(routeFor(routes.makeDefault, id));
+                        notify(response.data.message || 'Default image updated successfully.');
+                        refreshSoon();
+                    } catch (error) {
+                        notify(error.response?.data?.message || 'Unable to update the default image.', 'danger');
+                    } finally {
+                        setLoading(false);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-one').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const id = button.dataset.id;
+                    if (!confirm('Delete this media item?')) return;
+                    try {
+                        setLoading(true, 'Deleting media', 'The selected media item is being removed.');
+                        const response = await axios.delete(routeFor(routes.deleteOne, id));
+                        notify(response.data.message || 'Media deleted successfully.');
+                        refreshSoon();
+                    } catch (error) {
+                        notify(error.response?.data?.message || 'Unable to delete this media item.', 'danger');
+                    } finally {
+                        setLoading(false);
+                    }
+                });
+            });
+
+            refreshBulkButton();
         });
     </script>
 @endpush

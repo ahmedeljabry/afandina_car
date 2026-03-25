@@ -1,6 +1,5 @@
 <?php
 namespace App\Http\Controllers\admin;
-use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Car;
 use App\Models\Car_model;
@@ -12,15 +11,13 @@ use App\Models\Gear_type;
 use Illuminate\Support\Facades\DB;
 use App\Models\Year;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use App\Services\Ai\CarContentGenerator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
-use App\Jobs\ProcessFileJob;
-use App\Jobs\ProcessCarImages;
 
 class CarController extends GenericController
 {
@@ -609,26 +606,15 @@ class CarController extends GenericController
 
     public function edit_images($id)
     {
-        $this->data['item'] = Car::findOrFail($id);
+        $this->data['item'] = Car::with('images')->findOrFail($id);
         return view('pages.admin.' . $this->modelName . '.edit_images', $this->data);
     }
 
     public function deleteImage($id)
     {
         try {
-            // Find the media record in the database by ID
             $media = CarImage::findOrFail($id);
-
-            // Get the file path
-            $filePath = $media->file_path;
-
-            // Delete the database record first
-            $media->delete();
-
-            // Then try to delete the file if it exists
-            if ($filePath && Storage::disk('public')->exists($filePath)) {
-                Storage::disk('public')->delete($filePath);
-            }
+            $this->deleteMediaRecord($media);
 
             return response()->json(['success' => true, 'message' => 'File deleted successfully'], 200);
         } catch (\Exception $e) {
@@ -643,6 +629,12 @@ class CarController extends GenericController
     public function uploadImage(Request $request, $id)
     {
         try {
+            $request->validate([
+                'files' => 'required',
+                'files.*' => 'nullable|file|mimes:jpeg,webp,png,jpg,gif,svg,mp4,webm,ogg|max:102400',
+                'alt' => 'nullable|string|max:255',
+            ]);
+
             $car = Car::findOrFail($id);
             
             if (!$request->hasFile('files')) {
@@ -656,56 +648,29 @@ class CarController extends GenericController
             if (!is_array($files)) {
                 $files = [$files];
             }
-            
+
+            $createdMedia = [];
             foreach ($files as $file) {
-                $mimeType = $file->getMimeType();
-                $isVideo = str_starts_with($mimeType, 'video/');
-                
-                // Store file temporarily
-                $tempPath = $file->store('temp');
-                
-                // Generate final path
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $extension = $isVideo ? '.' . $file->getClientOriginalExtension() : '.webp';
-                $finalPath = 'media/' . $filename . '_' . uniqid() . $extension;
-                
-                if ($isVideo) {
-                    // Move video file directly
-                    Storage::disk('public')->put($finalPath, file_get_contents($file));
-                    
-                    // Create database record
-                    $media = new CarImage();
-                    $media->file_path = $finalPath;
-                    $media->alt = $request->input('alt') ?? null;
-                    $media->type = 'video';
-                    $media->car_id = $car->id;
-                    $media->save();
-                    
-                    // Clean up temp file
-                    Storage::delete($tempPath);
-                } else {
-                    // Process image through job
-                    ProcessFileJob::dispatch(
-                        Car::class,
-                        $car->id,
-                        'media',
-                        $tempPath,
-                        $file->getClientOriginalName(),
-                        [
-                            'maxWidth' => 1920,
-                            'maxHeight' => 1080,
-                            'quality' => 95,
-                            'alt' => $request->input('alt') ?? null,
-                            'type' => 'image'
-                        ],
-                        true
-                    );
+                if (!$file instanceof UploadedFile) {
+                    continue;
                 }
+
+                $createdMedia[] = $car->images()->create(
+                    $this->processUploadedMediaFile($file, $request->input('alt'))
+                );
+            }
+
+            if (empty($createdMedia)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No valid files provided'
+                ], 422);
             }
             
             return response()->json([
                 'success' => true,
-                'message' => 'Files uploaded successfully. Processing will complete shortly.'
+                'message' => 'Files uploaded successfully.',
+                'count' => count($createdMedia)
             ]);
 
         } catch (\Exception $e) {
@@ -720,36 +685,18 @@ class CarController extends GenericController
     public function uploadDefaultImage(Request $request, $id)
     {
         try {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,webp,png,jpg,gif,svg|max:10048',
+            ]);
+
             $car = Car::findOrFail($id);
             
             if ($request->hasFile('image')) {
-                $file = $request->file('image');
-                
-                // Store file temporarily
-                $tempPath = $file->store('temp');
-                
-                // Generate final path
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $finalPath = 'images/' . $filename . '_' . uniqid() . '.webp';
-                
-                // Dispatch job to process file
-                ProcessFileJob::dispatch(
-                    Car::class,
-                    $car->id,
-                    'default_image_path',
-                    $tempPath,
-                    $file->getClientOriginalName(),
-                    [
-                        'maxWidth' => 1920,
-                        'maxHeight' => 1080,
-                        'quality' => 95
-                    ],
-                    false
-                );
+                $this->storeDefaultImageFile($car, $request->file('image'));
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Default image uploaded successfully. Processing will complete shortly.'
+                    'message' => 'Default image updated successfully.'
                 ]);
             }
 
@@ -772,44 +719,30 @@ class CarController extends GenericController
         try {
             $request->validate([
                 'file_path' => 'required|array',
-                'file_path.*' => 'required|image|mimes:jpeg,webp,png,jpg,gif,svg|max:10048',
+                'file_path.*' => 'required|file|mimes:jpeg,webp,png,jpg,gif,svg,mp4,webm,ogg|max:102400',
                 'car_id' => 'required|integer',
+                'alt' => 'nullable|string|max:255',
             ]);
 
             $car = Car::findOrFail($request->car_id);
             
             if ($request->hasFile('file_path')) {
                 foreach ($request->file('file_path') as $file) {
-                    // Store file temporarily
-                    $tempPath = $file->store('temp');
-                    
-                    // Generate final path
-                    $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                    $finalPath = 'images/' . $filename . '_' . uniqid() . '.webp';
-                    
-                    // Dispatch job to process file
-                    ProcessFileJob::dispatch(
-                        Car::class,
-                        $car->id,
-                        'media',
-                        $tempPath,
-                        $file->getClientOriginalName(),
-                        [
-                            'maxWidth' => 1920,
-                            'maxHeight' => 1080,
-                            'quality' => 95,
-                            'alt' => null
-                        ],
-                        true
+                    if (!$file instanceof UploadedFile) {
+                        continue;
+                    }
+
+                    $car->images()->create(
+                        $this->processUploadedMediaFile($file, $request->input('alt'))
                     );
                 }
                 
                 return response()->json([
-                    'message' => 'Images uploaded successfully. Processing will complete shortly.',
-                    'status' => 'processing',
+                    'message' => 'Images uploaded successfully.',
+                    'status' => 'completed',
                     'car_id' => $car->id,
                     'total_images' => count($request->file('file_path'))
-                ], 202);
+                ]);
             }
 
             return response()->json([
@@ -839,35 +772,13 @@ class CarController extends GenericController
             $car = Car::findOrFail($request->car_id);
             
             if ($request->hasFile('default_image_path')) {
-                $file = $request->file('default_image_path');
-                
-                // Store file temporarily
-                $tempPath = $file->store('temp');
-                
-                // Generate final path
-                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $finalPath = 'images/' . $filename . '_' . uniqid() . '.webp';
-                
-                // Dispatch job to process file
-                ProcessFileJob::dispatch(
-                    Car::class,
-                    $car->id,
-                    'default_image_path',
-                    $tempPath,
-                    $file->getClientOriginalName(),
-                    [
-                        'maxWidth' => 1920,
-                        'maxHeight' => 1080,
-                        'quality' => 95
-                    ],
-                    false
-                );
+                $this->storeDefaultImageFile($car, $request->file('default_image_path'));
                 
                 return response()->json([
-                    'message' => 'Image upload successful. Processing will complete shortly.',
-                    'status' => 'processing',
+                    'message' => 'Image upload successful.',
+                    'status' => 'completed',
                     'car_id' => $car->id
-                ], 202);
+                ]);
             }
 
             return response()->json([
@@ -884,6 +795,228 @@ class CarController extends GenericController
                 'status' => 'error'
             ], 500);
         }
+    }
+
+    public function updateImage(Request $request, $id)
+    {
+        $request->validate([
+            'alt' => 'nullable|string|max:255',
+            'file' => 'nullable|file|mimes:jpeg,webp,png,jpg,gif,svg,mp4,webm,ogg|max:102400',
+            'make_default' => 'nullable|boolean',
+        ]);
+
+        try {
+            $media = CarImage::findOrFail($id);
+            $car = Car::findOrFail($media->car_id);
+
+            if (!$request->has('alt') && !$request->hasFile('file') && !$request->boolean('make_default')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No changes were submitted.'
+                ], 422);
+            }
+
+            if ($request->hasFile('file')) {
+                if ($car->default_image_path === $media->file_path && $this->isVideoFile($request->file('file'))) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'The default media must remain an image.'
+                    ], 422);
+                }
+
+                $oldFilePath = $media->file_path;
+                $oldThumbnailPath = $media->thumbnail_path;
+                $processedMedia = $this->processUploadedMediaFile(
+                    $request->file('file'),
+                    $request->has('alt') ? $request->input('alt') : $media->alt
+                );
+
+                $media->fill($processedMedia);
+                $media->save();
+
+                if ($car->default_image_path === $oldFilePath) {
+                    $car->default_image_path = $media->file_path;
+                    $car->default_thumbnail_path = $media->thumbnail_path;
+                    $car->save();
+                }
+
+                $this->cleanupMediaPath($oldFilePath);
+                $this->cleanupMediaPath($oldThumbnailPath);
+            } elseif ($request->has('alt')) {
+                $media->alt = $request->input('alt');
+                $media->save();
+            }
+
+            if ($request->boolean('make_default')) {
+                if ($media->type !== 'image') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only images can be used as the default image.'
+                    ], 422);
+                }
+
+                $this->syncDefaultFromMedia($media->fresh());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Media updated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating media: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating media: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function setImageAsDefault($id)
+    {
+        try {
+            $media = CarImage::findOrFail($id);
+
+            if ($media->type !== 'image') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only images can be used as the default image.'
+                ], 422);
+            }
+
+            $this->syncDefaultFromMedia($media);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Default image updated successfully.'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error setting default image: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating default image: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    protected function processUploadedMediaFile(UploadedFile $file, ?string $alt = null): array
+    {
+        $filename = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) ?: 'media');
+        $uniqueSuffix = uniqid();
+
+        if ($this->isVideoFile($file)) {
+            $extension = strtolower($file->getClientOriginalExtension());
+            $finalPath = "media/{$filename}_{$uniqueSuffix}.{$extension}";
+            Storage::disk('public')->put($finalPath, file_get_contents($file->getRealPath()));
+
+            return [
+                'file_path' => $finalPath,
+                'thumbnail_path' => null,
+                'alt' => $alt,
+                'type' => 'video',
+            ];
+        }
+
+        $finalPath = "media/{$filename}_{$uniqueSuffix}.webp";
+        $thumbnailPath = "media/thumbnails/{$filename}_{$uniqueSuffix}.webp";
+
+        $image = Image::make($file->getRealPath());
+        $image->resize(1920, 1080, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $image->encode('webp', 95);
+
+        $thumbnail = Image::make($file->getRealPath());
+        $thumbnail->fit(737, 536, function ($constraint) {
+            $constraint->upsize();
+        });
+        $thumbnail->encode('webp', 95);
+
+        Storage::disk('public')->put($finalPath, $image->stream()->__toString());
+        Storage::disk('public')->put($thumbnailPath, $thumbnail->stream()->__toString());
+
+        return [
+            'file_path' => $finalPath,
+            'thumbnail_path' => $thumbnailPath,
+            'alt' => $alt,
+            'type' => 'image',
+        ];
+    }
+
+    protected function storeDefaultImageFile(Car $car, UploadedFile $file): void
+    {
+        $oldDefaultImage = $car->default_image_path;
+        $oldDefaultThumbnail = $car->default_thumbnail_path;
+        $processedMedia = $this->processUploadedMediaFile($file);
+
+        if (($processedMedia['type'] ?? null) !== 'image') {
+            throw new \InvalidArgumentException('The default media must be an image.');
+        }
+
+        $car->default_image_path = $processedMedia['file_path'];
+        $car->default_thumbnail_path = $processedMedia['thumbnail_path'];
+        $car->save();
+
+        $this->cleanupMediaPath($oldDefaultImage);
+        $this->cleanupMediaPath($oldDefaultThumbnail);
+    }
+
+    protected function syncDefaultFromMedia(CarImage $media): void
+    {
+        $car = Car::findOrFail($media->car_id);
+        $car->default_image_path = $media->file_path;
+        $car->default_thumbnail_path = $media->thumbnail_path;
+        $car->save();
+    }
+
+    protected function deleteMediaRecord(CarImage $media): void
+    {
+        $car = Car::find($media->car_id);
+        $filePath = $media->file_path;
+        $thumbnailPath = $media->thumbnail_path;
+        $wasDefaultImage = $car && $car->default_image_path === $filePath;
+
+        $media->delete();
+
+        if ($wasDefaultImage && $car) {
+            $fallbackImage = CarImage::where('car_id', $car->id)
+                ->where('type', 'image')
+                ->latest('id')
+                ->first();
+
+            $car->default_image_path = $fallbackImage?->file_path;
+            $car->default_thumbnail_path = $fallbackImage?->thumbnail_path;
+            $car->save();
+        }
+
+        $this->cleanupMediaPath($filePath);
+        $this->cleanupMediaPath($thumbnailPath);
+    }
+
+    protected function cleanupMediaPath(?string $path): void
+    {
+        if (blank($path)) {
+            return;
+        }
+
+        $isReferencedByMedia = CarImage::where('file_path', $path)
+            ->orWhere('thumbnail_path', $path)
+            ->exists();
+
+        $isReferencedByCars = Car::where('default_image_path', $path)
+            ->orWhere('default_thumbnail_path', $path)
+            ->exists();
+
+        if (!$isReferencedByMedia && !$isReferencedByCars && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
+    protected function isVideoFile(UploadedFile $file): bool
+    {
+        return in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'webm', 'ogg'], true);
     }
 
     /**
@@ -945,15 +1078,7 @@ class CarController extends GenericController
             foreach ($imageIds as $id) {
                 try {
                     $media = CarImage::findOrFail($id);
-                    $filePath = $media->file_path;
-
-                    // Delete the database record
-                    $media->delete();
-
-                    // Delete the file if it exists
-                    if ($filePath && Storage::disk('public')->exists($filePath)) {
-                        Storage::disk('public')->delete($filePath);
-                    }
+                    $this->deleteMediaRecord($media);
 
                     $successCount++;
                 } catch (\Exception $e) {
@@ -985,12 +1110,7 @@ class CarController extends GenericController
             $images = CarImage::whereIn('id', $request->mediaIds)->get();
             
             foreach($images as $image) {
-                // حذف الملف من التخزين
-                if ($image->file_path && Storage::disk('public')->exists($image->file_path)) {
-                    Storage::disk('public')->delete($image->file_path);
-                }
-                // حذف السجل من قاعدة البيانات
-                $image->delete();
+                $this->deleteMediaRecord($image);
             }
 
             return response()->json(['success' => true, 'message' => 'Selected media deleted successfully']);
@@ -1005,12 +1125,7 @@ class CarController extends GenericController
             $images = CarImage::where('car_id', $carId)->get();
             
             foreach($images as $image) {
-                // حذف الملف من التخزين
-                if ($image->file_path && Storage::disk('public')->exists($image->file_path)) {
-                    Storage::disk('public')->delete($image->file_path);
-                }
-                // حذف السجل من قاعدة البيانات
-                $image->delete();
+                $this->deleteMediaRecord($image);
             }
 
             return response()->json(['success' => true, 'message' => 'All media deleted successfully']);

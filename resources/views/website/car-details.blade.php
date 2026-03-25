@@ -278,7 +278,70 @@
                 ],
             ]);
         }
+
+        $schemaImageUrls = $galleryImages
+            ->map(fn ($image) => $storageUrl($image['file_path'] ?? null))
+            ->filter(fn ($url) => filled($url))
+            ->unique()
+            ->values();
+
+        if ($schemaImageUrls->isEmpty() && filled($mainImage)) {
+            $schemaImageUrls = collect([$mainImage]);
+        }
+
+        $schemaDescription = trim((string) ($preferredDescription ?: $sidebarDescription ?: $carName));
+        $schemaAvailability = $statusRaw === 'available'
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock';
+        $schemaPriceValidUntil = now()->addYear()->toDateString();
+        $schemaCurrencyCode = (string) ($carDetails['currency_code'] ?? 'AED');
+
+        $schemaOffers = collect([
+            ['label' => 'daily', 'price' => $dailyPrice],
+            ['label' => 'weekly', 'price' => $weeklyPrice],
+            ['label' => 'monthly', 'price' => $monthlyPrice],
+        ])->filter(fn ($offer) => filled($offer['price']))
+            ->map(function (array $offer) use ($schemaCurrencyCode, $schemaAvailability, $schemaPriceValidUntil, $carDetailsUrl) {
+                return [
+                    '@type' => 'Offer',
+                    'price' => (string) $offer['price'],
+                    'priceCurrency' => $schemaCurrencyCode,
+                    'priceValidUntil' => $schemaPriceValidUntil,
+                    'availability' => $schemaAvailability,
+                    'url' => $carDetailsUrl,
+                ];
+            })
+            ->values();
+
+        $productSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $sidebarTitle,
+            'url' => $carDetailsUrl,
+            'sku' => (string) ($carDetails['id'] ?? ''),
+            'mpn' => (string) ($carDetails['id'] ?? ''),
+            'image' => $schemaImageUrls->all(),
+            'description' => $schemaDescription,
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => $brandName,
+            ],
+            'category' => $categoryName,
+        ];
+
+        if (filled($colorName)) {
+            $productSchema['color'] = $colorName;
+        }
+
+        if ($schemaOffers->isNotEmpty()) {
+            $productSchema['offers'] = $schemaOffers->all();
+        }
     @endphp
+
+    @push('head')
+        <script type="application/ld+json">{!! json_encode($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+    @endpush
+
     <style>
         .details-car-grid .related-cars-card .related-card-title a {
             display: block;

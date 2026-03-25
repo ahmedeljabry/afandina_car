@@ -10,15 +10,18 @@ use App\Models\Contact;
 use App\Models\Currency;
 use App\Models\Faq;
 use App\Models\Year;
+use App\Traits\DeduplicatesCars;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 class CarController extends Controller
 {
+    use DeduplicatesCars;
+
     public function index(Request $request)
     {
         $locale = app()->getLocale() ?? 'en';
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
+        [$currencyRate, $currencySymbol, $currencyCode] = $this->resolveCurrencyContext($locale);
 
         $translationFor = fn($model) => $this->translationFor($model, $locale);
 
@@ -75,6 +78,36 @@ class CarController extends Controller
 
         $sort = (string) $request->input('sort', 'newest');
 
+        $carsBaseQuery = Car::query()->where('is_active', true);
+
+        if (!empty($brandIds)) {
+            $carsBaseQuery->whereIn('brand_id', $brandIds);
+        }
+
+        if (!empty($categoryIds)) {
+            $carsBaseQuery->whereIn('category_id', $categoryIds);
+        }
+
+        if (!empty($yearIds)) {
+            $carsBaseQuery->whereIn('year_id', $yearIds);
+        }
+
+        if ($availableOnly) {
+            $carsBaseQuery->where('status', 'available');
+        }
+
+        if (filled($search)) {
+            $carsBaseQuery->whereHas('translations', function ($query) use ($search, $locale) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery
+                        ->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('description', 'like', '%' . $search . '%');
+                })->where('locale', $locale);
+            });
+        }
+
+        $representativeCarIds = $this->uniqueRepresentativeCarIds($carsBaseQuery);
+
         $carsQuery = Car::query()
             ->with([
                 'translations',
@@ -83,33 +116,7 @@ class CarController extends Controller
                 'gearType.translations',
                 'year',
             ])
-            ->where('is_active', true);
-
-        if (!empty($brandIds)) {
-            $carsQuery->whereIn('brand_id', $brandIds);
-        }
-
-        if (!empty($categoryIds)) {
-            $carsQuery->whereIn('category_id', $categoryIds);
-        }
-
-        if (!empty($yearIds)) {
-            $carsQuery->whereIn('year_id', $yearIds);
-        }
-
-        if ($availableOnly) {
-            $carsQuery->where('status', 'available');
-        }
-
-        if (filled($search)) {
-            $carsQuery->whereHas('translations', function ($query) use ($search, $locale) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery
-                        ->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('description', 'like', '%' . $search . '%');
-                })->where('locale', $locale);
-            });
-        }
+            ->whereIn('cars.id', $representativeCarIds->all());
 
         switch ($sort) {
             case 'price_low':
@@ -136,7 +143,7 @@ class CarController extends Controller
         $cars = $carsQuery
             ->paginate($perPage)
             ->withQueryString()
-            ->through(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
+            ->through(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol, $currencyCode));
 
         $brands = Brand::query()
             ->with('translations')
@@ -337,7 +344,7 @@ class CarController extends Controller
             return redirect()->route('website.cars.show', ['car' => $canonicalSlug]);
         }
 
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
+        [$currencyRate, $currencySymbol, $currencyCode] = $this->resolveCurrencyContext($locale);
 
         $carModel->load([
             'translations',
@@ -352,7 +359,17 @@ class CarController extends Controller
             'features.icon',
         ]);
 
-        $carDetails = $this->mapCarDetailsData($carModel, $locale, $currencyRate, $currencySymbol);
+        $carDetails = $this->mapCarDetailsData($carModel, $locale, $currencyRate, $currencySymbol, $currencyCode);
+        $currentCarGroupKey = $this->carDeduplicationKey($carModel);
+
+        $relatedCarsBaseQuery = Car::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $carModel->id)
+            ->when($carModel->category_id, function ($query) use ($carModel) {
+                $query->where('category_id', $carModel->category_id);
+            });
+
+        $relatedCarIds = $this->uniqueRepresentativeCarIds($relatedCarsBaseQuery);
 
         $relatedCars = Car::query()
             ->with([
@@ -362,15 +379,13 @@ class CarController extends Controller
                 'gearType.translations',
                 'year',
             ])
-            ->where('is_active', true)
-            ->where('id', '!=', $carModel->id)
-            ->when($carModel->category_id, function ($query) use ($carModel) {
-                $query->where('category_id', $carModel->category_id);
-            })
+            ->whereIn('id', $relatedCarIds->all())
             ->latest('id')
-            ->take(6)
             ->get()
-            ->map(fn(Car $relatedCar) => $this->mapCarCardData($relatedCar, $locale, $currencyRate, $currencySymbol));
+            ->reject(fn (Car $relatedCar) => $this->carDeduplicationKey($relatedCar) === $currentCarGroupKey)
+            ->take(6)
+            ->values()
+            ->map(fn(Car $relatedCar) => $this->mapCarCardData($relatedCar, $locale, $currencyRate, $currencySymbol, $currencyCode));
 
         $faqs = Faq::query()
             ->with('translations')
@@ -402,7 +417,7 @@ class CarController extends Controller
         return view('website.car-details', compact('carDetails', 'relatedCars', 'faqs', 'contact'));
     }
 
-    private function mapCarCardData(Car $car, string $locale, float $currencyRate, string $currencySymbol): array
+    private function mapCarCardData(Car $car, string $locale, float $currencyRate, string $currencySymbol, string $currencyCode): array
     {
         $carTranslation = $this->translationFor($car, $locale);
         $brandTranslation = $this->translationFor($car->brand, $locale);
@@ -452,6 +467,7 @@ class CarController extends Controller
             'door_count' => $car->door_count,
             'discount_rate' => $discountRate,
             'currency_symbol' => $currencySymbol,
+            'currency_code' => $currencyCode,
         ];
     }
 
@@ -500,7 +516,7 @@ class CarController extends Controller
             ?? (filled($car->slug ?? null) ? (string) $car->slug : null);
     }
 
-    private function mapCarDetailsData(Car $car, string $locale, float $currencyRate, string $currencySymbol): array
+    private function mapCarDetailsData(Car $car, string $locale, float $currencyRate, string $currencySymbol, string $currencyCode): array
     {
         $carTranslation = $this->translationFor($car, $locale);
         $brandTranslation = $this->translationFor($car->brand, $locale);
@@ -618,6 +634,7 @@ class CarController extends Controller
                 'monthly_discount' => $monthlyDiscountPrice,
             ],
             'currency_symbol' => $currencySymbol,
+            'currency_code' => $currencyCode,
         ];
     }
     private function resolveCurrencyContext(string $locale): array
@@ -638,7 +655,9 @@ class CarController extends Controller
             ?? $currency?->symbol
             ?? '$';
 
-        return [$currencyRate, $currencySymbol];
+        $currencyCode = $currency?->code ?? 'AED';
+
+        return [$currencyRate, $currencySymbol, $currencyCode];
     }
 
     private function translationFor($model, string $locale): mixed
