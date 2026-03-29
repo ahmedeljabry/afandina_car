@@ -734,26 +734,6 @@
                                 @endforeach
                             </ul>
 
-                            @if ($sidebarPriceRows->isNotEmpty())
-                                <div class="car-details-mobile-prices">
-                                    <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
-                                    <div class="car-details-mobile-price-grid">
-                                        @foreach ($sidebarPriceRows as $sidebarPriceRow)
-                                            <div class="car-details-mobile-price-card">
-                                                <span class="price-label">{{ $sidebarPriceRow['label'] }}</span>
-                                                <div class="price-main-wrap">
-                                                    <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
-                                                    @if (filled($sidebarPriceRow['old']))
-                                                        <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
-                                                    @endif
-                                                </div>
-                                                <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-
                             <div class="car-details-sidebar-overview">
                                 <h4>{{ __('website.car_details.sidebar.car_overview') }}</h4>
                                 <div class="car-details-overview-grid">
@@ -813,6 +793,26 @@
                                     {{ __('website.car_details.sidebar.call_us') }}
                                 </a>
                             </div>
+
+                            @if ($sidebarPriceRows->isNotEmpty())
+                                <div class="car-details-mobile-prices">
+                                    <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
+                                    <div class="car-details-mobile-price-grid">
+                                        @foreach ($sidebarPriceRows as $sidebarPriceRow)
+                                            <div class="car-details-mobile-price-card">
+                                                <span class="price-label">{{ $sidebarPriceRow['label'] }}</span>
+                                                <div class="price-main-wrap">
+                                                    <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
+                                                    @if (filled($sidebarPriceRow['old']))
+                                                        <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
+                                                    @endif
+                                                </div>
+                                                <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </aside>
                     </div>
                 </div>
