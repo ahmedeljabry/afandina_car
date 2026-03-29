@@ -110,12 +110,24 @@
                         <!-- Main Tabs -->
                         <ul class="nav nav-tabs mb-4" id="mainTabs" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab">
+                                <a class="nav-link active"
+                                   id="general-tab"
+                                   data-bs-toggle="tab"
+                                   href="#general"
+                                   role="tab"
+                                   aria-controls="general"
+                                   aria-selected="true">
                                     <i class="fas fa-cog mr-2"></i>General
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="content-tab" data-toggle="tab" href="#content" role="tab">
+                                <a class="nav-link"
+                                   id="content-tab"
+                                   data-bs-toggle="tab"
+                                   href="#content"
+                                   role="tab"
+                                   aria-controls="content"
+                                   aria-selected="false">
                                     <i class="fas fa-language mr-2"></i>Content (Multi-language)
                                 </a>
                             </li>
@@ -169,9 +181,11 @@
                                             <li class="nav-item mr-2 mb-2">
                                                 <a class="nav-link language-pill @if($loop->first) active @endif" 
                                                    id="lang-{{ $lang->code }}-tab" 
-                                                   data-toggle="pill" 
+                                                   data-bs-toggle="pill" 
                                                    href="#lang-{{ $lang->code }}" 
-                                                   role="tab">
+                                                   role="tab"
+                                                   aria-controls="lang-{{ $lang->code }}"
+                                                   aria-selected="{{ $loop->first ? 'true' : 'false' }}">
                                                     <i class="fas fa-globe mr-1"></i>{{ $lang->name }} ({{ strtoupper($lang->code) }})
                                                 </a>
                                             </li>
