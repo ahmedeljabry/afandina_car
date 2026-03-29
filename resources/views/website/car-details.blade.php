@@ -345,6 +345,70 @@
     @endpush
 
     <style>
+        .car-details-mobile-prices {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+        }
+
+        .car-details-mobile-prices h4 {
+            margin: 0 0 14px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .car-details-mobile-price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .car-details-mobile-price-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .car-details-mobile-price-card .price-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        .car-details-mobile-price-card .price-main-wrap {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .car-details-mobile-price-card .price-main-wrap strong {
+            font-size: 22px;
+            line-height: 1.1;
+            color: #111827;
+        }
+
+        .car-details-mobile-price-card .price-main-wrap del {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .car-details-mobile-price-card .price-meta {
+            display: block;
+            margin-top: 6px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
         .details-car-grid .related-cars-card .related-card-title a {
             display: block;
             white-space: nowrap;
@@ -418,7 +482,30 @@
             pointer-events: none;
         }
 
+        @media (max-width: 991.98px) {
+            .car-details-mobile-prices {
+                display: block;
+            }
+
+            .car-details-sidebar-prices {
+                display: none;
+            }
+        }
+
         @media (max-width: 575.98px) {
+            .car-details-mobile-prices {
+                margin-top: 14px;
+                padding: 14px;
+            }
+
+            .car-details-mobile-price-card {
+                padding: 12px;
+            }
+
+            .car-details-mobile-price-card .price-main-wrap strong {
+                font-size: 20px;
+            }
+
             .details-car-grid .related-cars-card .listing-action-group .listing-action-btn {
                 height: 46px;
                 font-size: 14px;
@@ -510,6 +597,25 @@
                                     <div><img src="{{ $thumbnailUrl }}" alt="{{ $thumbnailAlt }}"></div>
                                 @endforeach
                             </div>
+                            @if ($sidebarPriceRows->isNotEmpty())
+                                <div class="car-details-mobile-prices">
+                                    <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
+                                    <div class="car-details-mobile-price-grid">
+                                        @foreach ($sidebarPriceRows as $sidebarPriceRow)
+                                            <div class="car-details-mobile-price-card">
+                                                <span class="price-label">{{ $sidebarPriceRow['label'] }}</span>
+                                                <div class="price-main-wrap">
+                                                    <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
+                                                    @if (filled($sidebarPriceRow['old']))
+                                                        <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
+                                                    @endif
+                                                </div>
+                                                <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         <div class="review-sec pb-0">
                             <div class="review-header">
