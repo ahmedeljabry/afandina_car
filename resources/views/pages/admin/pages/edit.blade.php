@@ -90,6 +90,9 @@
 @endpush
 
 @section('content')
+    @php
+        $supportsArticle = $page->slug === 'all-cars';
+    @endphp
     <div class="row">
         <div class="col-12">
             <div class="card page-edit-card">
@@ -220,19 +223,35 @@
                                                     @enderror
                                                 </div>
 
-                                                <div class="form-group">
-                                                    <label for="sub_description_{{ $lang->code }}" class="font-weight-bold">
-                                                        Sub Description
-                                                    </label>
-                                                    <textarea name="sub_description[{{ $lang->code }}]" 
-                                                              id="sub_description_{{ $lang->code }}"
-                                                              class="form-control @error('sub_description.' . $lang->code) is-invalid @enderror"
-                                                              rows="4"
-                                                              placeholder="Enter sub description">{{ old('sub_description.' . $lang->code, $translation->sub_description ?? '') }}</textarea>
-                                                    @error('sub_description.' . $lang->code)
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
+                                                @if($supportsArticle)
+                                                    <div class="form-group">
+                                                        <label for="article_{{ $lang->code }}" class="font-weight-bold">
+                                                            Article
+                                                        </label>
+                                                        <textarea name="article[{{ $lang->code }}]"
+                                                                  id="article_{{ $lang->code }}"
+                                                                  class="form-control @error('article.' . $lang->code) is-invalid @enderror"
+                                                                  rows="8"
+                                                                  placeholder="Enter article content or HTML">{{ old('article.' . $lang->code, $translation->article ?? '') }}</textarea>
+                                                        @error('article.' . $lang->code)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                @else
+                                                    <div class="form-group">
+                                                        <label for="sub_description_{{ $lang->code }}" class="font-weight-bold">
+                                                            Sub Description
+                                                        </label>
+                                                        <textarea name="sub_description[{{ $lang->code }}]" 
+                                                                  id="sub_description_{{ $lang->code }}"
+                                                                  class="form-control @error('sub_description.' . $lang->code) is-invalid @enderror"
+                                                                  rows="4"
+                                                                  placeholder="Enter sub description">{{ old('sub_description.' . $lang->code, $translation->sub_description ?? '') }}</textarea>
+                                                        @error('sub_description.' . $lang->code)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             @if($page->slug === 'home')

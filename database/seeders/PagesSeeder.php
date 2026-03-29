@@ -83,6 +83,38 @@ class PagesSeeder extends Seeder
             );
         }
 
+        $allCarsPage = Page::firstOrCreate(
+            ['slug' => 'all-cars'],
+            [
+                'name' => 'All Cars',
+                'is_active' => true,
+            ]
+        );
+
+        foreach ($languages as $language) {
+            $translationExists = DB::table('page_translations')
+                ->where('page_id', $allCarsPage->id)
+                ->where('locale', $language->code)
+                ->exists();
+
+            if ($translationExists) {
+                continue;
+            }
+
+            DB::table('page_translations')->insert(
+                [
+                    'page_id' => $allCarsPage->id,
+                    'locale' => $language->code,
+                    'title' => null,
+                    'description' => null,
+                    'sub_description' => null,
+                    'article' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
         $this->command->info('Pages seeded successfully!');
     }
 
@@ -241,4 +273,3 @@ class PagesSeeder extends Seeder
         return $descriptions[$locale] ?? $descriptions['en'];
     }
 }
-

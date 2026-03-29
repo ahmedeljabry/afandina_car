@@ -50,6 +50,7 @@ class PageController extends Controller
             $rules['title.' . $lang->code] = 'nullable|string|max:255';
             $rules['description.' . $lang->code] = 'nullable|string';
             $rules['sub_description.' . $lang->code] = 'nullable|string';
+            $rules['article.' . $lang->code] = 'nullable|string';
             // Section fields (for home page)
             $rules['category_section_title.' . $lang->code] = 'nullable|string|max:255';
             $rules['category_section_description.' . $lang->code] = 'nullable|string';
@@ -78,6 +79,7 @@ class PageController extends Controller
                     'title' => $request->input('title.' . $lang->code),
                     'description' => $request->input('description.' . $lang->code),
                     'sub_description' => $request->input('sub_description.' . $lang->code),
+                    'article' => $request->input('article.' . $lang->code),
                     // Section fields (for home page)
                     'category_section_title' => $request->input('category_section_title.' . $lang->code),
                     'category_section_description' => $request->input('category_section_description.' . $lang->code),
@@ -107,4 +109,3 @@ class PageController extends Controller
         }
     }
 }
-

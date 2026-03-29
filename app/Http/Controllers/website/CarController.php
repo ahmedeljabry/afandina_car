@@ -9,6 +9,7 @@ use App\Models\Car;
 use App\Models\Contact;
 use App\Models\Currency;
 use App\Models\Faq;
+use App\Models\Page;
 use App\Models\Year;
 use App\Traits\DeduplicatesCars;
 use Illuminate\Http\Request;
@@ -225,7 +226,15 @@ class CarController extends Controller
             ->first()
             ?? Contact::query()->latest('id')->first();
 
-        return view('website.cars', compact('cars', 'filters', 'contact'));
+        $allCarsPage = Page::query()
+            ->with('translations')
+            ->where('slug', 'all-cars')
+            ->where('is_active', true)
+            ->first();
+
+        $allCarsPageTranslation = $this->translationFor($allCarsPage, $locale);
+
+        return view('website.cars', compact('cars', 'filters', 'contact', 'allCarsPageTranslation'));
     }
 
     public function brand(Request $request, string $brand)

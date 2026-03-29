@@ -23,6 +23,7 @@ class PageResource extends JsonResource
             'title' => $translation->title ?? null,
             'description' => $translation->description ?? null,
             'sub_description' => $translation->sub_description ?? null,
+            'article' => $translation->article ?? null,
         ];
 
         // Add sections only for home page
@@ -50,4 +51,3 @@ class PageResource extends JsonResource
         ];
     }
 }
-

@@ -33,9 +33,18 @@
         $breadcrumbParentUrl = (string) ($listingContext['breadcrumb_parent_url'] ?? route('website.cars.index'));
         $breadcrumbCurrentLabel = (string) ($listingContext['breadcrumb_current_label'] ?? $pageHeading);
         $showSeoContentInBreadcrumb = (bool) ($listingContext['seo_content_in_breadcrumb'] ?? false);
-        $listingContentTitle = trim((string) ($listingContext['content_title'] ?? ''));
-        $listingContentDescription = trim((string) ($listingContext['content_description'] ?? ''));
-        $listingContentArticle = trim((string) ($listingContext['content_article'] ?? ''));
+        $defaultListingContentTitle = trim((string) ($allCarsPageTranslation?->title ?? ''));
+        $defaultListingContentDescription = trim((string) ($allCarsPageTranslation?->description ?? ''));
+        $defaultListingContentArticle = trim((string) ($allCarsPageTranslation?->article ?? ''));
+        $listingContentTitle = array_key_exists('content_title', $listingContext)
+            ? trim((string) ($listingContext['content_title'] ?? ''))
+            : $defaultListingContentTitle;
+        $listingContentDescription = array_key_exists('content_description', $listingContext)
+            ? trim((string) ($listingContext['content_description'] ?? ''))
+            : $defaultListingContentDescription;
+        $listingContentArticle = array_key_exists('content_article', $listingContext)
+            ? trim((string) ($listingContext['content_article'] ?? ''))
+            : $defaultListingContentArticle;
         $breadcrumbTitle = $showSeoContentInBreadcrumb && $listingContentTitle !== ''
             ? $listingContentTitle
             : $pageHeading;
