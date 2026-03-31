@@ -215,6 +215,18 @@ return [
             'blog' => 'المدونة',
             'contact_us' => 'اتصل بنا',
         ],
+        'social' => [
+            'open_platform' => 'زيارة صفحة :platform الخاصة بـ :company',
+            'profile' => 'حساب اجتماعي',
+            'facebook' => 'فيسبوك',
+            'instagram' => 'إنستغرام',
+            'twitter' => 'إكس',
+            'linkedin' => 'لينكدإن',
+            'youtube' => 'يوتيوب',
+            'tiktok' => 'تيك توك',
+            'snapchat' => 'سناب شات',
+            'whatsapp' => 'واتساب',
+        ],
     ],
 
     'about' => [

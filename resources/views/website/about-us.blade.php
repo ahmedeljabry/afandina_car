@@ -36,7 +36,7 @@
                     <nav aria-label="breadcrumb" class="page-breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('website.nav.home') }}</a></li>
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">{{ __('website.about.breadcrumb.pages') }}</a></li>
+                            <li class="breadcrumb-item"><span>{{ __('website.about.breadcrumb.pages') }}</span></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $aboutMainTitle }}</li>
                         </ol>
                     </nav>

@@ -721,6 +721,8 @@
             ? $contact->whatsapp
             : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
         : 'javascript:void(0);';
+    $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
+    $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
 
     $testimonialItems = [
         [
@@ -1117,21 +1119,40 @@
                                 </div>
 
                                 <div class="listing-button d-flex gap-2 home-featured-action-group">
-                                    <a href="{{ $whatsAppHref }}"
-                                       class="btn btn-order flex-fill listing-action-btn whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
-                                       @if ($whatsAppHref !== 'javascript:void(0);')
-                                           target="_blank" rel="noopener noreferrer"
-                                       @endif
-                                       aria-disabled="{{ $whatsAppHref === 'javascript:void(0);' ? 'true' : 'false' }}">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                        <span>{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
-                                    </a>
-                                    <a href="{{ $phoneHref }}"
-                                       class="btn btn-outline-dark flex-fill listing-action-btn call-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
-                                       aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
-                                        <i class="fa-solid fa-phone"></i>
-                                        <span>{{ __('website.car_details.sidebar.call_us') }}</span>
-                                    </a>
+                                    @if ($hasWhatsAppHref)
+                                        <a href="{{ $whatsAppHref }}"
+                                           class="btn btn-order flex-fill listing-action-btn whatsapp-btn"
+                                           target="_blank"
+                                           rel="noopener noreferrer">
+                                            <i class="fa-brands fa-whatsapp"></i>
+                                            <span>{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                        </a>
+                                    @else
+                                        <button
+                                            type="button"
+                                            class="btn btn-order flex-fill listing-action-btn whatsapp-btn disabled"
+                                            aria-disabled="true"
+                                            disabled>
+                                            <i class="fa-brands fa-whatsapp"></i>
+                                            <span>{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                        </button>
+                                    @endif
+                                    @if ($hasPhoneHref)
+                                        <a href="{{ $phoneHref }}"
+                                           class="btn btn-outline-dark flex-fill listing-action-btn call-btn">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ __('website.car_details.sidebar.call_us') }}</span>
+                                        </a>
+                                    @else
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-dark flex-fill listing-action-btn call-btn disabled"
+                                            aria-disabled="true"
+                                            disabled>
+                                            <i class="fa-solid fa-phone"></i>
+                                            <span>{{ __('website.car_details.sidebar.call_us') }}</span>
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>

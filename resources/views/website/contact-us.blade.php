@@ -14,10 +14,13 @@
         $phoneHref = filled($phoneNumber)
             ? 'tel:' . preg_replace('/[^\d+]/', '', $phoneNumber)
             : 'javascript:void(0);';
+        $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
 
         $email = $contact?->email;
         $emailHref = filled($email) ? 'mailto:' . $email : 'javascript:void(0);';
+        $hasEmailHref = $emailHref !== 'javascript:void(0);';
         $locationHref = filled($contact?->google_map_url) ? $contact->google_map_url : 'javascript:void(0);';
+        $hasLocationHref = $locationHref !== 'javascript:void(0);';
 
         $fullAddress = collect([
             $contact?->address_line1,
@@ -29,6 +32,25 @@
         ])->filter()->implode(', ');
     @endphp
 
+    <style>
+        .contact-section .contact-info-area .single-contact-info .contact-info-text {
+            display: inline-block;
+            font-size: 16px;
+            color: #737373;
+            transition: all 0.5s;
+        }
+
+        .contact-section .contact-info-area .single-contact-info:hover .contact-info-text {
+            color: #ffffff;
+        }
+
+        @media (max-width: 991.98px) {
+            .contact-section .contact-info-area .single-contact-info .contact-info-text {
+                font-size: 13px;
+            }
+        }
+    </style>
+
     <!-- Breadscrumb Section -->
     <div class="breadcrumb-bar">
         <div class="container">
@@ -38,7 +60,7 @@
                     <nav aria-label="breadcrumb" class="page-breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('website.nav.home') }}</a></li>
-                            <li class="breadcrumb-item"><a href="javascript:void(0);">{{ __('website.contact.breadcrumb.pages') }}</a></li>
+                            <li class="breadcrumb-item"><span>{{ __('website.contact.breadcrumb.pages') }}</span></li>
                             <li class="breadcrumb-item active" aria-current="page">{{ $pageTitle }}</li>
                         </ol>
                     </nav>
@@ -57,28 +79,40 @@
                         <div class="single-contact-info flex-fill">
                             <span><i class="feather-phone-call"></i></span>
                             <h3>{{ __('website.contact.cards.phone_number') }}</h3>
-                            <a href="{{ $phoneHref }}">{{ $phoneNumber ?: __('website.contact.fallback.not_available') }}</a>
+                            @if ($hasPhoneHref)
+                                <a href="{{ $phoneHref }}" class="contact-info-text">{{ $phoneNumber }}</a>
+                            @else
+                                <span class="contact-info-text">{{ __('website.contact.fallback.not_available') }}</span>
+                            @endif
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.2">
                         <div class="single-contact-info flex-fill">
                             <span><i class="feather-mail"></i></span>
                             <h3>{{ __('website.contact.cards.email_address') }}</h3>
-                            <a href="{{ $emailHref }}">{{ $email ?: __('website.contact.fallback.not_available') }}</a>
+                            @if ($hasEmailHref)
+                                <a href="{{ $emailHref }}" class="contact-info-text">{{ $email }}</a>
+                            @else
+                                <span class="contact-info-text">{{ __('website.contact.fallback.not_available') }}</span>
+                            @endif
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.3">
                         <div class="single-contact-info flex-fill">
                             <span><i class="feather-map-pin"></i></span>
                             <h3>{{ __('website.contact.cards.location') }}</h3>
-                            <a href="{{ $locationHref }}" @if($locationHref !== 'javascript:void(0);') target="_blank" rel="noopener noreferrer" @endif>{{ $fullAddress ?: __('website.contact.fallback.not_available') }}</a>
+                            @if ($hasLocationHref)
+                                <a href="{{ $locationHref }}" class="contact-info-text" target="_blank" rel="noopener noreferrer">{{ $fullAddress ?: __('website.contact.fallback.not_available') }}</a>
+                            @else
+                                <span class="contact-info-text">{{ $fullAddress ?: __('website.contact.fallback.not_available') }}</span>
+                            @endif
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6 col-12 d-flex" data-aos="fade-down" data-aos-duration="1200" data-aos-delay="0.4">
                         <div class="single-contact-info flex-fill">
                             <span><i class="feather-clock"></i></span>
                             <h3>{{ __('website.contact.cards.opening_hours') }}</h3>
-                            <a href="javascript:void(0);">{{ $detailsParagraph }}</a>
+                            <span class="contact-info-text">{{ $detailsParagraph }}</span>
                         </div>
                     </div>
                 </div>

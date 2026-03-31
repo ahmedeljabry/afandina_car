@@ -100,6 +100,8 @@
                 ? $contact->whatsapp
                 : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
             : 'javascript:void(0);';
+        $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
+        $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
     ?>
 
     <style>
@@ -265,6 +267,24 @@
             margin-bottom: 24px;
         }
 
+        .cars-filter-offcanvas .accord-list .filter-toggle {
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #111;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: start;
+            font-size: 18px;
+        }
+
+        .cars-filter-offcanvas .accord-list .filter-toggle:focus-visible {
+            outline: 2px solid #121212;
+            outline-offset: 3px;
+        }
+
         .cars-filter-actions {
             margin-top: auto;
             padding-top: 20px;
@@ -331,6 +351,12 @@
 
             .cars-filter-offcanvas .offcanvas-title {
                 font-size: 30px;
+            }
+        }
+
+        @media (max-width: 991.96px) {
+            .cars-filter-offcanvas .accord-list .filter-toggle {
+                font-size: 16px;
             }
         }
 
@@ -632,13 +658,13 @@
                         <div class="accordion" id="drawerAccordionBrand">
                             <div class="card-header-new" id="drawerHeadingBrand">
                                 <h6 class="filter-title">
-                                    <a href="javascript:void(0);" class="w-100" data-bs-toggle="collapse"
+                                    <button type="button" class="filter-toggle" data-bs-toggle="collapse"
                                         data-bs-target="#drawerCollapseBrand" aria-expanded="true"
                                         aria-controls="drawerCollapseBrand">
                                         <?php echo e(__('website.cars.filters.brand')); ?>
 
                                         <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
-                                    </a>
+                                    </button>
                                 </h6>
                             </div>
                             <div id="drawerCollapseBrand" class="collapse show" aria-labelledby="drawerHeadingBrand"
@@ -662,13 +688,13 @@
                         <div class="accordion" id="drawerAccordionCategory">
                             <div class="card-header-new" id="drawerHeadingCategory">
                                 <h6 class="filter-title">
-                                    <a href="javascript:void(0);" class="w-100 collapsed" data-bs-toggle="collapse"
-                                        data-bs-target="#drawerCollapseCategory" aria-expanded="true"
+                                    <button type="button" class="filter-toggle collapsed" data-bs-toggle="collapse"
+                                        data-bs-target="#drawerCollapseCategory" aria-expanded="false"
                                         aria-controls="drawerCollapseCategory">
                                         <?php echo e(__('website.cars.filters.category')); ?>
 
                                         <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
-                                    </a>
+                                    </button>
                                 </h6>
                             </div>
                             <div id="drawerCollapseCategory" class="collapse" aria-labelledby="drawerHeadingCategory"
@@ -692,13 +718,13 @@
                         <div class="accordion" id="drawerAccordionYear">
                             <div class="card-header-new" id="drawerHeadingYear">
                                 <h6 class="filter-title">
-                                    <a href="javascript:void(0);" class="w-100 collapsed" data-bs-toggle="collapse"
-                                        data-bs-target="#drawerCollapseYear" aria-expanded="true"
+                                    <button type="button" class="filter-toggle collapsed" data-bs-toggle="collapse"
+                                        data-bs-target="#drawerCollapseYear" aria-expanded="false"
                                         aria-controls="drawerCollapseYear">
                                         <?php echo e(__('website.cars.filters.year')); ?>
 
                                         <span class="float-end"><i class="fa-solid fa-chevron-down"></i></span>
-                                    </a>
+                                    </button>
                                 </h6>
                             </div>
                             <div id="drawerCollapseYear" class="collapse" aria-labelledby="drawerHeadingYear"
@@ -862,21 +888,39 @@
                                             </div>
                                         </div>
                                         <div class="listing-button listing-action-group">
-                                            <a href="<?php echo e($whatsAppHref); ?>"
-                                                class="btn listing-action-btn whatsapp-btn <?php if($whatsAppHref === 'javascript:void(0);'): ?> disabled <?php endif; ?>"
-                                                <?php if($whatsAppHref !== 'javascript:void(0);'): ?>
-                                                    target="_blank" rel="noopener noreferrer"
-                                                <?php endif; ?>
-                                                aria-disabled="<?php echo e($whatsAppHref === 'javascript:void(0);' ? 'true' : 'false'); ?>">
-                                                <i class="fa-brands fa-whatsapp"></i>
-                                                <span class="action-label"><?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?></span>
-                                            </a>
-                                            <a href="<?php echo e($phoneHref); ?>"
-                                                class="btn listing-action-btn call-btn <?php if($phoneHref === 'javascript:void(0);'): ?> disabled <?php endif; ?>"
-                                                aria-disabled="<?php echo e($phoneHref === 'javascript:void(0);' ? 'true' : 'false'); ?>">
-                                                <i class="fa-solid fa-phone"></i>
-                                                <span class="action-label"><?php echo e(__('website.car_details.sidebar.call_us')); ?></span>
-                                            </a>
+                                            <?php if($hasWhatsAppHref): ?>
+                                                <a href="<?php echo e($whatsAppHref); ?>"
+                                                    class="btn listing-action-btn whatsapp-btn"
+                                                    target="_blank" rel="noopener noreferrer">
+                                                    <i class="fa-brands fa-whatsapp"></i>
+                                                    <span class="action-label"><?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?></span>
+                                                </a>
+                                            <?php else: ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn listing-action-btn whatsapp-btn disabled"
+                                                    aria-disabled="true"
+                                                    disabled>
+                                                    <i class="fa-brands fa-whatsapp"></i>
+                                                    <span class="action-label"><?php echo e(__('website.car_details.owner_details.chat_whatsapp')); ?></span>
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if($hasPhoneHref): ?>
+                                                <a href="<?php echo e($phoneHref); ?>"
+                                                    class="btn listing-action-btn call-btn">
+                                                    <i class="fa-solid fa-phone"></i>
+                                                    <span class="action-label"><?php echo e(__('website.car_details.sidebar.call_us')); ?></span>
+                                                </a>
+                                            <?php else: ?>
+                                                <button
+                                                    type="button"
+                                                    class="btn listing-action-btn call-btn disabled"
+                                                    aria-disabled="true"
+                                                    disabled>
+                                                    <i class="fa-solid fa-phone"></i>
+                                                    <span class="action-label"><?php echo e(__('website.car_details.sidebar.call_us')); ?></span>
+                                                </button>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="feature-text">

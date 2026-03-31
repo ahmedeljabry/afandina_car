@@ -9,6 +9,16 @@
     $footerSocialLinks = collect($footerSocialLinks ?? $socialLinks ?? [])
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'url')))
         ->values();
+    $footerSocialLabels = [
+        'facebook' => __('website.footer.social.facebook'),
+        'instagram' => __('website.footer.social.instagram'),
+        'twitter' => __('website.footer.social.twitter'),
+        'linkedin' => __('website.footer.social.linkedin'),
+        'youtube' => __('website.footer.social.youtube'),
+        'tiktok' => __('website.footer.social.tiktok'),
+        'snapchat' => __('website.footer.social.snapchat'),
+        'whatsapp' => __('website.footer.social.whatsapp'),
+    ];
     $footerLocale = app()->getLocale() ?? 'en';
     $footerBrands = \App\Models\Brand::query()
         ->with('translations')
@@ -84,12 +94,23 @@
                             <ul class="social-icon">
                                 @foreach ($footerSocialLinks as $socialLink)
                                     @php
+                                        $socialKey = (string) data_get($socialLink, 'key', '');
                                         $socialUrl = data_get($socialLink, 'url');
                                         $socialIcon = data_get($socialLink, 'icon', 'fa-solid fa-link');
+                                        $socialPlatform = $footerSocialLabels[$socialKey] ?? __('website.footer.social.profile');
+                                        $socialAriaLabel = __('website.footer.social.open_platform', [
+                                            'platform' => $socialPlatform,
+                                            'company' => $footerCompanyName,
+                                        ]);
                                     @endphp
                                     <li>
-                                        <a href="{{ $socialUrl }}" target="_blank" rel="noopener noreferrer">
-                                            <i class="{{ $socialIcon }}"></i>
+                                        <a
+                                            href="{{ $socialUrl }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label="{{ $socialAriaLabel }}"
+                                            title="{{ $socialAriaLabel }}">
+                                            <i class="{{ $socialIcon }}" aria-hidden="true"></i>
                                         </a>
                                     </li>
                                 @endforeach

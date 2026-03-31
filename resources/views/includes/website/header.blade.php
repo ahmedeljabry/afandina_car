@@ -57,6 +57,20 @@
 @endphp
 
 <style>
+    .header .navbar-header #mobile_btn,
+    .header .main-menu-wrapper .menu-header .menu-close {
+        background: transparent;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .header .navbar-header #mobile_btn:focus-visible,
+    .header .main-menu-wrapper .menu-header .menu-close:focus-visible {
+        outline: 2px solid #121212;
+        outline-offset: 3px;
+    }
+
     @media (max-width: 575.96px) {
         .header .header-nav {
             padding: 0 12px;
@@ -156,13 +170,18 @@
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg header-nav">
             <div class="navbar-header">
-                <a id="mobile_btn" href="javascript:void(0);">
+                <button
+                    id="mobile_btn"
+                    type="button"
+                    aria-controls="primary-navigation"
+                    aria-expanded="false"
+                    aria-label="{{ __('Open menu') }}">
                     <span class="bar-icon">
                         <span></span>
                         <span></span>
                         <span></span>
                     </span>
-                </a>
+                </button>
 
                 <a href="{{ route('home') }}" class="navbar-brand logo">
                     <img src="{{ $headerLogo ?? asset('website/assets/img/logo.svg') }}" alt="{{ $headerSiteName ?? config('app.name', 'Afandina Car Rental') }}" class="img-fluid">
@@ -173,14 +192,19 @@
                 </a>
             </div>
 
-            <div class="main-menu-wrapper">
+            <div id="primary-navigation" class="main-menu-wrapper">
                 <div class="menu-header">
                     <a href="{{ route('home') }}" class="menu-logo">
                         <img src="{{ $headerLogo ?? asset('website/assets/img/logo.svg') }}" alt="{{ $headerSiteName ?? config('app.name', 'Afandina Car Rental') }}" class="img-fluid">
                     </a>
-                    <a id="menu_close" class="menu-close" href="javascript:void(0);">
+                    <button
+                        id="menu_close"
+                        class="menu-close"
+                        type="button"
+                        aria-controls="primary-navigation"
+                        aria-label="{{ __('Close menu') }}">
                         <i class="fas fa-times"></i>
-                    </a>
+                    </button>
                 </div>
 
                 <ul class="main-nav">

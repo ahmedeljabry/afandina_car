@@ -10,9 +10,72 @@ Version      : 1.0
 	var $slimScrolls = $('.slimscroll');
 	var $wrapper = $('.main-wrapper');
 	var isRtl = $('html').attr('dir') === 'rtl';
+	var isArabicUi = (($('html').attr('lang') || '').toLowerCase().indexOf('ar') === 0) || isRtl;
 	var directionalArrowIcons = isRtl
 		? ["<i class='fa-solid fa-arrow-right'></i>", "<i class='fa-solid fa-arrow-left'></i>"]
 		: ["<i class='fa-solid fa-arrow-left'></i>", "<i class='fa-solid fa-arrow-right'></i>"];
+	var owlA11yText = isArabicUi
+		? {
+			prev: 'الشريحة السابقة',
+			next: 'الشريحة التالية',
+			goTo: 'الانتقال إلى الشريحة',
+			current: 'الشريحة الحالية'
+		}
+		: {
+			prev: 'Previous slide',
+			next: 'Next slide',
+			goTo: 'Go to slide',
+			current: 'Current slide'
+		};
+
+	function applyOwlCarouselA11y(target) {
+		var $carousel = $(target);
+
+		if (!$carousel.hasClass('owl-carousel')) {
+			$carousel = $carousel.closest('.owl-carousel');
+		}
+
+		if (!$carousel.length) {
+			return;
+		}
+
+		$carousel.find('.owl-nav button.owl-prev')
+			.attr('type', 'button')
+			.attr('aria-label', owlA11yText.prev)
+			.attr('title', owlA11yText.prev)
+			.removeAttr('role');
+
+		$carousel.find('.owl-nav button.owl-next')
+			.attr('type', 'button')
+			.attr('aria-label', owlA11yText.next)
+			.attr('title', owlA11yText.next)
+			.removeAttr('role');
+
+		$carousel.find('.owl-dots button.owl-dot').each(function(index) {
+			var $dot = $(this);
+			var isActive = $dot.hasClass('active');
+			var label = (isActive ? owlA11yText.current : owlA11yText.goTo) + ' ' + (index + 1);
+
+			$dot.attr('type', 'button')
+				.attr('aria-label', label)
+				.attr('title', label)
+				.removeAttr('role');
+
+			if (isActive) {
+				$dot.attr('aria-current', 'true');
+			} else {
+				$dot.removeAttr('aria-current');
+			}
+		});
+
+		$carousel.find('.owl-nav button i, .owl-dots button span').attr('aria-hidden', 'true');
+	}
+
+	function bindOwlCarouselA11y($carousels) {
+		$carousels.on('refreshed.owl.carousel changed.owl.carousel translated.owl.carousel', function() {
+			applyOwlCarouselA11y(this);
+		});
+	}
 	
 
 	// Sidebar
@@ -64,23 +127,24 @@ Version      : 1.0
 	// Mobile menu sidebar overlay
 	
 	$('body').append('<div class="sidebar-overlay"></div>');
+	var setMobileMenuState = function(isOpen) {
+		$wrapper.toggleClass('slide-nav', isOpen);
+		$('.sidebar-overlay').toggleClass('opened', isOpen);
+		$('html').toggleClass('menu-opened', isOpen);
+		$('#mobile_btn').attr('aria-expanded', isOpen ? 'true' : 'false');
+	};
+
 	$(document).on('click', '#mobile_btn', function() {
-		$('main-wrapper').toggleClass('slide-nav');
-		$('.sidebar-overlay').toggleClass('opened');
-		$('html').addClass('menu-opened');
+		setMobileMenuState(!$('html').hasClass('menu-opened'));
 		return false;
 	});	
 	
 	$(document).on('click', '.sidebar-overlay', function() {
-		$('html').removeClass('menu-opened');
-		$(this).removeClass('opened');
-		$('main-wrapper').removeClass('slide-nav');
+		setMobileMenuState(false);
 	});
 	
 	$(document).on('click', '#menu_close', function() {
-		$('html').removeClass('menu-opened');
-		$('.sidebar-overlay').removeClass('opened');
-		$('main-wrapper').removeClass('slide-nav');
+		setMobileMenuState(false);
 	});
 
 	// Select 2
@@ -304,6 +368,8 @@ Version      : 1.0
 			var desktopItems = totalItems >= 4 ? 3 : (totalItems >= 2 ? totalItems - 1 : 1);
 			var tabletItems = totalItems >= 3 ? 2 : 1;
 
+			bindOwlCarouselA11y($slider);
+
 			$slider.owlCarousel({
 				loop: totalItems > desktopItems,
 				rewind: totalItems > 1,
@@ -333,13 +399,18 @@ Version      : 1.0
 			if (isRtl) {
 				$slider.find('.owl-nav').css({ left: '0', right: 'auto' });
 			}
+
+			applyOwlCarouselA11y($slider);
 		});
 	}
 
 	// Card Image Carousel
 
 	if($('.img-slider').length > 0) {
-		$('.img-slider').owlCarousel({
+		var $imgSliders = $('.img-slider');
+		bindOwlCarouselA11y($imgSliders);
+
+		$imgSliders.owlCarousel({
 			loop:true,
 			margin:24,
 			nav:true,
@@ -365,7 +436,11 @@ Version      : 1.0
 					items:1
 				}
 			}
-		})
+		});
+
+		$imgSliders.each(function() {
+			applyOwlCarouselA11y(this);
+		});
 	}
 
 
@@ -426,7 +501,10 @@ Version      : 1.0
 	}	
 
 	if($('.car-details-slider').length > 0 ){
-		$('.car-details-slider').owlCarousel({
+		var $carDetailsSliders = $('.car-details-slider');
+		bindOwlCarouselA11y($carDetailsSliders);
+
+		$carDetailsSliders.owlCarousel({
 			loop:true,
 			items:3,
 			margin:24,
@@ -449,11 +527,18 @@ Version      : 1.0
 					items:3
 				}
 			}
-		});	
+		});
+
+		$carDetailsSliders.each(function() {
+			applyOwlCarouselA11y(this);
+		});
 	}
 
 	if($('.cars-slider').length > 0) {
-		$('.cars-slider').owlCarousel({
+		var $carsSliders = $('.cars-slider');
+		bindOwlCarouselA11y($carsSliders);
+
+		$carsSliders.owlCarousel({
 			loop:true,
 			margin:24,
 			nav:true,
@@ -476,7 +561,11 @@ Version      : 1.0
 					items:3
 				}
 			}
-		})
+		});
+
+		$carsSliders.each(function() {
+			applyOwlCarouselA11y(this);
+		});
 	}
 
 	// Select Favourite
@@ -1519,7 +1608,10 @@ Version      : 1.0
 	// Recommend Bike Slider 
 
 	if($('.car-slider').length > 0) {
-		$('.car-slider').owlCarousel({
+		var $carSliders = $('.car-slider');
+		bindOwlCarouselA11y($carSliders);
+
+		$carSliders.owlCarousel({
 			loop:true,
 			margin:0,
 			nav:true,
@@ -1533,7 +1625,11 @@ Version      : 1.0
 					items:1
 				},	
 			}
-		})
+		});
+
+		$carSliders.each(function() {
+			applyOwlCarouselA11y(this);
+		});
 	}
 
 	// Horizontal Slide

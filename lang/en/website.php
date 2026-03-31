@@ -215,6 +215,18 @@ return [
             'blog' => 'Blog',
             'contact_us' => 'Contact Us',
         ],
+        'social' => [
+            'open_platform' => 'Visit :platform page for :company',
+            'profile' => 'social profile',
+            'facebook' => 'Facebook',
+            'instagram' => 'Instagram',
+            'twitter' => 'Twitter',
+            'linkedin' => 'LinkedIn',
+            'youtube' => 'YouTube',
+            'tiktok' => 'TikTok',
+            'snapchat' => 'Snapchat',
+            'whatsapp' => 'WhatsApp',
+        ],
     ],
 
     'about' => [

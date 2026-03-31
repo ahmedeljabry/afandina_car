@@ -250,12 +250,14 @@
 
         $phone = $contact?->phone ?: $contact?->alternative_phone;
         $phoneHref = filled($phone) ? 'tel:' . preg_replace('/\s+/', '', $phone) : 'javascript:void(0);';
+        $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
 
         $whatsAppHref = filled($contact?->whatsapp)
             ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
                 ? $contact->whatsapp
                 : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
             : 'javascript:void(0);';
+        $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
 
         $relatedItems = collect($relatedCars ?? [])
             ->unique(fn ($item) => data_get($item, 'details_url') ?: data_get($item, 'id'))
@@ -482,6 +484,19 @@
             pointer-events: none;
         }
 
+        .read-more .more-link {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            padding-inline-start: 20px;
+            cursor: pointer;
+        }
+
+        .read-more .more-link:focus-visible {
+            outline: 2px solid #121212;
+            outline-offset: 3px;
+        }
+
         @media (max-width: 991.98px) {
             .car-details-mobile-prices {
                 display: block;
@@ -634,7 +649,7 @@
                                                 <p>{{ $paragraph }}</p>
                                             @endforeach
                                         </div>
-                                        <a href="javascript:void(0);" class="more-link">{{ __('website.car_details.show_more') }}</a>
+                                        <button type="button" class="more-link" aria-expanded="false">{{ __('website.car_details.show_more') }}</button>
                                    </div>
                                 @endif
                             </div>
@@ -779,19 +794,40 @@
                             @endif
 
                             <div class="car-details-sidebar-actions">
-                                <a href="{{ $whatsAppHref }}"
-                                   class="btn sidebar-action-btn sidebar-whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') is-disabled @endif"
-                                   @if ($whatsAppHref !== 'javascript:void(0);')
-                                       target="_blank" rel="noopener noreferrer"
-                                   @endif>
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                    {{ __('website.car_details.owner_details.chat_whatsapp') }}
-                                </a>
-                                <a href="{{ $phoneHref }}"
-                                   class="btn sidebar-action-btn sidebar-call-btn @if ($phoneHref === 'javascript:void(0);') is-disabled @endif">
-                                    <i class="fa-solid fa-phone"></i>
-                                    {{ __('website.car_details.sidebar.call_us') }}
-                                </a>
+                                @if ($hasWhatsAppHref)
+                                    <a href="{{ $whatsAppHref }}"
+                                       class="btn sidebar-action-btn sidebar-whatsapp-btn"
+                                       target="_blank"
+                                       rel="noopener noreferrer">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                        {{ __('website.car_details.owner_details.chat_whatsapp') }}
+                                    </a>
+                                @else
+                                    <button
+                                        type="button"
+                                        class="btn sidebar-action-btn sidebar-whatsapp-btn is-disabled"
+                                        aria-disabled="true"
+                                        disabled>
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                        {{ __('website.car_details.owner_details.chat_whatsapp') }}
+                                    </button>
+                                @endif
+                                @if ($hasPhoneHref)
+                                    <a href="{{ $phoneHref }}"
+                                       class="btn sidebar-action-btn sidebar-call-btn">
+                                        <i class="fa-solid fa-phone"></i>
+                                        {{ __('website.car_details.sidebar.call_us') }}
+                                    </a>
+                                @else
+                                    <button
+                                        type="button"
+                                        class="btn sidebar-action-btn sidebar-call-btn is-disabled"
+                                        aria-disabled="true"
+                                        disabled>
+                                        <i class="fa-solid fa-phone"></i>
+                                        {{ __('website.car_details.sidebar.call_us') }}
+                                    </button>
+                                @endif
                             </div>
 
                             @if ($sidebarPriceRows->isNotEmpty())
@@ -933,21 +969,40 @@
                                                         </div>
                                                     </div>
                                                     <div class="listing-button d-flex gap-2 listing-action-group">
-                                                        <a href="{{ $whatsAppHref }}"
-                                                           class="btn listing-action-btn whatsapp-btn @if ($whatsAppHref === 'javascript:void(0);') disabled @endif"
-                                                           @if ($whatsAppHref !== 'javascript:void(0);')
-                                                               target="_blank" rel="noopener noreferrer"
-                                                           @endif
-                                                           aria-disabled="{{ $whatsAppHref === 'javascript:void(0);' ? 'true' : 'false' }}">
-                                                            <i class="fa-brands fa-whatsapp"></i>
-                                                            <span class="action-label">{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
-                                                        </a>
-                                                        <a href="{{ $phoneHref }}"
-                                                           class="btn listing-action-btn call-btn @if ($phoneHref === 'javascript:void(0);') disabled @endif"
-                                                           aria-disabled="{{ $phoneHref === 'javascript:void(0);' ? 'true' : 'false' }}">
-                                                            <i class="fa-solid fa-phone"></i>
-                                                            <span class="action-label">{{ __('website.car_details.sidebar.call_us') }}</span>
-                                                        </a>
+                                                        @if ($hasWhatsAppHref)
+                                                            <a href="{{ $whatsAppHref }}"
+                                                               class="btn listing-action-btn whatsapp-btn"
+                                                               target="_blank"
+                                                               rel="noopener noreferrer">
+                                                                <i class="fa-brands fa-whatsapp"></i>
+                                                                <span class="action-label">{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                                            </a>
+                                                        @else
+                                                            <button
+                                                                type="button"
+                                                                class="btn listing-action-btn whatsapp-btn disabled"
+                                                                aria-disabled="true"
+                                                                disabled>
+                                                                <i class="fa-brands fa-whatsapp"></i>
+                                                                <span class="action-label">{{ __('website.car_details.owner_details.chat_whatsapp') }}</span>
+                                                            </button>
+                                                        @endif
+                                                        @if ($hasPhoneHref)
+                                                            <a href="{{ $phoneHref }}"
+                                                               class="btn listing-action-btn call-btn">
+                                                                <i class="fa-solid fa-phone"></i>
+                                                                <span class="action-label">{{ __('website.car_details.sidebar.call_us') }}</span>
+                                                            </a>
+                                                        @else
+                                                            <button
+                                                                type="button"
+                                                                class="btn listing-action-btn call-btn disabled"
+                                                                aria-disabled="true"
+                                                                disabled>
+                                                                <i class="fa-solid fa-phone"></i>
+                                                                <span class="action-label">{{ __('website.car_details.sidebar.call_us') }}</span>
+                                                            </button>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 @if (($relatedItem['is_featured'] ?? false) === true)
