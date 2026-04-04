@@ -17,7 +17,7 @@ return [
     ],
 
     'useAcceptLanguageHeader' => false,
-    'hideDefaultLocaleInURL' => false,
+    'hideDefaultLocaleInURL' => true,
     'localesOrder' => ['en','ar'],
     'localesMapping' => [],
 

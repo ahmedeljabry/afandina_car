@@ -34,15 +34,17 @@
 <!-- Bootstrap Core JS -->
 <script defer src="{{ $scriptAsset('website/assets/js/bootstrap.bundle.min.js', 'website/rtl/assets/js/bootstrap.bundle.min.js') }}"></script>
 
-<!-- counterup JS -->
-<script defer src="{{ $scriptAsset('website/assets/js/jquery.waypoints.js', 'website/rtl/assets/js/jquery.waypoints.js') }}"></script>
-<script defer src="{{ $scriptAsset('website/assets/js/jquery.counterup.min.js', 'website/rtl/assets/js/jquery.counterup.min.js') }}"></script>
-
-<!-- Aos -->
-<script defer src="{{ $scriptAsset('website/assets/plugins/aos/aos.js', 'website/rtl/assets/plugins/aos/aos.js') }}"></script>
-
 <!-- Top JS -->
 <script defer src="{{ $scriptAsset('website/assets/js/backToTop.js', 'website/rtl/assets/js/backToTop.js') }}"></script>
+
+@unless ($isHomePage)
+    <!-- counterup JS -->
+    <script defer src="{{ $scriptAsset('website/assets/js/jquery.waypoints.js', 'website/rtl/assets/js/jquery.waypoints.js') }}"></script>
+    <script defer src="{{ $scriptAsset('website/assets/js/jquery.counterup.min.js', 'website/rtl/assets/js/jquery.counterup.min.js') }}"></script>
+
+    <!-- Aos -->
+    <script defer src="{{ $scriptAsset('website/assets/plugins/aos/aos.js', 'website/rtl/assets/plugins/aos/aos.js') }}"></script>
+@endunless
 
 <!-- Owl Carousel JS -->
 <script defer src="{{ $scriptAsset('website/assets/js/owl.carousel.min.js', 'website/rtl/assets/js/owl.carousel.min.js') }}"></script>
@@ -70,5 +72,5 @@
 @endunless
 
 <!-- Custom JS -->
-<script defer src="{{ $scriptAsset('website/assets/js/script.js?v=0.5', 'website/rtl/assets/js/script.js?v=0.5') }}"></script>
+<script defer src="{{ $scriptAsset('website/assets/js/script.js?v=0.7', 'website/rtl/assets/js/script.js?v=0.7') }}"></script>
 @stack('js')

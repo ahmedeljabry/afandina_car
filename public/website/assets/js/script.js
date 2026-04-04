@@ -76,6 +76,20 @@ Version      : 1.0
 			applyOwlCarouselA11y(this);
 		});
 	}
+
+	function hydrateDeferredImages(target) {
+		var $scope = target ? $(target) : $(document);
+
+		$scope.find('img[data-defer-src]').each(function() {
+			var deferredSrc = $(this).attr('data-defer-src');
+
+			if (!deferredSrc) {
+				return;
+			}
+
+			$(this).attr('src', deferredSrc).removeAttr('data-defer-src');
+		});
+	}
 	
 
 	// Sidebar
@@ -132,6 +146,10 @@ Version      : 1.0
 		$('.sidebar-overlay').toggleClass('opened', isOpen);
 		$('html').toggleClass('menu-opened', isOpen);
 		$('#mobile_btn').attr('aria-expanded', isOpen ? 'true' : 'false');
+
+		if (isOpen) {
+			hydrateDeferredImages('#primary-navigation');
+		}
 	};
 
 	$(document).on('click', '#mobile_btn', function() {
@@ -145,6 +163,10 @@ Version      : 1.0
 	
 	$(document).on('click', '#menu_close', function() {
 		setMobileMenuState(false);
+	});
+
+	$(document).on('mouseenter focusin click touchstart', '.header .has-mega-dropdown', function() {
+		hydrateDeferredImages(this);
 	});
 
 	// Select 2
@@ -179,7 +201,7 @@ Version      : 1.0
 		
 	// Fade in Scroll 
 	
-	if($('.main-wrapper .aos').length>0){
+	if($('.main-wrapper .aos').length>0 && typeof AOS !== 'undefined'){
 		AOS.init({
 			duration:1200,
 			once:true
@@ -583,7 +605,7 @@ Version      : 1.0
 
 	// JQuery counterUp
 
-	if($('.counterUp').length > 0) {
+	if($('.counterUp').length > 0 && $.fn.counterUp) {
 		$('.counterUp').counterUp({
             delay: 15,
             time: 1500

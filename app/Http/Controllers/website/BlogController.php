@@ -94,6 +94,9 @@ class BlogController extends Controller
         $blogDetails = [
             'id' => $blogModel->id,
             'title' => $translation?->title ?? __('website.blog.common.untitled'),
+            'meta_description' => filled($translation?->meta_description)
+                ? trim(strip_tags((string) $translation->meta_description))
+                : $this->buildExcerpt($translation?->description, $translation?->content),
             'description' => filled($translation?->description)
                 ? trim(strip_tags((string) $translation->description))
                 : null,

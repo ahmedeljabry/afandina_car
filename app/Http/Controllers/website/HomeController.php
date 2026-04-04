@@ -14,6 +14,7 @@ use App\Models\Home;
 use App\Models\Service;
 use App\Traits\DeduplicatesCars;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -22,190 +23,206 @@ class HomeController extends Controller
     public function index()
     {
         $locale = app()->getLocale() ?? 'en';
+        $homePageData = Cache::remember(
+            "website.home.index.v2.{$locale}",
+            now()->addMinutes(5),
+            function () use ($locale) {
+                [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
 
-        [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
+                // ── Home page settings & section headings ────────────────────
+                $home = Home::with('translations')
+                    ->where('is_active', true)
+                    ->first();
 
-        // ── Home page settings & section headings ────────────────────────────
-        $home = Home::with('translations')
-            ->where('is_active', true)
-            ->first();
+                $homeTranslation = $this->translationFor($home, $locale);
 
-        $homeTranslation = $this->translationFor($home, $locale);
+                // ── Categories ───────────────────────────────────────────────
+                $categories = Category::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->withCount(['cars as cars_count' => fn($q) => $q->where('is_active', true)])
+                    ->get()
+                    ->map(function (Category $category) use ($locale) {
+                        $translation = $this->translationFor($category, $locale);
+                        $categoryRouteKey = $this->categoryRouteKey($category, $locale);
+                        $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
 
-        // ── Categories ───────────────────────────────────────────────────────
-        $categories = Category::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->withCount(['cars as cars_count' => fn($q) => $q->where('is_active', true)])
-            ->get()
-            ->map(function (Category $category) use ($locale) {
-                $translation = $this->translationFor($category, $locale);
-                $categoryRouteKey = $this->categoryRouteKey($category, $locale);
-                $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
+                        return [
+                            'id'         => $category->id,
+                            'name'       => $translation?->name ?? '',
+                            'slug'       => $categorySlug,
+                            'image_path' => $category->image_path,
+                            'cars_count' => (int) $category->cars_count,
+                            'url'        => route('website.cars.category', ['category' => $categoryRouteKey]),
+                        ];
+                    });
 
-                return [
-                    'id'         => $category->id,
-                    'name'       => $translation?->name ?? '',
-                    'slug'       => $categorySlug,
-                    'image_path' => $category->image_path,
-                    'cars_count' => (int) $category->cars_count,
-                    'url'        => route('website.cars.category', ['category' => $categoryRouteKey]),
-                ];
-            });
+                // ── Featured Cars ────────────────────────────────────────────
+                $featuredCarIds = $this->uniqueRepresentativeCarIds(
+                    Car::query()
+                        ->where('is_active', true)
+                        ->where('is_featured', true)
+                );
 
-        // ── Featured Cars ─────────────────────────────────────────────────────
-        $featuredCarIds = $this->uniqueRepresentativeCarIds(
-            Car::query()
-                ->where('is_active', true)
-                ->where('is_featured', true)
+                $featuredCars = Car::query()
+                    ->with(['translations', 'brand.translations', 'gearType.translations', 'year', 'images'])
+                    ->whereIn('cars.id', $featuredCarIds->all())
+                    ->latest('cars.id')
+                    ->take(4)
+                    ->get()
+                    ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
+
+                // ── Car Only / Slider Cars ───────────────────────────────────
+                $popularCarIds = $this->uniqueRepresentativeCarIds(
+                    Car::query()
+                        ->where('is_active', true)
+                        ->where('only_on_afandina', true)
+                );
+
+                $popularCars = Car::query()
+                    ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
+                    ->whereIn('cars.id', $popularCarIds->all())
+                    ->latest('cars.id')
+                    ->take(4)
+                    ->get()
+                    ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
+
+                // ── Brands ────────────────────────────────────────────────────
+                $brands = Brand::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->latest('id')
+                    ->take(12)
+                    ->get()
+                    ->map(function (Brand $brand) use ($locale) {
+                        $brandSlug = $this->brandRouteKey($brand, $locale);
+
+                        if (blank($brandSlug)) {
+                            return null;
+                        }
+
+                        return [
+                            'id' => $brand->id,
+                            'name'      => $this->translationFor($brand, $locale)?->name ?? '',
+                            'logo_path' => $brand->logo_path,
+                            'slug'      => $brandSlug,
+                            'url'       => route('website.cars.brand', ['brand' => $brandSlug]),
+                        ];
+                    })
+                    ->filter()
+                    ->values();
+
+                // ── Blogs ─────────────────────────────────────────────────────
+                $blogs = Blog::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->where('show_in_home', true)
+                    ->latest()
+                    ->take(3)
+                    ->get()
+                    ->map(fn(Blog $blog) => [
+                        'id'           => $blog->id,
+                        'slug'         => $blog->slug,
+                        'title'        => $this->translationFor($blog, $locale)?->title ?? '',
+                        'description'  => $this->translationFor($blog, $locale)?->description,
+                        'image_path'   => $blog->image_path,
+                        'published_on' => $blog->created_at?->translatedFormat('d M, Y'),
+                        'url'          => route('website.blogs.show', ['blog' => $blog->slug ?: $blog->id]),
+                    ]);
+
+                // ── FAQs ──────────────────────────────────────────────────────
+                $faqs = Faq::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->where('show_in_home', true)
+                    ->take(5)
+                    ->get()
+                    ->map(fn(Faq $faq) => [
+                        'id'       => $faq->id,
+                        'question' => $this->translationFor($faq, $locale)?->question ?? '',
+                        'answer'   => $this->translationFor($faq, $locale)?->answer ?? '',
+                    ]);
+
+                // ── Min price for hero banner ─────────────────────────────────
+                $priceStats = Car::query()
+                    ->where('is_active', true)
+                    ->selectRaw('MIN(COALESCE(daily_discount_price, daily_main_price)) as min_price')
+                    ->selectRaw('MAX(COALESCE(daily_discount_price, daily_main_price)) as max_price')
+                    ->first();
+
+                $minRawPrice = $priceStats?->min_price;
+                $maxRawPrice = $priceStats?->max_price;
+                $minPrice = $minRawPrice ? (int) ceil((float) $minRawPrice * $currencyRate) : null;
+                $maxPrice = $maxRawPrice ? (int) ceil((float) $maxRawPrice * $currencyRate) : null;
+
+                // ── Footer accordion: all categories & brands ────────────────
+                $allCategories = Category::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->orderBy('id')
+                    ->take(18)
+                    ->get()
+                    ->map(function (Category $category) use ($locale) {
+                        $categoryRouteKey = $this->categoryRouteKey($category, $locale);
+                        $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
+
+                        return [
+                            'id' => $category->id,
+                            'name' => $this->translationFor($category, $locale)?->name ?? '',
+                            'slug' => $categorySlug,
+                            'url'  => route('website.cars.category', ['category' => $categoryRouteKey]),
+                        ];
+                    });
+
+                $allBrands = Brand::query()
+                    ->with('translations')
+                    ->where('is_active', true)
+                    ->orderBy('id')
+                    ->take(18)
+                    ->get()
+                    ->map(function (Brand $brand) use ($locale) {
+                        $brandSlug = $this->brandRouteKey($brand, $locale);
+
+                        if (blank($brandSlug)) {
+                            return null;
+                        }
+
+                        return [
+                            'id' => $brand->id,
+                            'name' => $this->translationFor($brand, $locale)?->name ?? '',
+                            'slug' => $brandSlug,
+                            'url'  => route('website.cars.brand', ['brand' => $brandSlug]),
+                        ];
+                    })
+                    ->filter()
+                    ->values();
+
+                $contact = Contact::query()
+                    ->where('is_active', true)
+                    ->latest('id')
+                    ->first()
+                    ?? Contact::query()->latest('id')->first();
+
+                return compact(
+                    'home',
+                    'homeTranslation',
+                    'categories',
+                    'featuredCars',
+                    'popularCars',
+                    'brands',
+                    'blogs',
+                    'faqs',
+                    'minPrice',
+                    'maxPrice',
+                    'currencySymbol',
+                    'allCategories',
+                    'allBrands',
+                    'contact',
+                );
+            }
         );
 
-        $featuredCars = Car::query()
-            ->with(['translations', 'brand.translations', 'gearType.translations', 'year', 'images'])
-            ->whereIn('cars.id', $featuredCarIds->all())
-            ->latest('cars.id')
-            ->take(6)
-            ->get()
-            ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
-
-        // ── Car Only / Slider Cars ────────────────────────────────────────────
-        $popularCarIds = $this->uniqueRepresentativeCarIds(
-            Car::query()
-                ->where('is_active', true)
-                ->where('only_on_afandina', true)
-        );
-
-        $popularCars = Car::query()
-            ->with(['translations', 'brand.translations', 'gearType.translations', 'year'])
-            ->whereIn('cars.id', $popularCarIds->all())
-            ->latest('cars.id')
-            ->take(6)
-            ->get()
-            ->map(
-            fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol)
-        );
-
-        // ── Brands ────────────────────────────────────────────────────────────
-        $brands = Brand::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->get()
-            ->map(function (Brand $brand) use ($locale) {
-                $brandSlug = $this->brandRouteKey($brand, $locale);
-
-                if (blank($brandSlug)) {
-                    return null;
-                }
-
-                return [
-                    'id' => $brand->id,
-                    'name'      => $this->translationFor($brand, $locale)?->name ?? '',
-                    'logo_path' => $brand->logo_path,
-                    'slug'      => $brandSlug,
-                    'url'       => route('website.cars.brand', ['brand' => $brandSlug]),
-                ];
-            })
-            ->filter()
-            ->values();
-
-        // ── Blogs ─────────────────────────────────────────────────────────────
-        $blogs = Blog::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->where('show_in_home', true)
-            ->latest()
-            ->take(3)
-            ->get()
-            ->map(fn(Blog $blog) => [
-                'id'           => $blog->id,
-                'slug'         => $blog->slug,
-                'title'        => $this->translationFor($blog, $locale)?->title ?? '',
-                'description'  => $this->translationFor($blog, $locale)?->description,
-                'image_path'   => $blog->image_path,
-                'published_on' => $blog->created_at?->translatedFormat('d M, Y'),
-                'url'          => route('website.blogs.show', ['blog' => $blog->slug ?: $blog->id]),
-            ]);
-
-        // ── FAQs ──────────────────────────────────────────────────────────────
-        $faqs = Faq::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->where('show_in_home', true)
-            ->take(6)
-            ->get()
-            ->map(fn(Faq $faq) => [
-                'id'       => $faq->id,
-                'question' => $this->translationFor($faq, $locale)?->question ?? '',
-                'answer'   => $this->translationFor($faq, $locale)?->answer ?? '',
-            ]);
-
-        // ── Min price for hero banner ─────────────────────────────────────────
-        $minRawPrice = Car::query()
-            ->where('is_active', true)
-            ->whereNotNull('daily_main_price')
-            ->min('daily_main_price');
-
-        $minPrice = $minRawPrice ? (int) ceil((float) $minRawPrice * $currencyRate) : null;
-
-        // ── Footer accordion: all categories & brands ─────────────────────────
-        $allCategories = Category::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->get()
-            ->map(function (Category $category) use ($locale) {
-                $categoryRouteKey = $this->categoryRouteKey($category, $locale);
-                $categorySlug = ctype_digit($categoryRouteKey) ? null : $categoryRouteKey;
-
-                return [
-                    'id' => $category->id,
-                    'name' => $this->translationFor($category, $locale)?->name ?? '',
-                    'slug' => $categorySlug,
-                    'url'  => route('website.cars.category', ['category' => $categoryRouteKey]),
-                ];
-            });
-
-        $allBrands = Brand::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->get()
-            ->map(function (Brand $brand) use ($locale) {
-                $brandSlug = $this->brandRouteKey($brand, $locale);
-
-                if (blank($brandSlug)) {
-                    return null;
-                }
-
-                return [
-                    'id' => $brand->id,
-                    'name' => $this->translationFor($brand, $locale)?->name ?? '',
-                    'slug' => $brandSlug,
-                    'url'  => route('website.cars.brand', ['brand' => $brandSlug]),
-                ];
-            })
-            ->filter()
-            ->values();
-
-        $contact = Contact::query()
-            ->where('is_active', true)
-            ->latest('id')
-            ->first()
-            ?? Contact::query()->latest('id')->first();
-
-        return view('website.home', compact(
-            'home',
-            'homeTranslation',
-            'categories',
-            'featuredCars',
-            'popularCars',
-            'brands',
-            'blogs',
-            'faqs',
-            'minPrice',
-            'currencySymbol',
-            'allCategories',
-            'allBrands',
-            'contact',
-        ));
+        return view('website.home', $homePageData);
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
@@ -223,9 +240,21 @@ class HomeController extends Controller
 
         $dailyMain     = $car->daily_main_price     ? (float) $car->daily_main_price     : null;
         $dailyDiscount = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
-        $effectivePrice = ($dailyDiscount && $dailyDiscount < $dailyMain) ? $dailyDiscount : $dailyMain;
+        $effectivePrice = $dailyDiscount !== null && ($dailyMain === null || $dailyDiscount < $dailyMain)
+            ? $dailyDiscount
+            : $dailyMain;
+        $weeklyMain = $car->weekly_main_price ? (float) $car->weekly_main_price : null;
+        $weeklyDiscount = $car->weekly_discount_price ? (float) $car->weekly_discount_price : null;
+        $effectiveWeeklyPrice = $weeklyDiscount !== null && ($weeklyMain === null || $weeklyDiscount < $weeklyMain)
+            ? $weeklyDiscount
+            : $weeklyMain;
+        $monthlyMain = $car->monthly_main_price ? (float) $car->monthly_main_price : null;
+        $monthlyDiscount = $car->monthly_discount_price ? (float) $car->monthly_discount_price : null;
+        $effectiveMonthlyPrice = $monthlyDiscount !== null && ($monthlyMain === null || $monthlyDiscount < $monthlyMain)
+            ? $monthlyDiscount
+            : $monthlyMain;
 
-        $images = isset($car->images)
+        $images = $car->relationLoaded('images')
             ? $car->images->pluck('file_path')->filter()->values()->toArray()
             : [];
 
@@ -244,6 +273,8 @@ class HomeController extends Controller
             'image_path'       => $car->default_image_path,
             'images'           => $images,
             'daily_price'      => $effectivePrice ? (int) ceil($effectivePrice * $currencyRate) : null,
+            'weekly_price'     => $effectiveWeeklyPrice ? (int) ceil($effectiveWeeklyPrice * $currencyRate) : null,
+            'monthly_price'    => $effectiveMonthlyPrice ? (int) ceil($effectiveMonthlyPrice * $currencyRate) : null,
             'daily_main_price' => $dailyMain ? (int) ceil($dailyMain * $currencyRate) : null,
             'currency_symbol'  => $currencySymbol,
             'passenger_capacity' => $car->passenger_capacity,

@@ -30,6 +30,12 @@ return [
         'not_available' => 'Not Available',
     ],
 
+    'seo' => [
+        'default_description' => 'Rent luxury, sports, SUV, and economy cars with flexible daily, weekly, and monthly plans from Afandina Car Rental.',
+        'cars_description' => 'Browse available rental cars by brand, category, and year with flexible daily, weekly, and monthly pricing.',
+        'blog_description' => 'Read the latest car rental tips, travel updates, and fleet news from Afandina Car Rental.',
+    ],
+
     'cars' => [
         'page_title' => 'Car Listings',
         'showing_results' => 'Showing :from-:to of :total cars',
@@ -362,6 +368,15 @@ return [
         'not_available' => 'Not available',
         'show_more' => 'Show More',
         'contact_for_pricing' => 'Contact us for pricing details.',
+        'whatsapp_inquiry' => [
+            'intro' => 'Hi, I submitted an inquiry via OneClickDrive for this rental:',
+            'price_label' => 'Price',
+            'listing_link_label' => 'Listing Link',
+            'outro' => "I'd like more details. Is it available on...",
+            'day' => 'day',
+            'week' => 'week',
+            'month' => 'month',
+        ],
         'related_cars_subtitle' => 'Explore more available cars from our current listings.',
     ],
 

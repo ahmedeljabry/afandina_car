@@ -36,7 +36,6 @@ Version      : 1.0
 /*-----------------
     2. Typography
 -----------------------*/
-@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600;1,700;1,900&display=swap");
 .search-box-banner ul, .popular-services .listing-tabs-group, .css-equal-content, .css-equal-heights {
   display: flex;
   display: -webkit-flex;
@@ -387,7 +386,7 @@ Version      : 1.0
 	3. General
 -----------------------*/
 body {
-  font-family: "Fira Sans", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   color: #676767;
   background: #FCFBFB;
@@ -10053,7 +10052,7 @@ Version      : 1.0
 
 ========================================*/
 .banner-section-four {
-  background: #111111 url("../img/bg/banner-bg.png") no-repeat;
+  background: #111111;
   background-position: bottom;
   padding: 120px 0 40px;
   z-index: 1;
@@ -10530,7 +10529,7 @@ Version      : 1.0
 }
 
 .feature-section {
-  background: url("../img/bg/feature-bg-01.png") no-repeat;
+  background: none;
   background-position: bottom;
   padding: 0 0 60px;
 }
@@ -10674,7 +10673,7 @@ Version      : 1.0
 }
 
 .testimonial-section {
-  background: url("../img/bg/feature-bg-01.png") no-repeat;
+  background: none;
   background-position: bottom;
   padding: 60px 0;
 }
@@ -19166,7 +19165,7 @@ Version      : 1.0
 }
 
 .gm-style {
-  font-family: "Fira Sans", sans-serif !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 .gm-style .gm-style-iw-c {
   padding: 0 !important;

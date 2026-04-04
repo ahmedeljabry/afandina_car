@@ -38,6 +38,7 @@ Route::group(
     }
 );
 
+
 Route::get('/cars/images/check-status/{carId}', [AdminCarController::class, 'checkImageProcessingStatus']);
 
 Route::post('/cars/{id}/upload-image', [AdminCarController::class, 'uploadImage'])->name('cars.upload-image');

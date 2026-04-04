@@ -10,6 +10,7 @@
 
 @section('content')
     <?php
+        use App\Support\CarWhatsApp;
         use Illuminate\Support\Str;
 
         $assetUrl = static fn(string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -95,13 +96,8 @@
 
         $phoneValue = $contact?->phone ?: $contact?->alternative_phone;
         $phoneHref = filled($phoneValue) ? 'tel:' . preg_replace('/\s+/', '', $phoneValue) : 'javascript:void(0);';
-        $whatsAppHref = filled($contact?->whatsapp)
-            ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
-                ? $contact->whatsapp
-                : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
-            : 'javascript:void(0);';
         $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
-        $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
+        $buildCarWhatsAppHref = static fn (array $carData): ?string => CarWhatsApp::url($contact?->whatsapp, $carData);
     ?>
 
     <style>
@@ -779,6 +775,7 @@
                                 $carCurrency = $car['currency_symbol'] ?? '$';
                                 $carUrl = $car['details_url'] ?? route('website.cars.index');
                                 $carCardTitle = $formatCarCardTitle($carName);
+                                $carWhatsAppHref = $buildCarWhatsAppHref($car);
                             ?>
 
                             <div class="col-xxl-4 col-lg-6 col-md-6 col-12">
@@ -888,8 +885,8 @@
                                             </div>
                                         </div>
                                         <div class="listing-button listing-action-group">
-                                            <?php if($hasWhatsAppHref): ?>
-                                                <a href="<?php echo e($whatsAppHref); ?>"
+                                            <?php if($carWhatsAppHref): ?>
+                                                <a href="<?php echo e($carWhatsAppHref); ?>"
                                                     class="btn listing-action-btn whatsapp-btn"
                                                     target="_blank" rel="noopener noreferrer">
                                                     <i class="fa-brands fa-whatsapp"></i>

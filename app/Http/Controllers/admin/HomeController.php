@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class HomeController extends GenericController
 {
@@ -608,11 +609,69 @@ class HomeController extends GenericController
 
             if (filled($home->{$field})) {
                 Storage::disk('public')->delete($home->{$field});
+
+                if ($field === 'hero_header_image_path') {
+                    Storage::disk('public')->delete($this->optimizedHeroImagePath($home->{$field}));
+                    Storage::disk('public')->delete($this->optimizedHeroImagePath($home->{$field}, 'mobile'));
+                }
             }
 
-            $home->{$field} = $request->file($field)->store($directory, 'public');
+            $storedPath = $request->file($field)->store($directory, 'public');
+
+            if ($field === 'hero_header_image_path') {
+                $this->generateOptimizedHeroImage($storedPath);
+            }
+
+            $home->{$field} = $storedPath;
         }
 
         $home->save();
+    }
+
+    private function optimizedHeroImagePath(string $path, string $variant = 'default'): string
+    {
+        $pathInfo = pathinfo($path);
+        $directory = ($pathInfo['dirname'] ?? '.') === '.' ? '' : ($pathInfo['dirname'] . '/');
+        $filename = $pathInfo['filename'] ?? $path;
+
+        if ($variant === 'mobile') {
+            return $directory . $filename . '-mobile.webp';
+        }
+
+        return $directory . $filename . '.webp';
+    }
+
+    private function generateOptimizedHeroImage(string $path): void
+    {
+        $source = Storage::disk('public')->path($path);
+        $optimizedPath = Storage::disk('public')->path($this->optimizedHeroImagePath($path));
+        $mobileOptimizedPath = Storage::disk('public')->path($this->optimizedHeroImagePath($path, 'mobile'));
+
+        if (!is_file($source)) {
+            return;
+        }
+
+        $directory = dirname($optimizedPath);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        Image::make($source)
+            ->orientate()
+            ->resize(720, null, function ($constraint): void {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->encode('webp', 76)
+            ->save($optimizedPath);
+
+        Image::make($source)
+            ->orientate()
+            ->resize(360, null, function ($constraint): void {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->encode('webp', 70)
+            ->save($mobileOptimizedPath);
     }
 }

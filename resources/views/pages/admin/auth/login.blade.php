@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('website/assets/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('website/assets/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('website/assets/css/feather.css') }}">
-    <link rel="stylesheet" href="{{ asset('website/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('website/assets/css/style.css?v=0.6') }}">
 
     <style>
         .main-wrapper.login-body {
@@ -119,6 +119,6 @@
 
 <script src="{{ asset('website/assets/js/jquery-3.7.1.min.js') }}"></script>
 <script src="{{ asset('website/assets/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('website/assets/js/script.js') }}"></script>
+<script src="{{ asset('website/assets/js/script.js?v=0.7') }}"></script>
 </body>
 </html>

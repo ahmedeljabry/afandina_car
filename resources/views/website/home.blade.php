@@ -181,6 +181,10 @@
             flex: 1 1 auto;
         }
 
+        .rental-section-four .count-sec {
+            background-image: none;
+        }
+
         .home-car-card-title {
             margin-bottom: 0;
             min-width: 0;
@@ -210,6 +214,65 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .popular-section-four {
+            background-image: none;
+        }
+
+        .home-brand-grid,
+        .home-client-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .home-brand-grid {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .home-client-grid {
+            grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+            align-items: center;
+            margin-top: 32px;
+        }
+
+        .home-client-grid > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 72px;
+        }
+
+        .home-client-grid img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .home-deferred-section {
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 960px;
+        }
+
+        .brand-section .section-heading p,
+        .home-brand-grid .brand-wrap p {
+            color: #e5edf5;
+        }
+
+        .h6-like,
+        .h5-like,
+        .brand-copy,
+        .testimonial-name {
+            margin: 0;
+        }
+
+        .home-popular-grid .car-item {
+            height: 100%;
+        }
+
+        .home-popular-grid .car-item h2.display-1 {
+            font-size: clamp(1.9rem, 4vw, 3rem);
+            line-height: 1.05;
+            margin-bottom: 16px;
         }
 
         .home-hero-shell {
@@ -401,7 +464,8 @@
             object-fit: cover;
         }
 
-        .home-hero-trust-copy h4 {
+        .home-hero-trust-copy h4,
+        .home-hero-trust-copy .h4-like {
             margin: 0 0 0.2rem;
             font-size: 1rem;
             color: #fff;
@@ -508,7 +572,9 @@
         }
 
         .home-hero-price-badge h6,
-        .home-hero-status-badge h6 {
+        .home-hero-status-badge h6,
+        .home-hero-price-badge .price-copy,
+        .home-hero-status-badge .status-copy {
             margin: 0;
             font-size: 1.2rem;
             line-height: 1.3;
@@ -516,7 +582,8 @@
             color: #111111;
         }
 
-        .home-hero-price-badge h6 span {
+        .home-hero-price-badge h6 span,
+        .home-hero-price-badge .price-copy span {
             font-size: 0.8rem;
             font-weight: 700;
             color: #64748b;
@@ -528,16 +595,26 @@
             align-items: flex-start;
         }
 
-        .home-hero-status-badge h6 {
+        .home-hero-status-badge h6,
+        .home-hero-status-badge .status-copy {
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
             color: #127384;
         }
 
-        .home-hero-status-badge i {
+        .home-hero-status-badge i,
+        .home-status-dot {
             color: #16a34a;
             font-size: 0.85rem;
+        }
+
+        .home-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
         }
 
         .car-section .home-featured-action-group .listing-action-btn {
@@ -663,6 +740,10 @@
             .home-hero-media-asset video {
                 min-height: 340px;
             }
+
+            .home-deferred-section {
+                contain-intrinsic-size: 1px 1280px;
+            }
         }
 
         @media (max-width: 575.98px) {
@@ -685,15 +766,58 @@
 
 @push('head')
     @php
-        $heroPreloadPath = $home?->hero_header_image_path
-            ? asset('storage/' . $home->hero_header_image_path)
-            : asset('website/assets/img/banner/banner.png');
+        $heroImageStoragePath = $home?->hero_header_image_path;
+        $heroOptimizedStoragePath = null;
+        $heroMobileOptimizedStoragePath = null;
+        $heroAssetVersion = null;
+        $heroMobileAssetVersion = null;
+
+        if (filled($heroImageStoragePath)) {
+            $heroOptimizedCandidate = preg_replace('/\.[^.]+$/', '.webp', $heroImageStoragePath);
+            $heroMobileOptimizedCandidate = preg_replace('/\.[^.]+$/', '-mobile.webp', $heroImageStoragePath);
+
+            if ($heroOptimizedCandidate && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroOptimizedCandidate)) {
+                $heroOptimizedStoragePath = $heroOptimizedCandidate;
+            }
+
+            if ($heroMobileOptimizedCandidate && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroMobileOptimizedCandidate)) {
+                $heroMobileOptimizedStoragePath = $heroMobileOptimizedCandidate;
+            }
+        }
+
+        if ($heroOptimizedStoragePath) {
+            $heroAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroOptimizedStoragePath);
+        } elseif ($heroImageStoragePath && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroImageStoragePath)) {
+            $heroAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroImageStoragePath);
+        }
+
+        if ($heroMobileOptimizedStoragePath) {
+            $heroMobileAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroMobileOptimizedStoragePath);
+        }
+
+        $heroDefaultAsset = $heroOptimizedStoragePath
+            ? asset('storage/' . $heroOptimizedStoragePath) . ($heroAssetVersion ? '?v=' . $heroAssetVersion : '')
+            : ($heroImageStoragePath
+                ? asset('storage/' . $heroImageStoragePath) . ($heroAssetVersion ? '?v=' . $heroAssetVersion : '')
+                : asset('website/assets/img/banner/banner.png'));
+
+        $heroMobileAsset = $heroMobileOptimizedStoragePath
+            ? asset('storage/' . $heroMobileOptimizedStoragePath) . ($heroMobileAssetVersion ? '?v=' . $heroMobileAssetVersion : '')
+            : null;
+
+        $heroPreloadPath = $heroMobileAsset ?: $heroDefaultAsset;
     @endphp
-    <link rel="preload" as="image" href="{{ $heroPreloadPath }}" fetchpriority="high">
+    @if ($heroMobileAsset)
+        <link rel="preload" as="image" href="{{ $heroMobileAsset }}" media="(max-width: 991px)" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ $heroDefaultAsset }}" media="(min-width: 992px)" fetchpriority="high">
+    @else
+        <link rel="preload" as="image" href="{{ $heroPreloadPath }}" fetchpriority="high">
+    @endif
 @endpush
 
 @section('content')
 @php
+    use App\Support\CarWhatsApp;
     use Illuminate\Support\Str;
 
     $formatCurrency = static function ($price, ?string $currencyLabel): string {
@@ -714,15 +838,11 @@
     };
 
     $noDepositLabel = Str::title(str_replace('_', ' ', __('no_deposit')));
+    $deferredImagePlaceholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
     $phoneValue = $contact?->phone ?: $contact?->alternative_phone;
     $phoneHref = filled($phoneValue) ? 'tel:' . preg_replace('/\s+/', '', $phoneValue) : 'javascript:void(0);';
-    $whatsAppHref = filled($contact?->whatsapp)
-        ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
-            ? $contact->whatsapp
-            : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
-        : 'javascript:void(0);';
     $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
-    $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
+    $buildCarWhatsAppHref = static fn (array $carData): ?string => CarWhatsApp::url($contact?->whatsapp, $carData);
 
     $testimonialItems = [
         [
@@ -853,8 +973,44 @@
 
     $heroMediaType = $home?->hero_type === 'video' ? 'video' : 'image';
     $heroVideoPath = $home?->hero_header_video_path ? asset('storage/' . $home->hero_header_video_path) : null;
-    $heroPosterPath = $home?->hero_header_image_path ? asset('storage/' . $home->hero_header_image_path) : asset('website/assets/img/banner/banner.png');
-    $heroImagePath = $heroPosterPath;
+    $heroImageStoragePath = $home?->hero_header_image_path;
+    $heroOptimizedStoragePath = null;
+    $heroMobileOptimizedStoragePath = null;
+    $heroAssetVersion = null;
+    $heroMobileAssetVersion = null;
+
+    if (filled($heroImageStoragePath)) {
+        $heroOptimizedCandidate = preg_replace('/\.[^.]+$/', '.webp', $heroImageStoragePath);
+        $heroMobileOptimizedCandidate = preg_replace('/\.[^.]+$/', '-mobile.webp', $heroImageStoragePath);
+
+        if ($heroOptimizedCandidate && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroOptimizedCandidate)) {
+            $heroOptimizedStoragePath = $heroOptimizedCandidate;
+        }
+
+        if ($heroMobileOptimizedCandidate && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroMobileOptimizedCandidate)) {
+            $heroMobileOptimizedStoragePath = $heroMobileOptimizedCandidate;
+        }
+    }
+
+    if ($heroOptimizedStoragePath) {
+        $heroAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroOptimizedStoragePath);
+    } elseif ($heroImageStoragePath && \Illuminate\Support\Facades\Storage::disk('public')->exists($heroImageStoragePath)) {
+        $heroAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroImageStoragePath);
+    }
+
+    if ($heroMobileOptimizedStoragePath) {
+        $heroMobileAssetVersion = \Illuminate\Support\Facades\Storage::disk('public')->lastModified($heroMobileOptimizedStoragePath);
+    }
+
+    $heroPosterPath = $heroImageStoragePath
+        ? asset('storage/' . $heroImageStoragePath) . ($heroAssetVersion ? '?v=' . $heroAssetVersion : '')
+        : asset('website/assets/img/banner/banner.png');
+    $heroImagePath = $heroOptimizedStoragePath
+        ? asset('storage/' . $heroOptimizedStoragePath) . ($heroAssetVersion ? '?v=' . $heroAssetVersion : '')
+        : $heroPosterPath;
+    $heroMobileImagePath = $heroMobileOptimizedStoragePath
+        ? asset('storage/' . $heroMobileOptimizedStoragePath) . ($heroMobileAssetVersion ? '?v=' . $heroMobileAssetVersion : '')
+        : null;
     $heroAlt = trim($heroCopy['title_prefix'] . ' ' . $heroCopy['title_highlight'] . ' ' . $heroCopy['title_suffix']);
 @endphp
 
@@ -903,7 +1059,7 @@
                                     </li>
                                 </ul>
                                 <div class="home-hero-trust-copy">
-                                    <h4>{{ $heroCopy['customers_label'] }}</h4>
+                                    <p class="h4-like">{{ $heroCopy['customers_label'] }}</p>
                                     <p>{{ $heroCopy['customers_subtitle'] }}</p>
                                 </div>
                             </div>
@@ -925,12 +1081,12 @@
                         <div class="home-hero-media-frame">
                             <div class="home-hero-price-badge">
                                 <p>{{ $heroCopy['starting_from_label'] }}</p>
-                                <h6>{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ $heroCopy['per_day_label'] }}</span></h6>
+                                <p class="price-copy">{{ $formatCurrency($minPrice ?? 650, $currencySymbol) }} <span>{{ $heroCopy['per_day_label'] }}</span></p>
                             </div>
 
                             <div class="home-hero-status-badge">
                                 <p>{{ __('website.home.hero.available_for_rent') }}</p>
-                                <h6><i class="bx bxs-circle"></i>{{ $heroCopy['available_for_rent_label'] }}</h6>
+                                <p class="status-copy"><span class="home-status-dot" aria-hidden="true"></span>{{ $heroCopy['available_for_rent_label'] }}</p>
                             </div>
 
                             <div class="home-hero-media-asset">
@@ -939,7 +1095,15 @@
                                         <source src="{{ $heroVideoPath }}">
                                     </video>
                                 @else
-                                    <img src="{{ $heroImagePath }}" class="img-fluid" alt="{{ $heroAlt }}" loading="eager" fetchpriority="high" decoding="async">
+                                    <picture>
+                                        @if ($heroMobileImagePath)
+                                            <source srcset="{{ $heroMobileImagePath }}" media="(max-width: 991px)" type="image/webp">
+                                        @endif
+                                        @if ($heroOptimizedStoragePath)
+                                            <source srcset="{{ $heroImagePath }}" type="image/webp">
+                                        @endif
+                                        <img src="{{ $heroPosterPath }}" class="img-fluid" alt="{{ $heroAlt }}" loading="eager" fetchpriority="high" decoding="async" width="1220" height="1600">
+                                    </picture>
                                 @endif
                             </div>
                         </div>
@@ -948,13 +1112,13 @@
             </div>
         </div>
         <div class="banner-bgs">
-            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="img" loading="lazy" fetchpriority="low" decoding="async">
+            <img src="{{ asset('website/assets/img/bg/banner-bg-01.png') }}" class="bg-01 img-fluid" alt="" loading="eager" fetchpriority="high" decoding="async" aria-hidden="true">
         </div>
     </section>
     {{-- /Banner --}}
 
     {{-- CATEGORIES --}}
-    <section id="home-categories" class="category-section-four home-category-section">
+    <section id="home-categories" class="category-section-four home-category-section home-deferred-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -971,9 +1135,9 @@
                             <div class="home-category-col d-flex">
                                 <div class="category-item home-category-card flex-fill">
                                     <div class="category-info">
-                                        <h6 class="title">
+                                        <h3 class="title">
                                             <a href="{{ $categoryUrl }}" title="{{ $category['name'] }}">{{ $category['name'] }}</a>
-                                        </h6>
+                                        </h3>
                                         <div class="home-category-meta">
                                             <p class="home-category-count">{{ __('website.home.labels.cars_count', ['count' => $category['cars_count']]) }}</p>
                                             <a href="{{ $categoryUrl }}" class="link-icon" aria-label="{{ __('website.home.actions.view_all_cars') }}">
@@ -983,7 +1147,8 @@
                                     </div>
                                     <div class="category-img">
                                         @if ($category['image_path'])
-                                            <img src="{{ asset('storage/' . $category['image_path']) }}"
+                                            <img src="{{ $deferredImagePlaceholder }}"
+                                                data-home-defer-src="{{ asset('storage/' . $category['image_path']) }}"
                                                 alt="{{ $category['name'] }}" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                                         @else
                                             <span class="home-category-fallback" aria-hidden="true">
@@ -1013,7 +1178,7 @@
     {{-- /Categories --}}
 
     {{-- Feature Section --}}
-    <section class="feature-section pt-0">
+    <section class="feature-section pt-0 home-deferred-section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
@@ -1023,7 +1188,9 @@
                             <h2>{{ $homeTranslation?->feature_section_title ?: __('website.home.features.section_title') }}</h2>
                             <p>{{ $homeTranslation?->feature_section_paragraph ?: __('website.home.features.section_paragraph') }}</p>
                         </div>
-                        <img src="{{ asset('website/assets/img/cars/car.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
+                        <img src="{{ $deferredImagePlaceholder }}"
+                            data-home-defer-src="{{ asset('website/assets/img/cars/car.png') }}"
+                            alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                     </div>
 
                 </div>
@@ -1037,7 +1204,7 @@
                                         <i class="{{ $featureItem['icon'] }}"></i>
                                     </span>
                                     <div>
-                                        <h6 class="mb-1">{{ $featureItem['title'] }}</h6>
+                                        <h3 class="mb-1 h6-like">{{ $featureItem['title'] }}</h3>
                                         <p>{{ $featureItem['description'] }}</p>
                                     </div>
                                 </div>
@@ -1065,6 +1232,12 @@
                         <div class="listing-item listing-item-two">
                             <div class="listing-img">
                                 @php
+                                    $primaryCarImage = $car['image_path']
+                                        ? asset('storage/' . $car['image_path'])
+                                        : asset('website/assets/img/cars/car-11.jpg');
+                                @endphp
+
+                                @php
                                     $allImages = array_values(array_filter(array_merge(
                                         $car['image_path'] ? [$car['image_path']] : [],
                                         $car['images'] ?? []
@@ -1084,7 +1257,7 @@
                                     </div>
                                 @else
                                     <a href="{{ $car['details_url'] }}">
-                                        <img src="{{ $car['image_path'] ? asset('storage/' . $car['image_path']) : asset('website/assets/img/cars/car-11.jpg') }}"
+                                        <img src="{{ $primaryCarImage }}"
                                             class="img-fluid" alt="{{ $car['name'] }}" loading="lazy" fetchpriority="low" decoding="async">
                                     </a>
                                 @endif
@@ -1118,9 +1291,12 @@
                                     @endif
                                 </div>
 
+                                @php
+                                    $featuredWhatsAppHref = $buildCarWhatsAppHref($car);
+                                @endphp
                                 <div class="listing-button d-flex gap-2 home-featured-action-group">
-                                    @if ($hasWhatsAppHref)
-                                        <a href="{{ $whatsAppHref }}"
+                                    @if ($featuredWhatsAppHref)
+                                        <a href="{{ $featuredWhatsAppHref }}"
                                            class="btn btn-order flex-fill listing-action-btn whatsapp-btn"
                                            target="_blank"
                                            rel="noopener noreferrer">
@@ -1204,7 +1380,7 @@
     {{-- /Brands --}}
 
     {{-- HOW IT WORKS + STATS --}}
-    <section class="rental-section-four">
+    <section class="rental-section-four home-deferred-section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-7">
@@ -1227,7 +1403,7 @@
                                     <i class="{{ $rentalStep['icon_class'] }}"></i>
                                 </span>
                                 <div>
-                                    <h5>{{ $rentalStep['title'] }}</h5>
+                                    <h3 class="h5-like">{{ $rentalStep['title'] }}</h3>
                                     <p>{{ $rentalStep['description'] }}</p>
                                 </div>
                             </div>
@@ -1336,7 +1512,7 @@
                                 <i class="fas fa-star filled"></i>
                             </div>
                             <div class="user-info">
-                                <h6>{{ $testimonial['name'] }}</h6>
+                                <p class="testimonial-name">{{ $testimonial['name'] }}</p>
                                 <p>{{ $testimonial['location'] }}</p>
                             </div>
                         </div>
@@ -1373,7 +1549,7 @@
 	<!-- /Testimonial Section -->
 
     <!-- Support Section -->
-    <section class="support-section">
+    <section class="support-section home-deferred-section">
         <div class="horizontal-slide d-flex" data-direction="left" data-speed="slow">
             <div class="slide-list d-flex">
                 @foreach ($supportTickerItems as $supportItem)
@@ -1387,7 +1563,7 @@
     <!-- /Support Section -->
 
     {{-- BLOGS --}}
-    <section class="blog-section-four">
+    <section class="blog-section-four home-deferred-section">
         <div class="container">
             @if ($blogs->isNotEmpty())
                 <div class="section-heading heading-four" data-aos="fade-down">
@@ -1447,7 +1623,7 @@
 
     {{-- FAQ --}}
     @if ($faqs->isNotEmpty())
-    <section class="faq-section-four pt-0">
+    <section class="faq-section-four pt-0 home-deferred-section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
@@ -1488,7 +1664,7 @@
 
     {{-- ALL CATEGORIES & BRANDS ACCORDION --}}
     @if ($allCategories->isNotEmpty() || $allBrands->isNotEmpty())
-    <section class="categories-section">
+    <section class="categories-section home-deferred-section">
         <div class="container">
             <div class="accordion custom-accordion" id="catalogAccordion">
                 <div class="accordion-item">
@@ -1528,7 +1704,52 @@
             </div>
         </div>
     </section>
-    @endif
+@endif
     {{-- /Catalog --}}
 
 @endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var deferredImages = Array.prototype.slice.call(document.querySelectorAll('img[data-home-defer-src]'));
+
+            if (!deferredImages.length) {
+                return;
+            }
+
+            var hydrateImage = function (image) {
+                var source = image.getAttribute('data-home-defer-src');
+
+                if (!source) {
+                    return;
+                }
+
+                image.src = source;
+                image.removeAttribute('data-home-defer-src');
+            };
+
+            if (!('IntersectionObserver' in window)) {
+                deferredImages.forEach(hydrateImage);
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    hydrateImage(entry.target);
+                    observer.unobserve(entry.target);
+                });
+            }, {
+                rootMargin: '160px 0px'
+            });
+
+            deferredImages.forEach(function (image) {
+                observer.observe(image);
+            });
+        });
+    </script>
+@endpush

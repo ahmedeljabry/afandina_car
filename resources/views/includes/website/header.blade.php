@@ -7,6 +7,9 @@
     $contactPageUrl = route('website.contact.index');
     $brandsSectionUrl = route('home') . '#home-brands';
     $categoriesSectionUrl = route('home') . '#home-categories';
+    $headerBrands = collect($headerBrands ?? []);
+    $headerCategories = collect($headerCategories ?? []);
+    $deferredMediaPlaceholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
     $normalizeHeaderCategoryImage = static function (?string $path): ?string {
         if (blank($path)) {
             return null;
@@ -23,37 +26,6 @@
 
         return asset('storage/' . $normalizedPath);
     };
-    $headerCategories = \App\Models\Category::query()
-        ->with('translations')
-        ->withCount([
-            'cars as cars_count' => fn ($carsQuery) => $carsQuery->where('is_active', true),
-        ])
-        ->where('is_active', true)
-        ->whereNotNull('slug')
-        ->where('slug', '!=', '')
-        ->orderByDesc('cars_count')
-        ->latest('id')
-        ->take(24)
-        ->get()
-        ->map(function (\App\Models\Category $category) use ($currentLocale): ?array {
-            $translation = $category->translations->firstWhere('locale', $currentLocale)
-                ?? $category->translations->firstWhere('locale', 'en')
-                ?? $category->translations->first();
-            $name = trim((string) ($translation?->name ?? ''));
-
-            if ($name === '') {
-                return null;
-            }
-
-            return [
-                'name' => $name,
-                'slug' => $category->slug,
-                'image_path' => $category->image_path,
-                'cars_count' => (int) ($category->cars_count ?? 0),
-            ];
-        })
-        ->filter()
-        ->values();
 @endphp
 
 <style>
@@ -69,6 +41,11 @@
     .header .main-menu-wrapper .menu-header .menu-close:focus-visible {
         outline: 2px solid #121212;
         outline-offset: 3px;
+    }
+
+    .header .header-navbar-rht .header-lang-switcher .header-reg {
+        color: #111111;
+        border-color: rgba(17, 17, 17, 0.18);
     }
 
     @media (max-width: 575.96px) {
@@ -224,7 +201,7 @@
                             <li class="mega-menu-title d-lg-none">{{ __('website.nav.brands') }}</li>
                             <li class="mega-menu-body">
                                 <ul class="header-mega-grid" role="list">
-                                    @forelse ($headerBrands ?? [] as $brandItem)
+                                    @forelse ($headerBrands as $brandItem)
                                         @php
                                             $brandName = (string) data_get($brandItem, 'name', __('website.common.brand'));
                                             $brandLogoPath = data_get($brandItem, 'logo_path');
@@ -235,7 +212,13 @@
                                             <a href="{{ $brandHref }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
                                                     @if (filled($brandLogoPath))
-                                                        <img src="{{ $brandLogoPath }}" alt="{{ $brandName }}">
+                                                        <img
+                                                            src="{{ $deferredMediaPlaceholder }}"
+                                                            data-defer-src="{{ $brandLogoPath }}"
+                                                            alt="{{ $brandName }}"
+                                                            loading="lazy"
+                                                            fetchpriority="low"
+                                                            decoding="async">
                                                     @else
                                                         <span class="header-mega-item-fallback">{{ Str::substr($brandName, 0, 1) }}</span>
                                                     @endif
@@ -279,7 +262,13 @@
                                             <a href="{{ $categoryHref }}" class="header-mega-item">
                                                 <span class="header-mega-item-media">
                                                     @if (filled($categoryImagePath))
-                                                        <img src="{{ $categoryImagePath }}" alt="{{ $categoryName }}">
+                                                        <img
+                                                            src="{{ $deferredMediaPlaceholder }}"
+                                                            data-defer-src="{{ $categoryImagePath }}"
+                                                            alt="{{ $categoryName }}"
+                                                            loading="lazy"
+                                                            fetchpriority="low"
+                                                            decoding="async">
                                                     @else
                                                         <span class="header-mega-item-fallback">{{ Str::substr($categoryName, 0, 1) }}</span>
                                                     @endif

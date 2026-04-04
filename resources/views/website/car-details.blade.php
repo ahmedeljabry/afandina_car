@@ -3,6 +3,7 @@
 
 @section('content')
     @php
+        use App\Support\CarWhatsApp;
         use Illuminate\Support\Str;
 
         $assetUrl = static fn (string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -251,13 +252,8 @@
         $phone = $contact?->phone ?: $contact?->alternative_phone;
         $phoneHref = filled($phone) ? 'tel:' . preg_replace('/\s+/', '', $phone) : 'javascript:void(0);';
         $hasPhoneHref = $phoneHref !== 'javascript:void(0);';
-
-        $whatsAppHref = filled($contact?->whatsapp)
-            ? (str_starts_with((string) $contact->whatsapp, 'http://') || str_starts_with((string) $contact->whatsapp, 'https://')
-                ? $contact->whatsapp
-                : 'https://wa.me/' . preg_replace('/\D+/', '', (string) $contact->whatsapp))
-            : 'javascript:void(0);';
-        $hasWhatsAppHref = $whatsAppHref !== 'javascript:void(0);';
+        $buildCarWhatsAppHref = static fn (array $carData): ?string => CarWhatsApp::url($contact?->whatsapp, $carData);
+        $carDetailsWhatsAppHref = $buildCarWhatsAppHref($carDetails);
 
         $relatedItems = collect($relatedCars ?? [])
             ->unique(fn ($item) => data_get($item, 'details_url') ?: data_get($item, 'id'))
@@ -274,6 +270,7 @@
                     'daily_mileage_included' => $carDetails['daily_mileage_included'] ?? null,
                     'door_count' => $carDetails['door_count'] ?? null,
                     'daily_price' => $dailyPrice,
+                    'weekly_price' => $weeklyPrice,
                     'monthly_price' => $monthlyPrice,
                     'currency_symbol' => $currencySymbol,
                     'image_path' => $carDetails['image_path'] ?? null,
@@ -794,8 +791,8 @@
                             @endif
 
                             <div class="car-details-sidebar-actions">
-                                @if ($hasWhatsAppHref)
-                                    <a href="{{ $whatsAppHref }}"
+                                @if ($carDetailsWhatsAppHref)
+                                    <a href="{{ $carDetailsWhatsAppHref }}"
                                        class="btn sidebar-action-btn sidebar-whatsapp-btn"
                                        target="_blank"
                                        rel="noopener noreferrer">
@@ -877,6 +874,7 @@
                                         $relatedMonthlyPrice = $relatedItem['monthly_price'] ?? null;
                                         $relatedCurrency = $relatedItem['currency_symbol'] ?? $currencySymbol;
                                         $relatedUrl = $relatedItem['details_url'] ?? route('website.cars.index');
+                                        $relatedWhatsAppHref = $buildCarWhatsAppHref($relatedItem);
                                     @endphp
                                         <!-- owl carousel item -->
                                         <div class="rental-car-item">
@@ -969,8 +967,8 @@
                                                         </div>
                                                     </div>
                                                     <div class="listing-button d-flex gap-2 listing-action-group">
-                                                        @if ($hasWhatsAppHref)
-                                                            <a href="{{ $whatsAppHref }}"
+                                                        @if ($relatedWhatsAppHref)
+                                                            <a href="{{ $relatedWhatsAppHref }}"
                                                                class="btn listing-action-btn whatsapp-btn"
                                                                target="_blank"
                                                                rel="noopener noreferrer">

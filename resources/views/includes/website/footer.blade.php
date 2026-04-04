@@ -3,6 +3,8 @@
     $footerDescription = $footerDescription ?? null;
     $footerCompanyName = $footerCompanyName ?? config('app.name', 'Afandina Car Rental');
     $footerHomeTranslation = $footerHomeTranslation ?? null;
+    $footerBrands = collect($footerBrands ?? []);
+    $footerCategories = collect($footerCategories ?? []);
     $footerSupportItems = collect($footerSupportItems ?? $supportItems ?? [])
         ->filter(fn ($item) => is_array($item) && filled(data_get($item, 'label')))
         ->values();
@@ -19,57 +21,6 @@
         'snapchat' => __('website.footer.social.snapchat'),
         'whatsapp' => __('website.footer.social.whatsapp'),
     ];
-    $footerLocale = app()->getLocale() ?? 'en';
-    $footerBrands = \App\Models\Brand::query()
-        ->with('translations')
-        ->where('is_active', true)
-        ->whereNotNull('slug')
-        ->where('slug', '!=', '')
-        ->latest('id')
-        ->take(36)
-        ->get()
-        ->map(function (\App\Models\Brand $brand) use ($footerLocale): ?array {
-            $translation = $brand->translations->firstWhere('locale', $footerLocale)
-                ?? $brand->translations->firstWhere('locale', 'en')
-                ?? $brand->translations->first();
-            $name = trim((string) ($translation?->name ?? ''));
-
-            if ($name === '') {
-                return null;
-            }
-
-            return [
-                'name' => $name,
-                'slug' => $brand->slug,
-            ];
-        })
-        ->filter()
-        ->values();
-    $footerCategories = \App\Models\Category::query()
-        ->with('translations')
-        ->where('is_active', true)
-        ->whereNotNull('slug')
-        ->where('slug', '!=', '')
-        ->latest('id')
-        ->take(24)
-        ->get()
-        ->map(function (\App\Models\Category $category) use ($footerLocale): ?array {
-            $translation = $category->translations->firstWhere('locale', $footerLocale)
-                ?? $category->translations->firstWhere('locale', 'en')
-                ?? $category->translations->first();
-            $name = trim((string) ($translation?->name ?? ''));
-
-            if ($name === '') {
-                return null;
-            }
-
-            return [
-                'name' => $name,
-                'slug' => $category->slug,
-            ];
-        })
-        ->filter()
-        ->values();
     $footerLocations = collect($footerLocations ?? []);
     $footerPaymentMethods = collect($footerPaymentMethods ?? $paymentMethods ?? []);
 @endphp
@@ -81,7 +32,7 @@
                 <div class="col-lg-4">
                     <div class="footer-contact footer-widget">
                         <div class="footer-logo">
-                            <img src="{{ $footerLogo }}" class="img-fluid aos" alt="Logo">
+                            <img src="{{ $footerLogo }}" class="img-fluid aos" alt="Logo" loading="lazy" fetchpriority="low" decoding="async">
                         </div>
 
                         @if (filled($footerDescription))
@@ -251,7 +202,7 @@
                         <div class="payment-list">
                             @foreach ($footerPaymentMethods as $paymentMethod)
                                 <span>
-                                    <img src="{{ $paymentMethod }}" alt="payment">
+                                    <img src="{{ $paymentMethod }}" alt="payment" loading="lazy" fetchpriority="low" decoding="async">
                                 </span>
                             @endforeach
                         </div>

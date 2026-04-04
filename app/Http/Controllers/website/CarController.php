@@ -256,6 +256,8 @@ class CarController extends Controller
             return redirect()->route('website.cars.brand', ['brand' => $canonicalKey]);
         }
 
+        $brandModel->loadMissing('seoQuestions');
+
         $brandName = $this->translationFor($brandModel, $locale)?->name
             ?? $this->translationFor($brandModel, 'en')?->name
             ?? __('website.common.brand');
@@ -270,6 +272,7 @@ class CarController extends Controller
         $brandContentArticle = filled($brandTranslation?->article)
             ? $brandTranslation->article
             : '';
+        $brandSeoQuestions = $this->localizedSeoQuestions($brandModel, $locale);
 
         $listingRequest = $this->buildScopedListingRequest($request, [
             'brand' => [(int) $brandModel->id],
@@ -281,12 +284,20 @@ class CarController extends Controller
             'reset_url' => route('website.cars.brand', ['brand' => $canonicalKey]),
             'page_title' => $brandName,
             'meta_title' => $brandName . ' - ' . __('website.nav.all_cars'),
+            'meta_description' => filled($brandTranslation?->meta_description)
+                ? $brandTranslation->meta_description
+                : $brandContentDescription,
             'breadcrumb_parent_label' => __('website.nav.brands'),
             'breadcrumb_parent_url' => route('home') . '#home-brands',
             'seo_content_in_breadcrumb' => true,
             'content_title' => $brandContentTitle,
             'content_description' => $brandContentDescription,
             'content_article' => $brandContentArticle,
+            'schema_page_type' => 'brand',
+            'schema_image_path' => $brandModel->logo_path,
+            'schema_date_published' => $brandModel->created_at,
+            'schema_date_modified' => $brandModel->updated_at,
+            'schema_faq_items' => $brandSeoQuestions,
         ]);
     }
 
@@ -309,11 +320,17 @@ class CarController extends Controller
             return redirect()->route('website.cars.category', ['category' => $canonicalKey]);
         }
 
+        $categoryModel->loadMissing('seoQuestions');
+
         $categoryName = $this->translationFor($categoryModel, $locale)?->name
             ?? $this->translationFor($categoryModel, 'en')?->name
             ?? __('website.common.category');
         $categoryTranslation = $this->translationFor($categoryModel, $locale)
             ?? $this->translationFor($categoryModel, 'en');
+        $categoryContentDescription = filled($categoryTranslation?->description)
+            ? $categoryTranslation->description
+            : ($categoryTranslation?->meta_description ?? '');
+        $categorySeoQuestions = $this->localizedSeoQuestions($categoryModel, $locale);
 
         $listingRequest = $this->buildScopedListingRequest($request, [
             'category' => [(int) $categoryModel->id],
@@ -325,12 +342,20 @@ class CarController extends Controller
             'reset_url' => route('website.cars.category', ['category' => $canonicalKey]),
             'page_title' => $categoryName,
             'meta_title' => $categoryName . ' - ' . __('website.nav.all_cars'),
+            'meta_description' => filled($categoryTranslation?->meta_description)
+                ? $categoryTranslation->meta_description
+                : $categoryContentDescription,
             'breadcrumb_parent_label' => __('website.nav.categories'),
             'breadcrumb_parent_url' => route('home') . '#home-categories',
             'seo_content_in_breadcrumb' => true,
             'content_title' => $categoryTranslation?->title,
-            'content_description' => $categoryTranslation?->description,
+            'content_description' => $categoryContentDescription,
             'content_article' => $categoryTranslation?->article,
+            'schema_page_type' => 'category',
+            'schema_image_path' => $categoryModel->image_path,
+            'schema_date_published' => $categoryModel->created_at,
+            'schema_date_modified' => $categoryModel->updated_at,
+            'schema_faq_items' => $categorySeoQuestions,
         ]);
     }
 
@@ -444,6 +469,10 @@ class CarController extends Controller
         $dailyDiscountPrice = $car->daily_discount_price ? (float) $car->daily_discount_price : null;
         $effectiveDailyPrice = $dailyDiscountPrice ?? $dailyMainPrice;
 
+        $weeklyMainPrice = $car->weekly_main_price ? (float) $car->weekly_main_price : null;
+        $weeklyDiscountPrice = $car->weekly_discount_price ? (float) $car->weekly_discount_price : null;
+        $effectiveWeeklyPrice = $weeklyDiscountPrice ?? $weeklyMainPrice;
+
         $monthlyMainPrice = $car->monthly_main_price ? (float) $car->monthly_main_price : null;
         $monthlyDiscountPrice = $car->monthly_discount_price ? (float) $car->monthly_discount_price : null;
         $effectiveMonthlyPrice = $monthlyDiscountPrice ?? $monthlyMainPrice;
@@ -470,6 +499,7 @@ class CarController extends Controller
             'is_featured' => (bool) $car->is_featured,
             'daily_price' => $effectiveDailyPrice ? (int) ceil($effectiveDailyPrice * $currencyRate) : null,
             'daily_main_price' => $dailyMainPrice ? (int) ceil($dailyMainPrice * $currencyRate) : null,
+            'weekly_price' => $effectiveWeeklyPrice ? (int) ceil($effectiveWeeklyPrice * $currencyRate) : null,
             'monthly_price' => $effectiveMonthlyPrice ? (int) ceil($effectiveMonthlyPrice * $currencyRate) : null,
             'monthly_main_price' => $monthlyMainPrice ? (int) ceil($monthlyMainPrice * $currencyRate) : null,
             'daily_mileage_included' => $car->daily_mileage_included,
@@ -605,6 +635,9 @@ class CarController extends Controller
                 ? route('website.cars.show', ['car' => $carRouteKey])
                 : route('website.cars.index'),
             'name' => $carTranslation?->name ?? __('website.common.car'),
+            'meta_description' => filled($carTranslation?->meta_description)
+                ? $carTranslation->meta_description
+                : $carTranslation?->description,
             'description' => $carTranslation?->description,
             'long_description' => $carTranslation?->long_description,
             'status' => $car->status,
@@ -746,5 +779,33 @@ class CarController extends Controller
         $slug = $category->slug;
 
         return filled($slug) ? (string) $slug : (string) $category->id;
+    }
+
+    private function localizedSeoQuestions($model, string $locale): array
+    {
+        $questions = collect($model->seoQuestions ?? []);
+
+        $localized = $questions->where('locale', $locale);
+        if ($localized->isEmpty() && $locale !== 'en') {
+            $localized = $questions->where('locale', 'en');
+        }
+
+        return $localized
+            ->map(function ($question): ?array {
+                $questionText = trim((string) ($question->question_text ?? ''));
+                $answerText = trim((string) ($question->answer_text ?? ''));
+
+                if ($questionText === '' || $answerText === '') {
+                    return null;
+                }
+
+                return [
+                    'question' => $questionText,
+                    'answer' => $answerText,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 }
