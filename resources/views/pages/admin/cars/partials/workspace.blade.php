@@ -121,54 +121,7 @@
         </div>
     @endif
 
-    <div class="car-studio__layout">
-        <aside class="car-studio__aside">
-            <div class="studio-sidecard">
-                <div class="studio-sidecard__header">
-                    <span class="studio-sidecard__icon"><i class="ti ti-layout-dashboard"></i></span>
-                    <div>
-                        <h3 class="studio-sidecard__title">{{ __('Workspace Summary') }}</h3>
-                        <p class="studio-sidecard__copy">{{ __('The page is rebuilt around a single publishing flow instead of stacked generic cards.') }}</p>
-                    </div>
-                </div>
-                <ul class="studio-list">
-                    <li class="studio-list__item">
-                        <span class="studio-list__label">{{ __('General Tab') }}</span>
-                        <span class="studio-list__value">{{ __('Identity, specs, pricing, homepage flags, and publishing') }}</span>
-                    </li>
-                    <li class="studio-list__item">
-                        <span class="studio-list__label">{{ __('Translations Tab') }}</span>
-                        <span class="studio-list__value">{{ __('Per-language names, descriptions, and AI-assisted long copy') }}</span>
-                    </li>
-                    <li class="studio-list__item">
-                        <span class="studio-list__label">{{ __('SEO Tab') }}</span>
-                        <span class="studio-list__value">{{ __('Meta fields, robots directives, and question-answer blocks') }}</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="studio-sidecard">
-                <div class="studio-sidecard__header">
-                    <span class="studio-sidecard__icon"><i class="ti ti-photo"></i></span>
-                    <div>
-                        <h3 class="studio-sidecard__title">{{ $isEdit ? __('Current Cover') : __('Default Preview') }}</h3>
-                        <p class="studio-sidecard__copy">{{ $isEdit ? __('The main image currently used across the website.') : __('The uploaded default image will appear here before saving.') }}</p>
-                    </div>
-                </div>
-                <div class="studio-sidecard__image">
-                    <img id="imagePreviewLogo" src="{{ $defaultImageUrl }}" alt="{{ __('Car cover preview') }}">
-                </div>
-                @if ($isEdit)
-                    <a href="{{ route('admin.cars.edit_images', $item->id) }}" class="studio-outline-btn mt-3">
-                        <i class="ti ti-photo-edit"></i>{{ __('Open Image Manager') }}
-                    </a>
-                @else
-                    <div class="studio-upload-meta" id="default-image-name">{{ __('No image selected yet') }}</div>
-                @endif
-            </div>
-        </aside>
-
-        <div class="car-studio__main">
+    <div class="car-studio__main">
             <div class="studio-main-loader" id="loader-overlay">
                 <div class="studio-main-loader__spinner"></div>
                 <div class="studio-main-loader__text">{{ __('Saving changes and preparing the response...') }}</div>
@@ -443,6 +396,9 @@
                                                 </label>
                                                 <input type="file" name="default_image_path" id="default_image_path" class="d-none image-upload" accept="image/*">
                                                 <div class="studio-upload-meta" id="default-image-name">{{ __('No image selected yet') }}</div>
+                                                <div class="studio-preview-shell">
+                                                    <img id="imagePreviewLogo" src="{{ $defaultImageUrl }}" alt="{{ __('Car cover preview') }}" class="image-rectangle-preview">
+                                                </div>
                                                 @error('default_image_path') <span class="invalid-feedback">{{ $message }}</span> @enderror
                                             </div>
                                             <div class="studio-media-card">
@@ -644,7 +600,6 @@
                     </div>
                 </form>
             </div>
-        </div>
     </div>
 </div>
 

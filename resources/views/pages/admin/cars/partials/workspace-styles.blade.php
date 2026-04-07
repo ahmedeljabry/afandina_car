@@ -20,8 +20,6 @@
             .car-studio__metric-label{display:block;margin-bottom:.45rem;color:rgba(255,255,255,.68);font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
             .car-studio__metric-value{display:block;color:#fff;font-size:1.22rem;line-height:1.3;font-weight:800;word-break:break-word}
             .car-studio__metric-note{display:block;margin-top:.45rem;color:rgba(255,255,255,.72);font-size:.82rem;line-height:1.45}
-            .car-studio__layout{display:grid;grid-template-columns:minmax(280px,320px) minmax(0,1fr);gap:1.5rem;align-items:start}
-            .car-studio__aside{position:sticky;top:96px;display:flex;flex-direction:column;gap:1rem}
             .car-studio__main{position:relative}
             .studio-sidecard,.studio-frame,.studio-panel,.studio-language-pane,.studio-seo-pane{border:1px solid var(--line);border-radius:28px;background:var(--surface);box-shadow:var(--shadow)}
             .studio-sidecard{padding:1.15rem;background:linear-gradient(180deg,#fff 0%,#f8fbff 100%)}
@@ -98,7 +96,7 @@
             @keyframes carStudioSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
             .invalid-feedback{display:block}.is-invalid,.car-studio .select2-selection.is-invalid{border-color:rgba(220,38,38,.38) !important}
             @media (max-width:1399.98px){.car-studio__hero{grid-template-columns:1fr}.car-studio__hero-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}}
-            @media (max-width:1199.98px){.car-studio__layout,.studio-price-grid,.studio-media-grid{grid-template-columns:1fr}.car-studio__aside{position:static;order:2}}
+            @media (max-width:1199.98px){.studio-price-grid,.studio-media-grid{grid-template-columns:1fr}}
             @media (max-width:991.98px){.car-studio__hero-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.studio-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.studio-span-8,.studio-span-6,.studio-span-4,.studio-span-3{grid-column:span 6}}
             @media (max-width:767.98px){.car-studio__hero,.studio-frame,.studio-sidecard,.studio-panel,.studio-language-pane,.studio-seo-pane{border-radius:24px}.car-studio__hero{padding:1.35rem}.car-studio__hero-metrics{grid-template-columns:1fr}.studio-frame__meta,.studio-panel__header,.studio-language-head,.studio-submitbar,.studio-ai-banner{flex-direction:column;align-items:flex-start}.studio-robots{grid-template-columns:1fr}.studio-tab-pane,.studio-panel__body,.studio-language-pane,.studio-seo-pane{padding:1rem}}
         </style>
