@@ -67,7 +67,8 @@ class HomeController extends Controller
                 $featuredCars = Car::query()
                     ->with(['translations', 'brand.translations', 'gearType.translations', 'year', 'images'])
                     ->whereIn('cars.id', $featuredCarIds->all())
-                    ->latest('cars.id')
+                    ->orderByDesc('cars.updated_at')
+                    ->orderByDesc('cars.id')
                     ->take(4)
                     ->get()
                     ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));

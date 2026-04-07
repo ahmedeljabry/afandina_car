@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Language;
 use App\Services\Ai\CarContentGenerator;
@@ -317,6 +318,8 @@ class CarController extends GenericController
                 }
             }
 
+            $this->forgetHomePageCache();
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
@@ -509,6 +512,8 @@ class CarController extends GenericController
 
         DB::commit();
 
+        $this->forgetHomePageCache();
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -663,6 +668,15 @@ class CarController extends GenericController
         return $translation && $translation->name ? $translation->name : 'default-slug';
     }
 
+    public function destroy($id)
+    {
+        $response = parent::destroy($id);
+
+        $this->forgetHomePageCache();
+
+        return $response;
+    }
+
     public function edit_images($id)
     {
         $this->data['item'] = Car::with('images')->findOrFail($id);
@@ -674,6 +688,7 @@ class CarController extends GenericController
         try {
             $media = CarImage::findOrFail($id);
             $this->deleteMediaRecord($media);
+            $this->forgetHomePageCache();
 
             return response()->json(['success' => true, 'message' => 'File deleted successfully'], 200);
         } catch (\Exception $e) {
@@ -752,6 +767,7 @@ class CarController extends GenericController
             
             if ($request->hasFile('image')) {
                 $this->storeDefaultImageFile($car, $request->file('image'));
+                $this->forgetHomePageCache();
                 
                 return response()->json([
                     'success' => true,
@@ -795,6 +811,8 @@ class CarController extends GenericController
                         $this->processUploadedMediaFile($file, $request->input('alt'))
                     );
                 }
+
+                $this->forgetHomePageCache();
                 
                 return response()->json([
                     'message' => 'Images uploaded successfully.',
@@ -832,6 +850,7 @@ class CarController extends GenericController
             
             if ($request->hasFile('default_image_path')) {
                 $this->storeDefaultImageFile($car, $request->file('default_image_path'));
+                $this->forgetHomePageCache();
                 
                 return response()->json([
                     'message' => 'Image upload successful.',
@@ -919,6 +938,8 @@ class CarController extends GenericController
                 $this->syncDefaultFromMedia($media->fresh());
             }
 
+            $this->forgetHomePageCache();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Media updated successfully.'
@@ -946,6 +967,7 @@ class CarController extends GenericController
             }
 
             $this->syncDefaultFromMedia($media);
+            $this->forgetHomePageCache();
 
             return response()->json([
                 'success' => true,
@@ -1004,6 +1026,19 @@ class CarController extends GenericController
             'alt' => $alt,
             'type' => 'image',
         ];
+    }
+
+    protected function forgetHomePageCache(): void
+    {
+        $locales = Language::query()
+            ->pluck('code')
+            ->push('en')
+            ->filter()
+            ->unique();
+
+        foreach ($locales as $locale) {
+            Cache::forget("website.home.index.v2.{$locale}");
+        }
     }
 
     protected function storeDefaultImageFile(Car $car, UploadedFile $file): void
