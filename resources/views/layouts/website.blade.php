@@ -6,7 +6,9 @@
         use App\Support\ListingPageSchema;
 
         $isHomePage = request()->routeIs('home');
-        $isBrandOrCategoryPage = request()->routeIs('website.cars.brand') || request()->routeIs('website.cars.category');
+        $isListingPage = request()->routeIs('website.cars.index')
+            || request()->routeIs('website.cars.brand')
+            || request()->routeIs('website.cars.category');
         $styleVersion = '0.6';
         $deferredHomeIconStyles = app()->getLocale() == 'en'
             ? [
@@ -131,9 +133,16 @@
             ]);
         }
 
-        if ($isBrandOrCategoryPage) {
-            $listingPageUrl = (string) (data_get($listingContext ?? [], 'action_url') ?: url()->current());
+        if ($isListingPage) {
+            $listingBaseUrl = (string) (data_get($listingContext ?? [], 'action_url') ?: url()->current());
+            $listingPageUrl = request()->fullUrl();
             $listingCars = collect($cars?->items() ?? []);
+            $listingPageName = trim((string) (
+                data_get($listingContext ?? [], 'content_title')
+                ?: data_get($listingContext ?? [], 'meta_title')
+                ?: data_get($listingContext ?? [], 'page_title')
+                ?: __('website.cars.page_title')
+            ));
             $listingPrimaryImage = $normalizeAssetUrl(data_get($listingContext ?? [], 'schema_image_path'))
                 ?: $listingCars->map(fn ($car) => $normalizeAssetUrl(data_get($car, 'image_path')))->filter()->first()
                 ?: ($websiteLogo ?? $websiteFavicon ?? null);
@@ -148,12 +157,7 @@
                 'site_url' => route('home'),
                 'page_url' => $listingPageUrl,
                 'site_name' => trim((string) ($websiteSiteName ?? config('app.name', 'Afandina Car Rental'))),
-                'page_name' => trim((string) (
-                    data_get($listingContext ?? [], 'content_title')
-                    ?: data_get($listingContext ?? [], 'meta_title')
-                    ?: data_get($listingContext ?? [], 'page_title')
-                    ?: __('website.cars.page_title')
-                )),
+                'page_name' => $listingPageName,
                 'description' => $metaDescription,
                 'logo_url' => $websiteLogo ?? $websiteFavicon ?? null,
                 'primary_image_url' => $listingPrimaryImage,
@@ -180,17 +184,18 @@
                 'date_published' => data_get($listingContext ?? [], 'schema_date_published'),
                 'date_modified' => data_get($listingContext ?? [], 'schema_date_modified'),
                 'price_range' => $listingPriceRange,
-                'search_url_template' => $listingPageUrl . (str_contains($listingPageUrl, '?') ? '&' : '?') . 'search={search_term_string}',
+                'search_url_template' => $listingBaseUrl . (str_contains($listingBaseUrl, '?') ? '&' : '?') . 'search={search_term_string}',
                 'breadcrumb_items' => array_values(array_filter([
                     ['url' => route('home'), 'name' => __('website.nav.home')],
-                    [
+                    !request()->routeIs('website.cars.index') ? [
                         'url' => data_get($listingContext ?? [], 'breadcrumb_parent_url'),
                         'name' => data_get($listingContext ?? [], 'breadcrumb_parent_label'),
-                    ],
+                    ] : null,
                     [
                         'url' => $listingPageUrl,
                         'name' => data_get($listingContext ?? [], 'breadcrumb_current_label')
-                            ?: data_get($listingContext ?? [], 'page_title'),
+                            ?: data_get($listingContext ?? [], 'page_title')
+                            ?: $listingPageName,
                     ],
                 ], fn ($item) => filled(data_get($item, 'url')) && filled(data_get($item, 'name')))),
                 'faq_items' => data_get($listingContext ?? [], 'schema_faq_items', []),
@@ -199,6 +204,7 @@
                         'id' => data_get($car, 'id'),
                         'name' => data_get($car, 'name'),
                         'image' => $normalizeAssetUrl(data_get($car, 'image_path')),
+                        'description' => data_get($car, 'description'),
                         'brand_name' => data_get($car, 'brand_name'),
                         'category_name' => data_get($car, 'category_name'),
                         'passenger_capacity' => data_get($car, 'passenger_capacity'),

@@ -275,6 +275,7 @@ class ListingPageSchema
                     '@context' => 'https://schema.org',
                     '@type' => 'Product',
                     'name' => $name,
+                    'url' => $productUrl,
                     'image' => $imageUrl,
                     'description' => self::buildProductDescription($product),
                     'sku' => (string) data_get($product, 'id', ''),
@@ -283,6 +284,7 @@ class ListingPageSchema
                         '@type' => 'Brand',
                         'name' => trim((string) data_get($product, 'brand_name')),
                     ] : null,
+                    'category' => trim((string) data_get($product, 'category_name', '')),
                     'offers' => match (count($offers)) {
                         0 => null,
                         1 => $offers[0],
@@ -297,6 +299,12 @@ class ListingPageSchema
 
     private static function buildProductDescription(array $product): string
     {
+        $providedDescription = trim((string) data_get($product, 'description', ''));
+
+        if ($providedDescription !== '') {
+            return $providedDescription;
+        }
+
         $name = trim((string) data_get($product, 'name', ''));
         $category = trim((string) data_get($product, 'category_name', ''));
         $passengers = data_get($product, 'passenger_capacity');

@@ -482,10 +482,17 @@ class CarController extends Controller
             $discountRate = (int) ceil((($dailyMainPrice - $dailyDiscountPrice) / $dailyMainPrice) * 100);
         }
 
+        $schemaDescription = trim((string) strip_tags(
+            filled($carTranslation?->meta_description)
+                ? $carTranslation->meta_description
+                : ($carTranslation?->description ?? '')
+        ));
+
         return [
             'id' => $car->id,
             'details_url' => $detailsUrl,
             'name' => filled($carTranslation?->card_name) ? $carTranslation->card_name : ($carTranslation?->name ?? __('website.common.car')),
+            'description' => $schemaDescription,
             'brand_name' => $brandTranslation?->name,
             'brand_url' => ($car->brand && filled($brandRouteKey))
                 ? route('website.cars.brand', ['brand' => $brandRouteKey])
