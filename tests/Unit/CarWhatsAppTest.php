@@ -27,7 +27,7 @@ class CarWhatsAppTest extends TestCase
         parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
 
         $this->assertSame(
-            "Hi, I submitted an inquiry via OneClickDrive for this rental:\n\n*Mercedes Benz E450 Convertible 2020*\nPrice: AED 490/day, AED 3500/week, AED 9999/month\nListing Link: https://www.oneclickdrive.com/details/index/search-car-rentals-Dubai/Mercedes/Benz/E450/Convertible/?id=39824\n\nI'd like more details. Is it available on...",
+            "Hi, I submitted an inquiry via Afandina for this rental:\n\n*Mercedes Benz E450 Convertible 2020*\nPrice: AED 490/day, AED 3500/week, AED 9999/month\nListing Link: https://www.oneclickdrive.com/details/index/search-car-rentals-Dubai/Mercedes/Benz/E450/Convertible/?id=39824\n\nI'd like more details. Is it available on...",
             $query['text'] ?? null
         );
     }

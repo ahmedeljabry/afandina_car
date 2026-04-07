@@ -369,7 +369,7 @@ return [
         'show_more' => 'Show More',
         'contact_for_pricing' => 'Contact us for pricing details.',
         'whatsapp_inquiry' => [
-            'intro' => 'Hi, I submitted an inquiry via OneClickDrive for this rental:',
+            'intro' => 'Hi, I submitted an inquiry via Afandina for this rental:',
             'price_label' => 'Price',
             'listing_link_label' => 'Listing Link',
             'outro' => "I'd like more details. Is it available on...",
