@@ -24,7 +24,7 @@ class HomeController extends Controller
     {
         $locale = app()->getLocale() ?? 'en';
         $homePageData = Cache::remember(
-            "website.home.index.v2.{$locale}",
+            "website.home.index.v3.{$locale}",
             now()->addMinutes(5),
             function () use ($locale) {
                 [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
@@ -58,18 +58,12 @@ class HomeController extends Controller
                     });
 
                 // ── Featured Cars ────────────────────────────────────────────
-                $featuredCarIds = $this->uniqueRepresentativeCarIds(
-                    Car::query()
-                        ->where('is_active', true)
-                        ->where('is_featured', true)
-                );
-
                 $featuredCars = Car::query()
                     ->with(['translations', 'brand.translations', 'gearType.translations', 'year', 'images'])
-                    ->whereIn('cars.id', $featuredCarIds->all())
+                    ->where('cars.is_active', true)
+                    ->where('cars.is_featured', true)
                     ->orderByDesc('cars.updated_at')
                     ->orderByDesc('cars.id')
-                    ->take(4)
                     ->get()
                     ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 

@@ -1038,6 +1038,7 @@ class CarController extends GenericController
 
         foreach ($locales as $locale) {
             Cache::forget("website.home.index.v2.{$locale}");
+            Cache::forget("website.home.index.v3.{$locale}");
         }
     }
 
