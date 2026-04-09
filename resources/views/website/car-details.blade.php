@@ -70,6 +70,19 @@
             ])->values();
         }
 
+        $galleryLightboxItems = $galleryImages
+            ->map(function (array $image) use ($storageUrl, $mainImage, $carName) {
+                return [
+                    'src' => $storageUrl($image['file_path'] ?? null, $mainImage),
+                    'thumbSrc' => $storageUrl($image['thumbnail_path'] ?? ($image['file_path'] ?? null), $mainImage),
+                    'caption' => $image['alt'] ?? $carName,
+                ];
+            })
+            ->filter(fn (array $image) => filled($image['src']))
+            ->values();
+
+        $galleryImageCount = max(1, $galleryImages->count());
+
         $shortDescription = trim(strip_tags((string) ($carDetails['description'] ?? '')));
         $longDescription = trim(strip_tags((string) ($carDetails['long_description'] ?? '')));
         $preferredDescription = filled($longDescription) ? $longDescription : $shortDescription;
@@ -344,36 +357,36 @@
     @endpush
 
     <style>
-        .car-details-mobile-prices {
-            display: none;
-            margin-top: 18px;
-            padding: 18px;
-            border-radius: 18px;
+        .car-details-gallery-prices {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 20px;
             border: 1px solid #e5e7eb;
             background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
         }
 
-        .car-details-mobile-prices h4 {
+        .car-details-gallery-prices h4 {
             margin: 0 0 14px;
             font-size: 18px;
             font-weight: 700;
             color: #111827;
         }
 
-        .car-details-mobile-price-grid {
+        .car-details-gallery-price-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 12px;
         }
 
-        .car-details-mobile-price-card {
+        .car-details-gallery-price-card {
             background: #fff;
             border-radius: 14px;
             padding: 14px;
+            border: 1px solid #e5e7eb;
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
 
-        .car-details-mobile-price-card .price-label {
+        .car-details-gallery-price-card .price-label {
             display: block;
             margin-bottom: 8px;
             font-size: 12px;
@@ -383,29 +396,73 @@
             color: #6b7280;
         }
 
-        .car-details-mobile-price-card .price-main-wrap {
+        .car-details-gallery-price-card .price-main-wrap {
             display: flex;
             align-items: baseline;
             gap: 8px;
         }
 
-        .car-details-mobile-price-card .price-main-wrap strong {
+        .car-details-gallery-price-card .price-main-wrap strong {
             font-size: 22px;
             line-height: 1.1;
             color: #111827;
         }
 
-        .car-details-mobile-price-card .price-main-wrap del {
+        .car-details-gallery-price-card .price-main-wrap del {
             color: #9ca3af;
             font-size: 14px;
         }
 
-        .car-details-mobile-price-card .price-meta {
+        .car-details-gallery-price-card .price-meta {
             display: block;
             margin-top: 6px;
             color: #2563eb;
             font-size: 13px;
             font-weight: 600;
+        }
+
+        .product-img {
+            position: relative;
+        }
+
+        .car-details-gallery-trigger {
+            display: block;
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+
+        .car-details-gallery-trigger img {
+            display: block;
+            width: 100%;
+        }
+
+        .car-details-gallery-hint {
+            position: absolute;
+            top: 18px;
+            inset-inline-end: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(17, 24, 39, 0.72);
+            color: #fff;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .car-details-gallery-trigger:hover .car-details-gallery-hint,
+        .car-details-gallery-trigger:focus-visible .car-details-gallery-hint {
+            transform: scale(1.05);
+            background: rgba(37, 99, 235, 0.86);
+        }
+
+        .car-details-gallery-trigger:focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.3);
+            outline-offset: 4px;
         }
 
         .details-car-grid .related-cars-card .related-card-title a {
@@ -494,28 +551,125 @@
             outline-offset: 3px;
         }
 
+        .car-details-sidebar-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .sidebar-action-btn {
+            min-height: 56px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            box-shadow: none;
+        }
+
+        .sidebar-action-btn i {
+            font-size: 18px;
+        }
+
+        .sidebar-call-btn {
+            background: #faf5ff;
+            border-color: #d8b4fe;
+            color: #7c3aed;
+        }
+
+        .sidebar-call-btn:hover,
+        .sidebar-call-btn:focus {
+            background: #f3e8ff;
+            border-color: #c084fc;
+            color: #6d28d9;
+        }
+
+        .sidebar-whatsapp-btn {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #16a34a;
+        }
+
+        .sidebar-whatsapp-btn:hover,
+        .sidebar-whatsapp-btn:focus {
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #15803d;
+        }
+
+        .sidebar-action-btn.is-disabled {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .car-details-mobile-contact-bar {
+            display: none;
+        }
+
         @media (max-width: 991.98px) {
-            .car-details-mobile-prices {
-                display: block;
+            .product-details {
+                padding-bottom: 120px;
             }
 
-            .car-details-sidebar-prices {
+            .car-details-sidebar-actions {
                 display: none;
+            }
+
+            .car-details-mobile-contact-bar {
+                position: fixed;
+                left: 12px;
+                right: 12px;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                z-index: 1040;
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+                padding: 12px;
+                border-radius: 18px;
+                background: rgba(255, 255, 255, 0.96);
+                box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+                backdrop-filter: blur(14px);
             }
         }
 
         @media (max-width: 575.98px) {
-            .car-details-mobile-prices {
-                margin-top: 14px;
-                padding: 14px;
+            .car-details-gallery-prices {
+                margin-top: 16px;
+                padding: 16px;
             }
 
-            .car-details-mobile-price-card {
+            .car-details-gallery-price-card {
                 padding: 12px;
             }
 
-            .car-details-mobile-price-card .price-main-wrap strong {
+            .car-details-gallery-price-card .price-main-wrap strong {
                 font-size: 20px;
+            }
+
+            .car-details-gallery-hint {
+                top: 12px;
+                inset-inline-end: 12px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .car-details-mobile-contact-bar {
+                left: 10px;
+                right: 10px;
+                bottom: calc(10px + env(safe-area-inset-bottom));
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .car-details-mobile-contact-bar .sidebar-action-btn {
+                min-height: 52px;
+                padding: 10px 12px;
+                font-size: 14px;
             }
 
             .details-car-grid .related-cars-card .listing-action-group .listing-action-btn {
@@ -596,7 +750,15 @@
                                         $imageAlt = $image['alt'] ?? $carName;
                                     @endphp
                                     <div class="product-img">
-                                        <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}">
+                                        <a href="{{ $imageUrl }}"
+                                           class="car-details-gallery-trigger"
+                                           data-gallery-index="{{ $loop->index }}"
+                                           aria-label="{{ __('website.car_details.sections.gallery') }} {{ $loop->iteration }} / {{ $galleryImageCount }}">
+                                            <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}">
+                                            <span class="car-details-gallery-hint" aria-hidden="true">
+                                                <i class="fa-solid fa-expand"></i>
+                                            </span>
+                                        </a>
                                     </div>
                                 @endforeach
                             </div>
@@ -609,6 +771,25 @@
                                     <div><img src="{{ $thumbnailUrl }}" alt="{{ $thumbnailAlt }}"></div>
                                 @endforeach
                             </div>
+                            @if ($sidebarPriceRows->isNotEmpty())
+                                <div class="car-details-gallery-prices">
+                                    <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
+                                    <div class="car-details-gallery-price-grid">
+                                        @foreach ($sidebarPriceRows as $sidebarPriceRow)
+                                            <div class="car-details-gallery-price-card">
+                                                <span class="price-label">{{ $sidebarPriceRow['label'] }}</span>
+                                                <div class="price-main-wrap">
+                                                    <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
+                                                    @if (filled($sidebarPriceRow['old']))
+                                                        <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
+                                                    @endif
+                                                </div>
+                                                <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         <div class="review-sec pb-0">
                             <div class="review-header">
@@ -763,22 +944,6 @@
                                 </div>
                             </div>
 
-                            @if ($sidebarPriceRows->isNotEmpty())
-                                <div class="car-details-sidebar-prices">
-                                    @foreach ($sidebarPriceRows as $sidebarPriceRow)
-                                        <div class="car-details-price-row">
-                                            <div class="price-main-wrap">
-                                                <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
-                                                @if (filled($sidebarPriceRow['old']))
-                                                    <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
-                                                @endif
-                                            </div>
-                                            <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
-
                             @if ($sidebarHighlights->isNotEmpty())
                                 <ul class="car-details-sidebar-highlights">
                                     @foreach ($sidebarHighlights as $sidebarHighlight)
@@ -791,6 +956,22 @@
                             @endif
 
                             <div class="car-details-sidebar-actions">
+                                @if ($hasPhoneHref)
+                                    <a href="{{ $phoneHref }}"
+                                       class="btn sidebar-action-btn sidebar-call-btn">
+                                        <i class="fa-solid fa-phone"></i>
+                                        {{ __('website.car_details.sidebar.call_us') }}
+                                    </a>
+                                @else
+                                    <button
+                                        type="button"
+                                        class="btn sidebar-action-btn sidebar-call-btn is-disabled"
+                                        aria-disabled="true"
+                                        disabled>
+                                        <i class="fa-solid fa-phone"></i>
+                                        {{ __('website.car_details.sidebar.call_us') }}
+                                    </button>
+                                @endif
                                 @if ($carDetailsWhatsAppHref)
                                     <a href="{{ $carDetailsWhatsAppHref }}"
                                        class="btn sidebar-action-btn sidebar-whatsapp-btn"
@@ -809,43 +990,7 @@
                                         {{ __('website.car_details.owner_details.chat_whatsapp') }}
                                     </button>
                                 @endif
-                                @if ($hasPhoneHref)
-                                    <a href="{{ $phoneHref }}"
-                                       class="btn sidebar-action-btn sidebar-call-btn">
-                                        <i class="fa-solid fa-phone"></i>
-                                        {{ __('website.car_details.sidebar.call_us') }}
-                                    </a>
-                                @else
-                                    <button
-                                        type="button"
-                                        class="btn sidebar-action-btn sidebar-call-btn is-disabled"
-                                        aria-disabled="true"
-                                        disabled>
-                                        <i class="fa-solid fa-phone"></i>
-                                        {{ __('website.car_details.sidebar.call_us') }}
-                                    </button>
-                                @endif
                             </div>
-
-                            @if ($sidebarPriceRows->isNotEmpty())
-                                <div class="car-details-mobile-prices">
-                                    <h4>{{ __('website.car_details.sections.rental_prices') }}</h4>
-                                    <div class="car-details-mobile-price-grid">
-                                        @foreach ($sidebarPriceRows as $sidebarPriceRow)
-                                            <div class="car-details-mobile-price-card">
-                                                <span class="price-label">{{ $sidebarPriceRow['label'] }}</span>
-                                                <div class="price-main-wrap">
-                                                    <strong>{{ $formatAmount($sidebarPriceRow['current']) }}</strong>
-                                                    @if (filled($sidebarPriceRow['old']))
-                                                        <del>{{ $formatAmount($sidebarPriceRow['old']) }}</del>
-                                                    @endif
-                                                </div>
-                                                <span class="price-meta">{{ trim($currencySymbol . ' ' . $sidebarPriceRow['unit']) }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
                         </aside>
                     </div>
                 </div>
@@ -1019,4 +1164,65 @@
                 </div>
             </div>
         </section>
+
+        <div class="car-details-mobile-contact-bar">
+            @if ($hasPhoneHref)
+                <a href="{{ $phoneHref }}"
+                   class="btn sidebar-action-btn sidebar-call-btn">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ __('website.car_details.sidebar.call_us') }}
+                </a>
+            @else
+                <button
+                    type="button"
+                    class="btn sidebar-action-btn sidebar-call-btn is-disabled"
+                    aria-disabled="true"
+                    disabled>
+                    <i class="fa-solid fa-phone"></i>
+                    {{ __('website.car_details.sidebar.call_us') }}
+                </button>
+            @endif
+            @if ($carDetailsWhatsAppHref)
+                <a href="{{ $carDetailsWhatsAppHref }}"
+                   class="btn sidebar-action-btn sidebar-whatsapp-btn"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    {{ __('website.car_details.owner_details.chat_whatsapp') }}
+                </a>
+            @else
+                <button
+                    type="button"
+                    class="btn sidebar-action-btn sidebar-whatsapp-btn is-disabled"
+                    aria-disabled="true"
+                    disabled>
+                    <i class="fa-brands fa-whatsapp"></i>
+                    {{ __('website.car_details.owner_details.chat_whatsapp') }}
+                </button>
+            @endif
+        </div>
 @endsection
+
+@push('js')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const galleryItems = @json($galleryLightboxItems->all());
+
+            if (!window.Fancybox || !Array.isArray(galleryItems) || galleryItems.length === 0) {
+                return;
+            }
+
+            document.querySelectorAll('.car-details-gallery-trigger').forEach(function (trigger) {
+                trigger.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const startIndex = Number.parseInt(this.dataset.galleryIndex || '0', 10);
+
+                    window.Fancybox.show(galleryItems, {
+                        startIndex: Number.isNaN(startIndex) ? 0 : startIndex,
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

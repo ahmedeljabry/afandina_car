@@ -64,6 +64,7 @@ class HomeController extends Controller
                     ->where('cars.is_featured', true)
                     ->orderByDesc('cars.updated_at')
                     ->orderByDesc('cars.id')
+                    ->take(6)
                     ->get()
                     ->map(fn(Car $car) => $this->mapCarCardData($car, $locale, $currencyRate, $currencySymbol));
 
