@@ -509,29 +509,29 @@
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn {
-            background: #ffa633;
-            border-color: #ffa633;
-            color: #201f1d;
+            background: #1faf64;
+            border-color: #1faf64;
+            color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:focus {
-            background: #ffffff;
-            border-color: #ffa633;
-            color: #ffa633;
-            box-shadow: inset 0 48px 0 0 #ffffff;
+            background: #14824a;
+            border-color: #14824a;
+            color: #fff;
+            box-shadow: none;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn {
-            background: #201f1d;
-            border: 1px solid #201f1d;
+            background: #dc2626;
+            border: 1px solid #dc2626;
             color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .call-btn:focus {
-            background: #127384;
-            border-color: #127384;
+            background: #b91c1c;
+            border-color: #b91c1c;
             color: #fff;
         }
 
@@ -580,30 +580,30 @@
         }
 
         .sidebar-call-btn {
-            background: #201f1d;
-            border-color: #201f1d;
+            background: #dc2626;
+            border-color: #dc2626;
             color: #fff;
         }
 
         .sidebar-call-btn:hover,
         .sidebar-call-btn:focus {
-            background: #127384;
-            border-color: #127384;
+            background: #b91c1c;
+            border-color: #b91c1c;
             color: #fff;
         }
 
         .sidebar-whatsapp-btn {
-            background: #ffa633;
-            border-color: #ffa633;
-            color: #201f1d;
+            background: #1faf64;
+            border-color: #1faf64;
+            color: #fff;
         }
 
         .sidebar-whatsapp-btn:hover,
         .sidebar-whatsapp-btn:focus {
-            background: #ffffff;
-            border-color: #ffa633;
-            color: #ffa633;
-            box-shadow: inset 0 56px 0 0 #ffffff;
+            background: #14824a;
+            border-color: #14824a;
+            color: #fff;
+            box-shadow: none;
         }
 
         .sidebar-action-btn.is-disabled {
