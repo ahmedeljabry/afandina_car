@@ -499,6 +499,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            transition: background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .listing-action-btn .action-label {
@@ -508,28 +509,29 @@
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn {
-            background: #1faf64;
-            border-color: #1faf64;
-            color: #fff;
+            background: #ffa633;
+            border-color: #ffa633;
+            color: #201f1d;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .whatsapp-btn:focus {
-            background: #14824a;
-            border-color: #14824a;
-            color: #fff;
+            background: #ffffff;
+            border-color: #ffa633;
+            color: #ffa633;
+            box-shadow: inset 0 48px 0 0 #ffffff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn {
-            background: #dc2626;
-            border: 1px solid #dc2626;
+            background: #201f1d;
+            border: 1px solid #201f1d;
             color: #fff;
         }
 
         .details-car-grid .related-cars-card .listing-action-group .call-btn:hover,
         .details-car-grid .related-cars-card .listing-action-group .call-btn:focus {
-            background: #b91c1c;
-            border-color: #b91c1c;
+            background: #127384;
+            border-color: #127384;
             color: #fff;
         }
 
@@ -570,6 +572,7 @@
             font-weight: 700;
             border: 1px solid transparent;
             box-shadow: none;
+            transition: background-color .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
         }
 
         .sidebar-action-btn i {
@@ -577,29 +580,30 @@
         }
 
         .sidebar-call-btn {
-            background: #faf5ff;
-            border-color: #d8b4fe;
-            color: #7c3aed;
+            background: #201f1d;
+            border-color: #201f1d;
+            color: #fff;
         }
 
         .sidebar-call-btn:hover,
         .sidebar-call-btn:focus {
-            background: #f3e8ff;
-            border-color: #c084fc;
-            color: #6d28d9;
+            background: #127384;
+            border-color: #127384;
+            color: #fff;
         }
 
         .sidebar-whatsapp-btn {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-            color: #16a34a;
+            background: #ffa633;
+            border-color: #ffa633;
+            color: #201f1d;
         }
 
         .sidebar-whatsapp-btn:hover,
         .sidebar-whatsapp-btn:focus {
-            background: #dcfce7;
-            border-color: #86efac;
-            color: #15803d;
+            background: #ffffff;
+            border-color: #ffa633;
+            color: #ffa633;
+            box-shadow: inset 0 56px 0 0 #ffffff;
         }
 
         .sidebar-action-btn.is-disabled {
