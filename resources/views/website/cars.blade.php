@@ -360,6 +360,11 @@
             margin-top: 30px;
         }
 
+        .listing-seo-content .listing-seo-description > *:last-child,
+        .listing-seo-content .listing-seo-article > *:last-child {
+            margin-bottom: 0;
+        }
+
         .listing-breadcrumb-description {
             margin: 12px 0 0;
             color: #fff;
@@ -377,6 +382,8 @@
         }
 
         .listing-seo-content .listing-seo-description,
+        .listing-seo-content .listing-seo-description p,
+        .listing-seo-content .listing-seo-description li,
         .listing-seo-content .listing-seo-article,
         .listing-seo-content .listing-seo-article p,
         .listing-seo-content .listing-seo-article li {
@@ -385,6 +392,55 @@
             line-height: 1.75;
         }
 
+        .listing-seo-content .listing-seo-description p,
+        .listing-seo-content .listing-seo-article p {
+            margin-bottom: 14px;
+        }
+
+        .listing-seo-content .listing-seo-description ul,
+        .listing-seo-content .listing-seo-description ol,
+        .listing-seo-content .listing-seo-article ul,
+        .listing-seo-content .listing-seo-article ol {
+            margin: 0 0 16px;
+            padding-inline-start: 1.4rem;
+        }
+
+        .listing-seo-content .listing-seo-description li,
+        .listing-seo-content .listing-seo-article li {
+            margin-bottom: 8px;
+        }
+
+        .listing-seo-content .listing-seo-description li[data-list="bullet"],
+        .listing-seo-content .listing-seo-article li[data-list="bullet"] {
+            list-style-type: disc;
+        }
+
+        .listing-seo-content .listing-seo-description .ql-ui,
+        .listing-seo-content .listing-seo-article .ql-ui {
+            display: none;
+        }
+
+        .listing-seo-content .listing-seo-description a,
+        .listing-seo-content .listing-seo-article a {
+            color: #127384;
+            text-decoration: underline;
+        }
+
+        .listing-seo-content .listing-seo-description blockquote,
+        .listing-seo-content .listing-seo-article blockquote {
+            margin: 0 0 16px;
+            padding: 12px 16px;
+            border-inline-start: 4px solid #127384;
+            background: #f7fbfc;
+            color: #334155;
+        }
+
+        .listing-seo-content .listing-seo-description h1,
+        .listing-seo-content .listing-seo-description h2,
+        .listing-seo-content .listing-seo-description h3,
+        .listing-seo-content .listing-seo-description h4,
+        .listing-seo-content .listing-seo-description h5,
+        .listing-seo-content .listing-seo-description h6,
         .listing-seo-content .listing-seo-article h1,
         .listing-seo-content .listing-seo-article h2,
         .listing-seo-content .listing-seo-article h3,
@@ -399,6 +455,12 @@
             font-size: 24px;
         }
 
+        .listing-seo-content .listing-seo-description > h1:first-child,
+        .listing-seo-content .listing-seo-description > h2:first-child,
+        .listing-seo-content .listing-seo-description > h3:first-child,
+        .listing-seo-content .listing-seo-description > h4:first-child,
+        .listing-seo-content .listing-seo-description > h5:first-child,
+        .listing-seo-content .listing-seo-description > h6:first-child,
         .listing-seo-content .listing-seo-article > h1:first-child,
         .listing-seo-content .listing-seo-article > h2:first-child,
         .listing-seo-content .listing-seo-article > h3:first-child,
@@ -420,12 +482,20 @@
             }
 
             .listing-seo-content .listing-seo-description,
+            .listing-seo-content .listing-seo-description p,
+            .listing-seo-content .listing-seo-description li,
             .listing-seo-content .listing-seo-article,
             .listing-seo-content .listing-seo-article p,
             .listing-seo-content .listing-seo-article li {
                 font-size: 15px;
             }
 
+            .listing-seo-content .listing-seo-description h1,
+            .listing-seo-content .listing-seo-description h2,
+            .listing-seo-content .listing-seo-description h3,
+            .listing-seo-content .listing-seo-description h4,
+            .listing-seo-content .listing-seo-description h5,
+            .listing-seo-content .listing-seo-description h6,
             .listing-seo-content .listing-seo-article h1,
             .listing-seo-content .listing-seo-article h2,
             .listing-seo-content .listing-seo-article h3,
@@ -435,6 +505,12 @@
                 font-size: 22px;
             }
 
+            .listing-seo-content .listing-seo-description > h1:first-child,
+            .listing-seo-content .listing-seo-description > h2:first-child,
+            .listing-seo-content .listing-seo-description > h3:first-child,
+            .listing-seo-content .listing-seo-description > h4:first-child,
+            .listing-seo-content .listing-seo-description > h5:first-child,
+            .listing-seo-content .listing-seo-description > h6:first-child,
             .listing-seo-content .listing-seo-article > h1:first-child,
             .listing-seo-content .listing-seo-article > h2:first-child,
             .listing-seo-content .listing-seo-article > h3:first-child,
@@ -451,12 +527,20 @@
             }
 
             .listing-seo-content .listing-seo-description,
+            .listing-seo-content .listing-seo-description p,
+            .listing-seo-content .listing-seo-description li,
             .listing-seo-content .listing-seo-article,
             .listing-seo-content .listing-seo-article p,
             .listing-seo-content .listing-seo-article li {
                 font-size: 14px;
             }
 
+            .listing-seo-content .listing-seo-description h1,
+            .listing-seo-content .listing-seo-description h2,
+            .listing-seo-content .listing-seo-description h3,
+            .listing-seo-content .listing-seo-description h4,
+            .listing-seo-content .listing-seo-description h5,
+            .listing-seo-content .listing-seo-description h6,
             .listing-seo-content .listing-seo-article h1,
             .listing-seo-content .listing-seo-article h2,
             .listing-seo-content .listing-seo-article h3,
@@ -466,6 +550,12 @@
                 font-size: 20px;
             }
 
+            .listing-seo-content .listing-seo-description > h1:first-child,
+            .listing-seo-content .listing-seo-description > h2:first-child,
+            .listing-seo-content .listing-seo-description > h3:first-child,
+            .listing-seo-content .listing-seo-description > h4:first-child,
+            .listing-seo-content .listing-seo-description > h5:first-child,
+            .listing-seo-content .listing-seo-description > h6:first-child,
             .listing-seo-content .listing-seo-article > h1:first-child,
             .listing-seo-content .listing-seo-article > h2:first-child,
             .listing-seo-content .listing-seo-article > h3:first-child,
@@ -487,6 +577,8 @@
             }
 
             .listing-seo-content .listing-seo-description,
+            .listing-seo-content .listing-seo-description p,
+            .listing-seo-content .listing-seo-description li,
             .listing-seo-content .listing-seo-article,
             .listing-seo-content .listing-seo-article p,
             .listing-seo-content .listing-seo-article li {
@@ -494,6 +586,12 @@
                 line-height: 1.75;
             }
 
+            .listing-seo-content .listing-seo-description h1,
+            .listing-seo-content .listing-seo-description h2,
+            .listing-seo-content .listing-seo-description h3,
+            .listing-seo-content .listing-seo-description h4,
+            .listing-seo-content .listing-seo-description h5,
+            .listing-seo-content .listing-seo-description h6,
             .listing-seo-content .listing-seo-article h1,
             .listing-seo-content .listing-seo-article h2,
             .listing-seo-content .listing-seo-article h3,
@@ -503,6 +601,12 @@
                 font-size: 18px;
             }
 
+            .listing-seo-content .listing-seo-description > h1:first-child,
+            .listing-seo-content .listing-seo-description > h2:first-child,
+            .listing-seo-content .listing-seo-description > h3:first-child,
+            .listing-seo-content .listing-seo-description > h4:first-child,
+            .listing-seo-content .listing-seo-description > h5:first-child,
+            .listing-seo-content .listing-seo-description > h6:first-child,
             .listing-seo-content .listing-seo-article > h1:first-child,
             .listing-seo-content .listing-seo-article > h2:first-child,
             .listing-seo-content .listing-seo-article > h3:first-child,

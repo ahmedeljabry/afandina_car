@@ -18,6 +18,9 @@
 @endsection
 
 @push('styles')
+@if($page->slug === 'all-cars')
+    <link rel="stylesheet" href="{{ asset('admin/assets/plugins/quill/quill.snow.css') }}">
+@endif
 <style>
     .page-edit-card {
         border-radius: 12px;
@@ -85,6 +88,39 @@
     }
     .border-left-success {
         border-left: 4px solid #28a745 !important;
+    }
+    .rich-editor-input {
+        min-height: 220px;
+    }
+    .rich-editor-input.is-enhanced {
+        display: none;
+    }
+    .page-rich-editor {
+        background: #fff;
+        border-radius: 8px;
+    }
+    .page-rich-editor .ql-toolbar.ql-snow {
+        border-color: #ced4da;
+        border-radius: 8px 8px 0 0;
+        background: #f8f9fa;
+    }
+    .page-rich-editor .ql-container.ql-snow {
+        min-height: 220px;
+        border-color: #ced4da;
+        border-radius: 0 0 8px 8px;
+        font-size: 15px;
+    }
+    .page-rich-editor .ql-editor {
+        min-height: 220px;
+        line-height: 1.7;
+    }
+    .page-rich-editor .ql-editor.ql-blank::before {
+        color: #8a94a6;
+        font-style: normal;
+    }
+    .page-rich-editor.is-invalid .ql-toolbar.ql-snow,
+    .page-rich-editor.is-invalid .ql-container.ql-snow {
+        border-color: #dc3545;
     }
 </style>
 @endpush
@@ -227,13 +263,27 @@
                                                     <label for="description_{{ $lang->code }}" class="font-weight-bold">
                                                         Description
                                                     </label>
-                                                    <textarea name="description[{{ $lang->code }}]" 
-                                                              id="description_{{ $lang->code }}"
-                                                              class="form-control @error('description.' . $lang->code) is-invalid @enderror"
-                                                              rows="5"
-                                                              placeholder="Enter main description">{{ old('description.' . $lang->code, $translation->description ?? '') }}</textarea>
+                                                    @if($supportsArticle)
+                                                        <textarea name="description[{{ $lang->code }}]"
+                                                                  id="description_{{ $lang->code }}"
+                                                                  class="form-control rich-editor-input js-rich-editor-input @error('description.' . $lang->code) is-invalid @enderror"
+                                                                  data-rich-editor="description_editor_{{ $lang->code }}">{{ old('description.' . $lang->code, $translation->description ?? '') }}</textarea>
+                                                        <div class="page-rich-editor @error('description.' . $lang->code) is-invalid @enderror">
+                                                            <div id="description_editor_{{ $lang->code }}"
+                                                                 class="js-rich-editor"
+                                                                 data-input="description_{{ $lang->code }}"
+                                                                 data-placeholder="Write intro paragraphs for the listing SEO area"
+                                                                 dir="{{ $lang->code === 'ar' ? 'rtl' : 'ltr' }}"></div>
+                                                        </div>
+                                                    @else
+                                                        <textarea name="description[{{ $lang->code }}]"
+                                                                  id="description_{{ $lang->code }}"
+                                                                  class="form-control @error('description.' . $lang->code) is-invalid @enderror"
+                                                                  rows="5"
+                                                                  placeholder="Enter main description">{{ old('description.' . $lang->code, $translation->description ?? '') }}</textarea>
+                                                    @endif
                                                     @error('description.' . $lang->code)
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
                                                 </div>
 
@@ -244,11 +294,17 @@
                                                         </label>
                                                         <textarea name="article[{{ $lang->code }}]"
                                                                   id="article_{{ $lang->code }}"
-                                                                  class="form-control @error('article.' . $lang->code) is-invalid @enderror"
-                                                                  rows="8"
-                                                                  placeholder="Enter article content or HTML">{{ old('article.' . $lang->code, $translation->article ?? '') }}</textarea>
+                                                                  class="form-control rich-editor-input js-rich-editor-input @error('article.' . $lang->code) is-invalid @enderror"
+                                                                  data-rich-editor="article_editor_{{ $lang->code }}">{{ old('article.' . $lang->code, $translation->article ?? '') }}</textarea>
+                                                        <div class="page-rich-editor @error('article.' . $lang->code) is-invalid @enderror">
+                                                            <div id="article_editor_{{ $lang->code }}"
+                                                                 class="js-rich-editor"
+                                                                 data-input="article_{{ $lang->code }}"
+                                                                 data-placeholder="Write formatted article content with headings, paragraphs, and lists"
+                                                                 dir="{{ $lang->code === 'ar' ? 'rtl' : 'ltr' }}"></div>
+                                                        </div>
                                                         @error('article.' . $lang->code)
-                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                            <div class="invalid-feedback d-block">{{ $message }}</div>
                                                         @enderror
                                                     </div>
                                                 @else
@@ -414,3 +470,72 @@
         </div>
     </div>
 @endsection
+
+@if($page->slug === 'all-cars')
+    @push('scripts')
+        <script src="{{ asset('admin/assets/plugins/quill/quill.min.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof Quill === 'undefined') {
+                    return;
+                }
+
+                var toolbarOptions = [
+                    [{ header: [1, 2, 3, 4, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    [{ align: [] }, { direction: 'rtl' }],
+                    ['link', 'blockquote'],
+                    ['clean']
+                ];
+
+                var editors = [];
+
+                document.querySelectorAll('.js-rich-editor').forEach(function (editorElement) {
+                    var input = document.getElementById(editorElement.dataset.input);
+
+                    if (!input) {
+                        return;
+                    }
+
+                    var quill = new Quill(editorElement, {
+                        modules: {
+                            toolbar: toolbarOptions
+                        },
+                        placeholder: editorElement.dataset.placeholder || '',
+                        theme: 'snow'
+                    });
+
+                    quill.root.setAttribute('dir', editorElement.getAttribute('dir') || 'ltr');
+
+                    input.classList.add('is-enhanced');
+
+                    var initialValue = input.value.trim();
+
+                    if (initialValue !== '') {
+                        if (/<[a-z][\s\S]*>/i.test(initialValue)) {
+                            quill.clipboard.dangerouslyPasteHTML(initialValue);
+                        } else {
+                            quill.setText(initialValue);
+                        }
+                    }
+
+                    var syncInput = function () {
+                        input.value = quill.getText().trim().length ? quill.root.innerHTML : '';
+                    };
+
+                    quill.on('text-change', syncInput);
+                    editors.push(syncInput);
+                });
+
+                document.querySelectorAll('form').forEach(function (form) {
+                    form.addEventListener('submit', function () {
+                        editors.forEach(function (syncInput) {
+                            syncInput();
+                        });
+                    });
+                });
+            });
+        </script>
+    @endpush
+@endif
