@@ -109,7 +109,13 @@ class HomeController extends GenericController
             'support_item_4_text',
             'support_item_5_text',
         ];
-        $this->nonTranslatableFields = ['page_name', 'is_active', 'hero_type'];
+        $this->nonTranslatableFields = [
+            'page_name',
+            'is_active',
+            'hero_type',
+            'rental_section_image_path',
+            'rental_section_grid_image_path',
+        ];
     }
 
     public function edit($id): View
@@ -219,6 +225,8 @@ class HomeController extends GenericController
             'hero_type' => 'required|in:video,image',
             'hero_header_video_path' => 'nullable|mimes:mp4,webm,ogg,mov|max:102400',
             'hero_header_image_path' => 'nullable|mimes:jpg,jpeg,png,svg,webp|max:10240',
+            'rental_section_image_path' => 'nullable|mimes:jpg,jpeg,png,svg,webp|max:10240',
+            'rental_section_grid_image_path' => 'nullable|mimes:jpg,jpeg,png,svg,webp|max:10240',
             'meta_title.*' => 'nullable|string|max:255',
             'meta_description.*' => 'nullable|string',
             'meta_keywords.*' => 'nullable|string',
@@ -354,7 +362,7 @@ class HomeController extends GenericController
             ['id' => 'overview', 'label' => 'Overview', 'icon' => 'fas fa-house'],
             ['id' => 'hero', 'label' => 'Hero', 'icon' => 'fas fa-wand-magic-sparkles'],
             ['id' => 'features', 'label' => 'Features', 'icon' => 'fas fa-bolt'],
-            ['id' => 'rental', 'label' => 'Rental & Stats', 'icon' => 'fas fa-chart-line'],
+            ['id' => 'rental', 'label' => 'Rent Steps', 'icon' => 'fas fa-route'],
             ['id' => 'headings', 'label' => 'Headings', 'icon' => 'fas fa-heading'],
             ['id' => 'testimonials', 'label' => 'Testimonials', 'icon' => 'fas fa-quote-right'],
             ['id' => 'support', 'label' => 'Support', 'icon' => 'fas fa-life-ring'],
@@ -407,8 +415,22 @@ class HomeController extends GenericController
             ],
             'rental' => [
                 'anchor' => 'home-pane-rental',
-                'title' => 'Rental & Stats',
-                'description' => 'Rental steps and counter values used in the homepage stats block.',
+                'title' => 'Rent Our Cars in 3 Steps',
+                'description' => 'Control the homepage rental steps section, section images, and counter values.',
+                'media_fields' => [
+                    [
+                        'name' => 'rental_section_image_path',
+                        'label' => 'Main Section Image',
+                        'description' => 'Large car image on the left side of the 3 steps section.',
+                        'fallback_asset' => 'website/assets/img/about/rent-car.png',
+                    ],
+                    [
+                        'name' => 'rental_section_grid_image_path',
+                        'label' => 'Grid Overlay Image',
+                        'description' => 'Small overlay image displayed on top of the main section image.',
+                        'fallback_asset' => 'website/assets/img/about/car-grid.png',
+                    ],
+                ],
                 'fields' => [
                     ['name' => 'rental_section_title', 'label' => 'Section Title'],
                     ['name' => 'rental_section_paragraph', 'label' => 'Section Paragraph', 'type' => 'textarea', 'rows' => 3, 'width' => 'col-12'],
@@ -600,6 +622,8 @@ class HomeController extends GenericController
         $fileMap = [
             'hero_header_video_path' => 'homes/hero',
             'hero_header_image_path' => 'homes/hero',
+            'rental_section_image_path' => 'homes/rental',
+            'rental_section_grid_image_path' => 'homes/rental',
         ];
 
         foreach ($fileMap as $field => $directory) {

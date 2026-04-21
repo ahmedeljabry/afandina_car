@@ -837,6 +837,24 @@
         return implode(' ', array_slice($words, 1, 4));
     };
 
+    $mediaAssetUrl = static function (?string $path, string $fallback): string {
+        $path = trim((string) $path);
+
+        if ($path === '') {
+            return asset($fallback);
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        if (Str::startsWith($path, ['website/', 'admin/'])) {
+            return asset($path);
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    };
+
     $noDepositLabel = Str::title(str_replace('_', ' ', __('no_deposit')));
     $deferredImagePlaceholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
     $phoneValue = $contact?->phone ?: $contact?->alternative_phone;
@@ -955,6 +973,9 @@
             'label' => $homeTranslation?->rental_stat_4_label ?: __('website.home.stats.total_kilometers'),
         ],
     ];
+
+    $rentalSectionImage = $mediaAssetUrl($home?->rental_section_image_path, 'website/assets/img/about/rent-car.png');
+    $rentalSectionGridImage = $mediaAssetUrl($home?->rental_section_grid_image_path, 'website/assets/img/about/car-grid.png');
 
     $heroStats = array_slice($rentalStats, 0, 3);
     $heroHighlights = array_values(array_filter([
@@ -1385,9 +1406,9 @@
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <div class="rental-img">
-                        <img src="{{ asset('website/assets/img/about/rent-car.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
+                        <img src="{{ $rentalSectionImage }}" alt="{{ $homeTranslation?->rental_section_title ?: __('website.home.rental.title') }}" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         <div class="grid-img">
-                            <img src="{{ asset('website/assets/img/about/car-grid.png') }}" alt="img" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
+                            <img src="{{ $rentalSectionGridImage }}" alt="{{ __('website.home.rental.title') }}" class="img-fluid" loading="lazy" fetchpriority="low" decoding="async">
                         </div>
                     </div>
                 </div>

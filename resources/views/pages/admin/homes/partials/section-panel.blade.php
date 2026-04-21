@@ -24,6 +24,45 @@
         @endforeach
     </ul>
 
+    @if (!empty($section['media_fields']))
+        <div class="row g-3 mb-4">
+            @foreach ($section['media_fields'] as $mediaField)
+                @php
+                    $fieldName = $mediaField['name'];
+                    $currentPath = data_get($item, $fieldName);
+                    $previewUrl = filled($currentPath)
+                        ? asset('storage/' . ltrim($currentPath, '/'))
+                        : asset($mediaField['fallback_asset']);
+                    $previewId = $fieldName . '_preview';
+                    $filenameId = $fieldName . '_filename';
+                @endphp
+
+                <div class="col-lg-6">
+                    <div class="home-upload-card h-100">
+                        <h5>{{ __($mediaField['label']) }}</h5>
+                        <p>{{ __($mediaField['description']) }}</p>
+                        <img id="{{ $previewId }}" src="{{ $previewUrl }}" alt="{{ __($mediaField['label']) }}" class="home-media-preview">
+                        <label class="home-upload-dropzone" for="{{ $fieldName }}">
+                            <strong>{{ __('Choose Image') }}</strong>
+                            <small>{{ __('JPG, PNG, SVG, WEBP up to 10 MB') }}</small>
+                        </label>
+                        <input type="file"
+                            name="{{ $fieldName }}"
+                            id="{{ $fieldName }}"
+                            class="d-none home-upload-input @error($fieldName) is-invalid @enderror"
+                            accept="image/*"
+                            data-preview-target="{{ $previewId }}"
+                            data-file-label="{{ $filenameId }}">
+                        <div class="home-upload-filename" id="{{ $filenameId }}">{{ __('No new image selected') }}</div>
+                        @error($fieldName)
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="tab-content">
         @foreach ($homeLocales as $locale)
             @php
