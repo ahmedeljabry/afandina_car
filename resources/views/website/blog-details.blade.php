@@ -3,6 +3,7 @@
 
 @section('content')
     @php
+        use App\Support\CmsHtmlLinks;
         use Illuminate\Support\Str;
 
         $assetUrl = static fn (string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -21,6 +22,7 @@
 
         $blogTitle = $blogDetails['title'] ?? __('website.blog.common.untitled');
         $blogImage = $storageUrl($blogDetails['image_path'] ?? null, $assetUrl('img/blog/blog-1.jpg'));
+        $blogContent = CmsHtmlLinks::redirectBrokenInternalLinks($blogDetails['content'] ?? '');
     @endphp
 
     <div class="breadcrumb-bar">
@@ -62,9 +64,9 @@
                 </div>
             @endif
 
-            @if(filled($blogDetails['content'] ?? null))
+            @if(filled($blogContent))
                 <div class="blog-description">
-                    {!! $blogDetails['content'] !!}
+                    {!! $blogContent !!}
                 </div>
             @endif
 

@@ -4,6 +4,7 @@
 @section('content')
     @php
         use App\Support\CarWhatsApp;
+        use App\Support\CmsHtmlLinks;
         use Illuminate\Support\Str;
 
         $assetUrl = static fn (string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -114,6 +115,7 @@
             $descriptionHtml = '<p>' . e(__('website.car_details.not_available')) . '</p>';
             $descriptionPlainText = __('website.car_details.not_available');
         }
+        $descriptionHtml = CmsHtmlLinks::redirectBrokenInternalLinks($descriptionHtml);
 
         $features = collect($carDetails['features'] ?? [])
             ->filter(fn ($feature) => filled($feature['name'] ?? null))

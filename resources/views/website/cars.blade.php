@@ -11,6 +11,7 @@
 @section('content')
     <?php
         use App\Support\CarWhatsApp;
+        use App\Support\CmsHtmlLinks;
         use Illuminate\Support\Str;
 
         $assetUrl = static fn(string $path): string => asset('website/assets/' . ltrim($path, '/'));
@@ -46,6 +47,8 @@
         $listingContentArticle = array_key_exists('content_article', $listingContext)
             ? trim((string) ($listingContext['content_article'] ?? ''))
             : $defaultListingContentArticle;
+        $listingContentDescription = CmsHtmlLinks::redirectBrokenInternalLinks($listingContentDescription);
+        $listingContentArticle = CmsHtmlLinks::redirectBrokenInternalLinks($listingContentArticle);
         $breadcrumbTitle = $showSeoContentInBreadcrumb && $listingContentTitle !== ''
             ? $listingContentTitle
             : $pageHeading;
