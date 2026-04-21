@@ -83,21 +83,37 @@
 
         $galleryImageCount = max(1, $galleryImages->count());
 
-        $shortDescription = trim(strip_tags((string) ($carDetails['description'] ?? '')));
-        $longDescription = trim(strip_tags((string) ($carDetails['long_description'] ?? '')));
-        $preferredDescription = filled($longDescription) ? $longDescription : $shortDescription;
+        $decodeStoredHtml = static function (?string $value): string {
+            $value = trim((string) $value);
 
-        $descriptionParagraphs = collect(preg_split('/(?:\r\n|\r|\n){2,}/', $preferredDescription) ?: [])
-            ->map(fn ($value) => trim((string) $value))
-            ->filter(fn ($value) => filled($value))
-            ->values();
+            if (preg_match('/&lt;\\/?[a-z][\\s\\S]*?&gt;/i', $value)) {
+                return html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
 
-        if ($descriptionParagraphs->isEmpty()) {
-            $descriptionParagraphs = collect([__('website.car_details.not_available')]);
+            return $value;
+        };
+
+        $shortDescription = $decodeStoredHtml($carDetails['description'] ?? '');
+        $longDescription = $decodeStoredHtml($carDetails['long_description'] ?? '');
+        $preferredDescription = filled(trim(strip_tags($longDescription))) || preg_match('/<\\/?[a-z][\\s\\S]*?>/i', $longDescription)
+            ? $longDescription
+            : $shortDescription;
+
+        $descriptionHasHtml = preg_match('/<\\/?[a-z][\\s\\S]*?>/i', $preferredDescription);
+        $descriptionPlainText = trim(preg_replace('/\\s+/', ' ', strip_tags($preferredDescription)));
+
+        if (filled($descriptionPlainText)) {
+            $descriptionHtml = $descriptionHasHtml
+                ? $preferredDescription
+                : collect(preg_split('/(?:\\r\\n|\\r|\\n){2,}/', $preferredDescription) ?: [])
+                    ->map(fn ($value) => trim((string) $value))
+                    ->filter(fn ($value) => filled($value))
+                    ->map(fn ($value) => '<p>' . nl2br(e($value), false) . '</p>')
+                    ->implode('');
+        } else {
+            $descriptionHtml = '<p>' . e(__('website.car_details.not_available')) . '</p>';
+            $descriptionPlainText = __('website.car_details.not_available');
         }
-
-        $primaryDescription = $descriptionParagraphs->take(2);
-        $moreDescription = $descriptionParagraphs->slice(2);
 
         $features = collect($carDetails['features'] ?? [])
             ->filter(fn ($feature) => filled($feature['name'] ?? null))
@@ -169,7 +185,7 @@
         }
 
         $sidebarTitle = trim($carName . (filled($carDetails['year'] ?? null) ? ' - ' . $carDetails['year'] : ''));
-        $sidebarDescription = $descriptionParagraphs->first();
+        $sidebarDescription = Str::limit($descriptionPlainText, 180);
         $carSlug = $carDetails['slug'] ?? __('website.car_details.not_available');
         $carDetailsUrl = $carDetails['details_url'] ?? url()->current();
         $brandUrl = $carDetails['brand_url'] ?? route('website.cars.index');
@@ -303,7 +319,7 @@
             $schemaImageUrls = collect([$mainImage]);
         }
 
-        $schemaDescription = trim((string) ($preferredDescription ?: $sidebarDescription ?: $carName));
+        $schemaDescription = trim((string) ($descriptionPlainText ?: $sidebarDescription ?: $carName));
         $schemaAvailability = $statusRaw === 'available'
             ? 'https://schema.org/InStock'
             : 'https://schema.org/OutOfStock';
@@ -551,6 +567,136 @@
         .read-more .more-link:focus-visible {
             outline: 2px solid #121212;
             outline-offset: 3px;
+        }
+
+        .car-details-editor-content {
+            color: #4f5761;
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .car-details-editor-content > *:last-child {
+            margin-bottom: 0;
+        }
+
+        .car-details-editor-content p,
+        .car-details-editor-content li {
+            color: #4f5761;
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .car-details-editor-content p {
+            margin-bottom: 14px;
+        }
+
+        .car-details-editor-content h1,
+        .car-details-editor-content h2,
+        .car-details-editor-content h3,
+        .car-details-editor-content h4,
+        .car-details-editor-content h5,
+        .car-details-editor-content h6 {
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #1f1f1f;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .car-details-editor-content h1 {
+            font-size: 30px;
+        }
+
+        .car-details-editor-content h2 {
+            font-size: 26px;
+        }
+
+        .car-details-editor-content h3 {
+            font-size: 23px;
+        }
+
+        .car-details-editor-content h4,
+        .car-details-editor-content h5,
+        .car-details-editor-content h6 {
+            font-size: 20px;
+        }
+
+        .car-details-editor-content ul,
+        .car-details-editor-content ol {
+            margin: 0 0 16px;
+            padding-inline-start: 1.4rem;
+        }
+
+        .car-details-editor-content li {
+            margin-bottom: 8px;
+        }
+
+        .car-details-editor-content li[data-list="bullet"] {
+            list-style-type: disc;
+        }
+
+        .car-details-editor-content li[data-list="ordered"] {
+            list-style-type: decimal;
+        }
+
+        .car-details-editor-content .ql-ui {
+            display: none;
+        }
+
+        .car-details-editor-content .ql-align-center {
+            text-align: center;
+        }
+
+        .car-details-editor-content .ql-align-right {
+            text-align: right;
+        }
+
+        .car-details-editor-content .ql-align-justify {
+            text-align: justify;
+        }
+
+        .car-details-editor-content .ql-indent-1 {
+            padding-inline-start: 3em;
+        }
+
+        .car-details-editor-content .ql-indent-2 {
+            padding-inline-start: 6em;
+        }
+
+        .car-details-editor-content .ql-indent-3 {
+            padding-inline-start: 9em;
+        }
+
+        .car-details-editor-content blockquote {
+            margin: 0 0 16px;
+            padding: 12px 16px;
+            border-inline-start: 4px solid #127384;
+            background: #f7fbfc;
+            color: #334155;
+        }
+
+        .car-details-editor-content a {
+            color: #127384;
+            text-decoration: underline;
+        }
+
+        .car-details-editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .car-details-editor-content table {
+            width: 100%;
+            margin-bottom: 16px;
+            border-collapse: collapse;
+        }
+
+        .car-details-editor-content table th,
+        .car-details-editor-content table td {
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            vertical-align: top;
         }
 
         .car-details-sidebar-actions {
@@ -820,20 +966,8 @@
                             <div class="review-header">
                                 <h4>{{ __('website.car_details.sections.description') }}</h4>
                             </div>
-                            <div class="description-list">
-                                @foreach ($primaryDescription as $paragraph)
-                                    <p>{{ $paragraph }}</p>
-                                @endforeach
-                                @if ($moreDescription->isNotEmpty())
-                                    <div class="read-more">
-                                        <div class="more-text">
-                                            @foreach ($moreDescription as $paragraph)
-                                                <p>{{ $paragraph }}</p>
-                                            @endforeach
-                                        </div>
-                                        <button type="button" class="more-link" aria-expanded="false">{{ __('website.car_details.show_more') }}</button>
-                                   </div>
-                                @endif
+                            <div class="description-list car-details-editor-content">
+                                {!! $descriptionHtml !!}
                             </div>
                         </div>
                         <!-- /Listing Section -->
