@@ -44,14 +44,14 @@
             <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
                 <!-- General Data Tab -->
                 <li class="nav-item">
-                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill"
+                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-bs-toggle="pill"
                         href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
                         <i class="fas fa-info-circle"></i> General Data
                     </a>
                 </li>
                 <!-- Translated Data Tab -->
                 <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-toggle="pill"
+                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-bs-toggle="pill"
                         href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated"
                         aria-selected="false">
                         <i class="fas fa-language"></i> Translated Data
@@ -59,7 +59,7 @@
                 </li>
                 <!-- SEO Data Tab -->
                 <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-toggle="pill" href="#custom-tabs-seo"
+                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-bs-toggle="pill" href="#custom-tabs-seo"
                         role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
                         <i class="fas fa-search"></i> SEO Data
                     </a>
@@ -92,7 +92,7 @@
                             @foreach($activeLanguages as $lang)
                                 <li class="nav-item">
                                     <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-{{ $lang->code }}-tab" data-toggle="pill" href="#pills-{{ $lang->code }}"
+                                        id="pills-{{ $lang->code }}-tab" data-bs-toggle="pill" href="#pills-{{ $lang->code }}"
                                         role="tab" aria-controls="pills-{{ $lang->code }}"
                                         aria-selected="true">{{ $lang->name }}</a>
                                 </li>
@@ -119,7 +119,7 @@
                             @foreach($activeLanguages as $lang)
                                 <li class="nav-item">
                                     <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-seo-{{ $lang->code }}-tab" data-toggle="pill"
+                                        id="pills-seo-{{ $lang->code }}-tab" data-bs-toggle="pill"
                                         href="#pills-seo-{{ $lang->code }}" role="tab"
                                         aria-controls="pills-seo-{{ $lang->code }}" aria-selected="true">{{ $lang->name }}</a>
                                 </li>
