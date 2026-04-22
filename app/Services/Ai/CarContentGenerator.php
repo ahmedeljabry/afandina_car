@@ -19,16 +19,17 @@ class CarContentGenerator
 
         $model = config('services.openai.model', 'gpt-4o-mini');
         $language = $payload['language'] ?? 'en';
+        $languageName = $this->languageName($language);
         $name = $payload['name'] ?? '';
         $context = Arr::wrap($payload['context'] ?? []);
 
         $contextSummary = $this->buildContextSummary($context);
 
-        $systemPrompt = "You are an expert automotive copywriter creating concise, SEO-focused marketing copy. "
-            . "Always respond in the requested language ({$language}) and output clean JSON only.";
+        $systemPrompt = "You are an expert automotive SEO copywriter for Afandina Car Rental Agency in Dubai. "
+            . "Always write customer-facing copy in {$languageName} ({$language}) and output clean JSON only.";
 
         $userInstructions = [
-            "Generate marketing copy for a car rental listing using the following details:",
+            "Generate SEO content for a car rental listing using the following details:",
             "Car name: {$name}",
         ];
 
@@ -39,8 +40,8 @@ class CarContentGenerator
         $userInstructions = array_merge($userInstructions, [
             "Return a JSON object with the following keys:",
             'name: localized vehicle name suitable for listings.',
-            'description: short persuasive paragraph (~70 words).',
-            'long_description: detailed multi-paragraph copy (~220 words) with line breaks.',
+            "description: create a short SEO-optimized description in {$languageName} (max 100 words) about the car model, car type, specifications, and key features. Mention Afandina Car Rental Agency and car rental in Dubai. Use a natural human tone, unique content, and include a soft CTA.",
+            "long_description: create a 600+ word SEO article in {$languageName} for the editor. Return clean HTML only inside this JSON string, using one H1, multiple H2 sections, paragraphs, and lists where useful. Include specifications, features, car type, advantages, why to rent this car in Dubai, and a section titled naturally like 'Why choose Afandina Car Rental Agency'. Use natural keyword placement and no markdown fences.",
             'door_count: integer number of doors (e.g., 2).',
             'luggage_capacity: integer luggage capacity (e.g., 2).',
             'passenger_capacity: integer passenger capacity (e.g., 4).',
@@ -53,22 +54,23 @@ class CarContentGenerator
             'monthly_main_price: numeric monthly price without currency symbol.',
             'monthly_discount_price: numeric discounted monthly price or null if not applicable.',
             'monthly_mileage_included: numeric mileage included per month.',
-            'meta_title: under 60 characters, include branding if possible.',
-            'meta_description: under 160 characters, compelling CTA.',
-            'meta_keywords: array of 6 unique keywords (each under 35 characters).',
+            "meta_title: create 1 SEO title in {$languageName}, 50-60 characters where possible. Include the keyword idea 'Rent {$name} in Dubai' translated naturally when needed, include Afandina brand, and use power words.",
+            "meta_description: create a meta description in {$languageName}, 140-155 characters where possible. Include the main keyword, CTA, and Afandina brand.",
+            "meta_keywords: array of 5 SEO keywords maximum in {$languageName}, related to the car and including main keyword, long-tail keyword, and Afandina brand keyword.",
             'seo_questions: array of 3 objects with question and answer fields. Answers <= 60 words.',
         ]);
 
         $userMessage = implode("\n", $userInstructions)
             . "\n\nEnsure meta_keywords is an array of strings and seo_questions follows the example: "
-            . '[{"question": "...", "answer": "..."}]. Do not include markdown fences.';
+            . '[{"question": "...", "answer": "..."}]. '
+            . "Do not include markdown fences. Keep JSON valid even when long_description contains HTML.";
 
         $response = Http::timeout(40)
             ->withHeader('Authorization', "Bearer {$apiKey}")
             ->post('https://api.openai.com/v1/chat/completions', [
                 'model' => $model,
                 'temperature' => 0.7,
-                'max_tokens' => 900,
+                'max_tokens' => 3500,
                 'response_format' => ['type' => 'json_object'],
                 'messages' => [
                     ['role' => 'system', 'content' => $systemPrompt],
@@ -89,9 +91,9 @@ class CarContentGenerator
             'name' => Str::of(data_get($decoded, 'name', ''))->trim()->toString(),
             'description' => Str::of(data_get($decoded, 'description', ''))->trim()->toString(),
             'long_description' => Str::of(data_get($decoded, 'long_description', ''))->trim()->toString(),
-            'meta_title' => Str::limit(data_get($decoded, 'meta_title', ''), 120),
+            'meta_title' => Str::limit(data_get($decoded, 'meta_title', ''), 90),
             'meta_description' => Str::of(data_get($decoded, 'meta_description', ''))->trim()->toString(),
-            'meta_keywords' => $this->normalizeStringArray(data_get($decoded, 'meta_keywords', [])),
+            'meta_keywords' => array_slice($this->normalizeStringArray(data_get($decoded, 'meta_keywords', [])), 0, 5),
             'seo_questions' => $this->normalizeQaArray(data_get($decoded, 'seo_questions', [])),
             'door_count' => data_get($decoded, 'door_count'),
             'luggage_capacity' => data_get($decoded, 'luggage_capacity'),
@@ -128,6 +130,15 @@ class CarContentGenerator
         }
 
         return [];
+    }
+
+    protected function languageName(string $language): string
+    {
+        return match (Str::lower($language)) {
+            'ar', 'ar_ae', 'ar-ae' => 'Arabic',
+            'ru', 'ru_ru', 'ru-ru' => 'Russian',
+            default => 'English',
+        };
     }
 
     protected function buildContextSummary(array $context): string
