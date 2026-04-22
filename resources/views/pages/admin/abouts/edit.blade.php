@@ -6,6 +6,8 @@
     Edit {{ $modelName }}
 @endsection
 
+@include('includes.admin.rich_text_editor')
+
 @section('content')
     <!-- Display errors -->
 
@@ -391,7 +393,7 @@
         $(document).ready(function () {
             @foreach($activeLanguages as $lang)
                 var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                if (metaKeywordsInput) {
+                if (metaKeywordsInput && typeof Tagify !== 'undefined') {
                     new Tagify(metaKeywordsInput, {
                         placeholder: 'Enter meta keywords'
                     });

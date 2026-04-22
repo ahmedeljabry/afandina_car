@@ -219,7 +219,7 @@
 
             @foreach($activeLanguages as $lang)
                 var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                if (metaKeywordsInput) {
+                if (metaKeywordsInput && typeof Tagify !== 'undefined') {
                     new Tagify(metaKeywordsInput, {
                         placeholder: 'Enter meta keywords'
                     });
