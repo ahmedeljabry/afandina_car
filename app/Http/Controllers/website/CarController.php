@@ -14,6 +14,7 @@ use App\Models\Year;
 use App\Traits\DeduplicatesCars;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 class CarController extends Controller
 {
@@ -520,7 +521,23 @@ class CarController extends Controller
 
     private function resolveCar(string $identifier, string $locale): ?Car
     {
-        $car = Car::query()
+        $baseQuery = Car::query()->with('translations');
+
+        if (Schema::hasColumn('cars', 'slug')) {
+            $car = (clone $baseQuery)
+                ->where('slug', $identifier)
+                ->first();
+
+            if ($car) {
+                return $car;
+            }
+        }
+
+        if (!Schema::hasColumn('car_translations', 'slug')) {
+            return null;
+        }
+
+        $car = (clone $baseQuery)
             ->whereHas('translations', function ($query) use ($identifier, $locale) {
                 $query->where('locale', $locale)
                     ->where('slug', $identifier);
@@ -531,7 +548,7 @@ class CarController extends Controller
             return $car;
         }
 
-        $car = Car::query()
+        $car = (clone $baseQuery)
             ->whereHas('translations', function ($query) use ($identifier) {
                 $query->where('slug', $identifier);
             })

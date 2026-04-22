@@ -190,10 +190,16 @@ class CmsHtmlLinks
     private static function activeCarExists(string $slug): bool
     {
         return self::remembered('car:' . $slug, static function () use ($slug): bool {
+            $query = Car::query()->where('is_active', true);
+
+            if (Schema::hasColumn('cars', 'slug')) {
+                $query->where('slug', $slug);
+
+                return $query->exists();
+            }
+
             return Schema::hasColumn('car_translations', 'slug')
-                && Car::query()
-                    ->where('is_active', true)
-                    ->whereHas('translations', fn ($query) => $query->where('slug', $slug))
+                && $query->whereHas('translations', fn ($translationQuery) => $translationQuery->where('slug', $slug))
                     ->exists();
         });
     }
