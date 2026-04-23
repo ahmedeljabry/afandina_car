@@ -16,6 +16,8 @@
 
     @php
         $languageCount = isset($activeLanguages) ? $activeLanguages->count() : 0;
+        $translations = $item->translations->keyBy('locale');
+        $seoQuestions = $item->seoQuestions->groupBy('locale');
         $formStats = [];
         if ($languageCount) {
             $formStats[] = ['icon' => 'fas fa-language', 'label' => $languageCount . ' ' . __('Locales')];
@@ -28,6 +30,18 @@
         $formDescription = isset($item)
             ? __('Review the content, adjust translations and assets, then save confidently.')
             : __('Complete the details below to publish a polished entry.');
+        $keywordStringFor = function ($translation): string {
+            $metaKeywords = json_decode($translation?->meta_keywords ?? '[]', true);
+
+            if (!is_array($metaKeywords)) {
+                return '';
+            }
+
+            return implode(',', array_filter(array_map(
+                fn ($keyword) => is_array($keyword) ? ($keyword['value'] ?? null) : null,
+                $metaKeywords
+            )));
+        };
     @endphp
 
     @include('includes.admin.form_header', [
@@ -127,7 +141,7 @@
                         <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-tabContent">
                             @foreach($activeLanguages as $lang)
                                 @php
-                                    $translation = $item->translations->where('locale', $lang->code)->first();
+                                    $translation = $translations->get($lang->code);
                                 @endphp
                                 <div class="tab-pane fade @if($loop->first) show active @endif" id="pills-{{ $lang->code }}"
                                     role="tabpanel" aria-labelledby="pills-{{ $lang->code }}-tab">
@@ -136,21 +150,21 @@
                                             ({{ $lang->name }})</label>
                                         <input type="text" name="name[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="name_{{ $lang->code }}"
-                                            value="{{ old('name.' . $lang->code, $translation->name ?? '') }}">
+                                            value="{{ old('name.' . $lang->code, $translation?->name ?? '') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="title_{{ $lang->code }}" class="font-weight-bold">Section Title
                                             ({{ $lang->name }})</label>
                                         <input type="text" name="title[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="title_{{ $lang->code }}"
-                                            value="{{ old('title.' . $lang->code, $translation->title ?? '') }}">
+                                            value="{{ old('title.' . $lang->code, $translation?->title ?? '') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="description_{{ $lang->code }}" class="font-weight-bold">Description
                                             ({{ $lang->name }})</label>
                                         <textarea name="description[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="description_{{ $lang->code }}"
-                                            rows="4">{{ old('description.' . $lang->code, $translation->description ?? '') }}</textarea>
+                                            rows="4">{{ old('description.' . $lang->code, $translation?->description ?? '') }}</textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="article_{{ $lang->code }}" class="font-weight-bold">Article
@@ -158,7 +172,7 @@
                                         <textarea name="article[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm tinymce"
                                             id="article_{{ $lang->code }}"
-                                            rows="5">{{ old('article.' . $lang->code, $translation->article ?? '') }}</textarea>
+                                            rows="5">{{ old('article.' . $lang->code, $translation?->article ?? '') }}</textarea>
                                     </div>
                                 </div>
                             @endforeach
@@ -180,7 +194,7 @@
                         <div class="tab-content shadow-sm p-3 mb-4 bg-white rounded" id="pills-seo-tabContent">
                             @foreach($activeLanguages as $lang)
                                 @php
-                                    $translation = $item->translations->where('locale', $lang->code)->first();
+                                    $translation = $translations->get($lang->code);
                                 @endphp
                                 <div class="tab-pane fade @if($loop->first) show active @endif" id="pills-seo-{{ $lang->code }}"
                                     role="tabpanel" aria-labelledby="pills-seo-{{ $lang->code }}-tab">
@@ -189,7 +203,7 @@
                                             ({{ $lang->name }})</label>
                                         <input type="text" name="meta_title[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="meta_title_{{ $lang->code }}"
-                                            value="{{ old('meta_title.' . $lang->code, $translation->meta_title ?? '') }}">
+                                            value="{{ old('meta_title.' . $lang->code, $translation?->meta_title ?? '') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="meta_description_{{ $lang->code }}" class="font-weight-bold">Meta
@@ -197,31 +211,23 @@
                                         <textarea name="meta_description[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm"
                                             id="meta_description_{{ $lang->code }}"
-                                            rows="3">{{ old('meta_description.' . $lang->code, $translation->meta_description ?? '') }}</textarea>
+                                            rows="3">{{ old('meta_description.' . $lang->code, $translation?->meta_description ?? '') }}</textarea>
                                     </div>
                                     <!-- Meta Keywords Field -->
                                     <div class="form-group">
                                         <label for="meta_keywords_{{ $lang->code }}" class="font-weight-bold">Meta Keywords
                                             ({{ $lang->name }})</label>
 
-                                        @php
-                                            // Decode the JSON meta_keywords into an array
-                                            $metaKeywords = json_decode($translation->meta_keywords ?? '[]', true);
-
-                                            // Convert the array into a comma-separated string of keywords
-                                            $keywordString = implode(',', array_column($metaKeywords, 'value'));
-                                        @endphp
-
                                         <input type="text" name="meta_keywords[{{ $lang->code }}]"
                                             class="form-control form-control-lg shadow-sm" id="meta_keywords_{{ $lang->code }}"
-                                            value="{{ old('meta_keywords.' . $lang->code, $keywordString) }}"
+                                            value="{{ old('meta_keywords.' . $lang->code, $keywordStringFor($translation)) }}"
                                             data-role="tagsinput" placeholder="Enter meta keywords">
                                     </div>
 
                                     <!-- Dynamic SEO Questions/Answers Section -->
                                     <div class="seo-questions-container" id="seo-questions-{{ $lang->code }}">
                                         <label class="font-weight-bold">SEO Questions/Answers ({{ $lang->name }})</label>
-                                        @foreach($item->seoQuestions->where('locale', $lang->code) as $index => $seoQuestion)
+                                        @foreach($seoQuestions->get($lang->code, collect()) as $index => $seoQuestion)
                                             <div class="seo-question-group mb-3 p-3 border border-light rounded shadow-sm">
                                                 <div class="form-group">
                                                     <input type="text"

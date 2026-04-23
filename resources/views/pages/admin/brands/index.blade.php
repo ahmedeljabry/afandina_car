@@ -74,7 +74,7 @@
                                         <span>N/A</span>
                                     @endif
                                 </td>
-                                <td>{{ $item->translations->first()->name ?? 'N/A' }}</td>
+                                <td>{{ $item->translations->first()?->name ?? 'N/A' }}</td>
 
                                 <td>
                                     <!-- Custom Toggle Switch -->

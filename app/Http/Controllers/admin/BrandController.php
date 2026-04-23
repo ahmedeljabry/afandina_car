@@ -1,5 +1,7 @@
 <?php
 namespace App\Http\Controllers\admin;
+use App\Models\Brand;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class BrandController extends GenericController
@@ -11,6 +13,54 @@ class BrandController extends GenericController
         $this->translatableFields = ['name', 'title','description','article'];
         $this->nonTranslatableFields = ['is_active'];
         $this->uploadedfiles = ['logo_path'];
+    }
+
+    public function edit($id): View
+    {
+        $localeCodes = $this->data['activeLanguages']->pluck('code')->all();
+
+        $this->data['item'] = Brand::query()
+            ->with([
+                'translations' => function ($query) use ($localeCodes) {
+                    $query->whereIn('locale', $localeCodes);
+                },
+                'seoQuestions' => function ($query) use ($localeCodes) {
+                    $query->whereIn('locale', $localeCodes);
+                },
+            ])
+            ->withCount([
+                'cars',
+                'cars as active_cars_count' => function ($query) {
+                    $query->where('is_active', true);
+                },
+            ])
+            ->findOrFail($id);
+
+        return view('pages.admin.' . $this->modelName . '.edit', $this->data);
+    }
+
+    public function show($id): View
+    {
+        $localeCodes = $this->data['activeLanguages']->pluck('code')->all();
+
+        $this->data['item'] = Brand::query()
+            ->with([
+                'translations' => function ($query) use ($localeCodes) {
+                    $query->whereIn('locale', $localeCodes);
+                },
+                'seoQuestions' => function ($query) use ($localeCodes) {
+                    $query->whereIn('locale', $localeCodes);
+                },
+            ])
+            ->withCount([
+                'cars',
+                'cars as active_cars_count' => function ($query) {
+                    $query->where('is_active', true);
+                },
+            ])
+            ->findOrFail($id);
+
+        return view('pages.admin.' . $this->modelName . '.show', $this->data);
     }
 
     public function store(Request $request)

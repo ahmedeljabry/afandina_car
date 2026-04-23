@@ -6,7 +6,13 @@
     View {{ $modelName }}
 @endsection
 
-@section('content')<!-- Back, Edit, and Delete Buttons -->
+@section('content')
+                @php
+                    $translations = $item->translations->keyBy('locale');
+                    $seoQuestions = $item->seoQuestions->groupBy('locale');
+                    $primaryTranslation = $translations->first();
+                @endphp
+                <!-- Back, Edit, and Delete Buttons -->
                 <div class="mb-3 d-flex justify-content-between">
                     <a href="{{ route('admin.' . $modelName . '.index') }}" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="top" title="Back to list">
                         <i class="fas fa-arrow-left"></i> Back
@@ -36,8 +42,8 @@
                                 <img src="{{ asset('storage/' . $item->logo_path) }}" alt="Logo" class="img-fluid rounded shadow-sm" />
                             </div>
                             <div class="col-md-8">
-                                <h4>{{ $item->translations->first()->name ?? 'N/A' }}</h4>
-                                <span class="badge badge-info">{{ $item->translations->first()->slug ?? 'N/A' }}</span>
+                                <h4>{{ $primaryTranslation?->name ?? 'N/A' }}</h4>
+                                <span class="badge badge-info">{{ $primaryTranslation?->slug ?? 'N/A' }}</span>
                             </div>
                         </div>
 
@@ -54,6 +60,11 @@
 
                         <div class="tab-content mt-3" id="language-tabs-content">
                             @foreach($activeLanguages as $lang)
+                                @php
+                                    $translation = $translations->get($lang->code);
+                                    $keywords = json_decode($translation?->meta_keywords ?? '[]', true);
+                                    $keywords = is_array($keywords) ? $keywords : [];
+                                @endphp
                                 <div class="tab-pane fade @if($loop->first) show active @endif" id="content-{{ $lang->code }}" role="tabpanel" aria-labelledby="tab-{{ $lang->code }}">
                                     <div class="mb-3">
                                         <h5>Meta Data</h5>
@@ -61,21 +72,20 @@
                                             <tbody>
                                             <tr>
                                                 <th>Meta Title</th>
-                                                <td>{{ $item->translations->where('locale', $lang->code)->first()->meta_title ?? 'N/A' }}</td>
+                                                <td>{{ $translation?->meta_title ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Meta Description</th>
-                                                <td>{{ $item->translations->where('locale', $lang->code)->first()->meta_description ?? 'N/A' }}</td>
+                                                <td>{{ $translation?->meta_description ?? 'N/A' }}</td>
                                             </tr>
                                             <tr>
                                                 <th>Meta Keywords</th>
                                                 <td>
-                                                    @php
-                                                        $keywords = json_decode($item->translations->where('locale', $lang->code)->first()->meta_keywords, true);
-                                                    @endphp
-                                                    @foreach($keywords as $keyword)
+                                                    @forelse($keywords as $keyword)
                                                         <span class="badge badge-pill badge-primary">{{ $keyword['value'] }}</span>
-                                                    @endforeach
+                                                    @empty
+                                                        <span>N/A</span>
+                                                    @endforelse
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -84,23 +94,21 @@
 
                                     <div>
                                         <h5>SEO Questions/Answers</h5>
-                                        @forelse($item->seoQuestions->where('locale', $lang->code) as $seoQuestion)
-                                            @if($seoQuestion->where('locale', $lang->code)->first())
-                                                <div class="card mb-3 shadow-sm">
-                                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                                        <h6 class="m-0 font-weight-bold">Question {{ $seoQuestion->id }}</h6>
-                                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $seoQuestion->id }}" aria-expanded="false" aria-controls="collapse-{{ $seoQuestion->id }}">
-                                                            <i class="fas fa-chevron-down"></i>
-                                                        </button>
-                                                    </div>
-                                                    <div id="collapse-{{ $seoQuestion->id }}" class="collapse">
-                                                        <div class="card-body">
-                                                            <p><strong>Question:</strong> {{ $seoQuestion->question_text ?? 'N/A' }}</p>
-                                                            <p><strong>Answer:</strong> {{ $seoQuestion->answer_text ?? 'N/A' }}</p>
-                                                        </div>
+                                        @forelse($seoQuestions->get($lang->code, collect()) as $seoQuestion)
+                                            <div class="card mb-3 shadow-sm">
+                                                <div class="card-header d-flex justify-content-between align-items-center">
+                                                    <h6 class="m-0 font-weight-bold">Question {{ $seoQuestion->id }}</h6>
+                                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $seoQuestion->id }}" aria-expanded="false" aria-controls="collapse-{{ $seoQuestion->id }}">
+                                                        <i class="fas fa-chevron-down"></i>
+                                                    </button>
+                                                </div>
+                                                <div id="collapse-{{ $seoQuestion->id }}" class="collapse">
+                                                    <div class="card-body">
+                                                        <p><strong>Question:</strong> {{ $seoQuestion->question_text ?? 'N/A' }}</p>
+                                                        <p><strong>Answer:</strong> {{ $seoQuestion->answer_text ?? 'N/A' }}</p>
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         @empty
                                             <div class="alert alert-default-light">
                                                 No SEO questions available for this language.

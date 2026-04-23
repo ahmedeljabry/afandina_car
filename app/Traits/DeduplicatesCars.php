@@ -29,6 +29,31 @@ trait DeduplicatesCars
             ->values();
     }
 
+    protected function uniqueCarCountsByColumn(string $column, ?Builder $query = null): Collection
+    {
+        $allowedColumns = ['brand_id', 'category_id', 'year_id', 'car_model_id'];
+
+        if (!in_array($column, $allowedColumns, true)) {
+            throw new \InvalidArgumentException("Unsupported car grouping column [{$column}].");
+        }
+
+        $translationAlias = 'car_translation_dedupe';
+        $signatureExpression = $this->carDeduplicationSignatureExpression('cars', $translationAlias);
+        $baseQuery = $query ? clone $query : Car::query();
+
+        return $baseQuery
+            ->leftJoin("car_translations as {$translationAlias}", function ($join) use ($translationAlias) {
+                $join->on("{$translationAlias}.car_id", '=', 'cars.id')
+                    ->where("{$translationAlias}.locale", '=', 'en');
+            })
+            ->whereNotNull("cars.{$column}")
+            ->selectRaw("cars.{$column} as grouping_id")
+            ->selectRaw("COUNT(DISTINCT {$signatureExpression}) as cars_count")
+            ->groupBy("cars.{$column}")
+            ->pluck('cars_count', 'grouping_id')
+            ->mapWithKeys(fn ($count, $groupingId) => [(int) $groupingId => (int) $count]);
+    }
+
     protected function uniqueCarCount(Builder $query): int
     {
         return $this->uniqueRepresentativeCarIds($query)->count();
