@@ -403,7 +403,7 @@
                             </a>
                         </h4>
                         <div id="{{ $faqId }}" class="card-collapse collapse {{ $faqIndex === 0 ? 'show' : '' }}">
-                            <p>{{ $faq['answer'] }}</p>
+                            <div class="faq-answer-content">{!! $faq['answer'] !!}</div>
                         </div>
                     </div>
                 @empty

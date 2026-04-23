@@ -1670,7 +1670,7 @@
                                     class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                     data-bs-parent="#faqAccordion">
                                     <div class="accordion-body">
-                                        <p>{{ $faq['answer'] }}</p>
+                                        <div class="faq-answer-content">{!! $faq['answer'] !!}</div>
                                     </div>
                                 </div>
                             </div>
