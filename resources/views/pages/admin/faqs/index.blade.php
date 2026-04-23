@@ -80,8 +80,11 @@
                                     {{ $item->translations->first()->question ?? __('N/A') }}
                                 </td>
                                 <td>
+                                    @php
+                                        $answerPreview = strip_tags($item->translations->first()->answer ?? __('N/A'));
+                                    @endphp
                                     <span class="text-muted">
-                                        {{ \Illuminate\Support\Str::limit($item->translations->first()->answer ?? __('N/A'), 90) }}
+                                        {{ \Illuminate\Support\Str::limit($answerPreview, 90) }}
                                     </span>
                                 </td>
                                 <td>
