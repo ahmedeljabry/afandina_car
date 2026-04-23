@@ -8,6 +8,7 @@
 
 
 @include('includes.admin.form_theme')
+@include('includes.admin.rich_text_editor')
 
 
 @section('content')
@@ -42,20 +43,20 @@
             <!-- Tabs Header -->
             <ul class="nav nav-tabs" id="custom-tabs-three-tab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-toggle="pill"
+                    <a class="nav-link active text-dark" id="custom-tabs-general-tab" data-bs-toggle="pill"
                         href="#custom-tabs-general" role="tab" aria-controls="custom-tabs-general" aria-selected="true">
                         <i class="fas fa-info-circle"></i> General Data
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-toggle="pill"
+                    <a class="nav-link text-dark" id="custom-tabs-translated-tab" data-bs-toggle="pill"
                         href="#custom-tabs-translated" role="tab" aria-controls="custom-tabs-translated"
                         aria-selected="false">
                         <i class="fas fa-language"></i> Translated Data
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-toggle="pill" href="#custom-tabs-seo"
+                    <a class="nav-link text-dark" id="custom-tabs-seo-tab" data-bs-toggle="pill" href="#custom-tabs-seo"
                         role="tab" aria-controls="custom-tabs-seo" aria-selected="false">
                         <i class="fas fa-search"></i> SEO Data
                     </a>
@@ -114,7 +115,7 @@
                             @foreach($activeLanguages as $lang)
                                 <li class="nav-item">
                                     <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-{{ $lang->code }}-tab" data-toggle="pill" href="#pills-{{ $lang->code }}"
+                                        id="pills-{{ $lang->code }}-tab" data-bs-toggle="pill" href="#pills-{{ $lang->code }}"
                                         role="tab" aria-controls="pills-{{ $lang->code }}"
                                         aria-selected="true">{{ $lang->name }}</a>
                                 </li>
@@ -138,7 +139,7 @@
                                         <label for="answer_{{ $lang->code }}" class="font-weight-bold">Answer
                                             ({{ $lang->name }})</label>
                                         <textarea name="answer[{{ $lang->code }}]"
-                                            class="form-control form-control-lg shadow-sm" id="answer_{{ $lang->code }}"
+                                            class="form-control form-control-lg shadow-sm tinymce" id="answer_{{ $lang->code }}"
                                             rows="4">{{ old('answer.' . $lang->code, $translation->answer ?? '') }}</textarea>
                                     </div>
                                 </div>
@@ -152,7 +153,7 @@
                             @foreach($activeLanguages as $lang)
                                 <li class="nav-item">
                                     <a class="nav-link @if($loop->first) active @endif bg-light text-dark"
-                                        id="pills-seo-{{ $lang->code }}-tab" data-toggle="pill"
+                                        id="pills-seo-{{ $lang->code }}-tab" data-bs-toggle="pill"
                                         href="#pills-seo-{{ $lang->code }}" role="tab"
                                         aria-controls="pills-seo-{{ $lang->code }}" aria-selected="true">{{ $lang->name }}</a>
                                 </li>
@@ -263,14 +264,14 @@
                 $(this).closest('.seo-question-group').remove();
             });
 
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
 
 
         $(document).ready(function () {
             @foreach($activeLanguages as $lang)
                 var metaKeywordsInput = document.querySelector('#meta_keywords_{{ $lang->code }}');
-                if (metaKeywordsInput) {
+                if (metaKeywordsInput && typeof Tagify !== 'undefined') {
                     new Tagify(metaKeywordsInput, {
                         placeholder: 'Enter meta keywords'
                     });
