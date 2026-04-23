@@ -24,7 +24,7 @@ class HomeController extends Controller
     {
         $locale = app()->getLocale() ?? 'en';
         $homePageData = Cache::remember(
-            "website.home.index.v3.{$locale}",
+            "website.home.index.v4.{$locale}",
             now()->addMinutes(5),
             function () use ($locale) {
                 [$currencyRate, $currencySymbol] = $this->resolveCurrencyContext($locale);
@@ -131,7 +131,6 @@ class HomeController extends Controller
                     ->with('translations')
                     ->where('is_active', true)
                     ->where('show_in_home', true)
-                    ->take(5)
                     ->get()
                     ->map(fn(Faq $faq) => [
                         'id'       => $faq->id,
