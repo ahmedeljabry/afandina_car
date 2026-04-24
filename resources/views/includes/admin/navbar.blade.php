@@ -145,7 +145,7 @@
                     <div class="notification_item">
                         <a href="javascript:void(0);" class="btn btn-menubar position-relative" id="notification_popup" data-bs-toggle="dropdown" data-toggle="dropdown" data-bs-auto-close="outside">
                             <i class="ti ti-bell"></i>
-                            <span class="badge bg-violet rounded-pill"></span>
+                            <span class="badge bg-violet rounded-pill" data-admin-notification-badge>{{ $unreadNotifications->count() ?: '' }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end notification-dropdown">
                             <div class="topnav-dropdown-header pb-0">

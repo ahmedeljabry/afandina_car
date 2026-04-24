@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('cars/youtube', [CarController::class, 'storeYoutubeUrls'])->name('cars.storeYouTube');
     Route::post('cars/generate-content', [CarController::class, 'generateContent'])->name('cars.generate-content');
     Route::get('meta-catalog', [MetaCatalogController::class, 'index'])->name('meta-catalog.index');
+    Route::get('meta-catalog/notification-feed', [MetaCatalogController::class, 'notificationFeed'])->name('meta-catalog.notification-feed');
     Route::post('meta-catalog/sync-all', [MetaCatalogController::class, 'syncAll'])->name('meta-catalog.sync-all');
     Route::post('meta-catalog/sync-selected', [MetaCatalogController::class, 'syncSelected'])->name('meta-catalog.sync-selected');
     Route::post('meta-catalog/cars/{car}/sync', [MetaCatalogController::class, 'syncCar'])->name('meta-catalog.sync-car');

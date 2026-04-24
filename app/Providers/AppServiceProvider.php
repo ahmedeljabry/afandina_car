@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Contact;
 use App\Models\Home;
 use App\Models\Location;
+use App\Models\MetaCatalogSyncLog;
 use App\Models\Template;
 use App\Traits\DeduplicatesCars;
 use Illuminate\Pagination\Paginator;
@@ -299,11 +300,19 @@ class AppServiceProvider extends ServiceProvider
                 ? $view->getData()['adminNavbar']
                 : [];
 
-            $view->with('adminNavbar', array_merge([
+            $mergedConfig = array_merge([
                 'logo' => $branding['logo'],
                 'small_logo' => $branding['logo'],
                 'dark_logo' => $branding['dark_logo'],
-            ], $existingConfig));
+            ], $existingConfig);
+
+            $mergedConfig['notifications'] = collect($this->getAdminMetaCatalogNotifications())
+                ->concat(collect($existingConfig['notifications'] ?? []))
+                ->take(10)
+                ->values()
+                ->all();
+
+            $view->with('adminNavbar', $mergedConfig);
 
             $view->with([
                 'adminSiteName' => $branding['site_name'],
@@ -361,6 +370,32 @@ class AppServiceProvider extends ServiceProvider
         }
 
         return asset('storage/' . $normalizedPath);
+    }
+
+    private function getAdminMetaCatalogNotifications(): array
+    {
+        if (!auth()->check()) {
+            return [];
+        }
+
+        return MetaCatalogSyncLog::query()
+            ->with('car.translations')
+            ->where('requested_by', auth()->id())
+            ->where('created_at', '>=', now()->subDays(7))
+            ->latest('updated_at')
+            ->take(8)
+            ->get()
+            ->map(function (MetaCatalogSyncLog $log): array {
+                return [
+                    'title' => $log->notificationTitle(),
+                    'message' => $log->notificationMessage(),
+                    'time' => $log->notificationTimeLabel(),
+                    'url' => route('admin.meta-catalog.index'),
+                    'read' => !$log->isUnreadNotification(),
+                    'archived' => false,
+                ];
+            })
+            ->all();
     }
 
     private function normalizeExternalUrl(?string $url): ?string

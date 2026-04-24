@@ -81,10 +81,6 @@
 @endpush
 
 @section('content')
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
     @if($errors->any())
         <div class="alert alert-danger">{{ $errors->first() }}</div>
     @endif
@@ -225,6 +221,19 @@
             if (typeof $.fn.select2 !== 'undefined') {
                 $('.select2').select2({ width: '100%' });
             }
+
+            document.addEventListener('admin:sync-notifications', function (event) {
+                const changedNotifications = event.detail?.changedNotifications || [];
+                const shouldRefresh = changedNotifications.some(function (item) {
+                    return ['success', 'partial', 'failed'].includes(item.status);
+                });
+
+                if (shouldRefresh) {
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 1800);
+                }
+            });
         });
     </script>
 @endpush

@@ -60,6 +60,8 @@ class GenericController extends Controller
         $request->merge([
             'is_active' => $request->has('is_active') ? true : false,
         ]);
+
+        $this->normalizeMetaKeywords($request);
         
         foreach ($this->uploadedfiles as $fileField) {
             if ($request->has($fileField) && is_array($request->file($fileField))) {
@@ -125,6 +127,7 @@ class GenericController extends Controller
             $this->validationRules[$fileField] = 'sometimes|mimes:jpg,jpeg,png,svg,webp,mp4,webm,ogg|max:102400'; // 100MB max
         }
 
+        $this->normalizeMetaKeywords($request);
 
         // Validate the request data
         $validatedData = $request->validate($this->validationRules, $this->validationMessages);
@@ -289,6 +292,84 @@ class GenericController extends Controller
                 $this->syncEnglishSlug($validatedData, $model);
             }
         }
+    }
+
+    protected function normalizeMetaKeywords(Request $request): void
+    {
+        if (!$request->has('meta_keywords')) {
+            return;
+        }
+
+        $request->merge([
+            'meta_keywords' => $this->normalizeMetaKeywordsPayload((array) $request->input('meta_keywords', [])),
+        ]);
+    }
+
+    protected function normalizeMetaKeywordsPayload(array $metaKeywords): array
+    {
+        $normalized = [];
+
+        foreach ($metaKeywords as $locale => $value) {
+            $normalized[$locale] = $this->serializeKeywordList($value);
+        }
+
+        return $normalized;
+    }
+
+    protected function serializeKeywordList($value): ?string
+    {
+        if (is_array($value)) {
+            $keywords = collect($value)
+                ->map(function ($item) {
+                    if (is_array($item)) {
+                        return trim((string) ($item['value'] ?? ''));
+                    }
+
+                    return trim((string) $item);
+                })
+                ->filter()
+                ->unique()
+                ->values();
+
+            return $keywords->isEmpty()
+                ? null
+                : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
+        }
+
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        $decoded = json_decode($value, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $keywords = collect($decoded)
+                ->map(function ($item) {
+                    if (is_array($item)) {
+                        return trim((string) ($item['value'] ?? ''));
+                    }
+
+                    return trim((string) $item);
+                })
+                ->filter()
+                ->unique()
+                ->values();
+
+            return $keywords->isEmpty()
+                ? null
+                : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
+        }
+
+        $keywords = collect(preg_split('/[\r\n,]+/', $value) ?: [])
+            ->map(fn($keyword) => trim((string) $keyword))
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $keywords->isEmpty()
+            ? null
+            : $keywords->map(fn($keyword) => ['value' => $keyword])->toJson();
     }
 
     protected function syncEnglishSlug(array $validatedData, $model): void

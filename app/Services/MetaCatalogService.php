@@ -105,6 +105,120 @@ class MetaCatalogService
         return $this->syncCars([$car], 'single', $requestedBy);
     }
 
+    public function markLogAsRunning(MetaCatalogSyncLog $log, ?int $totalCount = null): MetaCatalogSyncLog
+    {
+        $message = $log->mode === 'single'
+            ? 'Meta catalog sync started for the selected car.'
+            : 'Meta catalog sync started for the selected cars.';
+
+        $payload = [
+            'status' => 'running',
+            'started_at' => $log->started_at ?? now(),
+            'message' => $message,
+        ];
+
+        if ($totalCount !== null) {
+            $payload['total_count'] = $totalCount;
+        }
+
+        $log->update($payload);
+
+        return $log->refresh();
+    }
+
+    public function syncBatch(Collection $cars, string $mode = 'selected'): array
+    {
+        $cars = $cars->filter(fn ($car): bool => $car instanceof Car)->values();
+
+        if ($cars->isEmpty()) {
+            return [
+                'responses' => [],
+                'success_count' => 0,
+                'failed_count' => 0,
+            ];
+        }
+
+        $responses = [];
+        $successCount = 0;
+        $failedCount = 0;
+        $client = new Client([
+            'timeout' => 45,
+            'connect_timeout' => 15,
+        ]);
+
+        foreach ($cars->map(fn (Car $car): array => $this->buildCatalogRequest($car))->chunk(100) as $chunkIndex => $requests) {
+            try {
+                $response = $client->post($this->endpoint(), [
+                    'form_params' => [
+                        'access_token' => $this->accessToken(),
+                        'item_type' => 'PRODUCT_ITEM',
+                        'requests' => json_encode($requests->values()->all(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    ],
+                ]);
+
+                $body = json_decode((string) $response->getBody(), true) ?: [];
+                $responses[] = [
+                    'chunk' => $chunkIndex + 1,
+                    'status_code' => $response->getStatusCode(),
+                    'count' => $requests->count(),
+                    'body' => $body,
+                ];
+                $successCount += $requests->count();
+            } catch (Throwable $e) {
+                Log::error('Meta catalog sync chunk failed', [
+                    'mode' => $mode,
+                    'message' => $e->getMessage(),
+                ]);
+
+                $responses[] = [
+                    'chunk' => $chunkIndex + 1,
+                    'count' => $requests->count(),
+                    'error' => $e->getMessage(),
+                ];
+                $failedCount += $requests->count();
+            }
+        }
+
+        return [
+            'responses' => $responses,
+            'success_count' => $successCount,
+            'failed_count' => $failedCount,
+        ];
+    }
+
+    public function completeExistingLog(
+        MetaCatalogSyncLog $log,
+        int $successCount,
+        int $failedCount,
+        array $payload = []
+    ): MetaCatalogSyncLog {
+        $status = match (true) {
+            $failedCount === 0 => 'success',
+            $successCount > 0 => 'partial',
+            default => 'failed',
+        };
+
+        $message = match ($status) {
+            'success' => "Meta catalog sync finished successfully for {$successCount} cars.",
+            'partial' => "Meta catalog sync finished with {$failedCount} failed cars out of {$log->total_count}.",
+            default => 'Meta catalog sync failed.',
+        };
+
+        return $this->finishLog($log, $status, $successCount, $failedCount, $message, $payload);
+    }
+
+    public function failExistingLog(MetaCatalogSyncLog $log, string $message, array $payload = []): MetaCatalogSyncLog
+    {
+        return $this->finishLog(
+            $log,
+            'failed',
+            $log->success_count,
+            max($log->failed_count, $log->total_count > 0 ? $log->total_count - $log->success_count : 0),
+            $message,
+            $payload
+        );
+    }
+
     private function finishLog(
         MetaCatalogSyncLog $log,
         string $status,

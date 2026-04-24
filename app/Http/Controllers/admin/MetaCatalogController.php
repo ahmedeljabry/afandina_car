@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SyncCarsToMetaCatalog;
 use App\Models\Car;
 use App\Models\MetaCatalogSyncLog;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -52,9 +53,33 @@ class MetaCatalogController extends Controller
 
     public function syncAll(): RedirectResponse
     {
-        SyncCarsToMetaCatalog::dispatch(null, 'all', auth()->id());
+        $carCount = Car::query()->count();
 
-        return back()->with('success', 'Meta catalog sync for all cars has been queued.');
+        if ($carCount === 0) {
+            MetaCatalogSyncLog::create([
+                'mode' => 'all',
+                'requested_by' => auth()->id(),
+                'status' => 'success',
+                'total_count' => 0,
+                'message' => 'No cars matched this sync request.',
+                'started_at' => now(),
+                'finished_at' => now(),
+            ]);
+
+            return back()->with('info', 'No cars are available to sync right now.');
+        }
+
+        $log = MetaCatalogSyncLog::create([
+            'mode' => 'all',
+            'requested_by' => auth()->id(),
+            'status' => 'queued',
+            'total_count' => $carCount,
+            'message' => 'Meta catalog sync is queued and waiting to start.',
+        ]);
+
+        SyncCarsToMetaCatalog::dispatch($log->id, null, 'all', auth()->id());
+
+        return back()->with('success', 'Meta catalog sync has been sent. You will be notified when it starts and finishes.');
     }
 
     public function syncSelected(Request $request): RedirectResponse
@@ -63,15 +88,63 @@ class MetaCatalogController extends Controller
             'car_id' => ['required', 'exists:cars,id'],
         ]);
 
-        SyncCarsToMetaCatalog::dispatch([(int) $validated['car_id']], 'single', auth()->id());
+        $carId = (int) $validated['car_id'];
+        $log = MetaCatalogSyncLog::create([
+            'mode' => 'single',
+            'car_id' => $carId,
+            'requested_by' => auth()->id(),
+            'status' => 'queued',
+            'total_count' => 1,
+            'message' => 'Meta catalog sync is queued for the selected car.',
+        ]);
 
-        return back()->with('success', 'Meta catalog sync for the selected car has been queued.');
+        SyncCarsToMetaCatalog::dispatch($log->id, [$carId], 'single', auth()->id());
+
+        return back()->with('success', 'Selected car sync has been sent. You will be notified when it starts and finishes.');
     }
 
     public function syncCar(Car $car): RedirectResponse
     {
-        SyncCarsToMetaCatalog::dispatch([$car->id], 'single', auth()->id());
+        $log = MetaCatalogSyncLog::create([
+            'mode' => 'single',
+            'car_id' => $car->id,
+            'requested_by' => auth()->id(),
+            'status' => 'queued',
+            'total_count' => 1,
+            'message' => 'Meta catalog sync is queued for this car.',
+        ]);
 
-        return back()->with('success', 'Meta catalog sync for this car has been queued.');
+        SyncCarsToMetaCatalog::dispatch($log->id, [$car->id], 'single', auth()->id());
+
+        return back()->with('success', 'Car sync has been sent. You will be notified when it starts and finishes.');
+    }
+
+    public function notificationFeed(): JsonResponse
+    {
+        $logs = MetaCatalogSyncLog::query()
+            ->with('car.translations')
+            ->where('requested_by', auth()->id())
+            ->where('created_at', '>=', now()->subDays(7))
+            ->latest('updated_at')
+            ->take(8)
+            ->get()
+            ->values();
+
+        return response()->json([
+            'notifications' => $logs->map(function (MetaCatalogSyncLog $log): array {
+                return [
+                    'id' => $log->id,
+                    'status' => $log->status,
+                    'type' => $log->notificationType(),
+                    'title' => $log->notificationTitle(),
+                    'message' => $log->notificationMessage(),
+                    'time' => $log->notificationTimeLabel(),
+                    'updated_at' => optional($log->updated_at)->toISOString(),
+                    'url' => route('admin.meta-catalog.index'),
+                    'unread' => $log->isUnreadNotification(),
+                ];
+            })->all(),
+            'unread_count' => $logs->filter(fn (MetaCatalogSyncLog $log): bool => $log->isUnreadNotification())->count(),
+        ]);
     }
 }
