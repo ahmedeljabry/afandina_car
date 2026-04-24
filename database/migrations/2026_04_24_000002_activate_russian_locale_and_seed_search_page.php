@@ -59,6 +59,8 @@ return new class extends Migration
             return;
         }
 
+        $pageTranslationColumns = Schema::getColumnListing('page_translations');
+
         $pageId = DB::table('pages')->where('slug', 'search-cars')->value('id');
 
         if (!$pageId) {
@@ -96,25 +98,38 @@ return new class extends Migration
         ];
 
         foreach ($translations as $locale => $translation) {
+            $payload = [
+                'page_id' => $pageId,
+                'locale' => $locale,
+                'sub_description' => null,
+                'category_section_title' => null,
+                'category_section_description' => null,
+                'brands_section_title' => null,
+                'brands_section_description' => null,
+                'special_offers_title' => null,
+                'special_offers_description' => null,
+                'only_on_us_title' => null,
+                'only_on_us_description' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            foreach ($translation as $column => $value) {
+                if (in_array($column, $pageTranslationColumns, true)) {
+                    $payload[$column] = $value;
+                }
+            }
+
+            if (in_array('meta_keywords', $pageTranslationColumns, true)) {
+                $payload['meta_keywords'] = null;
+            }
+
             DB::table('page_translations')->updateOrInsert(
                 [
                     'page_id' => $pageId,
                     'locale' => $locale,
                 ],
-                array_merge([
-                    'sub_description' => null,
-                    'category_section_title' => null,
-                    'category_section_description' => null,
-                    'brands_section_title' => null,
-                    'brands_section_description' => null,
-                    'special_offers_title' => null,
-                    'special_offers_description' => null,
-                    'only_on_us_title' => null,
-                    'only_on_us_description' => null,
-                    'meta_keywords' => null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ], $translation)
+                array_intersect_key($payload, array_flip($pageTranslationColumns))
             );
         }
     }
