@@ -44,6 +44,9 @@
                     return;
                 }
 
+                var api = window.AdminRichTextEditor || {};
+                api.instances = api.instances || {};
+
                 var toolbarOptions = [
                     [{ header: [1, 2, 3, 4, false] }],
                     ['bold', 'italic', 'underline'],
@@ -98,13 +101,67 @@
 
                     quill.on('text-change', syncInput);
                     syncEditors.push(syncInput);
+
+                    var editorKey = textarea.id || editorId;
+                    api.instances[editorKey] = {
+                        textarea: textarea,
+                        quill: quill,
+                        sync: syncInput
+                    };
                 });
+
+                api.syncAll = function () {
+                    Object.values(api.instances).forEach(function (instance) {
+                        instance.sync();
+                    });
+                };
+
+                api.setContent = function (editorKey, content) {
+                    var instance = api.instances[editorKey];
+
+                    if (!instance) {
+                        var textarea = document.getElementById(editorKey);
+                        if (textarea) {
+                            textarea.value = content || '';
+                            return true;
+                        }
+
+                        return false;
+                    }
+
+                    instance.quill.setContents([]);
+
+                    if (content) {
+                        if (/<[a-z][\s\S]*>/i.test(content)) {
+                            instance.quill.clipboard.dangerouslyPasteHTML(content);
+                        } else {
+                            instance.quill.setText(content);
+                        }
+                    }
+
+                    instance.sync();
+
+                    return true;
+                };
+
+                api.getContent = function (editorKey) {
+                    var instance = api.instances[editorKey];
+
+                    if (!instance) {
+                        var textarea = document.getElementById(editorKey);
+                        return textarea ? textarea.value : '';
+                    }
+
+                    instance.sync();
+
+                    return instance.textarea.value;
+                };
+
+                window.AdminRichTextEditor = api;
 
                 document.querySelectorAll('form').forEach(function (form) {
                     form.addEventListener('submit', function () {
-                        syncEditors.forEach(function (syncInput) {
-                            syncInput();
-                        });
+                        api.syncAll();
                     });
                 });
             });

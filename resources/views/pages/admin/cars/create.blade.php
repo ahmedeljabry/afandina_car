@@ -17,6 +17,7 @@
 @endsection
 
 @include('includes.admin.form_theme')
+@include('includes.admin.rich_text_editor')
 
 
 
@@ -1390,12 +1391,11 @@
             }
 
             if (data.long_description) {
-                const editor = typeof tinymce !== 'undefined'
-                    ? tinymce.get('long_description_' + lang)
-                    : null;
-                if (editor) {
-                    editor.setContent(data.long_description);
-                } else {
+                const updated = window.AdminRichTextEditor
+                    ? window.AdminRichTextEditor.setContent('long_description_' + lang, data.long_description)
+                    : false;
+
+                if (!updated) {
                     $('#long_description_' + lang).val(data.long_description);
                 }
             }
@@ -1702,11 +1702,11 @@
             // Handle form submission
             $('#createCarForm').on('submit', function(e) {
                 e.preventDefault();
-                
-                if (typeof tinymce !== 'undefined') {
-                    tinymce.triggerSave();
+
+                if (window.AdminRichTextEditor) {
+                    window.AdminRichTextEditor.syncAll();
                 }
-                
+
                 var form = $(this);
                 var submitBtn = form.find('button[type="submit"]');
                 var formData = new FormData(this);
