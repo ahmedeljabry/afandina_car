@@ -40,4 +40,13 @@ return [
         'license_key' => env('CKEDITOR_LICENSE_KEY'),
     ],
 
+    'meta_catalog' => [
+        'catalog_id' => env('META_CATALOG_ID'),
+        'access_token' => env('META_CATALOG_ACCESS_TOKEN'),
+        'graph_version' => env('META_GRAPH_VERSION', 'v20.0'),
+        'batch_endpoint' => env('META_CATALOG_BATCH_ENDPOINT', 'items_batch'),
+        'retailer_prefix' => env('META_CATALOG_RETAILER_PREFIX', 'afandina-car'),
+        'currency' => env('META_CATALOG_CURRENCY', 'AED'),
+    ],
+
 ];

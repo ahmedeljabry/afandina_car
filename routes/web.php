@@ -30,6 +30,7 @@ Route::group(
         Route::get('/contact-us', [WebsiteContactController::class, 'index'])->name('website.contact.index');
         Route::post('/contact-us', [WebsiteContactController::class, 'store'])->name('website.contact.store');
         Route::get('/all-cars', [WebsiteCarController::class, 'index'])->name('website.cars.index');
+        Route::get('/search', [WebsiteCarController::class, 'search'])->name('website.cars.search');
         Route::get('/brand/{brand}', [WebsiteCarController::class, 'brand'])->name('website.cars.brand');
         Route::get('/category/{category}', [WebsiteCarController::class, 'category'])->name('website.cars.category');
         Route::get('/product/{car}', [WebsiteCarController::class, 'show'])->name('website.cars.show');

@@ -66,6 +66,11 @@
           'title' => 'Car Listings',
           'route' => 'admin.cars.index',
         ),
+        5 =>
+        array (
+          'title' => 'Meta Catalog Sync',
+          'route' => 'admin.meta-catalog.index',
+        ),
       ),
     ),
     3 =>

@@ -14,11 +14,17 @@ return [
             'native' => 'English',
             'regional' => 'en_US',
         ],
+        'ru' => [
+            'name' => 'Russian',
+            'script' => 'Cyrl',
+            'native' => 'Русский',
+            'regional' => 'ru_RU',
+        ],
     ],
 
     'useAcceptLanguageHeader' => false,
     'hideDefaultLocaleInURL' => true,
-    'localesOrder' => ['en','ar'],
+    'localesOrder' => ['en','ar','ru'],
     'localesMapping' => [],
 
     'utf8suffix' => env('LARAVELLOCALIZATION_UTF8SUFFIX', '.UTF-8'),

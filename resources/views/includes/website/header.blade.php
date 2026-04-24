@@ -3,10 +3,11 @@
     use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
     $currentLocale = app()->getLocale();
-    $supportedLocales = collect(LaravelLocalization::getSupportedLocales())->only(['ar', 'en']);
+    $supportedLocales = collect(LaravelLocalization::getSupportedLocales());
     $contactPageUrl = route('website.contact.index');
     $brandsSectionUrl = route('home') . '#home-brands';
     $categoriesSectionUrl = route('home') . '#home-categories';
+    $headerSearchTerm = (string) request('search', '');
     $headerBrands = collect($headerBrands ?? []);
     $headerCategories = collect($headerCategories ?? []);
     $deferredMediaPlaceholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
@@ -48,6 +49,105 @@
         border-color: rgba(17, 17, 17, 0.18);
     }
 
+    .header .header-navbar-rht {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header .header-navbar-rht > li {
+        padding: 0;
+    }
+
+    .header-search-toggle {
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(17, 17, 17, 0.16);
+        border-radius: 12px;
+        background: #fff;
+        color: #111;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .header-search-toggle:hover,
+    .header-search-toggle:focus {
+        border-color: #127384;
+        color: #127384;
+        box-shadow: 0 10px 24px rgba(18, 115, 132, 0.14);
+    }
+
+    .header-search-toggle:focus-visible {
+        outline: 2px solid #121212;
+        outline-offset: 3px;
+    }
+
+    .header-search-modal .modal-content {
+        border: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
+    }
+
+    .header-search-modal .modal-header {
+        padding: 24px 28px 12px;
+        border-bottom: 0;
+    }
+
+    .header-search-modal .modal-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #111;
+    }
+
+    .header-search-modal .modal-title i {
+        color: #127384;
+    }
+
+    .header-search-modal .modal-body {
+        padding: 10px 28px 28px;
+    }
+
+    .header-search-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .header-search-form .form-control {
+        height: 58px;
+        border-radius: 14px;
+        border: 1px solid #d7dee8;
+        padding-inline: 18px;
+        font-size: 16px;
+    }
+
+    .header-search-form .btn {
+        height: 58px;
+        min-width: 140px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 700;
+        background: #127384;
+        border-color: #127384;
+    }
+
+    .header-search-form .btn:hover,
+    .header-search-form .btn:focus {
+        background: #0f5f6d;
+        border-color: #0f5f6d;
+    }
+
     @media (max-width: 575.96px) {
         .header .header-nav {
             padding: 0 12px;
@@ -62,7 +162,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            padding: 0 56px;
+            padding: 0 112px 0 56px;
         }
 
         .header .navbar-header #mobile_btn {
@@ -99,14 +199,22 @@
             transform: translateY(-50%);
             margin: 0;
             z-index: 9;
+            gap: 6px;
         }
 
         .header .header-navbar-rht > li {
             padding: 0;
         }
 
-        .header .header-navbar-rht > li:not(.header-lang-switcher) {
+        .header .header-navbar-rht > li:not(.header-lang-switcher):not(.header-search-entry) {
             display: none !important;
+        }
+
+        .header-search-toggle {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            font-size: 13px;
         }
 
         .header .header-navbar-rht .header-lang-switcher .header-reg {
@@ -130,6 +238,10 @@
             right: 12px;
         }
 
+        html[dir="rtl"] .header .navbar-header {
+            padding: 0 56px 0 112px;
+        }
+
         html[dir="rtl"] .header .header-navbar-rht {
             right: auto;
             left: 12px;
@@ -138,6 +250,18 @@
         html[dir="rtl"] .header .header-navbar-rht .header-lang-switcher .header-reg span {
             margin-right: 0;
             margin-left: 4px;
+        }
+
+        .header-search-modal .modal-title {
+            font-size: 23px;
+        }
+
+        .header-search-form {
+            grid-template-columns: 1fr;
+        }
+
+        .header-search-form .btn {
+            width: 100%;
         }
     }
 </style>
@@ -306,6 +430,16 @@
             </div>
 
             <ul class="nav header-navbar-rht">
+                <li class="nav-item header-search-entry">
+                    <button
+                        class="header-search-toggle"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#headerSearchModal"
+                        aria-label="{{ __('website.search.open') }}">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </li>
                 <li class="nav-item dropdown header-lang-switcher">
                     <a class="nav-link header-reg dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -327,3 +461,32 @@
     </div>
 </header>
 <!-- /Header -->
+
+<div class="modal fade header-search-modal" id="headerSearchModal" tabindex="-1" aria-labelledby="headerSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="headerSearchModalLabel">
+                    <i class="fa-solid fa-magnifying-glass"></i>{{ __('website.search.title') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('website.common.close') }}"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('website.cars.search') }}" method="GET" class="header-search-form">
+                    <input
+                        type="search"
+                        class="form-control"
+                        name="search"
+                        value="{{ $headerSearchTerm }}"
+                        placeholder="{{ __('website.search.placeholder') }}"
+                        aria-label="{{ __('website.search.input_label') }}"
+                        autocomplete="off">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span>{{ __('website.search.submit') }}</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

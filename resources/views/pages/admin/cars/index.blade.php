@@ -10,6 +10,9 @@
 @endsection
 
 @section('page-actions')
+    <a href="{{ route('admin.meta-catalog.index') }}" class="btn btn-outline-primary d-inline-flex align-items-center me-2 mb-2">
+        <i class="ti ti-brand-facebook me-1"></i>{{ __('Meta Catalog') }}
+    </a>
     <a href="{{ route('admin.cars.create') }}" class="btn btn-primary d-inline-flex align-items-center me-2 mb-2">
         <i class="ti ti-plus me-1"></i>{{ __('Add Car') }}
     </a>
@@ -365,6 +368,12 @@
                                         <a href="{{ route('admin.cars.edit_images', $item->id) }}" class="btn btn-sm btn-outline-info" title="{{ __('Images') }}">
                                             <i class="ti ti-photo"></i>
                                         </a>
+                                        <form action="{{ route('admin.meta-catalog.sync-car', $item->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="{{ __('Sync to Meta Catalog') }}">
+                                                <i class="ti ti-brand-facebook"></i>
+                                            </button>
+                                        </form>
                                         <form action="{{ route('admin.cars.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete this car?') }}')">
                                             @csrf
                                             @method('DELETE')

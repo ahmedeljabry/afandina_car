@@ -19,7 +19,7 @@ class LanguageSeeder extends Seeder
             ['code' => 'zh', 'name' => 'Chinese', 'is_active' => false],
             ['code' => 'it', 'name' => 'Italian', 'is_active' => false],
             ['code' => 'pt', 'name' => 'Portuguese', 'is_active' => false],
-            ['code' => 'ru', 'name' => 'Russian', 'is_active' => false],
+            ['code' => 'ru', 'name' => 'Russian', 'is_active' => true],
             ['code' => 'pl', 'name' => 'Polish', 'is_active' => false],
             ['code' => 'tr', 'name' => 'Turkish', 'is_active' => false],
             // Add more languages here if needed

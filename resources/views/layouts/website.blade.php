@@ -7,17 +7,25 @@
 
         $isHomePage = request()->routeIs('home');
         $isListingPage = request()->routeIs('website.cars.index')
+            || request()->routeIs('website.cars.search')
             || request()->routeIs('website.cars.brand')
             || request()->routeIs('website.cars.category');
         $styleVersion = '0.6';
-        $deferredHomeIconStyles = app()->getLocale() == 'en'
+        $currentLocale = app()->getLocale();
+        $isRtlLocale = $currentLocale === 'ar';
+        $schemaLanguage = match ($currentLocale) {
+            'ar' => 'ar-AE',
+            'ru' => 'ru-RU',
+            default => 'en-AE',
+        };
+        $deferredHomeIconStyles = $isRtlLocale
             ? [
-                asset('website/assets/plugins/fontawesome/css/all.min.css'),
-                asset('website/assets/plugins/boxicons/css/boxicons.min.css'),
-            ]
-            : [
                 asset('website/rtl/assets/plugins/fontawesome/css/all.min.css'),
                 asset('website/rtl/assets/plugins/boxicons/css/boxicons.min.css'),
+            ]
+            : [
+                asset('website/assets/plugins/fontawesome/css/all.min.css'),
+                asset('website/assets/plugins/boxicons/css/boxicons.min.css'),
             ];
         $defaultMetaDescription = match (true) {
             request()->routeIs('website.cars.*') => __('website.seo.cars_description'),
@@ -86,7 +94,6 @@
             $primaryImageUrl = $heroImageUrl ?: $featuredCarImageUrl ?: $popularCarImageUrl ?: ($websiteLogo ?? $websiteFavicon ?? null);
             $schemaSiteName = trim((string) ($websiteSiteName ?? $contact?->name ?? config('app.name', 'Afandina Car Rental')));
             $schemaPageUrl = route('home');
-            $schemaLanguage = app()->getLocale() === 'ar' ? 'ar-AE' : 'en-AE';
             $schemaPriceRange = filled($minPrice ?? null) && filled($maxPrice ?? null)
                 ? trim((string) ($currencySymbol ?? 'AED')) . ' ' . $minPrice . ' - ' . trim((string) ($currencySymbol ?? 'AED')) . ' ' . $maxPrice
                 : null;
@@ -180,7 +187,7 @@
                     'country' => $contact?->country,
                     'postal_code' => $contact?->postal_code,
                 ],
-                'in_language' => app()->getLocale() === 'ar' ? 'ar-AE' : 'en-AE',
+                'in_language' => $schemaLanguage,
                 'date_published' => data_get($listingContext ?? [], 'schema_date_published'),
                 'date_modified' => data_get($listingContext ?? [], 'schema_date_modified'),
                 'price_range' => $listingPriceRange,
@@ -245,7 +252,7 @@
         @endforeach
     @endif
 
-    @if (app()->getLocale() == 'en')
+    @if (!$isRtlLocale)
     	<!-- Bootstrap CSS -->
 	    <link rel="stylesheet" href="{{ asset('website/assets/css/bootstrap.min.css') }}">
         @unless ($isHomePage)

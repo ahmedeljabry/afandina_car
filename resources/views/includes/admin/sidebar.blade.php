@@ -66,6 +66,11 @@
                                 <i class="ti ti-car"></i><span>Cars</span>
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('admin.meta-catalog.*') ? 'active' : '' }}">
+                            <a href="{{ route('admin.meta-catalog.index') }}">
+                                <i class="ti ti-brand-facebook"></i><span>Meta Catalog</span>
+                            </a>
+                        </li>
                         <li class="submenu {{ request()->routeIs('admin.brands.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.car_models.*') || request()->routeIs('admin.colors.*') || request()->routeIs('admin.features.*') ? 'active' : '' }}">
                             <a href="javascript:void(0);">
                                 <i class="ti ti-device-camera-phone"></i><span>Car Attributes</span>

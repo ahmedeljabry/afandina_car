@@ -12,6 +12,7 @@ return [
         'contact_us' => 'Contact Us',
         'browse_cars' => 'Browse :name cars',
         'language' => 'Language',
+        'search' => 'Search',
     ],
 
     'common' => [
@@ -62,6 +63,18 @@ return [
             'year_new' => 'Year: Newest',
             'year_old' => 'Year: Oldest',
         ],
+    ],
+
+    'search' => [
+        'title' => 'Search Cars',
+        'open' => 'Open car search',
+        'input_label' => 'Search cars',
+        'placeholder' => 'Search by brand, model, or keyword',
+        'submit' => 'Search',
+        'page_title' => 'Search Cars',
+        'breadcrumb' => 'Search',
+        'results_title' => 'Search results for ":query"',
+        'meta_description' => 'Search available rental cars by brand, model, category, and keyword.',
     ],
 
     'blog' => [

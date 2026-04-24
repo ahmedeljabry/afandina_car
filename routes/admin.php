@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\CurrencyController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\GenericController;
 use App\Http\Controllers\admin\MainSettingController;
+use App\Http\Controllers\admin\MetaCatalogController;
 use App\Http\Controllers\admin\PageController;
 use App\Http\Controllers\admin\SitemapController;
 use App\Http\Controllers\admin\WebsiteSettingController;
@@ -76,6 +77,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('cars/images', [CarController::class, 'storeImages'])->name('cars.storeImages');
     Route::post('cars/youtube', [CarController::class, 'storeYoutubeUrls'])->name('cars.storeYouTube');
     Route::post('cars/generate-content', [CarController::class, 'generateContent'])->name('cars.generate-content');
+    Route::get('meta-catalog', [MetaCatalogController::class, 'index'])->name('meta-catalog.index');
+    Route::post('meta-catalog/sync-all', [MetaCatalogController::class, 'syncAll'])->name('meta-catalog.sync-all');
+    Route::post('meta-catalog/sync-selected', [MetaCatalogController::class, 'syncSelected'])->name('meta-catalog.sync-selected');
+    Route::post('meta-catalog/cars/{car}/sync', [MetaCatalogController::class, 'syncCar'])->name('meta-catalog.sync-car');
     Route::resource('cars', 'App\Http\Controllers\admin\CarController');
     Route::get('cars/models/{brand}', ['App\Http\Controllers\admin\CarController', 'getModelsByBrand'])->name('cars.models');
 

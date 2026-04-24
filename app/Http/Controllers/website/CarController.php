@@ -238,6 +238,49 @@ class CarController extends Controller
         return view('website.cars', compact('cars', 'filters', 'contact', 'allCarsPageTranslation'));
     }
 
+    public function search(Request $request)
+    {
+        $locale = app()->getLocale() ?? 'en';
+        $keyword = trim((string) $request->input('search', ''));
+
+        $searchPage = Page::query()
+            ->with('translations')
+            ->where('slug', 'search-cars')
+            ->where('is_active', true)
+            ->first();
+
+        $searchPageTranslation = $this->translationFor($searchPage, $locale);
+        $searchTitle = $keyword !== ''
+            ? __('website.search.results_title', ['query' => $keyword])
+            : (filled($searchPageTranslation?->title) ? $searchPageTranslation->title : __('website.search.page_title'));
+
+        return $this->index($request)
+            ->with('allCarsPageTranslation', $searchPageTranslation)
+            ->with('listingContext', [
+                'show_filters' => true,
+                'action_url' => route('website.cars.search'),
+                'reset_url' => route('website.cars.search'),
+                'page_title' => $searchTitle,
+                'meta_title' => filled($searchPageTranslation?->meta_title)
+                    ? $searchPageTranslation->meta_title
+                    : $searchTitle,
+                'meta_description' => filled($searchPageTranslation?->meta_description)
+                    ? $searchPageTranslation->meta_description
+                    : (filled($searchPageTranslation?->description)
+                        ? $searchPageTranslation->description
+                        : __('website.search.meta_description')),
+                'breadcrumb_parent_label' => __('website.nav.all_cars'),
+                'breadcrumb_parent_url' => route('website.cars.index'),
+                'breadcrumb_current_label' => __('website.search.breadcrumb'),
+                'content_title' => $searchPageTranslation?->title,
+                'content_description' => $searchPageTranslation?->description,
+                'content_article' => $searchPageTranslation?->article,
+                'schema_page_type' => 'search',
+                'schema_date_published' => $searchPage?->created_at,
+                'schema_date_modified' => $searchPage?->updated_at,
+            ]);
+    }
+
     public function brand(Request $request, string $brand)
     {
         $locale = app()->getLocale() ?? 'en';

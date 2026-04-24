@@ -39,7 +39,7 @@
         ->values();
 
     $supportedLocales = config('laravellocalization.supportedLocales', []);
-    $flagMap = ['en' => 'gb.svg', 'ar' => 'sa.svg'];
+    $flagMap = ['en' => 'gb.svg', 'ar' => 'sa.svg', 'ru' => 'ru.png'];
     $languages = collect($supportedLocales)->map(function (array $item, string $code) use ($flagMap): array {
         $flag = $flagMap[$code] ?? strtolower($code) . '.png';
         $flagPath = public_path('admin/assets/img/flags/' . $flag);
