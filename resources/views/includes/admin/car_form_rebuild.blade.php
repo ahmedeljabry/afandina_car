@@ -153,102 +153,6 @@
                 color: rgba(255, 255, 255, 0.7);
             }
 
-            .car-workbench__layout {
-                display: grid;
-                grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-                gap: 1.5rem;
-                align-items: start;
-            }
-
-            .car-workbench__aside {
-                position: sticky;
-                top: 94px;
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .car-workbench__panel {
-                padding: 1.2rem;
-                border-radius: 24px;
-                border: 1px solid #dbe8f5;
-                background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-                box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
-            }
-
-            .car-workbench__panel-head {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 0.95rem;
-            }
-
-            .car-workbench__panel-icon {
-                width: 42px;
-                height: 42px;
-                border-radius: 14px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-                color: #1d4ed8;
-                font-size: 1.1rem;
-            }
-
-            .car-workbench__panel-title {
-                margin: 0;
-                font-size: 1rem;
-                font-weight: 700;
-                color: #0f172a;
-            }
-
-            .car-workbench__panel-copy {
-                margin: 0;
-                font-size: 0.9rem;
-                line-height: 1.6;
-                color: #64748b;
-            }
-
-            .car-workbench__steps,
-            .car-workbench__facts {
-                list-style: none;
-                margin: 0;
-                padding: 0;
-            }
-
-            .car-workbench__steps li,
-            .car-workbench__facts li {
-                padding: 0.85rem 0.95rem;
-                border-radius: 18px;
-                background: #f8fafc;
-                border: 1px solid #e2e8f0;
-            }
-
-            .car-workbench__steps li + li,
-            .car-workbench__facts li + li {
-                margin-top: 0.75rem;
-            }
-
-            .car-workbench__step-label,
-            .car-workbench__fact-label {
-                display: block;
-                margin-bottom: 0.35rem;
-                font-size: 0.76rem;
-                font-weight: 700;
-                letter-spacing: 0.08em;
-                text-transform: uppercase;
-                color: #94a3b8;
-            }
-
-            .car-workbench__step-text,
-            .car-workbench__fact-value {
-                display: block;
-                font-size: 0.92rem;
-                line-height: 1.55;
-                font-weight: 600;
-                color: #0f172a;
-            }
-
             .car-workbench__main {
                 position: relative;
             }
@@ -732,17 +636,6 @@
                 }
             }
 
-            @media (max-width: 1199.98px) {
-                .car-workbench__layout {
-                    grid-template-columns: 1fr;
-                }
-
-                .car-workbench__aside {
-                    position: static;
-                    order: 2;
-                }
-            }
-
             @media (max-width: 991.98px) {
                 .car-workbench__hero-cards {
                     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -751,7 +644,6 @@
 
             @media (max-width: 767.98px) {
                 .car-workbench__hero,
-                .car-workbench__panel,
                 .car-workbench__main > .card.form-card,
                 .car-workbench #custom-tabs-general > .card.mb-4,
                 .car-workbench #pills-tabContent,

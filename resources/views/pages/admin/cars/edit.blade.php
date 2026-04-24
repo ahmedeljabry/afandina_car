@@ -429,64 +429,7 @@
             </div>
         </section>
 
-        <div class="car-workbench__layout">
-            <aside class="car-workbench__aside">
-                <div class="car-workbench__panel">
-                    <div class="car-workbench__panel-head">
-                        <span class="car-workbench__panel-icon"><i class="ti ti-adjustments"></i></span>
-                        <div>
-                            <h3 class="car-workbench__panel-title">{{ __('Editing Focus') }}</h3>
-                            <p class="car-workbench__panel-copy">
-                                {{ __('Use the main tabs to review the listing in the order buyers and search engines depend on.') }}
-                            </p>
-                        </div>
-                    </div>
-                    <ul class="car-workbench__steps">
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('General') }}</span>
-                            <span
-                                class="car-workbench__step-text">{{ __('Audit specs, pricing, switches, and selected features.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('Translations') }}</span>
-                            <span
-                                class="car-workbench__step-text">{{ __('Refresh localized copy where the message or naming changed.') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__step-label">{{ __('SEO') }}</span>
-                            <span
-                                class="car-workbench__step-text">{{ __('Tighten titles, descriptions, and FAQ intent before saving.') }}</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="car-workbench__panel">
-                    <div class="car-workbench__panel-head">
-                        <span class="car-workbench__panel-icon"><i class="ti ti-checklist"></i></span>
-                        <div>
-                            <h3 class="car-workbench__panel-title">{{ __('Quick Audit') }}</h3>
-                            <p class="car-workbench__panel-copy">{{ __('Key state checks for this specific listing.') }}</p>
-                        </div>
-                    </div>
-                    <ul class="car-workbench__facts">
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('Last update') }}</span>
-                            <span class="car-workbench__fact-value">{{ $updatedAt ?: __('just now') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('Visibility') }}</span>
-                            <span
-                                class="car-workbench__fact-value">{{ $item->is_active ? __('Currently live-ready') : __('Held back from publishing') }}</span>
-                        </li>
-                        <li>
-                            <span class="car-workbench__fact-label">{{ __('Images') }}</span>
-                            <span
-                                class="car-workbench__fact-value">{{ __('Use the image manager if gallery ordering needs to change.') }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-
-            <div class="car-workbench__main">
+        <div class="car-workbench__main">
 
 
                 <!-- Loader Overlay -->
@@ -1141,9 +1084,8 @@
                             </button>
                         </form>
                     </div>
-                </div>
-            </div>
         </div>
+    </div>
 @endsection
 
 @push('scripts')
