@@ -30,6 +30,7 @@ class HomeController extends Controller
             ->first();
 
         $homeTranslation = $this->translationFor($home, $locale);
+        $clientSliderItems = $home ? collect($home->activeClientSliderItems()) : collect(Home::DEFAULT_CLIENT_SLIDER_ITEMS);
 
         // ── Categories ───────────────────────────────────────────────
         $categories = Category::query()
@@ -208,6 +209,7 @@ class HomeController extends Controller
             'allCategories',
             'allBrands',
             'contact',
+            'clientSliderItems',
         );
 
         return view('website.home', $homePageData);

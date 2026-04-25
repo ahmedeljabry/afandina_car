@@ -129,6 +129,37 @@
         .home-switch-card .form-check { display: flex; align-items: center; gap: .75rem; min-height: 44px; margin-bottom: 0; }
         .home-switch-card .form-check-input { margin: 0; float: none; width: 2.6rem; height: 1.35rem; cursor: pointer; }
         .home-switch-card .form-check-label { margin: 0; color: #0f172a; font-weight: 700; }
+        .home-client-slider-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+        .home-client-slot {
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .home-client-logo-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 16px;
+            border: 1px dashed #cbd5e1;
+            background: #fff;
+            object-fit: contain;
+            padding: 1rem;
+        }
+
+        .home-client-logo-empty {
+            height: 120px;
+            border-radius: 16px;
+            border: 1px dashed #cbd5e1;
+            background: #fff;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1rem;
+        }
+
         .seo-question-group {
             border: 1px solid #dbe2f0;
             border-radius: 18px;
@@ -139,7 +170,7 @@
         .seo-question-group + .seo-question-group { margin-top: .85rem; }
 
         @media (max-width: 991.98px) {
-            .home-editor-grid, .home-status-metrics { grid-template-columns: 1fr; }
+            .home-editor-grid, .home-status-metrics, .home-client-slider-grid { grid-template-columns: 1fr; }
             .home-editor-topbar { flex-direction: column; align-items: stretch; }
         }
     </style>
@@ -163,7 +194,7 @@
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
                     <div>
                         <h2>{{ __('Homepage Content Manager') }}</h2>
-                        <p>{{ __('Manage homepage media, section copy, and SEO from one tabbed workspace for English and Arabic.') }}</p>
+                        <p>{{ __('Manage homepage media, section copy, slider logos, and SEO from one tabbed workspace for English, Arabic, and Russian.') }}</p>
                     </div>
                     <div class="d-flex flex-wrap">
                         <span class="hero-pill"><i class="fas fa-language"></i>{{ count($homeLocales) }} {{ __('Locales') }}</span>
@@ -312,6 +343,12 @@
                     </div>
                 @endforeach
 
+                <div class="tab-pane fade home-editor-pane" id="tab-clients" role="tabpanel">
+                    @include('pages.admin.homes.partials.client-slider-panel', [
+                        'clientSliderItems' => $clientSliderItems,
+                    ])
+                </div>
+
                 <div class="tab-pane fade home-editor-pane" id="tab-seo" role="tabpanel">
                     <div class="home-seo-card">
                         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3 mb-4">
@@ -450,6 +487,7 @@
             '#home-section-rental': '#tab-rental',
             '#home-section-headings': '#tab-headings',
             '#home-section-testimonials': '#tab-testimonials',
+            '#home-section-clients': '#tab-clients',
             '#home-section-support': '#tab-support',
             '#home-section-shared': '#tab-shared',
             '#home-section-seo': '#tab-seo'

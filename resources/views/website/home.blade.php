@@ -1545,26 +1545,26 @@
                 <a href="{{ route('website.cars.index') }}" class="btn btn-secondary">{{ $homeTranslation?->testimonial_cta_label ?: __('website.home.actions.view_all') }}<i class="bx bx-right-arrow-alt ms-1"></i></a>
             </div>
 
-            <div class="client-slider owl-carousel">
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-01.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
+            @if ($clientSliderItems->isNotEmpty())
+                <div class="client-slider owl-carousel">
+                    @foreach ($clientSliderItems as $clientItem)
+                        @php
+                            $clientLogoUrl = $mediaAssetUrl(data_get($clientItem, 'path'), 'website/assets/img/clients/client-01.svg');
+                            $clientLogoAlt = data_get($clientItem, 'alt') ?: __('website.home.testimonials.title');
+                            $clientLogoLink = trim((string) data_get($clientItem, 'url', ''));
+                        @endphp
+                        <div>
+                            @if ($clientLogoLink !== '')
+                                <a href="{{ $clientLogoLink }}" target="_blank" rel="noopener noreferrer">
+                                    <img src="{{ $clientLogoUrl }}" alt="{{ $clientLogoAlt }}" loading="lazy" fetchpriority="low" decoding="async">
+                                </a>
+                            @else
+                                <img src="{{ $clientLogoUrl }}" alt="{{ $clientLogoAlt }}" loading="lazy" fetchpriority="low" decoding="async">
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-02.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
-                </div>
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-03.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
-                </div>
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-04.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
-                </div>
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-05.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
-                </div>
-                <div>
-                    <img src="{{ asset('website/assets/img/clients/client-06.svg') }}" alt="img" loading="lazy" fetchpriority="low" decoding="async">
-                </div>
-            </div>
+            @endif
         </div>
     </section>
 	<!-- /Testimonial Section -->

@@ -8,10 +8,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 class HomeController extends GenericController
 {
+    private const HOME_LOCALES = ['en', 'ar', 'ru'];
+
     public function __construct()
     {
         parent::__construct('home');
@@ -135,6 +138,7 @@ class HomeController extends GenericController
         $this->data['prefillValues'] = $this->buildPrefillValues();
         $this->data['editorSections'] = $this->buildEditorSections();
         $this->data['editorTabs'] = $this->buildEditorTabs();
+        $this->data['clientSliderItems'] = $this->data['item']->clientSliderItemsForEditor();
 
         return view('pages.admin.homes.edit', $this->data);
     }
@@ -152,6 +156,7 @@ class HomeController extends GenericController
 
             $this->handleModelTranslations($validatedData, $row);
             $this->replaceHomeMedia($request, $row);
+            $this->replaceClientSliderItems($request, $row);
             $this->handleStoreSEOQuestions($validatedData, $row);
 
             DB::commit();
@@ -187,6 +192,7 @@ class HomeController extends GenericController
 
             $this->handleModelTranslations($validatedData, $row, $id);
             $this->replaceHomeMedia($request, $row);
+            $this->replaceClientSliderItems($request, $row);
             $this->handleUpdateSEOQuestions($validatedData, $row);
 
             DB::commit();
@@ -234,6 +240,14 @@ class HomeController extends GenericController
             'seo_questions.*.*.answer' => 'nullable|string',
             'robots_index.*' => 'nullable',
             'robots_follow.*' => 'nullable',
+            'client_slider_items' => 'nullable|array',
+            'client_slider_items.*.path' => 'nullable|string|max:2048',
+            'client_slider_items.*.alt' => 'nullable|string|max:255',
+            'client_slider_items.*.url' => 'nullable|url|max:2048',
+            'client_slider_items.*.is_active' => 'nullable',
+            'client_slider_items.*.remove_image' => 'nullable',
+            'client_slider_images' => 'nullable|array',
+            'client_slider_images.*' => 'nullable|mimes:jpg,jpeg,png,svg,webp|max:10240',
             'is_active' => 'boolean',
         ];
 
@@ -283,10 +297,12 @@ class HomeController extends GenericController
     {
         $activeLanguageMap = collect($this->data['activeLanguages'] ?? [])->keyBy('code');
 
-        return [
-            ['code' => 'en', 'name' => data_get($activeLanguageMap, 'en.name', 'English')],
-            ['code' => 'ar', 'name' => data_get($activeLanguageMap, 'ar.name', 'Arabic')],
-        ];
+        return collect(self::HOME_LOCALES)
+            ->map(fn (string $code): array => [
+                'code' => $code,
+                'name' => data_get($activeLanguageMap, $code . '.name', $this->fallbackLanguageName($code)),
+            ])
+            ->all();
     }
 
     private function buildPrefillValues(): array
@@ -338,20 +354,21 @@ class HomeController extends GenericController
 
         $prefillValues = [];
         foreach ($translationFallbackKeys as $fieldName => $key) {
-            $prefillValues[$fieldName] = [
-                'en' => trans($key, [], 'en'),
-                'ar' => trans($key, [], 'ar'),
-            ];
+            foreach (self::HOME_LOCALES as $locale) {
+                $prefillValues[$fieldName][$locale] = trans($key, [], $locale);
+            }
         }
 
-        $prefillValues['rental_stat_1_value'] = ['en' => '16', 'ar' => '16'];
-        $prefillValues['rental_stat_1_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_2_value'] = ['en' => '2547', 'ar' => '2547'];
-        $prefillValues['rental_stat_2_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_3_value'] = ['en' => '625', 'ar' => '625'];
-        $prefillValues['rental_stat_3_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
-        $prefillValues['rental_stat_4_value'] = ['en' => '15000', 'ar' => '15000'];
-        $prefillValues['rental_stat_4_suffix'] = ['en' => 'K+', 'ar' => 'K+'];
+        foreach (self::HOME_LOCALES as $locale) {
+            $prefillValues['rental_stat_1_value'][$locale] = '16';
+            $prefillValues['rental_stat_1_suffix'][$locale] = 'K+';
+            $prefillValues['rental_stat_2_value'][$locale] = '2547';
+            $prefillValues['rental_stat_2_suffix'][$locale] = 'K+';
+            $prefillValues['rental_stat_3_value'][$locale] = '625';
+            $prefillValues['rental_stat_3_suffix'][$locale] = 'K+';
+            $prefillValues['rental_stat_4_value'][$locale] = '15000';
+            $prefillValues['rental_stat_4_suffix'][$locale] = 'K+';
+        }
 
         return $prefillValues;
     }
@@ -365,6 +382,7 @@ class HomeController extends GenericController
             ['id' => 'rental', 'label' => 'Rent Steps', 'icon' => 'fas fa-route'],
             ['id' => 'headings', 'label' => 'Headings', 'icon' => 'fas fa-heading'],
             ['id' => 'testimonials', 'label' => 'Testimonials', 'icon' => 'fas fa-quote-right'],
+            ['id' => 'clients', 'label' => 'Client Slider', 'icon' => 'fas fa-images'],
             ['id' => 'support', 'label' => 'Support', 'icon' => 'fas fa-life-ring'],
             ['id' => 'shared', 'label' => 'Shared', 'icon' => 'fas fa-layer-group'],
             ['id' => 'seo', 'label' => 'SEO', 'icon' => 'fas fa-magnifying-glass'],
@@ -532,15 +550,30 @@ class HomeController extends GenericController
 
     private function homeLanguages()
     {
-        $homeLocales = ['en', 'ar'];
-
-        return Language::query()
+        $homeLocales = self::HOME_LOCALES;
+        $languages = Language::query()
             ->whereIn('code', $homeLocales)
             ->get()
-            ->sortBy(function ($language) use ($homeLocales) {
-                return array_search($language->code, $homeLocales, true);
+            ->keyBy('code');
+
+        return collect($homeLocales)
+            ->map(function (string $code) use ($languages): Language {
+                return $languages->get($code) ?: new Language([
+                    'code' => $code,
+                    'name' => $this->fallbackLanguageName($code),
+                    'is_active' => true,
+                ]);
             })
             ->values();
+    }
+
+    private function fallbackLanguageName(string $code): string
+    {
+        return [
+            'en' => 'English',
+            'ar' => 'Arabic',
+            'ru' => 'Russian',
+        ][$code] ?? strtoupper($code);
     }
 
     private function replaceHomeMedia(Request $request, Home $home): void
@@ -576,6 +609,59 @@ class HomeController extends GenericController
         }
 
         $home->save();
+    }
+
+    private function replaceClientSliderItems(Request $request, Home $home): void
+    {
+        $existingItems = $home->clientSliderItemsForEditor();
+        $submittedItems = (array) $request->input('client_slider_items', []);
+        $uploadedImages = $request->file('client_slider_images', []);
+        $slotCount = max(count($existingItems), count($submittedItems), 6);
+        $clientSliderItems = [];
+
+        for ($index = 0; $index < $slotCount; $index++) {
+            $hasSubmittedSlot = array_key_exists($index, $submittedItems);
+            $submittedItem = (array) ($submittedItems[$index] ?? []);
+            $existingItem = $existingItems[$index] ?? [];
+            $path = trim((string) ($submittedItem['path'] ?? data_get($existingItem, 'path', '')));
+            $removeImage = filter_var($submittedItem['remove_image'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+            if ($removeImage) {
+                $this->deleteStoredClientSliderImage($path);
+                $path = '';
+            }
+
+            if (is_array($uploadedImages) && isset($uploadedImages[$index])) {
+                $this->deleteStoredClientSliderImage($path);
+                $path = $uploadedImages[$index]->store('homes/client-slider', 'public');
+            }
+
+            $alt = trim((string) ($submittedItem['alt'] ?? data_get($existingItem, 'alt', '')));
+            $url = trim((string) ($submittedItem['url'] ?? data_get($existingItem, 'url', '')));
+
+            $clientSliderItems[] = [
+                'path' => $path !== '' ? $path : null,
+                'alt' => $alt !== '' ? $alt : 'Client logo ' . ($index + 1),
+                'url' => $url !== '' ? $url : null,
+                'is_active' => $hasSubmittedSlot
+                    ? filter_var($submittedItem['is_active'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                    : filter_var(data_get($existingItem, 'is_active', true), FILTER_VALIDATE_BOOLEAN),
+            ];
+        }
+
+        $home->client_slider_items = $clientSliderItems;
+        $home->save();
+    }
+
+    private function deleteStoredClientSliderImage(?string $path): void
+    {
+        $path = ltrim((string) $path, '/');
+
+        if ($path === '' || !Str::startsWith($path, 'homes/client-slider/')) {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
     }
 
     private function optimizedHeroImagePath(string $path, string $variant = 'default'): string

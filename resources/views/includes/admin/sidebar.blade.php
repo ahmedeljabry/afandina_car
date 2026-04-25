@@ -114,6 +114,9 @@
                                     <a href="{{ route('admin.homes.edit', 1) }}#tab-testimonials">Testimonials</a>
                                 </li>
                                 <li>
+                                    <a href="{{ route('admin.homes.edit', 1) }}#tab-clients">Client Slider</a>
+                                </li>
+                                <li>
                                     <a href="{{ route('admin.homes.edit', 1) }}#tab-support">Support Ticker</a>
                                 </li>
                                 <li>
