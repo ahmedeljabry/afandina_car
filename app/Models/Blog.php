@@ -12,7 +12,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class Blog extends Model
 {
     use HasFactory;
+
     protected $guarded = [];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'show_in_home' => 'boolean',
+    ];
 
     //relations
     public function translations(): HasMany

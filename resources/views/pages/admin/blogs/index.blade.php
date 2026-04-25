@@ -91,7 +91,8 @@
                                                        data-model="{{ $modelName }}"
                                                        data-attribute="show_in_home"
                                                        data-id="{{ $item->id }}"
-                                                       {{ $item->show_in_home ? 'checked' : '' }}>
+                                                       aria-label="{{ __('Toggle show in home for this post') }}"
+                                                       @checked($item->show_in_home)>
                                                 <span class="slider round"></span>
                                             </label>
                                         </div>
@@ -103,13 +104,14 @@
                                                        data-model="{{ $modelName }}"
                                                        data-attribute="is_active"
                                                        data-id="{{ $item->id }}"
-                                                       {{ $item->is_active ? 'checked' : '' }}>
+                                                       aria-label="{{ __('Toggle active status for this post') }}"
+                                                       @checked($item->is_active)>
                                                 <span class="slider round"></span>
                                             </label>
                                         </div>
-                                        <span class="status-pill mt-50 {{ $item->is_active ? 'active' : 'inactive' }}">
+                                        <span class="status-pill mt-50 {{ $item->is_active ? 'active' : 'inactive' }}" data-blog-status-pill>
                                             <i class="fas {{ $item->is_active ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
-                                            {{ $item->is_active ? __('Live') : __('Hidden') }}
+                                            <span data-blog-status-label>{{ $item->is_active ? __('Live') : __('Hidden') }}</span>
                                         </span>
                                     </div>
                                 </td>
@@ -158,7 +160,7 @@
                 return;
             }
 
-            $table.DataTable({
+            const dataTable = $table.DataTable({
                 order: [[2, 'asc']],
                 autoWidth: false,
                 pageLength: 10,
@@ -183,6 +185,57 @@
                     "<'row align-items-center mb-2'<'col-sm-6'l><'col-sm-6 text-sm-right'f>>" +
                     "t" +
                     "<'row align-items-center mt-2'<'col-sm-5'i><'col-sm-7'p>>"
+            });
+
+            function syncStatusPill($checkbox) {
+                if ($checkbox.data('attribute') !== 'is_active') {
+                    return;
+                }
+
+                const isActive = $checkbox.is(':checked');
+                const $pill = $checkbox.closest('.toggle-stack').find('[data-blog-status-pill]');
+                const $icon = $pill.find('i');
+
+                $pill
+                    .toggleClass('active', isActive)
+                    .toggleClass('inactive', !isActive);
+
+                $icon
+                    .toggleClass('fa-check-circle', isActive)
+                    .toggleClass('fa-times-circle', !isActive);
+
+                $pill.find('[data-blog-status-label]').text(isActive ? "{{ __('Live') }}" : "{{ __('Hidden') }}");
+            }
+
+            $table.on('change', '.toggle-status', function () {
+                const $checkbox = $(this);
+                const previousValue = !$checkbox.is(':checked');
+
+                $checkbox.prop('disabled', true);
+                syncStatusPill($checkbox);
+
+                $.ajax({
+                    url: "{{ route('admin.toggleStatus') }}",
+                    method: 'POST',
+                    data: {
+                        model: $checkbox.data('model'),
+                        id: $checkbox.data('id'),
+                        value: $checkbox.is(':checked') ? 1 : 0,
+                        attribute: $checkbox.data('attribute')
+                    }
+                }).fail(function () {
+                    $checkbox.prop('checked', previousValue);
+                    syncStatusPill($checkbox);
+
+                    if (window.AdminPanel) {
+                        window.AdminPanel.notify('error', "{{ __('The blog option could not be updated.') }}", {
+                            title: "{{ __('Update failed') }}"
+                        });
+                    }
+                }).always(function () {
+                    $checkbox.prop('disabled', false);
+                    dataTable.rows().invalidate('dom');
+                });
             });
         });
     </script>
