@@ -47,6 +47,7 @@ return [
             'button' => 'Filters',
             'drawer_title' => 'Apply Filters',
             'search_placeholder' => 'Search cars',
+            'mobile_launcher' => 'Search cars',
             'availability' => 'Availability',
             'brand' => 'Car Brand',
             'category' => 'Car Category',
@@ -346,6 +347,15 @@ return [
             'table_price' => 'Price',
             'table_included_mileage' => 'Included Mileage',
             'table_extra_mileage' => 'Extra Mileage',
+        ],
+        'rental_terms' => [
+            'title' => 'Rental Terms',
+            'mileage_policy' => 'Mileage Policy',
+            'fuel_policy' => 'Fuel Policy',
+            'deposit_policy' => 'Deposit Policy',
+            'rental_policy' => 'Rental Policy',
+            'details_cta' => 'View details',
+            'continue' => 'Continue',
         ],
         'sidebar' => [
             'pricing' => 'Pricing',

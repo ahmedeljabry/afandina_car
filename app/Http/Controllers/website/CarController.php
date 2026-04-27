@@ -8,7 +8,7 @@ use App\Models\Category;
 use App\Models\Car;
 use App\Models\Contact;
 use App\Models\Currency;
-use App\Models\Faq;
+use App\Models\Home;
 use App\Models\Page;
 use App\Models\Year;
 use App\Traits\DeduplicatesCars;
@@ -435,9 +435,17 @@ class CarController extends Controller
             'carModel.translations',
             'features.translations',
             'features.icon',
+            'seoQuestions',
         ]);
 
         $carDetails = $this->mapCarDetailsData($carModel, $locale, $currencyRate, $currencySymbol, $currencyCode);
+        $seoFaqs = $this->localizedSeoQuestions($carModel, $locale);
+        $faqSchema = $this->buildFaqSchema($seoFaqs);
+        $home = Home::query()
+            ->with('translations')
+            ->where('is_active', true)
+            ->first();
+        $homeTranslation = $this->translationFor($home, $locale);
         $currentCarGroupKey = $this->carDeduplicationKey($carModel);
 
         $relatedCarsBaseQuery = Car::query()
@@ -466,34 +474,13 @@ class CarController extends Controller
             ->values()
             ->map(fn(Car $relatedCar) => $this->mapCarCardData($relatedCar, $locale, $currencyRate, $currencySymbol, $currencyCode));
 
-        $faqs = Faq::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->take(4)
-            ->get()
-            ->map(function (Faq $faq) use ($locale): ?array {
-                $translation = $this->translationFor($faq, $locale);
-
-                if (blank($translation?->question) || blank($translation?->answer)) {
-                    return null;
-                }
-
-                return [
-                    'id' => $faq->id,
-                    'question' => $translation->question,
-                    'answer' => $translation->answer,
-                ];
-            })
-            ->filter()
-            ->values();
-
         $contact = Contact::query()
             ->where('is_active', true)
             ->latest('id')
             ->first()
             ?? Contact::query()->latest('id')->first();
 
-        return view('website.car-details', compact('carDetails', 'relatedCars', 'faqs', 'contact'));
+        return view('website.car-details', compact('carDetails', 'relatedCars', 'contact', 'seoFaqs', 'faqSchema', 'homeTranslation'));
     }
 
     private function mapCarCardData(Car $car, string $locale, float $currencyRate, string $currencySymbol, string $currencyCode): array
@@ -874,5 +861,40 @@ class CarController extends Controller
             ->filter()
             ->values()
             ->all();
+    }
+
+    private function buildFaqSchema(array $seoFaqs): ?array
+    {
+        $mainEntity = collect($seoFaqs)
+            ->map(function (array $faq): ?array {
+                $question = trim((string) data_get($faq, 'question', ''));
+                $answer = trim((string) preg_replace('/\s+/u', ' ', strip_tags((string) data_get($faq, 'answer', ''))));
+
+                if ($question === '' || $answer === '') {
+                    return null;
+                }
+
+                return [
+                    '@type' => 'Question',
+                    'name' => $question,
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $answer,
+                    ],
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($mainEntity === []) {
+            return null;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $mainEntity,
+        ];
     }
 }

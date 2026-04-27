@@ -67,6 +67,7 @@
         $selectedYearIds = collect($filters['selected_year_ids'] ?? [])->map(fn($id) => (int) $id)->all();
 
         $search = (string) ($filters['search'] ?? '');
+        $mobileSearchLabel = filled($search) ? $search : __('website.cars.filters.mobile_launcher');
         $availableOnly = (bool) ($filters['available_only'] ?? false);
         $sort = (string) ($filters['sort'] ?? 'newest');
         $perPage = (int) ($filters['per_page'] ?? 9);
@@ -323,6 +324,10 @@
             border-color: #121212;
         }
 
+        .cars-mobile-search-launcher {
+            display: none;
+        }
+
         @media (max-width: 575.98px) {
             .listing-action-group .listing-action-btn {
                 height: 46px;
@@ -354,8 +359,71 @@
         }
 
         @media (max-width: 991.96px) {
+            @if($showFilters)
+                body {
+                    padding-bottom: 108px;
+                }
+            @endif
+
             .cars-filter-offcanvas .accord-list .filter-toggle {
                 font-size: 16px;
+            }
+
+            .cars-mobile-search-launcher {
+                position: fixed;
+                left: 12px;
+                right: 12px;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                z-index: 1040;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                width: auto;
+                padding: 10px 10px 10px 16px;
+                border: 0;
+                border-radius: 999px;
+                background: #ffffff;
+                box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+                text-align: start;
+            }
+
+            .cars-mobile-search-launcher i {
+                color: #9ca3af;
+                font-size: 20px;
+                flex-shrink: 0;
+            }
+
+            .cars-mobile-search-launcher span {
+                flex: 1 1 auto;
+                min-width: 0;
+                color: #6b7280;
+                font-size: 17px;
+                font-weight: 500;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .cars-mobile-search-launcher strong {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #d97706;
+                color: #ffffff;
+                font-size: 18px;
+                flex-shrink: 0;
+            }
+
+            .cars-mobile-search-launcher:focus-visible {
+                outline: 3px solid rgba(217, 119, 6, 0.25);
+                outline-offset: 3px;
+            }
+
+            html[dir="rtl"] .cars-mobile-search-launcher strong i {
+                transform: rotate(180deg);
             }
         }
 
@@ -863,6 +931,19 @@
                 </form>
             </div>
         </div>
+    <?php endif; ?>
+
+    <?php if($showFilters): ?>
+        <button type="button"
+            class="cars-mobile-search-launcher"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#carsFilterOffcanvas"
+            aria-controls="carsFilterOffcanvas"
+            aria-label="<?php echo e(__('website.cars.filters.drawer_title')); ?>">
+            <i class="feather-search" aria-hidden="true"></i>
+            <span><?php echo e(\Illuminate\Support\Str::limit($mobileSearchLabel, 42)); ?></span>
+            <strong aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></strong>
+        </button>
     <?php endif; ?>
 
     <!-- Car Grid View -->

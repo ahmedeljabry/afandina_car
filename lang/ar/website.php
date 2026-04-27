@@ -47,6 +47,7 @@ return [
             'button' => 'الفلاتر',
             'drawer_title' => 'تطبيق الفلاتر',
             'search_placeholder' => 'ابحث عن سيارة',
+            'mobile_launcher' => 'ابحث عن سيارة',
             'availability' => 'التوفر',
             'brand' => 'العلامة التجارية',
             'category' => 'فئة السيارة',
@@ -346,6 +347,15 @@ return [
             'table_price' => 'السعر',
             'table_included_mileage' => 'المسافة المتضمنة',
             'table_extra_mileage' => 'المسافة الإضافية',
+        ],
+        'rental_terms' => [
+            'title' => 'شروط الإيجار',
+            'mileage_policy' => 'سياسة المسافة',
+            'fuel_policy' => 'سياسة الوقود',
+            'deposit_policy' => 'سياسة التأمين',
+            'rental_policy' => 'سياسة الإيجار',
+            'details_cta' => 'عرض التفاصيل',
+            'continue' => 'متابعة',
         ],
         'sidebar' => [
             'pricing' => 'الأسعار',

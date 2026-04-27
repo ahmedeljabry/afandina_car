@@ -194,7 +194,7 @@
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start gap-3">
                     <div>
                         <h2>{{ __('Homepage Content Manager') }}</h2>
-                        <p>{{ __('Manage homepage media, section copy, slider logos, and SEO from one tabbed workspace for English, Arabic, and Russian.') }}</p>
+                        <p>{{ __('Manage homepage media, shared section copy, slider logos, and SEO from one tabbed workspace for all active locales.') }}</p>
                     </div>
                     <div class="d-flex flex-wrap">
                         <span class="hero-pill"><i class="fas fa-language"></i>{{ count($homeLocales) }} {{ __('Locales') }}</span>

@@ -271,6 +271,47 @@
             ['label' => __('website.car_details.specifications.crypto_payment'), 'enabled' => (bool) ($carDetails['crypto_payment_accepted'] ?? false)],
         ])->filter(fn (array $item) => $item['enabled'])->values();
 
+        $rentalTerms = collect([
+            [
+                'key' => 'mileage_policy',
+                'label' => __('website.car_details.rental_terms.mileage_policy'),
+                'icon' => 'fa-solid fa-gauge-high',
+                'content' => trim((string) ($homeTranslation?->mileage_policy ?? '')),
+            ],
+            [
+                'key' => 'fuel_policy',
+                'label' => __('website.car_details.rental_terms.fuel_policy'),
+                'icon' => 'fa-solid fa-gas-pump',
+                'content' => trim((string) ($homeTranslation?->fuel_policy ?? '')),
+            ],
+            [
+                'key' => 'deposit_policy',
+                'label' => __('website.car_details.rental_terms.deposit_policy'),
+                'icon' => 'fa-solid fa-wallet',
+                'content' => trim((string) ($homeTranslation?->deposit_policy ?? '')),
+            ],
+            [
+                'key' => 'rental_policy',
+                'label' => __('website.car_details.rental_terms.rental_policy'),
+                'icon' => 'fa-solid fa-file-contract',
+                'content' => trim((string) ($homeTranslation?->rental_policy ?? '')),
+            ],
+        ])->filter(fn (array $term) => filled($term['content']))->values();
+        $defaultRentalTerm = $rentalTerms->first();
+
+        $rentalTermsData = $rentalTerms
+            ->mapWithKeys(fn (array $term) => [
+                $term['key'] => [
+                    'label' => $term['label'],
+                    'content' => $term['content'],
+                ],
+            ])
+            ->all();
+
+        $seoFaqItems = collect($seoFaqs ?? [])
+            ->filter(fn (array $faq) => filled($faq['question'] ?? null) && filled($faq['answer'] ?? null))
+            ->values();
+
         $fullAddress = collect([
             $contact?->address_line1,
             $contact?->address_line2,
@@ -372,6 +413,9 @@
 
     @push('head')
         <script type="application/ld+json">{!! json_encode($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+        @if (!empty($faqSchema))
+            <script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+        @endif
     @endpush
 
     <style>
@@ -759,6 +803,165 @@
             pointer-events: none;
         }
 
+        .rental-terms-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .rental-terms-card .review-header {
+            margin-bottom: 0;
+            padding: 22px 24px 18px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .rental-terms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px 18px;
+            padding: 20px 24px 24px;
+        }
+
+        .rental-term-trigger {
+            width: 100%;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: #1f2937;
+            text-align: start;
+        }
+
+        .rental-term-trigger:hover,
+        .rental-term-trigger:focus {
+            color: #d97706;
+        }
+
+        .rental-term-trigger:focus-visible {
+            outline: 2px solid rgba(217, 119, 6, 0.25);
+            outline-offset: 3px;
+            border-radius: 8px;
+        }
+
+        .rental-term-trigger-copy {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .rental-term-trigger-copy i {
+            color: #6b7280;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .rental-term-trigger-copy span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .rental-term-trigger-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #9ca3af;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .rental-terms-offcanvas {
+            --bs-offcanvas-width: 430px;
+        }
+
+        .rental-terms-offcanvas .offcanvas-header {
+            padding: 24px 24px 18px;
+            border-bottom: 1px solid #ececec;
+        }
+
+        .rental-terms-offcanvas .offcanvas-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .rental-terms-offcanvas .offcanvas-body {
+            display: flex;
+            flex-direction: column;
+            padding: 20px 24px 24px;
+        }
+
+        .rental-terms-offcanvas-heading {
+            margin: 0 0 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ececec;
+            color: #111827;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .rental-terms-offcanvas-content {
+            color: #4b5563;
+            font-size: 16px;
+            line-height: 1.85;
+            white-space: pre-line;
+        }
+
+        .rental-terms-offcanvas-action {
+            margin-top: auto;
+            padding-top: 24px;
+        }
+
+        .rental-terms-offcanvas-action .btn {
+            width: 100%;
+            min-height: 54px;
+            border-radius: 999px;
+            border: 1px solid #ea580c;
+            background: #ffffff;
+            color: #ea580c;
+            font-weight: 600;
+        }
+
+        .car-faq-accordion .accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .car-faq-accordion .accordion-item + .accordion-item {
+            margin-top: 12px;
+        }
+
+        .car-faq-accordion .accordion-button {
+            padding: 18px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            color: #111827;
+            background: #ffffff;
+            box-shadow: none;
+        }
+
+        .car-faq-accordion .accordion-button:not(.collapsed) {
+            color: #d97706;
+            background: #fffaf2;
+        }
+
+        .car-faq-accordion .accordion-body {
+            padding: 18px 20px 20px;
+            color: #4b5563;
+            line-height: 1.8;
+        }
+
         .car-details-mobile-contact-bar {
             display: none;
         }
@@ -808,6 +1011,19 @@
                 inset-inline-end: 12px;
                 width: 38px;
                 height: 38px;
+            }
+
+            .rental-terms-grid {
+                grid-template-columns: 1fr;
+                padding: 18px 18px 20px;
+            }
+
+            .rental-terms-card .review-header {
+                padding: 18px 18px 16px;
+            }
+
+            .rental-terms-offcanvas {
+                --bs-offcanvas-width: 100%;
             }
 
             .car-details-mobile-contact-bar {
@@ -1049,6 +1265,66 @@
 							</div>
                         </div>
                         <!-- /Tariff -->
+
+                        @if ($rentalTerms->isNotEmpty())
+                            <div class="review-sec rental-terms-card">
+                                <div class="review-header">
+                                    <h4>{{ __('website.car_details.rental_terms.title') }}</h4>
+                                </div>
+                                <div class="rental-terms-grid">
+                                    @foreach ($rentalTerms as $rentalTerm)
+                                        <button
+                                            type="button"
+                                            class="rental-term-trigger"
+                                            data-rental-term-key="{{ $rentalTerm['key'] }}">
+                                            <span class="rental-term-trigger-copy">
+                                                <i class="{{ $rentalTerm['icon'] }}"></i>
+                                                <span>{{ $rentalTerm['label'] }}</span>
+                                            </span>
+                                            <span class="rental-term-trigger-meta">
+                                                <span>{{ __('website.car_details.rental_terms.details_cta') }}</span>
+                                                <i class="fa-solid fa-circle-info"></i>
+                                            </span>
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($seoFaqItems->isNotEmpty())
+                            <div class="review-sec listing-feature">
+                                <div class="review-header">
+                                    <h4>{{ __('website.car_details.sections.faq') }}</h4>
+                                </div>
+                                <div class="accordion car-faq-accordion" id="carDetailsFaqAccordion">
+                                    @foreach ($seoFaqItems as $faqItem)
+                                        @php
+                                            $faqCollapseId = 'carDetailsFaq' . $loop->iteration;
+                                        @endphp
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="{{ $faqCollapseId }}Heading">
+                                                <button
+                                                    class="accordion-button {{ $loop->first ? '' : 'collapsed' }}"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#{{ $faqCollapseId }}"
+                                                    aria-expanded="{{ $loop->first ? 'true' : 'false' }}"
+                                                    aria-controls="{{ $faqCollapseId }}">
+                                                    {{ $faqItem['question'] }}
+                                                </button>
+                                            </h2>
+                                            <div
+                                                id="{{ $faqCollapseId }}"
+                                                class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}"
+                                                aria-labelledby="{{ $faqCollapseId }}Heading"
+                                                data-bs-parent="#carDetailsFaqAccordion">
+                                                <div class="accordion-body">{!! nl2br(e($faqItem['answer'])) !!}</div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
                     </div>
                     <div class="col-lg-4 theiaStickySidebar">
@@ -1305,6 +1581,26 @@
             </div>
         </section>
 
+        @if ($rentalTerms->isNotEmpty())
+            <div class="offcanvas offcanvas-end rental-terms-offcanvas" tabindex="-1" id="rentalTermsOffcanvas"
+                aria-labelledby="rentalTermsOffcanvasLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="rentalTermsOffcanvasLabel">{{ __('website.car_details.rental_terms.title') }}</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                        aria-label="{{ __('website.common.close') }}"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <h6 class="rental-terms-offcanvas-heading" data-rental-term-title>{{ $defaultRentalTerm['label'] ?? __('website.car_details.rental_terms.title') }}</h6>
+                    <div class="rental-terms-offcanvas-content" data-rental-term-content>{{ $defaultRentalTerm['content'] ?? '' }}</div>
+                    <div class="rental-terms-offcanvas-action">
+                        <button type="button" class="btn" data-bs-dismiss="offcanvas">
+                            {{ __('website.car_details.rental_terms.continue') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="car-details-mobile-contact-bar">
             @if ($hasPhoneHref)
                 <a href="{{ $phoneHref }}"
@@ -1347,22 +1643,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const galleryItems = @json($galleryLightboxItems->all());
+            const rentalTerms = @json($rentalTermsData);
 
-            if (!window.Fancybox || !Array.isArray(galleryItems) || galleryItems.length === 0) {
-                return;
-            }
+            if (window.Fancybox && Array.isArray(galleryItems) && galleryItems.length > 0) {
+                document.querySelectorAll('.car-details-gallery-trigger').forEach(function (trigger) {
+                    trigger.addEventListener('click', function (event) {
+                        event.preventDefault();
 
-            document.querySelectorAll('.car-details-gallery-trigger').forEach(function (trigger) {
-                trigger.addEventListener('click', function (event) {
-                    event.preventDefault();
+                        const startIndex = Number.parseInt(this.dataset.galleryIndex || '0', 10);
 
-                    const startIndex = Number.parseInt(this.dataset.galleryIndex || '0', 10);
-
-                    window.Fancybox.show(galleryItems, {
-                        startIndex: Number.isNaN(startIndex) ? 0 : startIndex,
+                        window.Fancybox.show(galleryItems, {
+                            startIndex: Number.isNaN(startIndex) ? 0 : startIndex,
+                        });
                     });
                 });
-            });
+            }
+
+            const rentalTermsElement = document.getElementById('rentalTermsOffcanvas');
+            const rentalTermTitle = document.querySelector('[data-rental-term-title]');
+            const rentalTermContent = document.querySelector('[data-rental-term-content]');
+
+            if (rentalTermsElement && rentalTermTitle && rentalTermContent && window.bootstrap && window.bootstrap.Offcanvas) {
+                const rentalTermsOffcanvas = window.bootstrap.Offcanvas.getOrCreateInstance(rentalTermsElement);
+
+                document.querySelectorAll('[data-rental-term-key]').forEach(function (trigger) {
+                    trigger.addEventListener('click', function () {
+                        const termKey = this.getAttribute('data-rental-term-key') || '';
+                        const termData = rentalTerms[termKey];
+
+                        if (!termData) {
+                            return;
+                        }
+
+                        rentalTermTitle.textContent = termData.label || '';
+                        rentalTermContent.textContent = termData.content || '';
+                        rentalTermsOffcanvas.show();
+                    });
+                });
+            }
         });
     </script>
 @endpush

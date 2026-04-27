@@ -99,6 +99,10 @@ class HomeController extends GenericController
             'why_choose_us_section_paragraph',
             'faq_section_title',
             'faq_section_paragraph',
+            'mileage_policy',
+            'fuel_policy',
+            'deposit_policy',
+            'rental_policy',
             'where_find_us_section_title',
             'where_find_us_section_paragraph',
             'required_documents_section_title',
@@ -295,13 +299,12 @@ class HomeController extends GenericController
 
     private function buildEditorLocales(): array
     {
-        $activeLanguageMap = collect($this->data['activeLanguages'] ?? [])->keyBy('code');
-
-        return collect(self::HOME_LOCALES)
-            ->map(fn (string $code): array => [
-                'code' => $code,
-                'name' => data_get($activeLanguageMap, $code . '.name', $this->fallbackLanguageName($code)),
+        return collect($this->data['activeLanguages'] ?? [])
+            ->map(fn (Language $language): array => [
+                'code' => $language->code,
+                'name' => $language->name,
             ])
+            ->values()
             ->all();
     }
 
@@ -353,21 +356,39 @@ class HomeController extends GenericController
         ];
 
         $prefillValues = [];
+        $localeCodes = collect($this->data['activeLanguages'] ?? [])
+            ->pluck('code')
+            ->filter()
+            ->unique()
+            ->values();
+
         foreach ($translationFallbackKeys as $fieldName => $key) {
-            foreach (self::HOME_LOCALES as $locale) {
-                $prefillValues[$fieldName][$locale] = trans($key, [], $locale);
-            }
+            $prefillValues[$fieldName] = $localeCodes
+                ->mapWithKeys(function (string $localeCode) use ($key): array {
+                    $value = trans($key, [], $localeCode);
+
+                    if ($value === $key) {
+                        $value = trans($key, [], 'en');
+                    }
+
+                    return [$localeCode => $value === $key ? '' : $value];
+                })
+                ->all();
         }
 
-        foreach (self::HOME_LOCALES as $locale) {
-            $prefillValues['rental_stat_1_value'][$locale] = '16';
-            $prefillValues['rental_stat_1_suffix'][$locale] = 'K+';
-            $prefillValues['rental_stat_2_value'][$locale] = '2547';
-            $prefillValues['rental_stat_2_suffix'][$locale] = 'K+';
-            $prefillValues['rental_stat_3_value'][$locale] = '625';
-            $prefillValues['rental_stat_3_suffix'][$locale] = 'K+';
-            $prefillValues['rental_stat_4_value'][$locale] = '15000';
-            $prefillValues['rental_stat_4_suffix'][$locale] = 'K+';
+        foreach ([
+            'rental_stat_1_value' => '16',
+            'rental_stat_1_suffix' => 'K+',
+            'rental_stat_2_value' => '2547',
+            'rental_stat_2_suffix' => 'K+',
+            'rental_stat_3_value' => '625',
+            'rental_stat_3_suffix' => 'K+',
+            'rental_stat_4_value' => '15000',
+            'rental_stat_4_suffix' => 'K+',
+        ] as $fieldName => $value) {
+            $prefillValues[$fieldName] = $localeCodes
+                ->mapWithKeys(fn (string $localeCode): array => [$localeCode => $value])
+                ->all();
         }
 
         return $prefillValues;
@@ -525,7 +546,7 @@ class HomeController extends GenericController
             'shared' => [
                 'anchor' => 'home-pane-shared',
                 'title' => 'Shared Content',
-                'description' => 'Legacy and shared home fields reused by other frontend sections and APIs.',
+                'description' => 'Legacy and shared home fields reused by other frontend sections, car details rental terms, and APIs.',
                 'fields' => [
                     ['name' => 'hero_header_title', 'label' => 'Legacy Hero Header Title'],
                     ['name' => 'contact_us_title', 'label' => 'Contact Us Title'],
@@ -542,6 +563,10 @@ class HomeController extends GenericController
                     ['name' => 'required_documents_section_paragraph', 'label' => 'Required Documents Section Paragraph', 'type' => 'textarea', 'rows' => 3],
                     ['name' => 'instagram_section_title', 'label' => 'Instagram Section Title'],
                     ['name' => 'instagram_section_paragraph', 'label' => 'Instagram Section Paragraph', 'type' => 'textarea', 'rows' => 3],
+                    ['name' => 'mileage_policy', 'label' => 'Mileage Policy', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
+                    ['name' => 'fuel_policy', 'label' => 'Fuel Policy', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
+                    ['name' => 'deposit_policy', 'label' => 'Deposit Policy', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
+                    ['name' => 'rental_policy', 'label' => 'Rental Policy', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
                     ['name' => 'footer_section_paragraph', 'label' => 'Footer Section Paragraph', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
                 ],
             ],
@@ -550,20 +575,28 @@ class HomeController extends GenericController
 
     private function homeLanguages()
     {
-        $homeLocales = self::HOME_LOCALES;
-        $languages = Language::query()
-            ->whereIn('code', $homeLocales)
+        $priorityLocales = self::HOME_LOCALES;
+        $activeLanguages = Language::query()
+            ->active()
             ->get()
             ->keyBy('code');
 
-        return collect($homeLocales)
-            ->map(function (string $code) use ($languages): Language {
-                return $languages->get($code) ?: new Language([
+        $orderedLocales = collect($priorityLocales)
+            ->map(function (string $code) use ($activeLanguages): Language {
+                return $activeLanguages->get($code) ?: new Language([
                     'code' => $code,
                     'name' => $this->fallbackLanguageName($code),
                     'is_active' => true,
                 ]);
-            })
+            });
+
+        $additionalLocales = $activeLanguages
+            ->reject(fn (Language $language, string $code): bool => in_array($code, $priorityLocales, true))
+            ->sortBy('id')
+            ->values();
+
+        return $orderedLocales
+            ->concat($additionalLocales)
             ->values();
     }
 
