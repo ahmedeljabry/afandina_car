@@ -4,6 +4,15 @@
     $sidebarSmallLogo = $navbarConfig['small_logo'] ?? $sidebarLogo;
     $sidebarDarkLogo = $navbarConfig['dark_logo'] ?? $sidebarLogo;
     $brandName = $adminSiteName ?? config('app.name', 'Admin');
+    $carAttributesTermsContext = request()->routeIs('admin.homes.edit') && request('context') === 'car-attributes';
+    $carAttributesActive = request()->routeIs('admin.brands.*')
+        || request()->routeIs('admin.categories.*')
+        || request()->routeIs('admin.car_models.*')
+        || request()->routeIs('admin.colors.*')
+        || request()->routeIs('admin.features.*')
+        || $carAttributesTermsContext;
+    $homeCmsActive = request()->routeIs('admin.homes.*') && !$carAttributesTermsContext;
+    $rentalTermsUrl = route('admin.homes.edit', ['home' => 1, 'context' => 'car-attributes']) . '#home-section-shared';
 @endphp
 
 <!-- Sidebar -->
@@ -71,7 +80,7 @@
                                 <i class="ti ti-brand-facebook"></i><span>Meta Catalog</span>
                             </a>
                         </li>
-                        <li class="submenu {{ request()->routeIs('admin.brands.*') || request()->routeIs('admin.categories.*') || request()->routeIs('admin.car_models.*') || request()->routeIs('admin.colors.*') || request()->routeIs('admin.features.*') ? 'active' : '' }}">
+                        <li class="submenu {{ $carAttributesActive ? 'active' : '' }}">
                             <a href="javascript:void(0);">
                                 <i class="ti ti-device-camera-phone"></i><span>Car Attributes</span>
                                 <span class="menu-arrow"></span>
@@ -82,6 +91,7 @@
                                 <li><a class="{{ request()->routeIs('admin.car_models.*') ? 'active' : '' }}" href="{{ route('admin.car_models.index') }}">Models</a></li>
                                 <li><a class="{{ request()->routeIs('admin.colors.*') ? 'active' : '' }}" href="{{ route('admin.colors.index') }}">Colors</a></li>
                                 <li><a class="{{ request()->routeIs('admin.features.*') ? 'active' : '' }}" href="{{ route('admin.features.index') }}">Features</a></li>
+                                <li><a class="{{ $carAttributesTermsContext ? 'active' : '' }}" href="{{ $rentalTermsUrl }}">Rental Terms</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -89,13 +99,13 @@
                 <li class="menu-title sidebar-section-title"><span>CMS</span></li>
                 <li class="sidebar-section-group">
                     <ul>
-                        <li class="submenu {{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
+                        <li class="submenu {{ $homeCmsActive ? 'active' : '' }}">
                             <a href="javascript:void(0);">
                                 <i class="ti ti-home"></i><span>Home</span>
                                 <span class="menu-arrow"></span>
                             </a>
                             <ul>
-                                <li class="{{ request()->routeIs('admin.homes.*') ? 'active' : '' }}">
+                                <li class="{{ $homeCmsActive ? 'active' : '' }}">
                                     <a href="{{ route('admin.homes.edit', 1) }}#tab-overview">Home Overview</a>
                                 </li>
                                 <li>
