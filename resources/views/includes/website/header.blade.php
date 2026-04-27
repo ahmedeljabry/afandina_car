@@ -148,6 +148,24 @@
         border-color: #0f5f6d;
     }
 
+    @media (max-width: 991.98px) {
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1045;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+        }
+
+        .header .header-nav {
+            min-height: 65px;
+        }
+    }
+
     @media (max-width: 575.96px) {
         .header .header-nav {
             padding: 0 12px;

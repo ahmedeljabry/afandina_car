@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\admin\CarController;
+use App\Http\Controllers\admin\CarDetailTermController;
 use App\Http\Controllers\admin\ContactController;
 use App\Http\Controllers\admin\ContactMessageController;
 use App\Http\Controllers\admin\CurrencyController;
@@ -90,6 +91,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('gear_types', 'App\Http\Controllers\admin\Gear_typeController');
 
     Route::resource('colors', 'App\Http\Controllers\admin\ColorController');
+    Route::get('car-detail-terms', [CarDetailTermController::class, 'edit'])->name('car-detail-terms.edit');
+    Route::put('car-detail-terms', [CarDetailTermController::class, 'update'])->name('car-detail-terms.update');
 
     Route::resource('locations', 'App\Http\Controllers\admin\LocationController');
 

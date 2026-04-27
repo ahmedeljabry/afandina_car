@@ -342,6 +342,7 @@
     <style>
         @media (max-width: 991.98px) {
             body {
+                padding-top: calc(65px + env(safe-area-inset-top));
                 padding-bottom: 110px;
             }
 
@@ -361,6 +362,10 @@
                 background: rgba(255, 255, 255, 0.98);
                 box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
                 backdrop-filter: blur(14px);
+            }
+
+            .main-wrapper {
+                min-height: 100vh;
             }
 
             .global-mobile-search__icon {

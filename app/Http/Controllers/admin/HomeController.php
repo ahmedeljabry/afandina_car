@@ -99,10 +99,6 @@ class HomeController extends GenericController
             'why_choose_us_section_paragraph',
             'faq_section_title',
             'faq_section_paragraph',
-            'mileage_policy',
-            'fuel_policy',
-            'deposit_policy',
-            'rental_policy',
             'where_find_us_section_title',
             'where_find_us_section_paragraph',
             'required_documents_section_title',
@@ -405,7 +401,7 @@ class HomeController extends GenericController
             ['id' => 'testimonials', 'label' => 'Testimonials', 'icon' => 'fas fa-quote-right'],
             ['id' => 'clients', 'label' => 'Client Slider', 'icon' => 'fas fa-images'],
             ['id' => 'support', 'label' => 'Support', 'icon' => 'fas fa-life-ring'],
-            ['id' => 'shared', 'label' => 'Shared & Terms', 'icon' => 'fas fa-layer-group'],
+            ['id' => 'shared', 'label' => 'Shared', 'icon' => 'fas fa-layer-group'],
             ['id' => 'seo', 'label' => 'SEO', 'icon' => 'fas fa-magnifying-glass'],
         ];
     }
@@ -545,8 +541,8 @@ class HomeController extends GenericController
             ],
             'shared' => [
                 'anchor' => 'home-pane-shared',
-                'title' => 'Shared Content & Car Detail Terms',
-                'description' => 'Edit shared homepage copy plus the Rental Terms content shown on every car details page.',
+                'title' => 'Shared Content',
+                'description' => 'Legacy and shared home fields reused by other frontend sections and APIs.',
                 'fields' => [
                     ['name' => 'hero_header_title', 'label' => 'Legacy Hero Header Title'],
                     ['name' => 'contact_us_title', 'label' => 'Contact Us Title'],
@@ -563,10 +559,6 @@ class HomeController extends GenericController
                     ['name' => 'required_documents_section_paragraph', 'label' => 'Required Documents Section Paragraph', 'type' => 'textarea', 'rows' => 3],
                     ['name' => 'instagram_section_title', 'label' => 'Instagram Section Title'],
                     ['name' => 'instagram_section_paragraph', 'label' => 'Instagram Section Paragraph', 'type' => 'textarea', 'rows' => 3],
-                    ['name' => 'mileage_policy', 'label' => 'Mileage Policy (Car Details)', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
-                    ['name' => 'fuel_policy', 'label' => 'Fuel Policy (Car Details)', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
-                    ['name' => 'deposit_policy', 'label' => 'Deposit Policy (Car Details)', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
-                    ['name' => 'rental_policy', 'label' => 'Rental Policy (Car Details)', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
                     ['name' => 'footer_section_paragraph', 'label' => 'Footer Section Paragraph', 'type' => 'textarea', 'rows' => 4, 'width' => 'col-12'],
                 ],
             ],

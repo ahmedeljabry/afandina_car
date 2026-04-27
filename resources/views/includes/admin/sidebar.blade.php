@@ -4,15 +4,14 @@
     $sidebarSmallLogo = $navbarConfig['small_logo'] ?? $sidebarLogo;
     $sidebarDarkLogo = $navbarConfig['dark_logo'] ?? $sidebarLogo;
     $brandName = $adminSiteName ?? config('app.name', 'Admin');
-    $carAttributesTermsContext = request()->routeIs('admin.homes.edit') && request('context') === 'car-attributes';
     $carAttributesActive = request()->routeIs('admin.brands.*')
         || request()->routeIs('admin.categories.*')
         || request()->routeIs('admin.car_models.*')
         || request()->routeIs('admin.colors.*')
         || request()->routeIs('admin.features.*')
-        || $carAttributesTermsContext;
-    $homeCmsActive = request()->routeIs('admin.homes.*') && !$carAttributesTermsContext;
-    $rentalTermsUrl = route('admin.homes.edit', ['home' => 1, 'context' => 'car-attributes']) . '#home-section-shared';
+        || request()->routeIs('admin.car-detail-terms.*');
+    $homeCmsActive = request()->routeIs('admin.homes.*');
+    $rentalTermsUrl = route('admin.car-detail-terms.edit');
 @endphp
 
 <!-- Sidebar -->
@@ -91,7 +90,7 @@
                                 <li><a class="{{ request()->routeIs('admin.car_models.*') ? 'active' : '' }}" href="{{ route('admin.car_models.index') }}">Models</a></li>
                                 <li><a class="{{ request()->routeIs('admin.colors.*') ? 'active' : '' }}" href="{{ route('admin.colors.index') }}">Colors</a></li>
                                 <li><a class="{{ request()->routeIs('admin.features.*') ? 'active' : '' }}" href="{{ route('admin.features.index') }}">Features</a></li>
-                                <li><a class="{{ $carAttributesTermsContext ? 'active' : '' }}" href="{{ $rentalTermsUrl }}">Rental Terms</a></li>
+                                <li><a class="{{ request()->routeIs('admin.car-detail-terms.*') ? 'active' : '' }}" href="{{ $rentalTermsUrl }}">Rental Terms</a></li>
                             </ul>
                         </li>
                     </ul>
