@@ -6,6 +6,7 @@
         use App\Support\ListingPageSchema;
 
         $isHomePage = request()->routeIs('home');
+        $isCarWebsiteRoute = request()->routeIs('website.cars.*');
         $isListingPage = request()->routeIs('website.cars.index')
             || request()->routeIs('website.cars.search')
             || request()->routeIs('website.cars.brand')
@@ -13,6 +14,7 @@
         $styleVersion = '0.6';
         $currentLocale = app()->getLocale();
         $isRtlLocale = $currentLocale === 'ar';
+        $mobileSearchValue = $isCarWebsiteRoute ? trim((string) request('search', '')) : '';
         $schemaLanguage = match ($currentLocale) {
             'ar' => 'ar-AE',
             'ru' => 'ru-RU',
@@ -337,6 +339,101 @@
 
 
     @stack('css')
+    <style>
+        @media (max-width: 991.98px) {
+            body {
+                padding-bottom: 110px;
+            }
+
+            .global-mobile-search {
+                position: fixed;
+                left: 12px;
+                right: 12px;
+                bottom: calc(12px + env(safe-area-inset-bottom));
+                z-index: 1030;
+                display: grid;
+                grid-template-columns: auto minmax(0, 1fr) auto;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 10px 10px 16px;
+                border: 1px solid rgba(18, 115, 132, 0.14);
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.98);
+                box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+                backdrop-filter: blur(14px);
+            }
+
+            .global-mobile-search__icon {
+                width: 20px;
+                height: 20px;
+                color: #8a94a6;
+                flex-shrink: 0;
+            }
+
+            .global-mobile-search__input {
+                width: 100%;
+                min-width: 0;
+                border: 0;
+                background: transparent;
+                color: #1f2937;
+                font-size: 17px;
+                font-weight: 500;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            .global-mobile-search__input::placeholder {
+                color: #6b7280;
+                opacity: 1;
+            }
+
+            .global-mobile-search__input:focus {
+                outline: none;
+                box-shadow: none;
+            }
+
+            .global-mobile-search__submit {
+                width: 46px;
+                height: 46px;
+                border: 0;
+                border-radius: 50%;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #127384;
+                color: #fff;
+                box-shadow: 0 12px 24px rgba(18, 115, 132, 0.24);
+                transition: background-color 0.2s ease, transform 0.2s ease;
+            }
+
+            .global-mobile-search__submit:hover,
+            .global-mobile-search__submit:focus {
+                background: #0f5f6d;
+                color: #fff;
+            }
+
+            .global-mobile-search__submit:focus-visible,
+            .global-mobile-search:focus-within {
+                outline: 3px solid rgba(18, 115, 132, 0.18);
+                outline-offset: 2px;
+            }
+
+            .global-mobile-search__submit svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            html[dir="rtl"] .global-mobile-search__submit svg {
+                transform: rotate(180deg);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .global-mobile-search {
+                display: none;
+            }
+        }
+    </style>
     <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -415,6 +512,29 @@
     <div class="main-wrapper home-three">
         @include('includes.website.header')
         @yield('content')
+        <form action="{{ route('website.cars.search') }}" method="GET" class="global-mobile-search" role="search" aria-label="{{ __('website.search.open') }}">
+            <label class="visually-hidden" for="global-mobile-search-input">{{ __('website.search.input_label') }}</label>
+            <span class="global-mobile-search__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+            <input
+                id="global-mobile-search-input"
+                class="global-mobile-search__input"
+                type="search"
+                name="search"
+                value="{{ $mobileSearchValue }}"
+                placeholder="{{ __('website.cars.filters.search_placeholder') }}"
+                autocomplete="off">
+            <button type="submit" class="global-mobile-search__submit" aria-label="{{ __('website.search.submit') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </form>
         @include('includes.website.footer')
     </div>
     @include('includes.website.scripts')
