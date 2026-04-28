@@ -164,6 +164,75 @@
         .header .header-nav {
             min-height: 65px;
         }
+
+        .header .main-menu-wrapper {
+            width: 86vw;
+            width: min(86vw, 360px);
+            max-width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100vh;
+            max-height: 100dvh;
+            top: 0;
+            bottom: auto;
+            left: 0;
+            right: auto;
+            z-index: 1060;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateX(-100%);
+            background: #201f1d;
+        }
+
+        html[dir="rtl"] .header .main-menu-wrapper {
+            left: auto;
+            right: 0;
+            transform: translateX(100%);
+        }
+
+        html.menu-opened,
+        html.menu-opened body {
+            overflow: hidden;
+        }
+
+        html.menu-opened .header .main-menu-wrapper {
+            transform: translateX(0);
+        }
+
+        html.menu-opened .global-mobile-search {
+            display: none;
+        }
+
+        .header .main-menu-wrapper .menu-header {
+            flex: 0 0 65px;
+            min-height: 65px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .header .main-menu-wrapper .menu-header .menu-logo {
+            min-width: 0;
+        }
+
+        .header .main-menu-wrapper .menu-header .menu-logo img {
+            width: auto;
+            max-width: 210px;
+            max-height: 42px;
+            object-fit: contain;
+        }
+
+        .header .main-menu-wrapper .main-nav {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding-bottom: calc(28px + env(safe-area-inset-bottom));
+        }
+
+        .sidebar-overlay.opened {
+            left: 0;
+        }
     }
 
     @media (max-width: 575.96px) {
@@ -245,6 +314,18 @@
             align-items: center;
             justify-content: center;
             border-radius: 6px;
+        }
+
+        .header .main-menu-wrapper {
+            width: 100vw;
+        }
+
+        .header .main-menu-wrapper .menu-header {
+            padding: 0 16px;
+        }
+
+        .header .main-menu-wrapper .menu-header .menu-logo img {
+            max-width: min(220px, 70vw);
         }
 
         .header .header-navbar-rht .header-lang-switcher .header-reg span {
