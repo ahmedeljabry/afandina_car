@@ -32,6 +32,7 @@ class BlogController extends GenericController
     public function store(Request $request)
     {
         $request->merge([
+            'is_active' => $request->has('is_active') ? true : false,
             'show_in_home' => $request->has('show_in_home') ? true : false,
 
         ]);
@@ -61,6 +62,7 @@ class BlogController extends GenericController
     public function update(Request $request, $id)
     {
         $request->merge([
+            'is_active' => $request->has('is_active') ? true : false,
             'show_in_home' => $request->has('show_in_home') ? true : false,
 
         ]);

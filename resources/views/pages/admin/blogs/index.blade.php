@@ -125,7 +125,8 @@
                                         <button type="button"
                                                 class="btn btn-outline-danger delete-btn"
                                                 data-id="{{ $item->id }}"
-                                                data-model="{{ $modelName }}">
+                                                data-model="{{ $modelName }}"
+                                                data-delete-url="{{ route('admin.' . $modelName . '.destroy', $item->id) }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -211,21 +212,48 @@
                 const $checkbox = $(this);
                 const previousValue = !$checkbox.is(':checked');
 
+                function revertToggle() {
+                    $checkbox.prop('checked', previousValue);
+                    syncStatusPill($checkbox);
+                }
+
                 $checkbox.prop('disabled', true);
                 syncStatusPill($checkbox);
 
                 $.ajax({
                     url: "{{ route('admin.toggleStatus') }}",
                     method: 'POST',
+                    dataType: 'json',
                     data: {
                         model: $checkbox.data('model'),
                         id: $checkbox.data('id'),
                         value: $checkbox.is(':checked') ? 1 : 0,
                         attribute: $checkbox.data('attribute')
                     }
-                }).fail(function () {
-                    $checkbox.prop('checked', previousValue);
+                }).done(function (response) {
+                    if (!response || response.success !== true) {
+                        revertToggle();
+
+                        if (window.AdminPanel) {
+                            window.AdminPanel.notify('error', response && response.message ? response.message : "{{ __('The blog option could not be updated.') }}", {
+                                title: "{{ __('Update failed') }}"
+                            });
+                        }
+
+                        return;
+                    }
+
+                    if (Object.prototype.hasOwnProperty.call(response, 'value')) {
+                        $checkbox.prop('checked', !!response.value);
+                    }
+
                     syncStatusPill($checkbox);
+
+                    if (window.AdminPanel) {
+                        window.AdminPanel.toast('success', "{{ __('Blog option updated.') }}");
+                    }
+                }).fail(function () {
+                    revertToggle();
 
                     if (window.AdminPanel) {
                         window.AdminPanel.notify('error', "{{ __('The blog option could not be updated.') }}", {
@@ -235,6 +263,55 @@
                 }).always(function () {
                     $checkbox.prop('disabled', false);
                     dataTable.rows().invalidate('dom');
+                });
+            });
+
+            $table.on('click', '.delete-btn', function () {
+                const $button = $(this);
+                const deleteUrl = $button.data('delete-url');
+
+                if (!deleteUrl) {
+                    return;
+                }
+
+                const deletePost = function () {
+                    $button.prop('disabled', true);
+
+                    $.ajax({
+                        url: deleteUrl,
+                        method: 'POST',
+                        dataType: 'html',
+                        data: {
+                            _method: 'DELETE'
+                        }
+                    }).done(function () {
+                        window.location.reload();
+                    }).fail(function () {
+                        $button.prop('disabled', false);
+
+                        if (window.AdminPanel) {
+                            window.AdminPanel.notify('error', "{{ __('The blog post could not be deleted.') }}", {
+                                title: "{{ __('Delete failed') }}"
+                            });
+                        }
+                    });
+                };
+
+                const confirmation = window.AdminPanel && window.Swal
+                    ? window.AdminPanel.confirm({
+                        title: "{{ __('Delete this blog post?') }}",
+                        text: "{{ __('This action cannot be undone.') }}",
+                        icon: 'warning',
+                        confirmButtonText: "{{ __('Delete') }}",
+                        cancelButtonText: "{{ __('Cancel') }}",
+                        confirmButtonColor: '#ea5455'
+                    })
+                    : Promise.resolve({ isConfirmed: window.confirm("{{ __('Delete this blog post?') }}") });
+
+                confirmation.then(function (result) {
+                    if (result && result.isConfirmed) {
+                        deletePost();
+                    }
                 });
             });
         });

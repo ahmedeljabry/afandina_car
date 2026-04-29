@@ -1,6 +1,154 @@
 @extends('layouts.website')
 @section('title', $blogDetails['title'] ?? __('website.blog.page_title'))
 
+@push('css')
+    <style>
+        .blog-editor-content {
+            color: #4f5761;
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .blog-editor-content > *:last-child {
+            margin-bottom: 0;
+        }
+
+        .blog-editor-content p,
+        .blog-editor-content li {
+            color: #4f5761;
+            font-size: 16px;
+            line-height: 1.75;
+        }
+
+        .blog-editor-content p {
+            margin-bottom: 14px;
+        }
+
+        .blog-editor-content h1,
+        .blog-editor-content h2,
+        .blog-editor-content h3,
+        .blog-editor-content h4,
+        .blog-editor-content h5,
+        .blog-editor-content h6 {
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #1f1f1f;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .blog-editor-content h1 {
+            font-size: 30px;
+        }
+
+        .blog-editor-content h2 {
+            font-size: 26px;
+        }
+
+        .blog-editor-content h3 {
+            font-size: 23px;
+        }
+
+        .blog-editor-content h4,
+        .blog-editor-content h5,
+        .blog-editor-content h6 {
+            font-size: 20px;
+        }
+
+        .blog-editor-content ul,
+        .blog-editor-content ol {
+            margin: 0 0 16px;
+            padding-inline-start: 1.4rem;
+        }
+
+        .blog-editor-content ul {
+            list-style: disc;
+        }
+
+        .blog-editor-content ol {
+            list-style: decimal;
+        }
+
+        .blog-editor-content li {
+            display: list-item;
+            margin-bottom: 8px;
+        }
+
+        .blog-editor-content li[data-list="bullet"] {
+            list-style-type: disc;
+        }
+
+        .blog-editor-content li[data-list="ordered"] {
+            list-style-type: decimal;
+        }
+
+        .blog-editor-content .ql-ui {
+            display: none;
+        }
+
+        .blog-editor-content .ql-align-center {
+            text-align: center;
+        }
+
+        .blog-editor-content .ql-align-right {
+            text-align: right;
+        }
+
+        .blog-editor-content .ql-align-justify {
+            text-align: justify;
+        }
+
+        .blog-editor-content .ql-direction-rtl {
+            direction: rtl;
+            text-align: inherit;
+        }
+
+        .blog-editor-content .ql-indent-1 {
+            padding-inline-start: 3em;
+        }
+
+        .blog-editor-content .ql-indent-2 {
+            padding-inline-start: 6em;
+        }
+
+        .blog-editor-content .ql-indent-3 {
+            padding-inline-start: 9em;
+        }
+
+        .blog-editor-content blockquote {
+            margin: 0 0 16px;
+            padding: 12px 16px;
+            border-inline-start: 4px solid #127384;
+            background: #f7fbfc;
+            color: #334155;
+        }
+
+        .blog-editor-content a {
+            color: #127384;
+            text-decoration: underline;
+        }
+
+        .blog-editor-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+        }
+
+        .blog-editor-content table {
+            width: 100%;
+            margin-bottom: 16px;
+            border-collapse: collapse;
+        }
+
+        .blog-editor-content table th,
+        .blog-editor-content table td {
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+    </style>
+@endpush
+
 @section('content')
     @php
         use App\Support\CmsHtmlLinks;
@@ -65,7 +213,7 @@
             @endif
 
             @if(filled($blogContent))
-                <div class="blog-description">
+                <div class="blog-description blog-editor-content">
                     {!! $blogContent !!}
                 </div>
             @endif

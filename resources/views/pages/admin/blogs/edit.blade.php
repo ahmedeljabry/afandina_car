@@ -13,6 +13,7 @@
 @endsection
 
 @include('includes.admin.blog_editor_theme')
+@include('includes.admin.rich_text_editor')
 
 @section('content')
     @php

@@ -29,6 +29,29 @@
                 line-height: 1.7;
             }
 
+            .admin-rich-editor .ql-editor ul,
+            .admin-rich-editor .ql-editor ol {
+                padding-inline-start: 1.5rem;
+            }
+
+            .admin-rich-editor .ql-editor li {
+                margin-bottom: 0.35rem;
+            }
+
+            .admin-rich-editor .ql-editor table {
+                width: 100%;
+                margin: 0.75rem 0;
+                border-collapse: collapse;
+            }
+
+            .admin-rich-editor .ql-editor table td,
+            .admin-rich-editor .ql-editor table th {
+                min-width: 90px;
+                padding: 0.5rem;
+                border: 1px solid #d8dee8;
+                vertical-align: top;
+            }
+
             .admin-rich-editor .ql-editor.ql-blank::before {
                 color: #8a94a6;
                 font-style: normal;
@@ -37,7 +60,7 @@
     @endpush
 
     @push('scripts')
-        <script src="{{ asset('admin/assets/plugins/quill/quill.min.js') }}"></script>
+        <script src="{{ asset('admin/assets/plugins/quill/quill.js') }}"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 if (typeof Quill === 'undefined') {
@@ -52,11 +75,12 @@
                     ['bold', 'italic', 'underline'],
                     [{ list: 'ordered' }, { list: 'bullet' }],
                     [{ align: [] }, { direction: 'rtl' }],
-                    ['link', 'blockquote'],
+                    ['link', 'blockquote', 'table'],
                     ['clean']
                 ];
 
                 var syncEditors = [];
+                var tableButtonLabel = @json(__('Insert table'));
 
                 document.querySelectorAll('textarea.tinymce, textarea.js-rich-editor-source').forEach(function (textarea, index) {
                     if (textarea.dataset.richEditorInitialized === '1') {
@@ -77,13 +101,40 @@
 
                     var quill = new Quill(editor, {
                         modules: {
-                            toolbar: toolbarOptions
+                            toolbar: {
+                                container: toolbarOptions,
+                                handlers: {
+                                    table: function () {
+                                        this.quill.focus();
+
+                                        if (!this.quill.getSelection()) {
+                                            this.quill.setSelection(Math.max(this.quill.getLength() - 1, 0), 0);
+                                        }
+
+                                        var tableModule = this.quill.getModule('table');
+
+                                        if (tableModule && typeof tableModule.insertTable === 'function') {
+                                            tableModule.insertTable(3, 3);
+                                        }
+                                    }
+                                }
+                            },
+                            table: true
                         },
                         placeholder: textarea.getAttribute('placeholder') || '',
                         theme: 'snow'
                     });
 
                     quill.root.setAttribute('dir', direction);
+
+                    var toolbar = quill.getModule('toolbar');
+                    if (toolbar && toolbar.container) {
+                        toolbar.container.querySelectorAll('button.ql-table').forEach(function (button) {
+                            button.setAttribute('type', 'button');
+                            button.setAttribute('title', tableButtonLabel);
+                            button.setAttribute('aria-label', tableButtonLabel);
+                        });
+                    }
 
                     var initialValue = textarea.value.trim();
 
