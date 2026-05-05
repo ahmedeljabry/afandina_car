@@ -441,10 +441,7 @@ class CarController extends Controller
         $carDetails = $this->mapCarDetailsData($carModel, $locale, $currencyRate, $currencySymbol, $currencyCode);
         $seoFaqs = $this->localizedSeoQuestions($carModel, $locale);
         $faqSchema = $this->buildFaqSchema($seoFaqs);
-        $home = Home::query()
-            ->with('translations')
-            ->where('is_active', true)
-            ->first();
+        $home = $this->resolveRentalTermsHomePage();
         $homeTranslation = $this->translationFor($home, $locale);
         $homeEnglishTranslation = $this->translationFor($home, 'en');
         $currentCarGroupKey = $this->carDeduplicationKey($carModel);
@@ -756,6 +753,19 @@ class CarController extends Controller
         $currencyCode = $currency?->code ?? 'AED';
 
         return [$currencyRate, $currencySymbol, $currencyCode];
+    }
+
+    private function resolveRentalTermsHomePage(): ?Home
+    {
+        return Home::query()
+            ->with('translations')
+            ->where('page_name', 'home')
+            ->latest('id')
+            ->first()
+            ?? Home::query()
+                ->with('translations')
+                ->where('is_active', true)
+                ->first();
     }
 
     private function translationFor($model, string $locale): mixed
