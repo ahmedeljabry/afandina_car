@@ -25,6 +25,15 @@ class AboutController extends Controller
             ?? About::query()->with('translations')->first();
 
         $aboutTranslation = $this->translationFor($about, $locale);
+        $aboutEnglishTranslation = $this->translationFor($about, 'en');
+
+        $localizedField = fn (string $field, ?string $fallbackKey = null): ?string => $this->localizedField(
+            $aboutTranslation,
+            $aboutEnglishTranslation,
+            $locale,
+            $field,
+            $fallbackKey
+        );
 
         $faqs = Faq::query()
             ->with('translations')
@@ -47,16 +56,16 @@ class AboutController extends Controller
             ->values();
 
         $aboutData = [
-            'page_title' => $aboutTranslation?->about_main_header_title,
-            'agency_title' => $aboutTranslation?->about_our_agency_title,
-            'main_title' => $aboutTranslation?->about_main_header_title,
-            'main_paragraph' => $aboutTranslation?->about_main_header_paragraph,
-            'why_choose_title' => $aboutTranslation?->why_choose_title,
-            'why_choose_content' => $aboutTranslation?->why_choose_content,
-            'our_vision_title' => $aboutTranslation?->our_vision_title,
-            'our_vision_content' => $aboutTranslation?->our_vision_content,
-            'our_mission_title' => $aboutTranslation?->our_mission_title,
-            'our_mission_content' => $aboutTranslation?->our_mission_content,
+            'page_title' => $localizedField('about_main_header_title', 'website.about.page_title'),
+            'agency_title' => $localizedField('about_our_agency_title', 'website.about.about_agency_title'),
+            'main_title' => $localizedField('about_main_header_title', 'website.about.page_title'),
+            'main_paragraph' => $localizedField('about_main_header_paragraph', 'website.about.fallback.main_paragraph'),
+            'why_choose_title' => $localizedField('why_choose_title', 'website.about.cards.why_choose_title'),
+            'why_choose_content' => $localizedField('why_choose_content', 'website.about.cards.why_choose_content'),
+            'our_vision_title' => $localizedField('our_vision_title', 'website.about.cards.our_vision_title'),
+            'our_vision_content' => $localizedField('our_vision_content', 'website.about.cards.our_vision_content'),
+            'our_mission_title' => $localizedField('our_mission_title', 'website.about.cards.our_mission_title'),
+            'our_mission_content' => $localizedField('our_mission_content', 'website.about.cards.our_mission_content'),
             'why_choose_image_url' => $this->storageUrl(
                 $about?->why_choose_image_path,
                 asset('website/assets/img/about-us.png')
@@ -74,9 +83,14 @@ class AboutController extends Controller
             'active_categories' => Category::query()->where('is_active', true)->count(),
         ];
 
+        $aboutMetaTitle = $localizedField('meta_title', 'website.about.page_title');
+        $aboutMetaDescription = $localizedField('meta_description', 'website.seo.default_description');
+
         return view('website.about-us', compact(
             'about',
             'aboutTranslation',
+            'aboutMetaTitle',
+            'aboutMetaDescription',
             'aboutData',
             'faqs',
             'stats',
@@ -104,5 +118,25 @@ class AboutController extends Controller
 
         return $model->translations->firstWhere('locale', $locale)
             ?? $model->translations->first();
+    }
+
+    private function localizedField($translation, $defaultTranslation, string $locale, string $field, ?string $fallbackKey = null): ?string
+    {
+        $value = trim((string) data_get($translation, $field, ''));
+        $defaultValue = trim((string) data_get($defaultTranslation, $field, ''));
+
+        if ($locale !== 'en' && ($value === '' || ($defaultValue !== '' && $value === $defaultValue))) {
+            return $fallbackKey ? __($fallbackKey) : null;
+        }
+
+        if ($value !== '') {
+            return data_get($translation, $field);
+        }
+
+        if ($fallbackKey) {
+            return __($fallbackKey);
+        }
+
+        return data_get($defaultTranslation, $field);
     }
 }

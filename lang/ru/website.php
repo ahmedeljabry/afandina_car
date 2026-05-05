@@ -349,6 +349,15 @@ return array_replace_recursive($translations, [
             'table_included_mileage' => 'Включенный пробег',
             'table_extra_mileage' => 'Дополнительный пробег',
         ],
+        'rental_terms' => [
+            'title' => 'Условия аренды',
+            'mileage_policy' => 'Политика пробега',
+            'fuel_policy' => 'Политика топлива',
+            'deposit_policy' => 'Политика депозита',
+            'rental_policy' => 'Правила аренды',
+            'details_cta' => 'Подробнее',
+            'continue' => 'Продолжить',
+        ],
         'sidebar' => [
             'pricing' => 'Стоимость',
             'car_overview' => 'Обзор авто',

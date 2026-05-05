@@ -446,6 +446,7 @@ class CarController extends Controller
             ->where('is_active', true)
             ->first();
         $homeTranslation = $this->translationFor($home, $locale);
+        $homeEnglishTranslation = $this->translationFor($home, 'en');
         $currentCarGroupKey = $this->carDeduplicationKey($carModel);
 
         $relatedCarsBaseQuery = Car::query()
@@ -480,7 +481,7 @@ class CarController extends Controller
             ->first()
             ?? Contact::query()->latest('id')->first();
 
-        return view('website.car-details', compact('carDetails', 'relatedCars', 'contact', 'seoFaqs', 'faqSchema', 'homeTranslation'));
+        return view('website.car-details', compact('carDetails', 'relatedCars', 'contact', 'seoFaqs', 'faqSchema', 'homeTranslation', 'homeEnglishTranslation'));
     }
 
     private function mapCarCardData(Car $car, string $locale, float $currencyRate, string $currencySymbol, string $currencyCode): array

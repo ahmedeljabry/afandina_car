@@ -179,6 +179,13 @@
                                             id="about_main_header_paragraph_{{ $lang->code }}"
                                             rows="4">{{ old('about_main_header_paragraph.' . $lang->code, $translation->about_main_header_paragraph ?? '') }}</textarea>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="about_our_agency_title_[{{ $lang->code }}]" class="font-weight-bold">About
+                                            Our Agency Title ([{{ $lang->name }}])</label>
+                                        <input type="text" name="about_our_agency_title[{{ $lang->code }}]"
+                                            class="form-control shadow-sm" id="about_our_agency_title_[{{ $lang->code }}]"
+                                            value="{{ old('about_our_agency_title.' . $lang->code, $translation->about_our_agency_title ?? '') }}">
+                                    </div>
 
                                     <hr>
                                     <div class="form-group">
@@ -202,9 +209,9 @@
                                     <div class="form-group">
                                         <label for="our_vision_[{{ $lang->code }}]" class="font-weight-bold">Our Vision Title
                                             ([{{ $lang->name }}])</label>
-                                        <input type="text" name="our_vision[{{ $lang->code }}]" class="form-control shadow-sm"
+                                        <input type="text" name="our_vision_title[{{ $lang->code }}]" class="form-control shadow-sm"
                                             id="our_vision_[{{ $lang->code }}]"
-                                            value="{{ old('our_vision.' . $lang->code, $translation->our_vision ?? '') }}">
+                                            value="{{ old('our_vision_title.' . $lang->code, $translation->our_vision_title ?? '') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="our_vision_content_{{ $lang->code }}" class="font-weight-bold">Our Vision
@@ -219,9 +226,9 @@
                                     <div class="form-group">
                                         <label for="our_mission_[{{ $lang->code }}]" class="font-weight-bold">Our Mission Title
                                             ([{{ $lang->name }}])</label>
-                                        <input type="text" name="our_mission[{{ $lang->code }}]" class="form-control shadow-sm"
+                                        <input type="text" name="our_mission_title[{{ $lang->code }}]" class="form-control shadow-sm"
                                             id="our_mission_[{{ $lang->code }}]"
-                                            value="{{ old('our_mission.' . $lang->code, $translation->our_mission ?? '') }}">
+                                            value="{{ old('our_mission_title.' . $lang->code, $translation->our_mission_title ?? '') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="our_mission_content_{{ $lang->code }}" class="font-weight-bold">Our Mission

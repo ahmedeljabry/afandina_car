@@ -271,30 +271,40 @@
             ['label' => __('website.car_details.specifications.crypto_payment'), 'enabled' => (bool) ($carDetails['crypto_payment_accepted'] ?? false)],
         ])->filter(fn (array $item) => $item['enabled'])->values();
 
+        $rentalTermContent = static function (string $field) use ($homeTranslation, $homeEnglishTranslation): string {
+            $localizedContent = trim((string) data_get($homeTranslation, $field, ''));
+
+            if ($localizedContent !== '') {
+                return $localizedContent;
+            }
+
+            return trim((string) data_get($homeEnglishTranslation, $field, ''));
+        };
+
         $rentalTerms = collect([
             [
                 'key' => 'mileage_policy',
                 'label' => __('website.car_details.rental_terms.mileage_policy'),
                 'icon' => 'fa-solid fa-gauge-high',
-                'content' => trim((string) ($homeTranslation?->mileage_policy ?? '')),
+                'content' => $rentalTermContent('mileage_policy'),
             ],
             [
                 'key' => 'fuel_policy',
                 'label' => __('website.car_details.rental_terms.fuel_policy'),
                 'icon' => 'fa-solid fa-gas-pump',
-                'content' => trim((string) ($homeTranslation?->fuel_policy ?? '')),
+                'content' => $rentalTermContent('fuel_policy'),
             ],
             [
                 'key' => 'deposit_policy',
                 'label' => __('website.car_details.rental_terms.deposit_policy'),
                 'icon' => 'fa-solid fa-wallet',
-                'content' => trim((string) ($homeTranslation?->deposit_policy ?? '')),
+                'content' => $rentalTermContent('deposit_policy'),
             ],
             [
                 'key' => 'rental_policy',
                 'label' => __('website.car_details.rental_terms.rental_policy'),
                 'icon' => 'fa-solid fa-file-contract',
-                'content' => trim((string) ($homeTranslation?->rental_policy ?? '')),
+                'content' => $rentalTermContent('rental_policy'),
             ],
         ])->filter(fn (array $term) => filled($term['content']))->values();
         $defaultRentalTerm = $rentalTerms->first();

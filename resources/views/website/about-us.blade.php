@@ -1,5 +1,6 @@
 @extends('layouts.website')
-@section('title', $aboutTranslation?->meta_title ?? $aboutData['page_title'] ?? __('website.about.page_title'))
+@section('title', $aboutMetaTitle ?? $aboutData['page_title'] ?? __('website.about.page_title'))
+@section('meta_description', $aboutMetaDescription ?? '')
 
 @section('content')
     @php

@@ -11,8 +11,12 @@ class AboutController extends GenericController
         $this->translatableFields = [
             'about_main_header_title',
             'about_main_header_paragraph',
+            'about_our_agency_title',
+            'why_choose_title',
             'why_choose_content',
+            'our_vision_title',
             'our_vision_content',
+            'our_mission_title',
             'our_mission_content'
         ];
         $this->nonTranslatableFields = ['page_name','is_active'];
@@ -33,8 +37,12 @@ class AboutController extends GenericController
             'page_name' => 'required|string|max:255',
             'about_main_header_title.*' => 'nullable|string',
             'about_main_header_paragraph.*' => 'nullable|string',
+            'about_our_agency_title.*' => 'nullable|string',
+            'why_choose_title.*' => 'nullable|string',
             'why_choose_content.*' => 'nullable|string',
+            'our_vision_title.*' => 'nullable|string',
             'our_mission_content.*' => 'nullable|string',
+            'our_mission_title.*' => 'nullable|string',
             'our_vision_content.*' => 'nullable|string',
 
             'why_choose_image_path' => 'required|mimes:jpg,svg,jpeg,png,webp|max:10096',
@@ -72,8 +80,12 @@ class AboutController extends GenericController
             'page_name' => 'required|string|max:255',
             'about_main_header_title.*' => 'nullable|string',
             'about_main_header_paragraph.*' => 'nullable|string',
+            'about_our_agency_title.*' => 'nullable|string',
+            'why_choose_title.*' => 'nullable|string',
             'why_choose_content.*' => 'nullable|string',
+            'our_vision_title.*' => 'nullable|string',
             'our_mission_content.*' => 'nullable|string',
+            'our_mission_title.*' => 'nullable|string',
             'our_vision_content.*' => 'nullable|string',
 
             'why_choose_image_path' => 'nullable|mimes:jpg,jpeg,png,webp|max:10096',
